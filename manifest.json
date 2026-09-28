@@ -1,0 +1,16 @@
+{
+  "name": "ProTector",
+  "short_name": "ProTector",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#009688",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/644/644458.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
