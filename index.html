@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="az" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ANTIUDAR Uyğunluq</title>
+
+    <style>
+        /* =========================================================
+           COLORS
+        ========================================================= */
+        :root[data-theme="dark"] {
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #1a1a1a;
+            --border: #333333;
+            --text: #f5f5f5;
+            --muted: #999999;
+            --orange: #ff5722;
+            --selected: #551b0b;
+            --white: #ffffff;
+            --gold: #d4af37;
+            --gold-dark: #8a6d1d;
+            --header-bg: rgba(10, 10, 10, 0.9);
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --result-hover: rgba(212, 175, 55, 0.1);
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface-2: #eeeeee;
+            --border: #dddddd;
+            --text: #111111;
+            --muted: #666666;
+            --orange: #ff5722;
+            --selected: #ffe0d0;
+            --white: #ffffff;
+            --gold: #b8860b;
+            --gold-dark: #8b6914;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: #ffffff;
+            --result-hover: rgba(184, 134, 11, 0.08);
+        }
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body {
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Qızılı magical fon — YALNIZ tünd tema */
+        :root[data-theme="dark"] body {
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(139, 105, 20, 0.04) 0%, transparent 70%),
+                linear-gradient(160deg, #0a0a0a 0%, #111111 40%, #0d0d0d 100%);
+            background-attachment: fixed;
+        }
+
+        button, input, a {
+            font-family: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* =========================================================
+           MAIN APP
+        ========================================================= */
+        #app {
+            width: 100%;
+            min-height: 100vh;
+            background: transparent;
+        }
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+        .top-header {
+            height: 110px;
+            padding: 22px 28px 18px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+            background: var(--header-bg);
+            backdrop-filter: blur(8px);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-small {
+            font-size: 13px;
+            letter-spacing: 5px;
+            color: var(--gold);
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .header-title {
+            font-size: 36px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: var(--text);
+        }
+
+        /* =========================================================
+           MENU BUTTON
+        ========================================================= */
+        .menu-button {
+            width: 70px;
+            height: 70px;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-button:active {
+            background: var(--result-hover);
+        }
+
+        /* =========================================================
+           MAIN CONTENT
+        ========================================================= */
+        .main-content {
+            padding: 24px;
+        }
+
+        /* =========================================================
+           SEARCH BOX
+        ========================================================= */
+        .search-wrapper {
+            width: 100%;
+            height: 72px;
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            margin-bottom: 16px;
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+        }
+
+        .search-input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 22px;
+            padding: 0 22px;
+        }
+
+        .search-input::placeholder {
+            color: var(--muted);
+        }
+
+        .clear-button {
+            width: 70px;
+            height: 100%;
+            border: none;
+            border-left: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-size: 32px;
+            font-weight: 700;
+            display: none;
+            cursor: pointer;
+        }
+
+        .clear-button.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+        .status {
+            height: 36px;
+            font-size: 14px;
+            letter-spacing: 3px;
+            color: var(--gold);
+            text-transform: uppercase;
+            padding-left: 2px;
+            margin-bottom: 6px;
+        }
+
+        /* =========================================================
+           SEARCH RESULTS
+        ========================================================= */
+        #results {
+            width: 100%;
+        }
+
+        .result-item {
+            width: 100%;
+            min-height: 78px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .result-item:active {
+            background: var(--result-hover);
+        }
+
+        /* =========================================================
+           BRAND
+        ========================================================= */
+        .brand-badge {
+            flex-shrink: 0;
+            min-width: 110px;
+            height: 36px;
+            padding: 0 12px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #111111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 2px;
+        }
+
+        /* =========================================================
+           MODEL NAME
+        ========================================================= */
+        .result-model {
+            flex: 1;
+            font-size: 20px;
+            margin-left: 18px;
+            color: var(--text);
+            font-weight: 400;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        /* =========================================================
+           ARROW
+        ========================================================= */
+        .result-arrow {
+            flex-shrink: 0;
+            font-size: 32px;
+            color: var(--gold);
+            margin-left: 10px;
+            line-height: 1;
+            opacity: 0.75;
+        }
+
+        /* =========================================================
+           NO RESULT
+        ========================================================= */
+        .no-results {
+            text-align: center;
+            color: var(--muted);
+            font-size: 15px;
+            padding-top: 50px;
+        }
+
+        /* =========================================================
+           DETAIL VIEW
+        ========================================================= */
+        #detail-view {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 500;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        :root[data-theme="dark"] #detail-view {
+            background:
+                radial-gradient(ellipse at 30% 10%, rgba(212, 175, 55, 0.07) 0%, transparent 50%),
+                linear-gradient(160deg, #0a0a0a 0%, #111111 100%);
+        }
+
+        #detail-view.active {
+            display: flex;
+        }
+
+        /* =========================================================
+           DETAIL HEADER
+        ========================================================= */
+        .detail-header {
+            height: 110px;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--gold);
+            background: var(--header-bg);
+        }
+
+        .detail-back {
+            width: 68px;
+            height: 68px;
+            flex-shrink: 0;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-size: 40px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .detail-heading {
+            margin-left: 20px;
+            overflow: hidden;
+        }
+
+        .detail-small {
+            font-size: 13px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .detail-model {
+            font-size: 28px;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text);
+        }
+
+        /* =========================================================
+           COMPATIBILITY BAR  (kiçildilmiş)
+        ========================================================= */
+        .compatibility-title {
+            min-height: 48px;
+            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* =========================================================
+           DETAIL LIST
+        ========================================================= */
+        .compatibility-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .compatibility-item {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: transparent;
+            padding: 12px 16px;
+        }
+
+        .compatibility-item.selected {
+            background: var(--selected);
+            border-left: 3px solid var(--gold);
+        }
+
+        /* =========================================================
+           NUMBER
+        ========================================================= */
+        .compat-number {
+            width: 48px;
+            flex-shrink: 0;
+            color: var(--gold);
+            font-size: 15px;
+            text-align: center;
+            font-weight: 500;
+            opacity: 0.85;
+        }
+
+        /* =========================================================
+           DETAIL BRAND
+        ========================================================= */
+        .compat-brand {
+            min-width: 105px;
+            height: 34px;
+            padding: 0 10px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #111111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 2px;
+        }
+
+        /* =========================================================
+           DETAIL MODEL
+        ========================================================= */
+        .compat-model {
+            margin-left: 16px;
+            font-size: 19px;
+            color: var(--text);
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .compatibility-item.selected .compat-model {
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           SETTINGS
+        ========================================================= */
+        #settings-view {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 600;
+            display: none;
+            overflow-y: auto;
+        }
+
+        :root[data-theme="dark"] #settings-view {
+            background:
+                radial-gradient(ellipse at 70% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+                linear-gradient(160deg, #0a0a0a 0%, #111111 100%);
+        }
+
+        #settings-view.active {
+            display: block;
+        }
+
+        .settings-header {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--gold);
+            background: var(--header-bg);
+        }
+
+        .settings-back {
+            width: 64px;
+            height: 64px;
+            border: 2px solid var(--gold);
+            background: transparent;
+            color: var(--gold);
+            font-size: 38px;
+            cursor: pointer;
+        }
+
+        .settings-heading {
+            margin-left: 18px;
+        }
+
+        .settings-small {
+            color: var(--gold);
+            font-size: 12px;
+            letter-spacing: 4px;
+        }
+
+        .settings-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .settings-content {
+            padding: 24px;
+        }
+
+        .settings-section {
+            margin-bottom: 28px;
+        }
+
+        .settings-section-title {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .settings-box {
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+        }
+
+        .settings-row {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .update-button {
+            width: 100%;
+            height: 56px;
+            border: none;
+            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-top: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+        }
+
+        /* WhatsApp düyməsi */
+        .whatsapp-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            height: 56px;
+            background: #25D366;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            transition: background 0.2s;
+        }
+
+        .whatsapp-button:active {
+            background: #1da851;
+        }
+
+        .theme-selector {
+            display: flex;
+            border: 1px solid var(--border);
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 16px 8px;
+            text-align: center;
+            border-right: 1px solid var(--border);
+            font-size: 13px;
+            cursor: pointer;
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .theme-option:last-child {
+            border-right: none;
+        }
+
+        .theme-option.active {
+            background: var(--gold);
+            color: #111111;
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           BLOCK SCREEN
+        ========================================================= */
+        #block-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        :root[data-theme="dark"] #block-screen {
+            background:
+                radial-gradient(ellipse at 50% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
+                #0a0a0a;
+        }
+
+        .block-title {
+            color: var(--gold);
+            font-size: 26px;
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .block-text {
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+        @media (max-width: 600px) {
+            .top-header {
+                height: 100px;
+                padding: 18px 20px 14px 20px;
+            }
+            .header-small { font-size: 12px; letter-spacing: 4px; }
+            .header-title { font-size: 32px; }
+            .menu-button { width: 62px; height: 62px; font-size: 28px; }
+            .main-content { padding: 20px; }
+            .search-wrapper { height: 64px; }
+            .search-input { font-size: 18px; padding: 0 18px; }
+            .brand-badge { min-width: 95px; height: 32px; font-size: 12px; }
+            .result-model { font-size: 18px; margin-left: 14px; }
+            .result-arrow { font-size: 28px; }
+            .detail-header { height: 100px; min-height: 100px; padding: 14px 18px; }
+            .detail-back { width: 60px; height: 60px; font-size: 36px; }
+            .detail-heading { margin-left: 16px; }
+            .detail-small { font-size: 12px; letter-spacing: 3px; }
+            .detail-model { font-size: 24px; }
+            .compatibility-title { min-height: 44px; font-size: 11px; padding: 0 12px; letter-spacing: 1px; }
+            .compatibility-item { min-height: 68px; padding: 10px 14px; }
+            .compat-number { width: 42px; font-size: 14px; }
+            .compat-brand { min-width: 95px; height: 30px; font-size: 11px; }
+            .compat-model { font-size: 17px; margin-left: 12px; }
+        }
+
+        @media (max-width: 390px) {
+            .main-content { padding: 16px; }
+            .top-header { padding: 16px 14px 12px 14px; }
+            .header-title { font-size: 28px; }
+            .header-small { font-size: 11px; }
+            .menu-button { width: 54px; height: 54px; font-size: 24px; }
+            .search-input { font-size: 16px; padding: 0 14px; }
+            .clear-button { width: 54px; }
+            .brand-badge { min-width: 80px; font-size: 11px; letter-spacing: 1px; padding: 0 6px; }
+            .result-model { font-size: 16px; margin-left: 10px; }
+            .result-arrow { font-size: 24px; }
+            .detail-header { padding: 12px 14px; }
+            .detail-back { width: 52px; height: 52px; font-size: 30px; }
+            .detail-heading { margin-left: 12px; }
+            .detail-small { font-size: 10px; letter-spacing: 2px; }
+            .detail-model { font-size: 20px; }
+            .compatibility-title { font-size: 10px; letter-spacing: 0.5px; padding: 0 10px; min-height: 40px; }
+            .compat-number { width: 36px; font-size: 13px; }
+            .compat-brand { min-width: 80px; height: 28px; font-size: 10px; letter-spacing: 1px; }
+            .compat-model { font-size: 15px; margin-left: 10px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- MAIN VIEW -->
+    <div id="main-view">
+        <header class="top-header">
+            <div class="header-left">
+                <div class="header-small">ANTIUDAR</div>
+                <div class="header-title">Uyğunluq</div>
+            </div>
+            <button class="menu-button" onclick="openSettings()">☰</button>
+        </header>
+
+        <main class="main-content">
+            <div class="search-wrapper">
+                <input
+                    id="searchInput"
+                    class="search-input"
+                    type="text"
+                    placeholder="Model axtar: 11, A20, iPhone..."
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                >
+                <button id="clearButton" class="clear-button" onclick="clearSearch()">×</button>
+            </div>
+
+            <div id="status" class="status"></div>
+            <div id="results"></div>
+        </main>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div id="detail-view">
+        <header class="detail-header">
+            <button class="detail-back" onclick="closeDetail()">‹</button>
+            <div class="detail-heading">
+                <div class="detail-small">SEÇİLƏN MODEL</div>
+                <div id="detail-model" class="detail-model"></div>
+            </div>
+        </header>
+
+        <div class="compatibility-title">
+            BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR
+        </div>
+
+        <div id="compatibility-list" class="compatibility-list"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="settings-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="closeSettings()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">PARAMETRLƏR</div>
+                <div class="settings-title">Tənzimləmələr</div>
+            </div>
+        </header>
+
+        <div class="settings-content">
+
+            <!-- BAZA -->
+            <div class="settings-section">
+                <div class="settings-section-title">BAZA</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span style="color:var(--muted)">SON YENİLƏNMƏ</span>
+                        <span id="lastUpdateText">Bilinmir</span>
+                    </div>
+                </div>
+                <button id="updateButton" class="update-button" onclick="forceUpdate()">
+                    İNDİ YENİLƏ
+                </button>
+            </div>
+
+            <!-- MÖVZU -->
+            <div class="settings-section">
+                <div class="settings-section-title">MÖVZU</div>
+                <div class="theme-selector">
+                    <div id="theme-system" class="theme-option" onclick="setTheme('system')">SİSTEM</div>
+                    <div id="theme-light" class="theme-option" onclick="setTheme('light')">AÇIQ</div>
+                    <div id="theme-dark" class="theme-option" onclick="setTheme('dark')">TÜND</div>
+                </div>
+            </div>
+
+            <!-- ƏLAQƏ -->
+            <div class="settings-section">
+                <div class="settings-section-title">ƏLAQƏ</div>
+                <a href="https://wa.me/994553115544" class="whatsapp-button" target="_blank" rel="noopener">
+                    WhatsApp ilə əlaqə
+                </a>
+            </div>
+
+            <!-- MƏLUMAT -->
+            <div class="settings-section">
+                <div class="settings-section-title">MƏLUMAT</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span style="color:var(--muted)">QAYDA</span>
+                        <span style="text-align:right; width:65%;">
+                            Baza 3 gündən çox yenilənməsə, proqram bloklanır.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- BLOCK SCREEN -->
+    <div id="block-screen">
+        <div class="block-title">Proqram Bloklanıb</div>
+        <div class="block-text">
+            Baza 3 gündən çoxdur ki yenilənmir.
+            <br><br>
+            Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.
+        </div>
+        <button class="update-button" onclick="forceUpdate()">BAZANI YENİLƏ</button>
+    </div>
+
+</div>
+
+<script>
+/* =============================================================
+   CONFIGURATION
+============================================================= */
+const RAW_URL = "https://raw.githubusercontent.com/Eminlist/Emin/main/Base.json";
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+const DB_KEY = "antiudar_db_v3";
+const UPDATE_KEY = "antiudar_last_update_v3";
+
+let database = [];
+let selectedModel = "";
+let selectedGroup = null;
+
+/* =============================================================
+   PAGE LOAD
+============================================================= */
+document.addEventListener("DOMContentLoaded", function () {
+    initTheme();
+
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", function () {
+        updateClearButton();
+        performSearch(this.value);
+    });
+
+    // Yalnız cache-dən yüklə. GitHub avtomatik yoxdur.
+    loadDatabaseFromCacheOnly();
+});
+
+/* =============================================================
+   THEME
+============================================================= */
+function initTheme() {
+    const savedTheme = localStorage.getItem("antiudar_theme") || "system";
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    localStorage.setItem("antiudar_theme", theme);
+
+    document.querySelectorAll(".theme-option").forEach(function (el) {
+        el.classList.remove("active");
+    });
+
+    const selected = document.getElementById("theme-" + theme);
+    if (selected) selected.classList.add("active");
+
+    if (theme === "system") {
+        const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+        document.documentElement.setAttribute("data-theme", prefersLight ? "light" : "dark");
+    } else {
+        document.documentElement.setAttribute("data-theme", theme);
+    }
+}
+
+/* =============================================================
+   SEARCH CLEAR
+============================================================= */
+function updateClearButton() {
+    const input = document.getElementById("searchInput");
+    const button = document.getElementById("clearButton");
+    if (input.value.trim().length > 0) {
+        button.classList.add("visible");
+    } else {
+        button.classList.remove("visible");
+    }
+}
+
+function clearSearch() {
+    const input = document.getElementById("searchInput");
+    input.value = "";
+    updateClearButton();
+    document.getElementById("status").innerText = "";
+    document.getElementById("results").innerHTML = "";
+    input.focus();
+}
+
+/* =============================================================
+   NORMALIZE DATABASE
+============================================================= */
+function normalizeDatabase(data) {
+    if (!Array.isArray(data)) return [];
+
+    const result = [];
+
+    data.forEach(function (group) {
+        if (typeof group === "string") {
+            const models = group.split(",").map(m => m.trim()).filter(m => m.length > 0);
+            if (models.length > 0) result.push(models);
+            return;
+        }
+
+        if (Array.isArray(group)) {
+            const models = group.map(m => String(m).trim()).filter(m => m.length > 0);
+            if (models.length > 0) result.push(models);
+            return;
+        }
+
+        if (group && typeof group === "object") {
+            Object.values(group).forEach(function (value) {
+                if (typeof value === "string") {
+                    const models = value.split(",").map(m => m.trim()).filter(m => m.length > 0);
+                    if (models.length > 0) result.push(models);
+                }
+                if (Array.isArray(value)) {
+                    const models = value.map(m => String(m).trim()).filter(m => m.length > 0);
+                    if (models.length > 0) result.push(models);
+                }
+            });
+        }
+    });
+
+    return result;
+}
+
+/* =============================================================
+   GET BRAND
+============================================================= */
+function getBrand(model) {
+    if (!model) return "";
+    const parts = String(model).trim().split(/\s+/);
+    return parts.length > 0 ? parts[0] : "";
+}
+
+/* =============================================================
+   SEARCH
+============================================================= */
+function performSearch(query) {
+    const results = document.getElementById("results");
+    const status = document.getElementById("status");
+    results.innerHTML = "";
+
+    query = String(query || "").trim().toLowerCase();
+
+    if (!query) {
+        status.innerText = "";
+        return;
+    }
+
+    if (!Array.isArray(database) || database.length === 0) {
+        status.innerText = "BAZA YOXDUR — YENİLƏYİN";
+        return;
+    }
+
+    const tokens = query.split(/\s+/).filter(t => t.length > 0);
+    const found = new Set();
+    let matches = [];
+
+    database.forEach(function (group) {
+        if (!Array.isArray(group)) return;
+
+        group.forEach(function (model) {
+            const modelText = String(model).toLowerCase().trim();
+            const match = tokens.every(token => modelText.includes(token));
+            if (!match) return;
+
+            if (found.has(modelText)) return;
+            found.add(modelText);
+
+            matches.push({ model: model, group: group });
+        });
+    });
+
+    if (matches.length === 0) {
+        status.innerText = "NƏTİCƏ TAPILMADI";
+        const noResult = document.createElement("div");
+        noResult.className = "no-results";
+        noResult.innerText = '"' + query + '" üçün heç nə tapılmadı.';
+        results.appendChild(noResult);
+        return;
+    }
+
+    status.innerText = matches.length + " NƏTİCƏ";
+
+    matches.forEach(function (item) {
+        const row = document.createElement("div");
+        row.className = "result-item";
+
+        const brand = document.createElement("div");
+        brand.className = "brand-badge";
+        brand.innerText = getBrand(item.model);
+
+        const modelEl = document.createElement("div");
+        modelEl.className = "result-model";
+        modelEl.innerText = item.model;
+
+        const arrow = document.createElement("div");
+        arrow.className = "result-arrow";
+        arrow.innerText = "›";
+
+        row.appendChild(brand);
+        row.appendChild(modelEl);
+        row.appendChild(arrow);
+
+        row.addEventListener("click", function () {
+            openDetail(item.model, item.group);
+        });
+
+        results.appendChild(row);
+    });
+}
+
+/* =============================================================
+   DETAIL
+============================================================= */
+function openDetail(model, group) {
+    selectedModel = model;
+    selectedGroup = group;
+
+    document.getElementById("detail-model").innerText = model;
+    renderCompatibilityList(group, model);
+
+    document.getElementById("detail-view").classList.add("active");
+    document.getElementById("compatibility-list").scrollTop = 0;
+    document.body.style.overflow = "hidden";
+}
+
+function closeDetail() {
+    document.getElementById("detail-view").classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+function renderCompatibilityList(group, selected) {
+    const list = document.getElementById("compatibility-list");
+    list.innerHTML = "";
+
+    if (!Array.isArray(group)) return;
+
+    group.forEach(function (model, index) {
+        const item = document.createElement("div");
+        item.className = "compatibility-item";
+
+        if (String(model).trim().toLowerCase() === String(selected).trim().toLowerCase()) {
+            item.classList.add("selected");
+        }
+
+        const number = document.createElement("div");
+        number.className = "compat-number";
+        number.innerText = String(index + 1).padStart(2, "0");
+
+        const brand = document.createElement("div");
+        brand.className = "compat-brand";
+        brand.innerText = getBrand(model);
+
+        const modelName = document.createElement("div");
+        modelName.className = "compat-model";
+        modelName.innerText = model;
+
+        item.appendChild(number);
+        item.appendChild(brand);
+        item.appendChild(modelName);
+        list.appendChild(item);
+    });
+}
+
+/* =============================================================
+   SETTINGS
+============================================================= */
+function openSettings() {
+    document.getElementById("settings-view").classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function closeSettings() {
+    document.getElementById("settings-view").classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+/* =============================================================
+   DATABASE — YALNIZ DÜYMƏ İLƏ
+============================================================= */
+async function fetchDatabase() {
+    const updateButton = document.getElementById("updateButton");
+
+    try {
+        updateButton.innerText = "YENİLƏNİR...";
+        updateButton.disabled = true;
+
+        const response = await fetch(RAW_URL + "?t=" + Date.now(), {
+            cache: "no-store"
+        });
+
+        if (!response.ok) throw new Error("HTTP " + response.status);
+
+        const data = await response.json();
+        const parsed = normalizeDatabase(data);
+
+        if (parsed.length === 0) throw new Error("Baza boşdur.");
+
+        localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+        localStorage.setItem(UPDATE_KEY, Date.now().toString());
+
+        database = parsed;
+        updateLastUpdate();
+
+        const input = document.getElementById("searchInput");
+        if (input.value.trim()) performSearch(input.value);
+
+        checkBlockStatus();
+
+        updateButton.innerText = "İNDİ YENİLƏ";
+        updateButton.disabled = false;
+
+    } catch (error) {
+        console.error("Baza xətası:", error);
+        updateButton.innerText = "İNDİ YENİLƏ";
+        updateButton.disabled = false;
+
+        if (database.length === 0) {
+            alert("Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.");
+        }
+        checkBlockStatus();
+    }
+}
+
+function loadDatabaseFromCacheOnly() {
+    const cached = localStorage.getItem(DB_KEY);
+    const lastUpdate = localStorage.getItem(UPDATE_KEY);
+
+    if (cached && lastUpdate) {
+        try {
+            const parsed = JSON.parse(cached);
+            database = normalizeDatabase(parsed);
+
+            if (database.length > 0) {
+                updateLastUpdate();
+                checkBlockStatus();
+                return;
+            }
+        } catch (e) {
+            console.log("Cache oxunmadı:", e);
+        }
+    }
+
+    updateLastUpdate();
+    checkBlockStatus();
+}
+
+function forceUpdate() {
+    fetchDatabase();
+}
+
+function updateLastUpdate() {
+    const last = localStorage.getItem(UPDATE_KEY);
+    const element = document.getElementById("lastUpdateText");
+
+    if (!last) {
+        element.innerText = "Bilinmir";
+        return;
+    }
+
+    const date = new Date(parseInt(last, 10));
+    const formatted =
+        String(date.getDate()).padStart(2, "0") + "." +
+        String(date.getMonth() + 1).padStart(2, "0") + "." +
+        date.getFullYear() + " " +
+        String(date.getHours()).padStart(2, "0") + ":" +
+        String(date.getMinutes()).padStart(2, "0");
+
+    element.innerText = formatted;
+}
+
+function checkBlockStatus() {
+    const last = localStorage.getItem(UPDATE_KEY);
+    const block = document.getElementById("block-screen");
+
+    if (!last) {
+        block.style.display = "none";
+        return false;
+    }
+
+    const passed = Date.now() - parseInt(last, 10);
+
+    if (passed > THREE_DAYS_MS) {
+        block.style.display = "flex";
+        return true;
+    }
+
+    block.style.display = "none";
+    return false;
+}
+
+setInterval(checkBlockStatus, 60 * 1000);
+
+/* =============================================================
+   SYSTEM THEME CHANGE
+============================================================= */
+window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function () {
+    const current = localStorage.getItem("antiudar_theme");
+    if (current === "system" || !current) {
+        setTheme("system");
+    }
+});
+</script>
+
+</body>
+</html>
