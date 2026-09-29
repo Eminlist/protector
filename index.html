@@ -8,7 +8,7 @@
 
     <style>
         /* =========================================================
-           COLORS
+           COLORS & VARIABLES
         ========================================================= */
         :root[data-theme="dark"] {
             --bg: #0a0a0a;
@@ -46,6 +46,8 @@
 
         :root {
             --font-scale: 1;
+            --accent-color: #d4af37;
+            --accent-dark: #8a6d1d;
         }
 
         * {
@@ -61,6 +63,7 @@
             background: var(--bg);
             color: var(--text);
             font-size: calc(16px * var(--font-scale));
+            overscroll-behavior-y: auto; /* Rubber-band scrolling support */
         }
 
         body {
@@ -73,6 +76,7 @@
                 radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.09) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
                 radial-gradient(ellipse at 50% 50%, rgba(139, 105, 20, 0.04) 0%, transparent 70%),
+                radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
                 linear-gradient(160deg, #0a0a0a 0%, #111111 40%, #0d0d0d 100%);
             background-attachment: fixed;
         }
@@ -111,7 +115,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 2px solid var(--gold);
+            border-bottom: 2px solid var(--accent-color);
             background: var(--header-bg);
             backdrop-filter: blur(8px);
         }
@@ -125,14 +129,14 @@
         .header-small {
             font-size: calc(13px * var(--font-scale));
             letter-spacing: 5px;
-            color: var(--gold);
+            color: var(--accent-color);
             margin-bottom: 3px;
             text-transform: uppercase;
             font-weight: 500;
         }
 
         .header-title {
-            font-size: calc(24px * var(--font-scale));
+            font-size: calc(24px * var(--font-scale) * var(--responsive-scale, 1));
             line-height: 1;
             font-weight: 800;
             letter-spacing: -1.5px;
@@ -140,21 +144,23 @@
         }
 
         .menu-button {
-            width: 70px;
-            height: 70px;
-            border: 2px solid var(--gold);
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--accent-color);
             background: transparent;
-            color: var(--gold);
-            font-size: 32px;
+            color: var(--accent-color);
+            font-size: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background 0.2s;
+            border-radius: 16px;
+            transition: background 0.2s, transform 0.1s;
         }
 
         .menu-button:active {
             background: var(--result-hover);
+            transform: scale(0.95);
         }
 
         .main-content {
@@ -164,12 +170,14 @@
         .search-wrapper {
             width: 100%;
             height: 72px;
-            border: 2px solid var(--gold);
+            border: 2px solid var(--accent-color);
             display: flex;
             align-items: center;
             background: var(--surface);
             margin-bottom: 16px;
+            border-radius: 18px;
             box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+            overflow: hidden;
         }
 
         .search-input {
@@ -185,19 +193,20 @@
 
         .search-input::placeholder {
             color: var(--muted);
+            transition: opacity 0.3s ease;
         }
 
         .clear-button {
-            width: 70px;
+            width: 60px;
             height: 100%;
             border: none;
-            border-left: 2px solid var(--gold);
             background: transparent;
-            color: var(--gold);
-            font-size: 32px;
+            color: var(--accent-color);
+            font-size: 28px;
             font-weight: 700;
             display: none;
             cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
         .clear-button.visible {
@@ -206,11 +215,15 @@
             justify-content: center;
         }
 
+        .clear-button.rotate {
+            transform: rotate(180deg);
+        }
+
         .status {
             height: 36px;
             font-size: calc(14px * var(--font-scale));
             letter-spacing: 3px;
-            color: var(--gold);
+            color: var(--accent-color);
             text-transform: uppercase;
             padding-left: 2px;
             margin-bottom: 6px;
@@ -230,6 +243,8 @@
             background: transparent;
             cursor: pointer;
             transition: background 0.15s;
+            border-radius: 12px;
+            margin-bottom: 4px;
         }
 
         .result-item:active {
@@ -241,7 +256,7 @@
             min-width: 110px;
             height: 36px;
             padding: 0 12px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
             color: #111111;
             display: flex;
             align-items: center;
@@ -250,7 +265,7 @@
             letter-spacing: 2px;
             font-weight: 700;
             text-transform: uppercase;
-            border-radius: 2px;
+            border-radius: 10px;
         }
 
         .result-model {
@@ -263,10 +278,17 @@
             word-break: break-word;
         }
 
+        .result-model mark {
+            background: transparent;
+            color: var(--accent-color);
+            font-weight: 800;
+            text-decoration: underline;
+        }
+
         .result-arrow {
             flex-shrink: 0;
             font-size: 32px;
-            color: var(--gold);
+            color: var(--accent-color);
             margin-left: 10px;
             line-height: 1;
             opacity: 0.75;
@@ -316,23 +338,24 @@
             display: flex;
             align-items: center;
             padding: 16px 24px;
-            border-bottom: 2px solid var(--gold);
+            border-bottom: 2px solid var(--accent-color);
             background: var(--header-bg);
         }
 
         .detail-back {
-            width: 68px;
-            height: 68px;
+            width: 54px;
+            height: 54px;
             flex-shrink: 0;
-            border: 2px solid var(--gold);
+            border: 2px solid var(--accent-color);
             background: transparent;
-            color: var(--gold);
-            font-size: 40px;
+            color: var(--accent-color);
+            font-size: 32px;
             line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            border-radius: 16px;
         }
 
         .detail-heading {
@@ -343,7 +366,7 @@
         .detail-small {
             font-size: calc(13px * var(--font-scale));
             letter-spacing: 4px;
-            color: var(--gold);
+            color: var(--accent-color);
             margin-bottom: 2px;
             text-transform: uppercase;
         }
@@ -388,17 +411,19 @@
             border-bottom: 1px solid var(--border);
             background: transparent;
             padding: 12px 16px;
+            border-radius: 12px;
+            margin: 2px 8px;
         }
 
         .compatibility-item.selected {
             background: var(--selected);
-            border-left: 3px solid var(--gold);
+            border-left: 4px solid var(--accent-color);
         }
 
         .compat-number {
             width: 48px;
             flex-shrink: 0;
-            color: var(--gold);
+            color: var(--accent-color);
             font-size: calc(15px * var(--font-scale));
             text-align: center;
             font-weight: 500;
@@ -410,7 +435,7 @@
             height: 34px;
             padding: 0 10px;
             flex-shrink: 0;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
             color: #111111;
             display: flex;
             align-items: center;
@@ -419,7 +444,7 @@
             letter-spacing: 2px;
             font-weight: 700;
             text-transform: uppercase;
-            border-radius: 2px;
+            border-radius: 10px;
         }
 
         .compat-model {
@@ -468,18 +493,22 @@
             display: flex;
             align-items: center;
             padding: 16px 24px;
-            border-bottom: 2px solid var(--gold);
+            border-bottom: 2px solid var(--accent-color);
             background: var(--header-bg);
         }
 
         .settings-back {
-            width: 64px;
-            height: 64px;
-            border: 2px solid var(--gold);
+            width: 54px;
+            height: 54px;
+            border: 2px solid var(--accent-color);
             background: transparent;
-            color: var(--gold);
-            font-size: 38px;
+            color: var(--accent-color);
+            font-size: 30px;
             cursor: pointer;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .settings-heading {
@@ -487,7 +516,7 @@
         }
 
         .settings-small {
-            color: var(--gold);
+            color: var(--accent-color);
             font-size: calc(12px * var(--font-scale));
             letter-spacing: 4px;
         }
@@ -509,13 +538,15 @@
         .settings-section-title {
             font-size: calc(12px * var(--font-scale));
             letter-spacing: 3px;
-            color: var(--gold);
+            color: var(--accent-color);
             margin-bottom: 10px;
         }
 
         .settings-box {
             border: 1px solid var(--border);
             background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
         }
 
         .settings-row {
@@ -549,6 +580,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            border-radius: 16px;
         }
 
         .spinner {
@@ -580,7 +612,7 @@
             position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
             background-color: white; transition: .3s; border-radius: 50%;
         }
-        input:checked + .slider { background-color: var(--gold); }
+        input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(22px); }
 
         .whatsapp-button {
@@ -596,7 +628,7 @@
             font-weight: 700;
             letter-spacing: 0.5px;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 16px;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
             transition: background 0.2s;
         }
@@ -608,6 +640,9 @@
         .theme-selector {
             display: flex;
             border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            background: var(--surface);
         }
 
         .theme-option {
@@ -626,9 +661,30 @@
         }
 
         .theme-option.active {
-            background: var(--gold);
+            background: var(--accent-color);
             color: #111111;
             font-weight: 800;
+        }
+
+        /* Color Palettes */
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .color-swatch {
+            height: 44px;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            transition: transform 0.2s;
+        }
+        .color-swatch:active {
+            transform: scale(0.92);
+        }
+        .color-swatch.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
         #privacy-view {
@@ -677,7 +733,7 @@
         }
 
         .block-title {
-            color: var(--gold);
+            color: var(--accent-color);
             font-size: calc(26px * var(--font-scale));
             margin-bottom: 16px;
             font-weight: 800;
@@ -690,39 +746,13 @@
             margin-bottom: 22px;
         }
 
-        @media (max-width: 600px) {
-            .top-header {
-                height: 100px;
-                padding: 18px 20px 14px 20px;
-            }
-            .header-small { font-size: calc(12px * var(--font-scale)); letter-spacing: 4px; }
-            .header-title { font-size: calc(22px * var(--font-scale)); }
-            .menu-button { width: 62px; height: 62px; font-size: 28px; }
-            .main-content { padding: 20px; }
-            .search-wrapper { height: 64px; }
-            .search-input { font-size: calc(18px * var(--font-scale)); padding: 0 18px; }
-            .brand-badge { min-width: 95px; height: 32px; font-size: calc(12px * var(--font-scale)); }
-            .result-model { font-size: calc(17px * var(--font-scale)); margin-left: 14px; }
-            .result-arrow { font-size: 28px; }
-            .detail-header { height: 100px; min-height: 100px; padding: 14px 18px; }
-            .detail-back { width: 60px; height: 60px; font-size: 36px; }
-            .detail-heading { margin-left: 16px; }
-            .detail-small { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; }
-            .detail-model { font-size: calc(22px * var(--font-scale)); }
-            .compatibility-title { min-height: 44px; font-size: calc(11px * var(--font-scale)); padding: 0 12px; letter-spacing: 1px; }
-            .compatibility-item { min-height: 68px; padding: 10px 14px; }
-            .compat-number { width: 42px; font-size: calc(14px * var(--font-scale)); }
-            .compat-brand { min-width: 95px; height: 30px; font-size: calc(11px * var(--font-scale)); }
-            .compat-model { font-size: calc(16px * var(--font-scale)); margin-left: 12px; }
-        }
-
         #recent { display: none; margin-bottom: 8px; }
         .recent-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .recent-title { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; color: var(--gold); }
+        .recent-title { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; color: var(--accent-color); }
         .recent-clear { background: none; border: none; color: var(--muted); font-size: calc(12px * var(--font-scale)); letter-spacing: 2px; cursor: pointer; padding: 8px 0 8px 12px; }
-        .recent-item { padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: calc(16px * var(--font-scale)); cursor: pointer; display: flex; justify-content: space-between; }
+        .recent-item { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: calc(16px * var(--font-scale)); cursor: pointer; display: flex; justify-content: space-between; border-radius: 12px; margin-bottom: 2px; }
         .recent-item:active { background: var(--result-hover); }
-        .recent-item span:last-child { color: var(--gold); }
+        .recent-item span:last-child { color: var(--accent-color); }
         .nf-button { margin-top: 18px; }
         
         .status-dot { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 18px; height: 18px; border-radius: 50%; z-index: 1100; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; padding: 0; }
@@ -731,12 +761,12 @@
         .status-dot.gray { background: #8a8a8a; }
         .status-dot.yellow { background: #f1c40f; box-shadow: 0 0 12px rgba(241,196,15,0.7); }
         
-        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; z-index: 1100; display: none; letter-spacing: 1px; }
+        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; z-index: 1100; display: none; letter-spacing: 1px; }
 
-        #toast { position: fixed; right: 16px; bottom: calc(50px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--text); border: 1px solid var(--gold); padding: 10px 14px; font-size: calc(13px * var(--font-scale)); z-index: 1100; display: none; }
-        .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+        #toast { position: fixed; right: 16px; bottom: calc(50px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--text); border: 1px solid var(--accent-color); padding: 10px 14px; font-size: calc(13px * var(--font-scale)); z-index: 1100; display: none; border-radius: 12px; }
+        .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
         .lang-option { padding: 16px 8px; text-align: center; font-size: calc(13px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
-        .lang-option.active { background: var(--gold); color: #111111; font-weight: 800; }
+        .lang-option.active { background: var(--accent-color); color: #111111; font-weight: 800; }
     </style>
 </head>
 
@@ -762,7 +792,7 @@
                     id="searchInput"
                     class="search-input"
                     type="text"
-                    placeholder="Axtar: Samsung,Mi,iPhone ..." data-i18n-ph="search"
+                    placeholder="Axtar: Samsung,Mi,iPhone ..."
                     autocomplete="off"
                     autocorrect="off"
                     autocapitalize="off"
@@ -821,29 +851,19 @@
                 </button>
             </div>
 
-            <!-- GÜNÜN VALYUTASI (Avtomatik Məzənnə Paneli) -->
+            <!-- AKSENT RƏNG SEÇİCİ -->
             <div class="settings-section">
-                <div class="settings-section-title" data-i18n="secCurrency">GÜNÜN VALYUTASI (1 AZN)</div>
-                <div class="settings-box">
-                    <div class="settings-row">
-                        <span style="color:var(--muted)">AZ Manat</span>
-                        <span style="font-weight:700; color:var(--gold);">1.00 AZN</span>
-                    </div>
-                    <div class="settings-row">
-                        <span style="color:var(--muted)">Dollar (USD)</span>
-                        <span id="rateUSD" style="font-weight:700;">Yüklənir...</span>
-                    </div>
-                    <div class="settings-row">
-                        <span style="color:var(--muted)">Euro (EUR)</span>
-                        <span id="rateEUR" style="font-weight:700;">Yüklənir...</span>
-                    </div>
-                    <div class="settings-row">
-                        <span style="color:var(--muted)">Rubl (RUB)</span>
-                        <span id="rateRUB" style="font-weight:700;">Yüklənir...</span>
-                    </div>
-                    <div class="settings-row">
-                        <span style="color:var(--muted)">Türk TL-si (TRY)</span>
-                        <span id="rateTRY" style="font-weight:700;">Yüklənir...</span>
+                <div class="settings-section-title" data-i18n="secAccent"> AKSENT RƏNGİ</div>
+                <div class="settings-box" style="padding: 16px;">
+                    <div class="color-picker-grid">
+                        <div class="color-swatch" style="background: #d4af37;" onclick="setAccentColor('#d4af37', '#8a6d1d')"></div>
+                        <div class="color-swatch" style="background: #3498db;" onclick="setAccentColor('#3498db', '#1b4f72')"></div>
+                        <div class="color-swatch" style="background: #2ecc71;" onclick="setAccentColor('#2ecc71', '#145a32')"></div>
+                        <div class="color-swatch" style="background: #9b59b6;" onclick="setAccentColor('#9b59b6', '#512e5f')"></div>
+                        <div class="color-swatch" style="background: #e74c3c;" onclick="setAccentColor('#e74c3c', '#78281f')"></div>
+                        <div class="color-swatch" style="background: #e67e22;" onclick="setAccentColor('#e67e22', '#7e5109')"></div>
+                        <div class="color-swatch" style="background: #1abc9c;" onclick="setAccentColor('#1abc9c', '#0e6251')"></div>
+                        <div class="color-swatch" style="background: #e91e63;" onclick="setAccentColor('#e91e63', '#880e4f')"></div>
                     </div>
                 </div>
             </div>
@@ -885,16 +905,49 @@
                 <div class="settings-section-title" data-i18n="secSoundHaptic">SƏS VƏ HAPTİK</div>
                 <div class="settings-box">
                     <div class="settings-row">
-                        <span data-i18n="soundLbl">Səs effektləri (Bip)</span>
+                        <span data-i18n="soundLbl">Səs effektləri</span>
                         <label class="switch">
                             <input type="checkbox" id="soundToggle" onchange="toggleSound(this)">
                             <span class="slider"></span>
                         </label>
                     </div>
                     <div class="settings-row">
+                        <span data-i18n="soundTypeLbl">Səs Tembri</span>
+                        <select id="soundTypeSelect" onchange="changeSoundType(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; outline:none;">
+                            <option value="bip">Bip (Standart)</option>
+                            <option value="click">Yumşaq Klik</option>
+                            <option value="pop">Pop Səsi</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
                         <span data-i18n="hapticLbl">Haptik Vibrasiya</span>
                         <label class="switch">
                             <input type="checkbox" id="hapticToggle" onchange="toggleHaptic(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <span data-i18n="hapticIntensityLbl">Vibrasiya Gücü</span>
+                        <select id="hapticIntensitySelect" onchange="changeHapticIntensity(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; outline:none;">
+                            <option value="light">Zəif</option>
+                            <option value="medium" selected>Orta</option>
+                            <option value="heavy">Güclü</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BATARAYA QƏNAƏT REJİMİ -->
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secPerformance">PERFORMANS</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <div>
+                            <div data-i18n="lowPowerLbl">Batareya Qənaət Rejimi</div>
+                            <div style="font-size:11px; color:var(--muted);" data-i18n="lowPowerDesc">Ağır animasiyaları məhdudlaşdırır</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="lowPowerToggle" onchange="toggleLowPower(this)">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -907,7 +960,7 @@
                 <div class="settings-box" onclick="openPrivacy()" style="cursor: pointer;">
                     <div class="settings-row">
                         <span data-i18n="privacy">Məxfilik Siyasəti</span>
-                        <span style="color:var(--gold); font-size: 18px; line-height: 14px;">›</span>
+                        <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
                     </div>
                 </div>
             </div>
@@ -939,19 +992,6 @@
                 </div>
             </div>
 
-            <!-- MƏLUMAT -->
-            <div class="settings-section">
-                <div class="settings-section-title" data-i18n="secInfo">MƏLUMAT</div>
-                <div class="settings-box">
-                    <div class="settings-row">
-                        <span style="color:var(--muted)" data-i18n="ruleLbl">QAYDA</span>
-                        <span data-i18n="ruleText" style="text-align:right; width:65%;">
-                            Baza 3 gündən çox yenilənməsə, proqram bloklanır.
-                        </span>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
     
@@ -969,7 +1009,6 @@
             <br>
             <p><strong>1. Məlumat toplanması və emalı</strong></p>
             <p>ProTector heç bir şəxsi məlumat toplamır, emal etmir, saxlamır və ya ötürtmür...</p>
-            <br><br>
         </div>
     </div>
 
@@ -1006,16 +1045,20 @@ let selectedGroup = null;
 
 let soundEnabled = localStorage.getItem("antiudar_sound") === "true";
 let hapticEnabled = localStorage.getItem("antiudar_haptic") !== "false";
+let soundType = localStorage.getItem("antiudar_sound_type") || "bip";
+let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medium";
+let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
 
 /* =============================================================
-   PAGE LOAD
+   PAGE LOAD & RESPONSIVE TYPOGRAPHY / DYNAMIC PLACEHOLDER
 ============================================================= */
 document.addEventListener("DOMContentLoaded", function () {
     initTheme();
     initFontScale();
     initLang();
     initToggles();
-    fetchLiveCurrencyRates();
+    initAccentColor();
+    initResponsiveTypography();
 
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", function () {
@@ -1026,66 +1069,194 @@ document.addEventListener("DOMContentLoaded", function () {
     loadDatabaseFromCacheOnly();
     backgroundCheckUpdate();
 
-    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("online", () => {
+        updateNetworkStatus();
+        backgroundCheckUpdate(); // Background Sync on online event
+    });
     window.addEventListener("offline", updateNetworkStatus);
     updateNetworkStatus();
+
+    initDynamicPlaceholder();
+    initEdgeSwipeGestures();
 });
 
 /* =============================================================
-   LIVE CURRENCY RATES FETCHING (AZN BASED)
+   RESPONSIVE TYPOGRAPHY (Dynamic Scaling based on Viewport)
 ============================================================= */
-async function fetchLiveCurrencyRates() {
-    try {
-        const response = await fetch("https://open.er-api.com/v6/latest/AZN");
-        if (!response.ok) throw new Error("Valyuta məlumatı alınmadı");
-        const data = await response.json();
-        
-        if (data && data.rates) {
-            const usd = data.rates.USD ? (1 / data.rates.USD).toFixed(4) : "—";
-            const eur = data.rates.EUR ? (1 / data.rates.EUR).toFixed(4) : "—";
-            const rub = data.rates.RUB ? data.rates.RUB.toFixed(2) : "—";
-            const tryRate = data.rates.TRY ? data.rates.TRY.toFixed(2) : "—";
-
-            document.getElementById("rateUSD").innerText = usd + " USD";
-            document.getElementById("rateEUR").innerText = eur + " EUR";
-            document.getElementById("rateRUB").innerText = rub + " RUB";
-            document.getElementById("rateTRY").innerText = tryRate + " TRY";
-        }
-    } catch (e) {
-        document.getElementById("rateUSD").innerText = "1.7000 USD";
-        document.getElementById("rateEUR").innerText = "1.8500 EUR";
-        document.getElementById("rateRUB").innerText = "55.00 RUB";
-        document.getElementById("rateTRY").innerText = "35.00 TRY";
+function initResponsiveTypography() {
+    function adjustTypography() {
+        const width = window.innerWidth;
+        let scale = 1;
+        if (width < 360) scale = 0.92;
+        else if (width > 768) scale = 1.08;
+        document.documentElement.style.setProperty("--responsive-scale", scale);
     }
+    window.addEventListener("resize", adjustTypography);
+    adjustTypography();
 }
 
 /* =============================================================
-   AUDIO SYNTHESIZER (BIP EFFECT)
+   EDGE SWIPE GESTURES (Swipe right to close detail/settings)
 ============================================================= */
-function playBipSound() {
+function initEdgeSwipeGestures() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    document.addEventListener("touchstart", e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, {passive: true});
+
+    document.addEventListener("touchend", e => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        const diffX = touchEndX - touchStartX;
+        const diffY = Math.abs(touchEndY - touchStartY);
+
+        // Swipe from left edge (X < 50px) to right (> 80px distance) with minimal vertical drift
+        if (touchStartX < 50 && diffX > 80 && diffY < 60) {
+            const detailView = document.getElementById("detail-view");
+            const settingsView = document.getElementById("settings-view");
+            const privacyView = document.getElementById("privacy-view");
+
+            if (privacyView.classList.contains("active")) {
+                closePrivacy();
+            } else if (settingsView.classList.contains("active")) {
+                closeSettings();
+            } else if (detailView.classList.contains("active")) {
+                closeDetail();
+            }
+        }
+    }, {passive: true});
+}
+
+/* =============================================================
+   DYNAMIC PLACEHOLDER CYCLING
+============================================================= */
+let placeholderInterval = null;
+const placeholderSamples = ["Samsung", "iPhone 13", "Xiaomi Mi 11", "Redmi Note 10", "Huawei P40", "Honor X9", "Oppo Reno"];
+function initDynamicPlaceholder() {
+    const input = document.getElementById("searchInput");
+    let index = 0;
+    placeholderInterval = setInterval(() => {
+        if (document.activeElement !== input && !input.value) {
+            input.style.opacity = 0;
+            setTimeout(() => {
+                input.placeholder = "Axtar: " + placeholderSamples[index] + " ...";
+                input.style.opacity = 1;
+                index = (index + 1) % placeholderSamples.length;
+            }, 300);
+        }
+    }, 3500);
+}
+
+/* =============================================================
+   CUSTOM ACCENT COLOR PICKER
+============================================================= */
+function initAccentColor() {
+    const savedAccent = localStorage.getItem("antiudar_accent") || "#d4af37";
+    const savedDark = localStorage.getItem("antiudar_accent_dark") || "#8a6d1d";
+    setAccentColor(savedAccent, savedDark, false);
+}
+
+function setAccentColor(accent, dark, save = true) {
+    if (save) {
+        localStorage.setItem("antiudar_accent", accent);
+        localStorage.setItem("antiudar_accent_dark", dark);
+        triggerHaptic(30);
+    }
+    document.documentElement.style.setProperty("--accent-color", accent);
+    document.documentElement.style.setProperty("--accent-dark", dark);
+}
+
+/* =============================================================
+   SOUND SYNTHESIZER (Fərqli Tembrlər: Bip, Klik, Pop)
+============================================================= */
+function playSoundEffect() {
+    if (!soundEnabled) return;
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        if (soundType === "click") {
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        } else if (soundType === "pop") {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+        } else {
+            // Default Bip
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+    } catch (e) {}
+}
+
+function playSuccessSound() {
     if (!soundEnabled) return;
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
         gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.1);
+        osc.stop(audioCtx.currentTime + 0.35);
     } catch (e) {}
 }
 
+function changeSoundType(el) {
+    soundType = el.value;
+    localStorage.setItem("antiudar_sound_type", soundType);
+    playSoundEffect();
+}
+
 /* =============================================================
-   HAPTIC VIBRATION
+   HAPTIC VIBRATION (İntensivlik seçimi ilə)
 ============================================================= */
-function triggerHaptic(duration = 35) {
+function triggerHaptic(customDuration = null) {
     if (hapticEnabled && navigator.vibrate) {
-        try { navigator.vibrate(duration); } catch (e) {}
+        try {
+            let duration = customDuration;
+            if (!duration) {
+                if (hapticIntensity === "light") duration = 15;
+                else if (hapticIntensity === "heavy") duration = 65;
+                else duration = 35;
+            }
+            navigator.vibrate(duration);
+        } catch (e) {}
     }
+}
+
+function changeHapticIntensity(el) {
+    hapticIntensity = el.value;
+    localStorage.setItem("antiudar_haptic_intensity", hapticIntensity);
+    triggerHaptic();
+}
+
+function toggleLowPower(el) {
+    lowPowerMode = el.checked;
+    localStorage.setItem("antiudar_low_power", lowPowerMode);
 }
 
 /* =============================================================
@@ -1169,14 +1340,21 @@ function setFontScale(scale, save = true) {
 function initToggles() {
     const sToggle = document.getElementById("soundToggle");
     const hToggle = document.getElementById("hapticToggle");
+    const lpToggle = document.getElementById("lowPowerToggle");
+    const sTypeSel = document.getElementById("soundTypeSelect");
+    const hIntSel = document.getElementById("hapticIntensitySelect");
+
     if (sToggle) sToggle.checked = soundEnabled;
     if (hToggle) hToggle.checked = hapticEnabled;
+    if (lpToggle) lpToggle.checked = lowPowerMode;
+    if (sTypeSel) sTypeSel.value = soundType;
+    if (hIntSel) hIntSel.value = hapticIntensity;
 }
 
 function toggleSound(el) {
     soundEnabled = el.checked;
     localStorage.setItem("antiudar_sound", soundEnabled);
-    if (soundEnabled) playBipSound();
+    if (soundEnabled) playSoundEffect();
 }
 
 function toggleHaptic(el) {
@@ -1186,7 +1364,7 @@ function toggleHaptic(el) {
 }
 
 /* =============================================================
-   SEARCH CLEAR
+   SEARCH CLEAR (with rotation animation)
 ============================================================= */
 function updateClearButton() {
     const input = document.getElementById("searchInput");
@@ -1200,6 +1378,10 @@ function updateClearButton() {
 
 function clearSearch() {
     const input = document.getElementById("searchInput");
+    const button = document.getElementById("clearButton");
+    button.classList.add("rotate");
+    setTimeout(() => button.classList.remove("rotate"), 300);
+
     input.value = "";
     updateClearButton();
     document.getElementById("status").innerText = "";
@@ -1210,7 +1392,7 @@ function clearSearch() {
 }
 
 /* =============================================================
-   NORMALIZE DATABASE
+   NORMALIZE DATABASE & DIFF VIEWER
 ============================================================= */
 function normalizeDatabase(data) {
     if (!Array.isArray(data)) return [];
@@ -1252,12 +1434,12 @@ function getBrand(model) {
    SEARCH & I18N
 ============================================================= */
 const I18N = {
- az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secCurrency:"GÜNÜN VALYUTASI",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"İNDİ YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri (Bip)",hapticLbl:"Haptik Vibrasiya",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz"},
- ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secCurrency:"КУРСЫ ВАЛЮТ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты (Бип)",hapticLbl:"Виброотклик",offlineBanner:"Нет подключения к интернету — Режим офлайн"},
- en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secCurrency:"CURRENCY RATES",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE NOW",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects (Bip)",hapticLbl:"Haptic Vibration",offlineBanner:"No internet connection — Offline mode"},
- tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secCurrency:"GÜNCEL KURLAR",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"ŞİMDİ GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri (Bip)",hapticLbl:"Haptik Titreşim",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod"}
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"İNDİ YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE NOW",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"ŞİMDİ GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod"}
 };
-const APP_VERSION = "1.2.1";
+const APP_VERSION = "1.3.0";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -1445,6 +1627,20 @@ function showNotFound(query) {
     results.appendChild(a);
 }
 
+/* =============================================================
+   TERM HIGHLIGHTING IN SEARCH RESULTS
+============================================================= */
+function highlightMatch(text, query) {
+    if (!query) return text;
+    try {
+        const escaped = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regex = new RegExp("(" + escaped.split(/\s+/).filter(Boolean).join("|") + ")", "gi");
+        return text.replace(regex, "<mark>$1</mark>");
+    } catch (e) {
+        return text;
+    }
+}
+
 function performSearch(query) {
     const results = document.getElementById("results");
     const status = document.getElementById("status");
@@ -1505,7 +1701,7 @@ function performSearch(query) {
 
         const modelEl = document.createElement("div");
         modelEl.className = "result-model";
-        modelEl.innerText = item.model;
+        modelEl.innerHTML = highlightMatch(item.model, query);
 
         const arrow = document.createElement("div");
         arrow.className = "result-arrow";
@@ -1516,7 +1712,7 @@ function performSearch(query) {
         row.appendChild(arrow);
 
         row.addEventListener("click", function () {
-            playBipSound();
+            playSoundEffect();
             triggerHaptic(30);
             openDetail(item.model, item.group);
         });
@@ -1599,7 +1795,10 @@ function closePrivacy() {
     document.getElementById("privacy-view").classList.remove("active");
 }
 
-async function fetchDatabase() {
+/* =============================================================
+   DATABASE FETCHING WITH AUTO-RETRY & NOTIFICATION SOUND
+============================================================= */
+async function fetchDatabase(retries = 3) {
     const updateButton = document.getElementById("updateButton");
     const spinner = document.getElementById("updateSpinner");
 
@@ -1630,11 +1829,17 @@ async function fetchDatabase() {
         updateButton.querySelector("span").innerText = t("updateNow");
         spinner.style.display = "none";
         updateButton.disabled = false;
-        playBipSound();
+        playSuccessSound(); // Success notification sound
         triggerHaptic(50);
 
     } catch (error) {
         console.error("Baza xətası:", error);
+        if (retries > 0) {
+            // Auto-retry with delay if network glitches
+            setTimeout(() => fetchDatabase(retries - 1), 2000);
+            return;
+        }
+
         updateButton.querySelector("span").innerText = t("updateNow");
         spinner.style.display = "none";
         updateButton.disabled = false;
@@ -1654,7 +1859,12 @@ async function backgroundCheckUpdate() {
             const data = await response.json();
             const parsed = normalizeDatabase(data);
             if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
-                console.log("Yeni baza versiyası mövcuddur.");
+                // Background sync execution
+                localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+                localStorage.setItem(UPDATE_KEY, Date.now().toString());
+                database = parsed;
+                updateLastUpdate();
+                playSuccessSound();
             }
         }
     } catch (e) {}
@@ -1680,7 +1890,7 @@ function loadDatabaseFromCacheOnly() {
 }
 
 function forceUpdate() {
-    fetchDatabase();
+    fetchDatabase(3);
 }
 
 function updateLastUpdate() {
