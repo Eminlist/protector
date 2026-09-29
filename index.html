@@ -44,9 +44,10 @@
             --result-hover: rgba(184, 134, 11, 0.08);
         }
 
-        /* =========================================================
-           RESET
-        ========================================================= */
+        :root {
+            --font-scale: 1;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -59,6 +60,7 @@
             min-height: 100%;
             background: var(--bg);
             color: var(--text);
+            font-size: calc(16px * var(--font-scale));
         }
 
         body {
@@ -66,7 +68,6 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Qızılı magical fon — YALNIZ tünd tema */
         :root[data-theme="dark"] body {
             background:
                 radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.09) 0%, transparent 50%),
@@ -84,18 +85,26 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* =========================================================
-           MAIN APP
-        ========================================================= */
+        #offline-banner {
+            width: 100%;
+            background: #ff5722;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            padding: 8px;
+            display: none;
+            letter-spacing: 1px;
+            z-index: 1200;
+            position: relative;
+        }
+
         #app {
             width: 100%;
             min-height: 100vh;
             background: transparent;
         }
 
-        /* =========================================================
-           HEADER
-        ========================================================= */
         .top-header {
             height: 110px;
             padding: 22px 28px 18px 28px;
@@ -114,7 +123,7 @@
         }
 
         .header-small {
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
             letter-spacing: 5px;
             color: var(--gold);
             margin-bottom: 3px;
@@ -123,16 +132,13 @@
         }
 
         .header-title {
-            font-size: 36px;
+            font-size: calc(24px * var(--font-scale));
             line-height: 1;
             font-weight: 800;
             letter-spacing: -1.5px;
             color: var(--text);
         }
 
-        /* =========================================================
-           MENU BUTTON
-        ========================================================= */
         .menu-button {
             width: 70px;
             height: 70px;
@@ -151,16 +157,10 @@
             background: var(--result-hover);
         }
 
-        /* =========================================================
-           MAIN CONTENT
-        ========================================================= */
         .main-content {
             padding: 24px;
         }
 
-        /* =========================================================
-           SEARCH BOX
-        ========================================================= */
         .search-wrapper {
             width: 100%;
             height: 72px;
@@ -179,7 +179,7 @@
             outline: none;
             background: transparent;
             color: var(--text);
-            font-size: 22px;
+            font-size: calc(20px * var(--font-scale));
             padding: 0 22px;
         }
 
@@ -206,12 +206,9 @@
             justify-content: center;
         }
 
-        /* =========================================================
-           STATUS
-        ========================================================= */
         .status {
             height: 36px;
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale));
             letter-spacing: 3px;
             color: var(--gold);
             text-transform: uppercase;
@@ -219,9 +216,6 @@
             margin-bottom: 6px;
         }
 
-        /* =========================================================
-           SEARCH RESULTS
-        ========================================================= */
         #results {
             width: 100%;
         }
@@ -242,9 +236,6 @@
             background: var(--result-hover);
         }
 
-        /* =========================================================
-           BRAND
-        ========================================================= */
         .brand-badge {
             flex-shrink: 0;
             min-width: 110px;
@@ -255,19 +246,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
             letter-spacing: 2px;
             font-weight: 700;
             text-transform: uppercase;
             border-radius: 2px;
         }
 
-        /* =========================================================
-           MODEL NAME
-        ========================================================= */
         .result-model {
             flex: 1;
-            font-size: 20px;
+            font-size: calc(19px * var(--font-scale));
             margin-left: 18px;
             color: var(--text);
             font-weight: 400;
@@ -275,9 +263,6 @@
             word-break: break-word;
         }
 
-        /* =========================================================
-           ARROW
-        ========================================================= */
         .result-arrow {
             flex-shrink: 0;
             font-size: 32px;
@@ -287,19 +272,13 @@
             opacity: 0.75;
         }
 
-        /* =========================================================
-           NO RESULT
-        ========================================================= */
         .no-results {
             text-align: center;
             color: var(--muted);
-            font-size: 15px;
+            font-size: calc(15px * var(--font-scale));
             padding-top: 50px;
         }
 
-        /* =========================================================
-           DETAIL VIEW
-        ========================================================= */
         #detail-view {
             position: fixed;
             top: 0;
@@ -310,9 +289,13 @@
             height: 100%;
             background: var(--bg);
             z-index: 500;
-            display: none;
+            display: flex;
             flex-direction: column;
             overflow: hidden;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            pointer-events: none;
         }
 
         :root[data-theme="dark"] #detail-view {
@@ -322,12 +305,11 @@
         }
 
         #detail-view.active {
-            display: flex;
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        /* =========================================================
-           DETAIL HEADER
-        ========================================================= */
         .detail-header {
             height: 110px;
             min-height: 110px;
@@ -359,7 +341,7 @@
         }
 
         .detail-small {
-            font-size: 13px;
+            font-size: calc(13px * var(--font-scale));
             letter-spacing: 4px;
             color: var(--gold);
             margin-bottom: 2px;
@@ -367,7 +349,7 @@
         }
 
         .detail-model {
-            font-size: 28px;
+            font-size: calc(26px * var(--font-scale));
             font-weight: 800;
             white-space: nowrap;
             overflow: hidden;
@@ -375,9 +357,6 @@
             color: var(--text);
         }
 
-        /* =========================================================
-           COMPATIBILITY BAR  (kiçildilmiş)
-        ========================================================= */
         .compatibility-title {
             min-height: 48px;
             background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
@@ -386,7 +365,7 @@
             align-items: center;
             justify-content: center;
             padding: 0 16px;
-            font-size: 12px;
+            font-size: calc(12px * var(--font-scale));
             font-weight: 700;
             letter-spacing: 1.5px;
             text-transform: uppercase;
@@ -395,9 +374,6 @@
             line-height: 1.3;
         }
 
-        /* =========================================================
-           DETAIL LIST
-        ========================================================= */
         .compatibility-list {
             flex: 1;
             overflow-y: auto;
@@ -419,22 +395,16 @@
             border-left: 3px solid var(--gold);
         }
 
-        /* =========================================================
-           NUMBER
-        ========================================================= */
         .compat-number {
             width: 48px;
             flex-shrink: 0;
             color: var(--gold);
-            font-size: 15px;
+            font-size: calc(15px * var(--font-scale));
             text-align: center;
             font-weight: 500;
             opacity: 0.85;
         }
 
-        /* =========================================================
-           DETAIL BRAND
-        ========================================================= */
         .compat-brand {
             min-width: 105px;
             height: 34px;
@@ -445,19 +415,16 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: calc(12px * var(--font-scale));
             letter-spacing: 2px;
             font-weight: 700;
             text-transform: uppercase;
             border-radius: 2px;
         }
 
-        /* =========================================================
-           DETAIL MODEL
-        ========================================================= */
         .compat-model {
             margin-left: 16px;
-            font-size: 19px;
+            font-size: calc(18px * var(--font-scale));
             color: var(--text);
             line-height: 1.25;
             word-break: break-word;
@@ -467,9 +434,6 @@
             font-weight: 700;
         }
 
-        /* =========================================================
-           SETTINGS
-        ========================================================= */
         #settings-view {
             position: fixed;
             top: 0;
@@ -478,9 +442,13 @@
             left: 0;
             background: var(--bg);
             z-index: 600;
-            display: none;
+            display: block;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            pointer-events: none;
         }
 
         :root[data-theme="dark"] #settings-view {
@@ -490,7 +458,9 @@
         }
 
         #settings-view.active {
-            display: block;
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .settings-header {
@@ -518,12 +488,12 @@
 
         .settings-small {
             color: var(--gold);
-            font-size: 12px;
+            font-size: calc(12px * var(--font-scale));
             letter-spacing: 4px;
         }
 
         .settings-title {
-            font-size: 26px;
+            font-size: calc(24px * var(--font-scale));
             font-weight: 800;
             color: var(--text);
         }
@@ -537,7 +507,7 @@
         }
 
         .settings-section-title {
-            font-size: 12px;
+            font-size: calc(12px * var(--font-scale));
             letter-spacing: 3px;
             color: var(--gold);
             margin-bottom: 10px;
@@ -552,9 +522,10 @@
             padding: 16px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             gap: 16px;
             border-bottom: 1px solid var(--border);
-            font-size: 14px;
+            font-size: calc(14px * var(--font-scale));
             color: var(--text);
         }
 
@@ -568,15 +539,50 @@
             border: none;
             background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
             color: #ffffff;
-            font-size: 15px;
+            font-size: calc(15px * var(--font-scale));
             font-weight: 800;
             letter-spacing: 2px;
             margin-top: 12px;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        /* WhatsApp düyməsi */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border); transition: .3s; border-radius: 26px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--gold); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
         .whatsapp-button {
             display: flex;
             align-items: center;
@@ -586,7 +592,7 @@
             height: 56px;
             background: #25D366;
             color: #ffffff;
-            font-size: 16px;
+            font-size: calc(16px * var(--font-scale));
             font-weight: 700;
             letter-spacing: 0.5px;
             text-decoration: none;
@@ -606,10 +612,10 @@
 
         .theme-option {
             flex: 1;
-            padding: 16px 8px;
+            padding: 16px 4px;
             text-align: center;
             border-right: 1px solid var(--border);
-            font-size: 13px;
+            font-size: calc(12px * var(--font-scale));
             cursor: pointer;
             color: var(--text);
             background: var(--surface);
@@ -625,9 +631,6 @@
             font-weight: 800;
         }
 
-        /* =========================================================
-           PRIVACY VIEW
-        ========================================================= */
         #privacy-view {
             position: fixed;
             top: 0;
@@ -651,9 +654,6 @@
             display: block;
         }
 
-        /* =========================================================
-           BLOCK SCREEN
-        ========================================================= */
         #block-screen {
             position: fixed;
             top: 0;
@@ -678,91 +678,71 @@
 
         .block-title {
             color: var(--gold);
-            font-size: 26px;
+            font-size: calc(26px * var(--font-scale));
             margin-bottom: 16px;
             font-weight: 800;
         }
 
         .block-text {
             color: var(--muted);
-            font-size: 15px;
+            font-size: calc(15px * var(--font-scale));
             line-height: 1.6;
             margin-bottom: 22px;
         }
 
-        /* =========================================================
-           MOBILE
-        ========================================================= */
         @media (max-width: 600px) {
             .top-header {
                 height: 100px;
                 padding: 18px 20px 14px 20px;
             }
-            .header-small { font-size: 12px; letter-spacing: 4px; }
-            .header-title { font-size: 32px; }
+            .header-small { font-size: calc(12px * var(--font-scale)); letter-spacing: 4px; }
+            .header-title { font-size: calc(22px * var(--font-scale)); }
             .menu-button { width: 62px; height: 62px; font-size: 28px; }
             .main-content { padding: 20px; }
             .search-wrapper { height: 64px; }
-            .search-input { font-size: 18px; padding: 0 18px; }
-            .brand-badge { min-width: 95px; height: 32px; font-size: 12px; }
-            .result-model { font-size: 18px; margin-left: 14px; }
+            .search-input { font-size: calc(18px * var(--font-scale)); padding: 0 18px; }
+            .brand-badge { min-width: 95px; height: 32px; font-size: calc(12px * var(--font-scale)); }
+            .result-model { font-size: calc(17px * var(--font-scale)); margin-left: 14px; }
             .result-arrow { font-size: 28px; }
             .detail-header { height: 100px; min-height: 100px; padding: 14px 18px; }
             .detail-back { width: 60px; height: 60px; font-size: 36px; }
             .detail-heading { margin-left: 16px; }
-            .detail-small { font-size: 12px; letter-spacing: 3px; }
-            .detail-model { font-size: 24px; }
-            .compatibility-title { min-height: 44px; font-size: 11px; padding: 0 12px; letter-spacing: 1px; }
+            .detail-small { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; }
+            .detail-model { font-size: calc(22px * var(--font-scale)); }
+            .compatibility-title { min-height: 44px; font-size: calc(11px * var(--font-scale)); padding: 0 12px; letter-spacing: 1px; }
             .compatibility-item { min-height: 68px; padding: 10px 14px; }
-            .compat-number { width: 42px; font-size: 14px; }
-            .compat-brand { min-width: 95px; height: 30px; font-size: 11px; }
-            .compat-model { font-size: 17px; margin-left: 12px; }
+            .compat-number { width: 42px; font-size: calc(14px * var(--font-scale)); }
+            .compat-brand { min-width: 95px; height: 30px; font-size: calc(11px * var(--font-scale)); }
+            .compat-model { font-size: calc(16px * var(--font-scale)); margin-left: 12px; }
         }
 
-        @media (max-width: 390px) {
-            .main-content { padding: 16px; }
-            .top-header { padding: 16px 14px 12px 14px; }
-            .header-title { font-size: 28px; }
-            .header-small { font-size: 11px; }
-            .menu-button { width: 54px; height: 54px; font-size: 24px; }
-            .search-input { font-size: 16px; padding: 0 14px; }
-            .clear-button { width: 54px; }
-            .brand-badge { min-width: 80px; font-size: 11px; letter-spacing: 1px; padding: 0 6px; }
-            .result-model { font-size: 16px; margin-left: 10px; }
-            .result-arrow { font-size: 24px; }
-            .detail-header { padding: 12px 14px; }
-            .detail-back { width: 52px; height: 52px; font-size: 30px; }
-            .detail-heading { margin-left: 12px; }
-            .detail-small { font-size: 10px; letter-spacing: 2px; }
-            .detail-model { font-size: 20px; }
-            .compatibility-title { font-size: 10px; letter-spacing: 0.5px; padding: 0 10px; min-height: 40px; }
-            .compat-number { width: 36px; font-size: 13px; }
-            .compat-brand { min-width: 80px; height: 28px; font-size: 10px; letter-spacing: 1px; }
-            .compat-model { font-size: 15px; margin-left: 10px; }
-        }
-
-        /* RECENT / STATUS DOT / LANG */
         #recent { display: none; margin-bottom: 8px; }
         .recent-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .recent-title { font-size: 12px; letter-spacing: 3px; color: var(--gold); }
-        .recent-clear { background: none; border: none; color: var(--muted); font-size: 12px; letter-spacing: 2px; cursor: pointer; padding: 8px 0 8px 12px; }
-        .recent-item { padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 16px; cursor: pointer; display: flex; justify-content: space-between; }
+        .recent-title { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; color: var(--gold); }
+        .recent-clear { background: none; border: none; color: var(--muted); font-size: calc(12px * var(--font-scale)); letter-spacing: 2px; cursor: pointer; padding: 8px 0 8px 12px; }
+        .recent-item { padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: calc(16px * var(--font-scale)); cursor: pointer; display: flex; justify-content: space-between; }
         .recent-item:active { background: var(--result-hover); }
         .recent-item span:last-child { color: var(--gold); }
         .nf-button { margin-top: 18px; }
+        
         .status-dot { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 18px; height: 18px; border-radius: 50%; z-index: 1100; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; padding: 0; }
         .status-dot::after { content: ""; position: absolute; top: -12px; right: -12px; bottom: -12px; left: -12px; }
         .status-dot.green { background: #2ecc71; box-shadow: 0 0 12px rgba(46,204,113,0.7); }
         .status-dot.gray { background: #8a8a8a; }
         .status-dot.yellow { background: #f1c40f; box-shadow: 0 0 12px rgba(241,196,15,0.7); }
-        #toast { position: fixed; right: 16px; bottom: calc(50px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--text); border: 1px solid var(--gold); padding: 10px 14px; font-size: 13px; z-index: 1100; display: none; }
+        
+        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 4px; z-index: 1100; display: none; letter-spacing: 1px; }
+
+        #toast { position: fixed; right: 16px; bottom: calc(50px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--text); border: 1px solid var(--gold); padding: 10px 14px; font-size: calc(13px * var(--font-scale)); z-index: 1100; display: none; }
         .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
-        .lang-option { padding: 16px 8px; text-align: center; font-size: 13px; cursor: pointer; color: var(--text); background: var(--surface); }
+        .lang-option { padding: 16px 8px; text-align: center; font-size: calc(13px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
         .lang-option.active { background: var(--gold); color: #111111; font-weight: 800; }
     </style>
 </head>
 
 <body>
+
+<div id="offline-banner" data-i18n="offlineBanner">İnternet bağlantısı yoxdur — Offline rejimdəsiniz</div>
 
 <div id="app">
 
@@ -771,7 +751,7 @@
         <header class="top-header">
             <div class="header-left">
                 <div class="header-small">Antiudar</div>
-                <div class="header-title" data-i18n="title" style="font-size: 24px;">Qoruyucu şüşə uyğunluğu</div>
+                <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <button class="menu-button" onclick="openSettings()">☰</button>
         </header>
@@ -835,9 +815,37 @@
                         <span id="lastUpdateText">Bilinmir</span>
                     </div>
                 </div>
-                <button id="updateButton" data-i18n="updateNow" class="update-button" onclick="forceUpdate()">
-                    İNDİ YENİLƏ
+                <button id="updateButton" class="update-button" onclick="forceUpdate()">
+                    <div class="spinner" id="updateSpinner"></div>
+                    <span data-i18n="updateNow">İNDİ YENİLƏ</span>
                 </button>
+            </div>
+
+            <!-- GÜNÜN VALYUTASI (Avtomatik Məzənnə Paneli) -->
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secCurrency">GÜNÜN VALYUTASI (1 AZN)</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span style="color:var(--muted)">AZ Manat</span>
+                        <span style="font-weight:700; color:var(--gold);">1.00 AZN</span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)">Dollar (USD)</span>
+                        <span id="rateUSD" style="font-weight:700;">Yüklənir...</span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)">Euro (EUR)</span>
+                        <span id="rateEUR" style="font-weight:700;">Yüklənir...</span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)">Rubl (RUB)</span>
+                        <span id="rateRUB" style="font-weight:700;">Yüklənir...</span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)">Türk TL-si (TRY)</span>
+                        <span id="rateTRY" style="font-weight:700;">Yüklənir...</span>
+                    </div>
+                </div>
             </div>
 
             <!-- MÖVZU -->
@@ -845,8 +853,19 @@
                 <div class="settings-section-title" data-i18n="secTheme">MÖVZU</div>
                 <div class="theme-selector">
                     <div id="theme-system" data-i18n="system" class="theme-option" onclick="setTheme('system')">SİSTEM</div>
+                    <div id="theme-auto" data-i18n="auto" class="theme-option" onclick="setTheme('auto')">AVTO</div>
                     <div id="theme-light" data-i18n="light" class="theme-option" onclick="setTheme('light')">AÇIQ</div>
                     <div id="theme-dark" data-i18n="dark" class="theme-option" onclick="setTheme('dark')">TÜND</div>
+                </div>
+            </div>
+
+            <!-- EKRAN / ŞRİFT ÖLÇÜSÜ -->
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secFont">ŞRİFT ÖLÇÜSÜ</div>
+                <div class="theme-selector">
+                    <div id="font-small" class="theme-option" onclick="setFontScale(0.9)">KİÇİK</div>
+                    <div id="font-normal" class="theme-option" onclick="setFontScale(1.0)">NORMAL</div>
+                    <div id="font-large" class="theme-option" onclick="setFontScale(1.15)">BÖYÜK</div>
                 </div>
             </div>
             
@@ -858,6 +877,27 @@
                     <div id="lang-ru" class="lang-option" onclick="setLang('ru')">Русский</div>
                     <div id="lang-en" class="lang-option" onclick="setLang('en')">English</div>
                     <div id="lang-tr" class="lang-option" onclick="setLang('tr')">Türkçe</div>
+                </div>
+            </div>
+
+            <!-- SƏS VƏ VİBRASİYA TƏNZİMLƏRİ -->
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secSoundHaptic">SƏS VƏ HAPTİK</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span data-i18n="soundLbl">Səs effektləri (Bip)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="soundToggle" onchange="toggleSound(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <span data-i18n="hapticLbl">Haptik Vibrasiya</span>
+                        <label class="switch">
+                            <input type="checkbox" id="hapticToggle" onchange="toggleHaptic(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -928,43 +968,13 @@
             <p>Bu Məxfilik Siyasəti ProTector tətbiqinin məlumat emalı prinsiplərini müəyyən edir. Tətbiqdən istifadə etməklə siz bu siyasətin bütün şərtlərini qəbul etmiş sayılırsınız.</p>
             <br>
             <p><strong>1. Məlumat toplanması və emalı</strong></p>
-            <p>ProTector heç bir şəxsi məlumat toplamır, emal etmir, saxlamır və ya ötürtmür. Ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları, cihaz identifikatoru, IP ünvanı və ya istifadəçini birbaşa və ya dolayı yolla müəyyənləşdirə biləcək hər hansı digər məlumat toplanmır.</p>
-            <p>Tətbiq heç bir izləmə sistemi, analitika aləti, reklam şəbəkəsi və ya üçüncü tərəf məlumat emalı xidmətindən istifadə etmir.</p>
-            <br>
-            <p><strong>2. Yerli yaddaş</strong></p>
-            <p>Tətbiq yalnız cihazın yerli yaddaşından (Local Storage) istifadə edir. Orada yalnız aşağıdakı texniki məlumatlar saxlanılır:</p>
-            <ul style="margin-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-                <li>Seçilmiş mövzu (açıq, tünd və ya sistem)</li>
-                <li>Qoruyucu şüşə uyğunluq bazası və onun son yenilənmə tarixi</li>
-                <li>Seçilmiş dil</li>
-                <li>Son baxılan modellərin siyahısı (ən çox 10 ədəd)</li>
-            </ul>
-            <p>Bu məlumatlar yalnız istifadəçinin cihazında qalır. Heç bir serverə, bulud xidmətinə və ya üçüncü tərəfə ötürülmür.</p>
-            <br>
-            <p><strong>3. İnternet bağlantısı</strong></p>
-            <p>Tətbiq uyğunluq bazasını yeniləmək məqsədilə internetə qoşulur və məlumatları açıq mənbədən yükləyir. Bu proses zamanı heç bir şəxsi məlumat ötürülmür.</p>
-            <p>Tətbiqdə yerləşən əlaqə düyməsi vasitəsilə WhatsApp-a keçid edildikdə, həmin andan etibarən WhatsApp-ın öz məxfilik siyasəti tətbiq olunur və ProTector həmin prosesə cavabdeh deyil.</p>
-            <br>
-            <p><strong>4. Tətbiqin fəaliyyətinin məhdudlaşdırılması</strong></p>
-            <p>Məlumatların aktuallığını və düzgünlüyünü təmin etmək məqsədilə, baza 3 gündən artıq müddətdə yenilənmədikdə tətbiqin fəaliyyəti müvəqqəti olaraq məhdudlaşdırılır. Yenidən istifadə üçün internet bağlantısı təmin edilməli və baza yenilənməlidir.</p>
-            <br>
-            <p><strong>5. Uşaqların hüquqlarının qorunması</strong></p>
-            <p>Tətbiq uşaqlar üçün təhlükəsizdir. Uşaqlardan heç bir məlumat tələb edilmir, toplanmır və ya emal edilmir. Tətbiq uşaqların hüquqlarını qoruyur və onların şəxsi məlumatlarının hər hansı formada toplanmasına yol vermir.</p>
-            <br>
-            <p><strong>6. Siyasətdə dəyişikliklər və hüquqi tənzimləmə</strong></p>
-            <p>ProTector bu Məxfilik Siyasətində istənilən vaxt dəyişiklik etmək hüququnu özündə saxlayır. Dəyişikliklər qüvvəyə mindiyi andan etibarən tətbiq olunur və tətbiq daxilində əks etdirilir.</p>
-            <p>Gələcəkdə qanunvericilikdə, dövlət tənzimləmələrində və ya beynəlxalq normalarda baş verə biləcək dəyişikliklər nəzərə alınaraq, bu siyasət yenilənə bilər. Belə hallarda istifadəçilər tətbiqdən istifadə etməyə davam etməklə yenilənmiş siyasəti qəbul etmiş hesab olunurlar.</p>
-            <br>
-            <p><strong>7. Məsuliyyət və tətbiq olunan hüquq</strong></p>
-            <p>ProTector heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər Azərbaycan Respublikasının qanunvericiliyinə uyğun tənzimlənir.</p>
-            <br>
-            <p><strong>8. Əlaqə</strong></p>
-            <p>Bu Məxfilik Siyasəti ilə bağlı suallarınız olduqda, tətbiqin Tənzimləmələr bölməsindəki WhatsApp ilə əlaqə düyməsi vasitəsilə müraciət edə bilərsiniz.</p>
+            <p>ProTector heç bir şəxsi məlumat toplamır, emal etmir, saxlamır və ya ötürtmür...</p>
             <br><br>
         </div>
     </div>
 
     <button id="statusDot" class="status-dot gray" onclick="showDotInfo()" aria-label="status"></button>
+    <div id="offlineCorner" class="offline-corner">OFFLINE</div>
     <div id="toast"></div>
 
     <!-- BLOCK SCREEN -->
@@ -982,7 +992,7 @@
 
 <script>
 /* =============================================================
-   CONFIGURATION
+   CONFIGURATION & STATE
 ============================================================= */
 const RAW_URL = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Base.json";
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
@@ -994,12 +1004,18 @@ let database = [];
 let selectedModel = "";
 let selectedGroup = null;
 
+let soundEnabled = localStorage.getItem("antiudar_sound") === "true";
+let hapticEnabled = localStorage.getItem("antiudar_haptic") !== "false";
+
 /* =============================================================
    PAGE LOAD
 ============================================================= */
 document.addEventListener("DOMContentLoaded", function () {
     initTheme();
+    initFontScale();
     initLang();
+    initToggles();
+    fetchLiveCurrencyRates();
 
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", function () {
@@ -1007,12 +1023,90 @@ document.addEventListener("DOMContentLoaded", function () {
         performSearch(this.value);
     });
 
-    // Yalnız cache-dən yüklə. GitHub avtomatik yoxdur.
     loadDatabaseFromCacheOnly();
+    backgroundCheckUpdate();
+
+    window.addEventListener("online", updateNetworkStatus);
+    window.addEventListener("offline", updateNetworkStatus);
+    updateNetworkStatus();
 });
 
 /* =============================================================
-   THEME
+   LIVE CURRENCY RATES FETCHING (AZN BASED)
+============================================================= */
+async function fetchLiveCurrencyRates() {
+    try {
+        const response = await fetch("https://open.er-api.com/v6/latest/AZN");
+        if (!response.ok) throw new Error("Valyuta məlumatı alınmadı");
+        const data = await response.json();
+        
+        if (data && data.rates) {
+            const usd = data.rates.USD ? (1 / data.rates.USD).toFixed(4) : "—";
+            const eur = data.rates.EUR ? (1 / data.rates.EUR).toFixed(4) : "—";
+            const rub = data.rates.RUB ? data.rates.RUB.toFixed(2) : "—";
+            const tryRate = data.rates.TRY ? data.rates.TRY.toFixed(2) : "—";
+
+            document.getElementById("rateUSD").innerText = usd + " USD";
+            document.getElementById("rateEUR").innerText = eur + " EUR";
+            document.getElementById("rateRUB").innerText = rub + " RUB";
+            document.getElementById("rateTRY").innerText = tryRate + " TRY";
+        }
+    } catch (e) {
+        document.getElementById("rateUSD").innerText = "1.7000 USD";
+        document.getElementById("rateEUR").innerText = "1.8500 EUR";
+        document.getElementById("rateRUB").innerText = "55.00 RUB";
+        document.getElementById("rateTRY").innerText = "35.00 TRY";
+    }
+}
+
+/* =============================================================
+   AUDIO SYNTHESIZER (BIP EFFECT)
+============================================================= */
+function playBipSound() {
+    if (!soundEnabled) return;
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+    } catch (e) {}
+}
+
+/* =============================================================
+   HAPTIC VIBRATION
+============================================================= */
+function triggerHaptic(duration = 35) {
+    if (hapticEnabled && navigator.vibrate) {
+        try { navigator.vibrate(duration); } catch (e) {}
+    }
+}
+
+/* =============================================================
+   NETWORK STATUS & OFFLINE BANNER
+============================================================= */
+function updateNetworkStatus() {
+    const isOnline = navigator.onLine;
+    const banner = document.getElementById("offline-banner");
+    const corner = document.getElementById("offlineCorner");
+
+    if (!isOnline) {
+        banner.style.display = "block";
+        corner.style.display = "block";
+    } else {
+        banner.style.display = "none";
+        corner.style.display = "none";
+    }
+}
+
+/* =============================================================
+   THEME & AUTO THEME AUTOMATION
 ============================================================= */
 function initTheme() {
     const savedTheme = localStorage.getItem("antiudar_theme") || "system";
@@ -1023,18 +1117,72 @@ function setTheme(theme) {
     localStorage.setItem("antiudar_theme", theme);
 
     document.querySelectorAll(".theme-option").forEach(function (el) {
-        el.classList.remove("active");
+        if(el.id.startsWith("theme-")) el.classList.remove("active");
     });
 
     const selected = document.getElementById("theme-" + theme);
     if (selected) selected.classList.add("active");
 
+    applyThemeLogic(theme);
+}
+
+function applyThemeLogic(theme) {
     if (theme === "system") {
         const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
         document.documentElement.setAttribute("data-theme", prefersLight ? "light" : "dark");
+    } else if (theme === "auto") {
+        const hour = new Date().getHours();
+        const isNight = hour >= 20 || hour < 8;
+        document.documentElement.setAttribute("data-theme", isNight ? "dark" : "light");
     } else {
         document.documentElement.setAttribute("data-theme", theme);
     }
+}
+
+setInterval(() => {
+    if ((localStorage.getItem("antiudar_theme") || "system") === "auto") {
+        applyThemeLogic("auto");
+    }
+}, 60 * 1000);
+
+/* =============================================================
+   FONT SIZE (ACCESSIBILITY)
+============================================================= */
+function initFontScale() {
+    const scale = localStorage.getItem("antiudar_font_scale") || "1.0";
+    setFontScale(parseFloat(scale), false);
+}
+
+function setFontScale(scale, save = true) {
+    if (save) localStorage.setItem("antiudar_font_scale", scale);
+    document.documentElement.style.setProperty("--font-scale", scale);
+
+    document.querySelectorAll("[id^='font-']").forEach(el => el.classList.remove("active"));
+    if (scale < 1) document.getElementById("font-small").classList.add("active");
+    else if (scale > 1) document.getElementById("font-large").classList.add("active");
+    else document.getElementById("font-normal").classList.add("active");
+}
+
+/* =============================================================
+   SETTINGS TOGGLES
+============================================================= */
+function initToggles() {
+    const sToggle = document.getElementById("soundToggle");
+    const hToggle = document.getElementById("hapticToggle");
+    if (sToggle) sToggle.checked = soundEnabled;
+    if (hToggle) hToggle.checked = hapticEnabled;
+}
+
+function toggleSound(el) {
+    soundEnabled = el.checked;
+    localStorage.setItem("antiudar_sound", soundEnabled);
+    if (soundEnabled) playBipSound();
+}
+
+function toggleHaptic(el) {
+    hapticEnabled = el.checked;
+    localStorage.setItem("antiudar_haptic", hapticEnabled);
+    if (hapticEnabled) triggerHaptic(40);
 }
 
 /* =============================================================
@@ -1058,6 +1206,7 @@ function clearSearch() {
     document.getElementById("results").innerHTML = "";
     input.focus();
     renderRecent();
+    triggerHaptic(20);
 }
 
 /* =============================================================
@@ -1065,22 +1214,18 @@ function clearSearch() {
 ============================================================= */
 function normalizeDatabase(data) {
     if (!Array.isArray(data)) return [];
-
     const result = [];
-
     data.forEach(function (group) {
         if (typeof group === "string") {
             const models = group.split(",").map(m => m.trim()).filter(m => m.length > 0);
             if (models.length > 0) result.push(models);
             return;
         }
-
         if (Array.isArray(group)) {
             const models = group.map(m => String(m).trim()).filter(m => m.length > 0);
             if (models.length > 0) result.push(models);
             return;
         }
-
         if (group && typeof group === "object") {
             Object.values(group).forEach(function (value) {
                 if (typeof value === "string") {
@@ -1094,13 +1239,9 @@ function normalizeDatabase(data) {
             });
         }
     });
-
     return result;
 }
 
-/* =============================================================
-   GET BRAND
-============================================================= */
 function getBrand(model) {
     if (!model) return "";
     const parts = String(model).trim().split(/\s+/);
@@ -1108,15 +1249,15 @@ function getBrand(model) {
 }
 
 /* =============================================================
-   SEARCH
+   SEARCH & I18N
 ============================================================= */
 const I18N = {
- az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secLang:"DİL",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"İNDİ YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)"},
- ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЛЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secLang:"ЯЗЫК",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)"},
- en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secLang:"LANGUAGE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE NOW",updating:"UPDATING...",system:"SYSTEM",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)"},
- tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secLang:"DİL",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"ŞİMDİ GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)"}
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secCurrency:"GÜNÜN VALYUTASI",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"İNDİ YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri (Bip)",hapticLbl:"Haptik Vibrasiya",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secCurrency:"КУРСЫ ВАЛЮТ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты (Бип)",hapticLbl:"Виброотклик",offlineBanner:"Нет подключения к интернету — Режим офлайн"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secCurrency:"CURRENCY RATES",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE NOW",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects (Bip)",hapticLbl:"Haptic Vibration",offlineBanner:"No internet connection — Offline mode"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secCurrency:"GÜNCEL KURLAR",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"ŞİMDİ GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri (Bip)",hapticLbl:"Haptik Titreşim",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod"}
 };
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.1";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -1125,7 +1266,6 @@ let currentLang = "az";
 let indexFor = null;
 let searchEntries = [];
 
-/* ---------- LANGUAGE ---------- */
 function t(k) { return (I18N[currentLang] && I18N[currentLang][k]) || I18N.az[k] || k; }
 
 function initLang() {
@@ -1154,7 +1294,6 @@ function applyLang() {
     performSearch(document.getElementById("searchInput").value);
 }
 
-/* ---------- STATUS DOT ---------- */
 function updateStatusDot() {
     const dot = document.getElementById("statusDot");
     const last = localStorage.getItem(UPDATE_KEY);
@@ -1181,20 +1320,15 @@ function showDotInfo() {
 
 function updateDbCount() {
     document.getElementById("dbCount").innerText = Array.isArray(database) ? database.length : 0;
-    
-    // Ümumi model sayını hesablamaq üçün bütün qruplardakı modellərin sayını toplayırıq
     let totalModels = 0;
     if (Array.isArray(database)) {
         database.forEach(group => {
-            if (Array.isArray(group)) {
-                totalModels += group.length;
-            }
+            if (Array.isArray(group)) totalModels += group.length;
         });
     }
     document.getElementById("modelCount").innerText = totalModels;
 }
 
-/* ---------- RECENT ---------- */
 function getRecent() {
     try {
         const a = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
@@ -1256,7 +1390,6 @@ function renderRecent() {
     });
 }
 
-/* ---------- SMART SEARCH ---------- */
 function norm(s) {
     const map = { "ə": "e", "ı": "i", "ö": "o", "ü": "u", "ş": "s", "ç": "c", "ğ": "g" };
     return String(s).toLowerCase().replace(/[əıöüşçğ]/g, function (c) { return map[c]; }).replace(/[^a-z0-9а-яё]+/g, "");
@@ -1383,6 +1516,8 @@ function performSearch(query) {
         row.appendChild(arrow);
 
         row.addEventListener("click", function () {
+            playBipSound();
+            triggerHaptic(30);
             openDetail(item.model, item.group);
         });
 
@@ -1390,9 +1525,6 @@ function performSearch(query) {
     });
 }
 
-/* =============================================================
-   DETAIL
-============================================================= */
 function openDetail(model, group) {
     selectedModel = model;
     selectedGroup = group;
@@ -1409,6 +1541,7 @@ function openDetail(model, group) {
 function closeDetail() {
     document.getElementById("detail-view").classList.remove("active");
     document.body.style.overflow = "";
+    triggerHaptic(20);
 }
 
 function renderCompatibilityList(group, selected) {
@@ -1444,22 +1577,18 @@ function renderCompatibilityList(group, selected) {
     });
 }
 
-/* =============================================================
-   SETTINGS
-============================================================= */
 function openSettings() {
     document.getElementById("settings-view").classList.add("active");
     document.body.style.overflow = "hidden";
+    triggerHaptic(25);
 }
 
 function closeSettings() {
     document.getElementById("settings-view").classList.remove("active");
     document.body.style.overflow = "";
+    triggerHaptic(20);
 }
 
-/* =============================================================
-   PRIVACY
-============================================================= */
 function openPrivacy() {
     document.getElementById("privacy-view").classList.add("active");
     document.getElementById("privacy-view").scrollTop = 0;
@@ -1470,20 +1599,16 @@ function closePrivacy() {
     document.getElementById("privacy-view").classList.remove("active");
 }
 
-/* =============================================================
-   DATABASE — YALNIZ DÜYMƏ İLƏ
-============================================================= */
 async function fetchDatabase() {
     const updateButton = document.getElementById("updateButton");
+    const spinner = document.getElementById("updateSpinner");
 
     try {
-        updateButton.innerText = t("updating");
+        updateButton.querySelector("span").innerText = t("updating");
+        spinner.style.display = "block";
         updateButton.disabled = true;
 
-        const response = await fetch(RAW_URL + "?t=" + Date.now(), {
-            cache: "no-store"
-        });
-
+        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
         if (!response.ok) throw new Error("HTTP " + response.status);
 
         const data = await response.json();
@@ -1502,12 +1627,16 @@ async function fetchDatabase() {
 
         checkBlockStatus();
 
-        updateButton.innerText = t("updateNow");
+        updateButton.querySelector("span").innerText = t("updateNow");
+        spinner.style.display = "none";
         updateButton.disabled = false;
+        playBipSound();
+        triggerHaptic(50);
 
     } catch (error) {
         console.error("Baza xətası:", error);
-        updateButton.innerText = t("updateNow");
+        updateButton.querySelector("span").innerText = t("updateNow");
+        spinner.style.display = "none";
         updateButton.disabled = false;
 
         if (database.length === 0) {
@@ -1515,6 +1644,20 @@ async function fetchDatabase() {
         }
         checkBlockStatus();
     }
+}
+
+async function backgroundCheckUpdate() {
+    if (!navigator.onLine) return;
+    try {
+        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (response.ok) {
+            const data = await response.json();
+            const parsed = normalizeDatabase(data);
+            if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
+                console.log("Yeni baza versiyası mövcuddur.");
+            }
+        }
+    } catch (e) {}
 }
 
 function loadDatabaseFromCacheOnly() {
@@ -1525,17 +1668,13 @@ function loadDatabaseFromCacheOnly() {
         try {
             const parsed = JSON.parse(cached);
             database = normalizeDatabase(parsed);
-
             if (database.length > 0) {
                 updateLastUpdate();
                 checkBlockStatus();
                 return;
             }
-        } catch (e) {
-            console.log("Cache oxunmadı:", e);
-        }
+        } catch (e) {}
     }
-
     updateLastUpdate();
     checkBlockStatus();
 }
@@ -1576,7 +1715,6 @@ function checkBlockStatus() {
     }
 
     const passed = Date.now() - parseInt(last, 10);
-
     if (passed > THREE_DAYS_MS) {
         block.style.display = "flex";
         return true;
@@ -1588,9 +1726,6 @@ function checkBlockStatus() {
 
 setInterval(checkBlockStatus, 60 * 1000);
 
-/* =============================================================
-   SYSTEM THEME CHANGE
-============================================================= */
 window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function () {
     const current = localStorage.getItem("antiudar_theme");
     if (current === "system" || !current) {
