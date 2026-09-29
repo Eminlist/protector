@@ -111,9 +111,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-width: 0;
-            flex: 1;
-            padding-right: 12px;
         }
 
         .header-small {
@@ -126,15 +123,11 @@
         }
 
         .header-title {
-            font-size: 22px;
-            line-height: 1.15;
+            font-size: 36px;
+            line-height: 1;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -1.5px;
             color: var(--text);
-            max-width: calc(100vw - 120px);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         /* =========================================================
@@ -143,7 +136,6 @@
         .menu-button {
             width: 70px;
             height: 70px;
-            flex-shrink: 0;
             border: 2px solid var(--gold);
             background: transparent;
             color: var(--gold);
@@ -310,7 +302,10 @@
         ========================================================= */
         #detail-view {
             position: fixed;
-            inset: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             background: var(--bg);
@@ -477,11 +472,15 @@
         ========================================================= */
         #settings-view {
             position: fixed;
-            inset: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
             background: var(--bg);
             z-index: 600;
             display: none;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         :root[data-theme="dark"] #settings-view {
@@ -631,11 +630,15 @@
         ========================================================= */
         #privacy-view {
             position: fixed;
-            inset: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
             background: var(--bg);
             z-index: 700;
             display: none;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         :root[data-theme="dark"] #privacy-view {
@@ -653,7 +656,10 @@
         ========================================================= */
         #block-screen {
             position: fixed;
-            inset: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
             background: var(--bg);
             z-index: 1000;
             display: none;
@@ -693,8 +699,8 @@
                 padding: 18px 20px 14px 20px;
             }
             .header-small { font-size: 12px; letter-spacing: 4px; }
-            .header-title { font-size: 20px; }
-            .menu-button { width: 62px; height: 62px; font-size: 28px; flex-shrink: 0; }
+            .header-title { font-size: 32px; }
+            .menu-button { width: 62px; height: 62px; font-size: 28px; }
             .main-content { padding: 20px; }
             .search-wrapper { height: 64px; }
             .search-input { font-size: 18px; padding: 0 18px; }
@@ -716,9 +722,9 @@
         @media (max-width: 390px) {
             .main-content { padding: 16px; }
             .top-header { padding: 16px 14px 12px 14px; }
-            .header-title { font-size: 17px; }
+            .header-title { font-size: 28px; }
             .header-small { font-size: 11px; }
-            .menu-button { width: 54px; height: 54px; font-size: 24px; flex-shrink: 0; }
+            .menu-button { width: 54px; height: 54px; font-size: 24px; }
             .search-input { font-size: 16px; padding: 0 14px; }
             .clear-button { width: 54px; }
             .brand-badge { min-width: 80px; font-size: 11px; letter-spacing: 1px; padding: 0 6px; }
@@ -734,6 +740,25 @@
             .compat-brand { min-width: 80px; height: 28px; font-size: 10px; letter-spacing: 1px; }
             .compat-model { font-size: 15px; margin-left: 10px; }
         }
+
+        /* RECENT / STATUS DOT / LANG */
+        #recent { display: none; margin-bottom: 8px; }
+        .recent-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .recent-title { font-size: 12px; letter-spacing: 3px; color: var(--gold); }
+        .recent-clear { background: none; border: none; color: var(--muted); font-size: 12px; letter-spacing: 2px; cursor: pointer; padding: 8px 0 8px 12px; }
+        .recent-item { padding: 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: 16px; cursor: pointer; display: flex; justify-content: space-between; }
+        .recent-item:active { background: var(--result-hover); }
+        .recent-item span:last-child { color: var(--gold); }
+        .nf-button { margin-top: 18px; }
+        .status-dot { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 18px; height: 18px; border-radius: 50%; z-index: 1100; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; padding: 0; }
+        .status-dot::after { content: ""; position: absolute; top: -12px; right: -12px; bottom: -12px; left: -12px; }
+        .status-dot.green { background: #2ecc71; box-shadow: 0 0 12px rgba(46,204,113,0.7); }
+        .status-dot.gray { background: #8a8a8a; }
+        .status-dot.yellow { background: #f1c40f; box-shadow: 0 0 12px rgba(241,196,15,0.7); }
+        #toast { position: fixed; right: 16px; bottom: calc(50px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--text); border: 1px solid var(--gold); padding: 10px 14px; font-size: 13px; z-index: 1100; display: none; }
+        .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+        .lang-option { padding: 16px 8px; text-align: center; font-size: 13px; cursor: pointer; color: var(--text); background: var(--surface); }
+        .lang-option.active { background: var(--gold); color: #111111; font-weight: 800; }
     </style>
 </head>
 
@@ -746,7 +771,7 @@
         <header class="top-header">
             <div class="header-left">
                 <div class="header-small">Antiudar</div>
-                <div class="header-title">Qoruyucu şüşə uyğunluğu</div>
+                <div class="header-title" data-i18n="title" style="font-size: 24px;">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <button class="menu-button" onclick="openSettings()">☰</button>
         </header>
@@ -757,7 +782,7 @@
                     id="searchInput"
                     class="search-input"
                     type="text"
-                    placeholder="Axtar: Samsung,Mi,iPhone ..."
+                    placeholder="Axtar: Samsung,Mi,iPhone ..." data-i18n-ph="search"
                     autocomplete="off"
                     autocorrect="off"
                     autocapitalize="off"
@@ -766,6 +791,7 @@
                 <button id="clearButton" class="clear-button" onclick="clearSearch()">×</button>
             </div>
 
+            <div id="recent"></div>
             <div id="status" class="status"></div>
             <div id="results"></div>
         </main>
@@ -776,12 +802,12 @@
         <header class="detail-header">
             <button class="detail-back" onclick="closeDetail()">‹</button>
             <div class="detail-heading">
-                <div class="detail-small">SEÇİLƏN MODEL</div>
+                <div class="detail-small" data-i18n="selected">SEÇİLƏN MODEL</div>
                 <div id="detail-model" class="detail-model"></div>
             </div>
         </header>
 
-        <div class="compatibility-title">
+        <div class="compatibility-title" data-i18n="compat">
             BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR
         </div>
 
@@ -794,7 +820,7 @@
             <button class="settings-back" onclick="closeSettings()">‹</button>
             <div class="settings-heading">
                 <div class="settings-small">By Emin</div>
-                <div class="settings-title">Tənzimləmələr</div>
+                <div class="settings-title" data-i18n="settings">Tənzimləmələr</div>
             </div>
         </header>
 
@@ -802,34 +828,45 @@
 
             <!-- BAZA -->
             <div class="settings-section">
-                <div class="settings-section-title">BAZA</div>
+                <div class="settings-section-title" data-i18n="secBase">BAZA</div>
                 <div class="settings-box">
                     <div class="settings-row">
-                        <span style="color:var(--muted)">SON YENİLƏNMƏ</span>
+                        <span style="color:var(--muted)" data-i18n="lastUpd">SON YENİLƏNMƏ</span>
                         <span id="lastUpdateText">Bilinmir</span>
                     </div>
                 </div>
-                <button id="updateButton" class="update-button" onclick="forceUpdate()">
+                <button id="updateButton" data-i18n="updateNow" class="update-button" onclick="forceUpdate()">
                     İNDİ YENİLƏ
                 </button>
             </div>
 
             <!-- MÖVZU -->
             <div class="settings-section">
-                <div class="settings-section-title">MÖVZU</div>
+                <div class="settings-section-title" data-i18n="secTheme">MÖVZU</div>
                 <div class="theme-selector">
-                    <div id="theme-system" class="theme-option" onclick="setTheme('system')">SİSTEM</div>
-                    <div id="theme-light" class="theme-option" onclick="setTheme('light')">AÇIQ</div>
-                    <div id="theme-dark" class="theme-option" onclick="setTheme('dark')">TÜND</div>
+                    <div id="theme-system" data-i18n="system" class="theme-option" onclick="setTheme('system')">SİSTEM</div>
+                    <div id="theme-light" data-i18n="light" class="theme-option" onclick="setTheme('light')">AÇIQ</div>
+                    <div id="theme-dark" data-i18n="dark" class="theme-option" onclick="setTheme('dark')">TÜND</div>
                 </div>
             </div>
             
+            <!-- DİL -->
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secLang">DİL</div>
+                <div class="lang-selector">
+                    <div id="lang-az" class="lang-option" onclick="setLang('az')">Azərbaycan</div>
+                    <div id="lang-ru" class="lang-option" onclick="setLang('ru')">Русский</div>
+                    <div id="lang-en" class="lang-option" onclick="setLang('en')">English</div>
+                    <div id="lang-tr" class="lang-option" onclick="setLang('tr')">Türkçe</div>
+                </div>
+            </div>
+
             <!-- MƏXFİLİK -->
             <div class="settings-section">
-                <div class="settings-section-title">MƏXFİLİK</div>
+                <div class="settings-section-title" data-i18n="secPrivacy">MƏXFİLİK</div>
                 <div class="settings-box" onclick="openPrivacy()" style="cursor: pointer;">
                     <div class="settings-row">
-                        <span>Məxfilik Siyasəti</span>
+                        <span data-i18n="privacy">Məxfilik Siyasəti</span>
                         <span style="color:var(--gold); font-size: 18px; line-height: 14px;">›</span>
                     </div>
                 </div>
@@ -837,19 +874,34 @@
 
             <!-- ƏLAQƏ -->
             <div class="settings-section">
-                <div class="settings-section-title">ƏLAQƏ</div>
-                <a href="https://wa.me/994553115544?text=Salam,%20ProTector%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" target="_blank" rel="noopener">
+                <div class="settings-section-title" data-i18n="secContact">ƏLAQƏ</div>
+                <a href="https://wa.me/994553115544?text=Salam,%20ProTector%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">
                     WhatsApp ilə əlaqə
                 </a>
             </div>
 
-            <!-- MƏLUMAT -->
+            <!-- PROQRAM -->
             <div class="settings-section">
-                <div class="settings-section-title">MƏLUMAT</div>
+                <div class="settings-section-title" data-i18n="secApp">PROQRAM</div>
                 <div class="settings-box">
                     <div class="settings-row">
-                        <span style="color:var(--muted)">QAYDA</span>
-                        <span style="text-align:right; width:65%;">
+                        <span style="color:var(--muted)" data-i18n="version">VERSİYA</span>
+                        <span id="appVersion"></span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="dbSize">BAZADA QRUP</span>
+                        <span id="dbCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MƏLUMAT -->
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secInfo">MƏLUMAT</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="ruleLbl">QAYDA</span>
+                        <span data-i18n="ruleText" style="text-align:right; width:65%;">
                             Baza 3 gündən çox yenilənməsə, proqram bloklanır.
                         </span>
                     </div>
@@ -865,7 +917,7 @@
             <button class="settings-back" onclick="closePrivacy()">‹</button>
             <div class="settings-heading">
                 <div class="settings-small">By Emin</div>
-                <div class="settings-title">Məxfilik Siyasəti</div>
+                <div class="settings-title" data-i18n="privacy">Məxfilik Siyasəti</div>
             </div>
         </header>
         <div class="settings-content" style="color: var(--text); font-size: 14px; line-height: 1.6;">
@@ -880,6 +932,8 @@
             <ul style="margin-left: 20px; margin-top: 8px; margin-bottom: 8px;">
                 <li>Seçilmiş mövzu (açıq, tünd və ya sistem)</li>
                 <li>Qoruyucu şüşə uyğunluq bazası və onun son yenilənmə tarixi</li>
+                <li>Seçilmiş dil</li>
+                <li>Son baxılan modellərin siyahısı (ən çox 10 ədəd)</li>
             </ul>
             <p>Bu məlumatlar yalnız istifadəçinin cihazında qalır. Heç bir serverə, bulud xidmətinə və ya üçüncü tərəfə ötürülmür.</p>
             <br>
@@ -906,15 +960,18 @@
         </div>
     </div>
 
+    <button id="statusDot" class="status-dot gray" onclick="showDotInfo()" aria-label="status"></button>
+    <div id="toast"></div>
+
     <!-- BLOCK SCREEN -->
     <div id="block-screen">
-        <div class="block-title">Proqram Bloklanıb</div>
-        <div class="block-text">
+        <div class="block-title" data-i18n="blockTitle">Proqram Bloklanıb</div>
+        <div class="block-text" data-i18n-html="blockText">
             Baza 3 gündən çoxdur ki yenilənmir.
             <br><br>
             Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.
         </div>
-        <button class="update-button" onclick="forceUpdate()">BAZANI YENİLƏ</button>
+        <button class="update-button" data-i18n="updateBase" onclick="forceUpdate()">BAZANI YENİLƏ</button>
     </div>
 
 </div>
@@ -938,6 +995,7 @@ let selectedGroup = null;
 ============================================================= */
 document.addEventListener("DOMContentLoaded", function () {
     initTheme();
+    initLang();
 
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", function () {
@@ -995,6 +1053,7 @@ function clearSearch() {
     document.getElementById("status").innerText = "";
     document.getElementById("results").innerHTML = "";
     input.focus();
+    renderRecent();
 }
 
 /* =============================================================
@@ -1047,52 +1106,246 @@ function getBrand(model) {
 /* =============================================================
    SEARCH
 ============================================================= */
+const I18N = {
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secLang:"DİL",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"İNDİ YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЛЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secLang:"ЯЗЫК",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secLang:"LANGUAGE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE NOW",updating:"UPDATING...",system:"SYSTEM",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secLang:"DİL",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"ŞİMDİ GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)"}
+};
+const APP_VERSION = "1.1.0";
+const DAY_MS = 24 * 60 * 60 * 1000;
+const LANG_KEY = "antiudar_lang";
+const RECENT_KEY = "antiudar_recent_v1";
+const WA_NUMBER = "994553115544";
+let currentLang = "az";
+let indexFor = null;
+let searchEntries = [];
+
+/* ---------- LANGUAGE ---------- */
+function t(k) { return (I18N[currentLang] && I18N[currentLang][k]) || I18N.az[k] || k; }
+
+function initLang() {
+    let l = null;
+    try { l = localStorage.getItem(LANG_KEY); } catch (e) {}
+    setLang(I18N[l] ? l : "az", false);
+}
+
+function setLang(l, save) {
+    if (!I18N[l]) l = "az";
+    currentLang = l;
+    if (save !== false) { try { localStorage.setItem(LANG_KEY, l); } catch (e) {} }
+    applyLang();
+}
+
+function applyLang() {
+    document.documentElement.lang = currentLang;
+    document.title = t("title");
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-ph]").forEach(function (el) { el.placeholder = t(el.getAttribute("data-i18n-ph")); });
+    document.querySelectorAll(".lang-option").forEach(function (el) { el.classList.toggle("active", el.id === "lang-" + currentLang); });
+    document.getElementById("appVersion").innerText = "v" + APP_VERSION;
+    updateLastUpdate();
+    updateStatusDot();
+    performSearch(document.getElementById("searchInput").value);
+}
+
+/* ---------- STATUS DOT ---------- */
+function updateStatusDot() {
+    const dot = document.getElementById("statusDot");
+    const last = localStorage.getItem(UPDATE_KEY);
+    let cls = "gray", key = "stOld";
+    if (last) {
+        const age = Date.now() - parseInt(last, 10);
+        if (age > THREE_DAYS_MS) { cls = "yellow"; key = "stStale"; }
+        else if (age < DAY_MS) { cls = "green"; key = "stFresh"; }
+    }
+    dot.className = "status-dot " + cls;
+    dot.setAttribute("title", t(key));
+    dot.setAttribute("aria-label", t(key));
+    dot.setAttribute("data-key", key);
+}
+
+let toastTimer = null;
+function showDotInfo() {
+    const toast = document.getElementById("toast");
+    toast.innerText = t(document.getElementById("statusDot").getAttribute("data-key"));
+    toast.style.display = "block";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.style.display = "none"; }, 2200);
+}
+
+function updateDbCount() {
+    document.getElementById("dbCount").innerText = Array.isArray(database) ? database.length : 0;
+}
+
+/* ---------- RECENT ---------- */
+function getRecent() {
+    try {
+        const a = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+        return Array.isArray(a) ? a.filter(function (x) { return typeof x === "string"; }).slice(0, 10) : [];
+    } catch (e) { return []; }
+}
+
+function saveRecent(q) {
+    q = String(q || "").trim();
+    if (!q) return;
+    let a = getRecent().filter(function (x) { return x.toLowerCase() !== q.toLowerCase(); });
+    a.unshift(q);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(a.slice(0, 10))); } catch (e) {}
+}
+
+function clearRecent() {
+    try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+    renderRecent();
+}
+
+function hideRecent() { document.getElementById("recent").style.display = "none"; }
+
+function renderRecent() {
+    const box = document.getElementById("recent");
+    const list = getRecent();
+    box.innerHTML = "";
+    if (list.length === 0) { box.style.display = "none"; return; }
+    box.style.display = "block";
+
+    const head = document.createElement("div");
+    head.className = "recent-head";
+    const title = document.createElement("div");
+    title.className = "recent-title";
+    title.innerText = t("recent");
+    const clr = document.createElement("button");
+    clr.className = "recent-clear";
+    clr.innerText = t("clear");
+    clr.addEventListener("click", clearRecent);
+    head.appendChild(title);
+    head.appendChild(clr);
+    box.appendChild(head);
+
+    list.forEach(function (q) {
+        const row = document.createElement("div");
+        row.className = "recent-item";
+        const a = document.createElement("span");
+        a.innerText = q;
+        const b = document.createElement("span");
+        b.innerText = "›";
+        row.appendChild(a);
+        row.appendChild(b);
+        row.addEventListener("click", function () {
+            const input = document.getElementById("searchInput");
+            input.value = q;
+            updateClearButton();
+            performSearch(q);
+        });
+        box.appendChild(row);
+    });
+}
+
+/* ---------- SMART SEARCH ---------- */
+function norm(s) {
+    const map = { "ə": "e", "ı": "i", "ö": "o", "ü": "u", "ş": "s", "ç": "c", "ğ": "g" };
+    return String(s).toLowerCase().replace(/[əıöüşçğ]/g, function (c) { return map[c]; }).replace(/[^a-z0-9а-яё]+/g, "");
+}
+
+function lev(a, b) {
+    const prev = [];
+    for (let j = 0; j <= b.length; j++) prev[j] = j;
+    for (let i = 1; i <= a.length; i++) {
+        let diag = prev[0];
+        prev[0] = i;
+        for (let j = 1; j <= b.length; j++) {
+            const tmp = prev[j];
+            prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1));
+            diag = tmp;
+        }
+    }
+    return prev[b.length];
+}
+
+function buildIndex() {
+    if (indexFor === database) return;
+    searchEntries = [];
+    database.forEach(function (group) {
+        if (!Array.isArray(group)) return;
+        group.forEach(function (model) {
+            searchEntries.push({
+                model: model,
+                group: group,
+                key: norm(model),
+                words: String(model).toLowerCase().split(/\s+/).map(norm).filter(Boolean)
+            });
+        });
+    });
+    indexFor = database;
+}
+
+function showNotFound(query) {
+    const results = document.getElementById("results");
+    document.getElementById("status").innerText = t("none");
+
+    const noResult = document.createElement("div");
+    noResult.className = "no-results";
+    noResult.innerText = '"' + query + '": ' + t("noneText");
+    results.appendChild(noResult);
+
+    const a = document.createElement("a");
+    a.className = "whatsapp-button nf-button";
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTector: bazada tapılmayan model — " + query);
+    a.innerText = t("nfBtn");
+    results.appendChild(a);
+}
+
 function performSearch(query) {
     const results = document.getElementById("results");
     const status = document.getElementById("status");
     results.innerHTML = "";
-
-    query = String(query || "").trim().toLowerCase();
+    query = String(query || "").trim();
 
     if (!query) {
         status.innerText = "";
+        renderRecent();
         return;
     }
+    hideRecent();
 
     if (!Array.isArray(database) || database.length === 0) {
-        status.innerText = "BAZA YOXDUR — YENİLƏYİN";
+        status.innerText = t("noDb");
         return;
     }
 
-    const tokens = query.split(/\s+/).filter(t => t.length > 0);
-    const found = new Set();
-    let matches = [];
+    const whole = norm(query);
+    const tokens = query.split(/\s+/).map(norm).filter(function (x) { return x.length > 0; });
+    if (tokens.length === 0) { showNotFound(query); return; }
 
-    database.forEach(function (group) {
-        if (!Array.isArray(group)) return;
-
-        group.forEach(function (model) {
-            const modelText = String(model).toLowerCase().trim();
-            const match = tokens.every(token => modelText.includes(token));
-            if (!match) return;
-
-            if (found.has(modelText)) return;
-            found.add(modelText);
-
-            matches.push({ model: model, group: group });
+    buildIndex();
+    const seen = new Set();
+    const matches = [];
+    function pass(test) {
+        searchEntries.forEach(function (e) {
+            if (seen.has(e.key)) return;
+            if (test(e)) { seen.add(e.key); matches.push(e); }
         });
-    });
-
-    if (matches.length === 0) {
-        status.innerText = "NƏTİCƏ TAPILMADI";
-        const noResult = document.createElement("div");
-        noResult.className = "no-results";
-        noResult.innerText = '"' + query + '" üçün heç nə tapılmadı.';
-        results.appendChild(noResult);
-        return;
     }
 
-    status.innerText = matches.length + " NƏTİCƏ";
+    pass(function (e) { return e.key.includes(whole) || tokens.every(function (tk) { return e.key.includes(tk); }); });
+
+    let fuzzy = false;
+    if (matches.length === 0) {
+        fuzzy = true;
+        pass(function (e) {
+            return tokens.every(function (tk) {
+                return e.key.includes(tk) || (tk.length >= 4 && e.words.some(function (w) {
+                    return Math.abs(w.length - tk.length) <= 1 && lev(w, tk) <= 1;
+                }));
+            });
+        });
+    }
+
+    if (matches.length === 0) { showNotFound(query); return; }
+
+    status.innerText = matches.length + " " + (fuzzy ? t("similar") : t("found"));
 
     matches.forEach(function (item) {
         const row = document.createElement("div");
@@ -1128,6 +1381,7 @@ function performSearch(query) {
 function openDetail(model, group) {
     selectedModel = model;
     selectedGroup = group;
+    saveRecent(model);
 
     document.getElementById("detail-model").innerText = model;
     renderCompatibilityList(group, model);
@@ -1193,6 +1447,8 @@ function closeSettings() {
 ============================================================= */
 function openPrivacy() {
     document.getElementById("privacy-view").classList.add("active");
+    document.getElementById("privacy-view").scrollTop = 0;
+    document.body.style.overflow = "hidden";
 }
 
 function closePrivacy() {
@@ -1206,7 +1462,7 @@ async function fetchDatabase() {
     const updateButton = document.getElementById("updateButton");
 
     try {
-        updateButton.innerText = "YENİLƏNİR...";
+        updateButton.innerText = t("updating");
         updateButton.disabled = true;
 
         const response = await fetch(RAW_URL + "?t=" + Date.now(), {
@@ -1231,16 +1487,16 @@ async function fetchDatabase() {
 
         checkBlockStatus();
 
-        updateButton.innerText = "İNDİ YENİLƏ";
+        updateButton.innerText = t("updateNow");
         updateButton.disabled = false;
 
     } catch (error) {
         console.error("Baza xətası:", error);
-        updateButton.innerText = "İNDİ YENİLƏ";
+        updateButton.innerText = t("updateNow");
         updateButton.disabled = false;
 
         if (database.length === 0) {
-            alert("Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.");
+            alert(t("alertFail"));
         }
         checkBlockStatus();
     }
@@ -1274,11 +1530,12 @@ function forceUpdate() {
 }
 
 function updateLastUpdate() {
+    updateDbCount();
     const last = localStorage.getItem(UPDATE_KEY);
     const element = document.getElementById("lastUpdateText");
 
     if (!last) {
-        element.innerText = "Bilinmir";
+        element.innerText = t("unknown");
         return;
     }
 
@@ -1294,6 +1551,7 @@ function updateLastUpdate() {
 }
 
 function checkBlockStatus() {
+    updateStatusDot();
     const last = localStorage.getItem(UPDATE_KEY);
     const block = document.getElementById("block-screen");
 
