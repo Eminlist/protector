@@ -111,6 +111,9 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            min-width: 0;
+            flex: 1;
+            padding-right: 12px;
         }
 
         .header-small {
@@ -123,11 +126,15 @@
         }
 
         .header-title {
-            font-size: 36px;
-            line-height: 1;
+            font-size: 22px;
+            line-height: 1.15;
             font-weight: 800;
-            letter-spacing: -1.5px;
+            letter-spacing: -0.5px;
             color: var(--text);
+            max-width: calc(100vw - 120px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* =========================================================
@@ -136,6 +143,7 @@
         .menu-button {
             width: 70px;
             height: 70px;
+            flex-shrink: 0;
             border: 2px solid var(--gold);
             background: transparent;
             color: var(--gold);
@@ -685,8 +693,8 @@
                 padding: 18px 20px 14px 20px;
             }
             .header-small { font-size: 12px; letter-spacing: 4px; }
-            .header-title { font-size: 32px; }
-            .menu-button { width: 62px; height: 62px; font-size: 28px; }
+            .header-title { font-size: 20px; }
+            .menu-button { width: 62px; height: 62px; font-size: 28px; flex-shrink: 0; }
             .main-content { padding: 20px; }
             .search-wrapper { height: 64px; }
             .search-input { font-size: 18px; padding: 0 18px; }
@@ -708,9 +716,9 @@
         @media (max-width: 390px) {
             .main-content { padding: 16px; }
             .top-header { padding: 16px 14px 12px 14px; }
-            .header-title { font-size: 28px; }
+            .header-title { font-size: 17px; }
             .header-small { font-size: 11px; }
-            .menu-button { width: 54px; height: 54px; font-size: 24px; }
+            .menu-button { width: 54px; height: 54px; font-size: 24px; flex-shrink: 0; }
             .search-input { font-size: 16px; padding: 0 14px; }
             .clear-button { width: 54px; }
             .brand-badge { min-width: 80px; font-size: 11px; letter-spacing: 1px; padding: 0 6px; }
@@ -738,7 +746,7 @@
         <header class="top-header">
             <div class="header-left">
                 <div class="header-small">Antiudar</div>
-                <div class="header-title" style="font-size: 24px;">Qoruyucu şüşə uyğunluğu</div>
+                <div class="header-title">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <button class="menu-button" onclick="openSettings()">☰</button>
         </header>
