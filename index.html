@@ -123,10 +123,10 @@
         }
 
         .header-title {
-            font-size: 18px;
-            line-height: 1.2;
+            font-size: 36px;
+            line-height: 1;
             font-weight: 800;
-            letter-spacing: -0.5px;
+            letter-spacing: -1.5px;
             color: var(--text);
         }
 
@@ -685,7 +685,7 @@
                 padding: 18px 20px 14px 20px;
             }
             .header-small { font-size: 12px; letter-spacing: 4px; }
-            .header-title { font-size: 16px; }
+            .header-title { font-size: 32px; }
             .menu-button { width: 62px; height: 62px; font-size: 28px; }
             .main-content { padding: 20px; }
             .search-wrapper { height: 64px; }
@@ -708,7 +708,7 @@
         @media (max-width: 390px) {
             .main-content { padding: 16px; }
             .top-header { padding: 16px 14px 12px 14px; }
-            .header-title { font-size: 15px; }
+            .header-title { font-size: 28px; }
             .header-small { font-size: 11px; }
             .menu-button { width: 54px; height: 54px; font-size: 24px; }
             .search-input { font-size: 16px; padding: 0 14px; }
@@ -738,7 +738,7 @@
         <header class="top-header">
             <div class="header-left">
                 <div class="header-small">Antiudar</div>
-                <div class="header-title">Qoruyucu şüşə uyğunluğu</div>
+                <div class="header-title" style="font-size: 24px;">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <button class="menu-button" onclick="openSettings()">☰</button>
         </header>
@@ -861,39 +861,39 @@
             </div>
         </header>
         <div class="settings-content" style="color: var(--text); font-size: 14px; line-height: 1.6;">
-            <p><strong>Son yenilənmə tarixi:</strong> 29 Sentyabr 2026</p>
+            <p>Bu Məxfilik Siyasəti ProTector tətbiqinin məlumat emalı prinsiplərini müəyyən edir. Tətbiqdən istifadə etməklə siz bu siyasətin bütün şərtlərini qəbul etmiş sayılırsınız.</p>
             <br>
-            <p>Bu Məxfilik Siyasəti "ProTector" tətbiqindən (bundan sonra "Tətbiq" adlandırılacaq) istifadə zamanı məlumatların necə idarə olunduğunu izah edir. Tətbiq "ProTector qrupu" tərəfindən yaradılmışdır və idarə olunur.</p>
-            <p>Tətbiqdən istifadə edərək, siz bu Məxfilik Siyasətinin şərtləri ilə razılaşmış olursunuz.</p>
+            <p><strong>1. Məlumat toplanması və emalı</strong></p>
+            <p>ProTector heç bir şəxsi məlumat toplamır, emal etmir, saxlamır və ya ötürtmür. Ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları, cihaz identifikatoru, IP ünvanı və ya istifadəçini birbaşa və ya dolayı yolla müəyyənləşdirə biləcək hər hansı digər məlumat toplanmır.</p>
+            <p>Tətbiq heç bir izləmə sistemi, analitika aləti, reklam şəbəkəsi və ya üçüncü tərəf məlumat emalı xidmətindən istifadə etmir.</p>
             <br>
-            <p><strong>1. Hansı məlumatları toplayırıq?</strong></p>
-            <p>ProTector qrupu olaraq biz istifadəçilərdən heç bir şəxsi məlumat (ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları və s.) toplamırıq. Tətbiq istifadəçinin şəxsiyyətini müəyyənləşdirə biləcək heç bir izləmə (tracking) sistemi və ya analitika alətindən istifadə etmir.</p>
-            <br>
-            <p><strong>2. Cihaz yaddaşının (Local Storage) istifadəsi</strong></p>
-            <p>Tətbiq daha sürətli işləmək və istifadəçi təcrübəsini yaxşılaşdırmaq üçün cihazınızın yerli yaddaşından (Local Storage) istifadə edir. Bu yaddaşda yalnız aşağıdakı texniki məlumatlar saxlanılır:</p>
+            <p><strong>2. Yerli yaddaş</strong></p>
+            <p>Tətbiq yalnız cihazın yerli yaddaşından (Local Storage) istifadə edir. Orada yalnız aşağıdakı texniki məlumatlar saxlanılır:</p>
             <ul style="margin-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-                <li>Mövzu seçimi: Tətbiqin görünüşü üçün seçdiyiniz mövzu (açıq, tünd və ya sistem).</li>
-                <li>Baza məlumatları: Qoruyucu şüşə uyğunluqları barədə məlumatlar və bazanın son yenilənmə tarixi.</li>
+                <li>Seçilmiş mövzu (açıq, tünd və ya sistem)</li>
+                <li>Qoruyucu şüşə uyğunluq bazası və onun son yenilənmə tarixi</li>
             </ul>
-            <p>Bu məlumatlar yalnız sizin cihazınızda qalır və ProTector qrupuna və ya hər hansı üçüncü tərəfə göndərilmir.</p>
+            <p>Bu məlumatlar yalnız istifadəçinin cihazında qalır. Heç bir serverə, bulud xidmətinə və ya üçüncü tərəfə ötürülmür.</p>
             <br>
-            <p><strong>3. İnternet bağlantısı və Üçüncü tərəf xidmətləri</strong></p>
-            <ul style="margin-left: 20px; margin-top: 8px; margin-bottom: 8px;">
-                <li>Baza yenilənməsi: Tətbiq ən son qoruyucu şüşə uyğunluqlarını əldə etmək üçün internetə qoşulur və məlumatları birbaşa açıq mənbədən (GitHub serverindən) çəkir.</li>
-                <li>Əlaqə kanalı: Tətbiq daxilində "ProTector qrupu" ilə əlaqə saxlamaq üçün WhatsApp yönləndirməsi mövcuddur. Siz həmin düyməyə kliklədikdə WhatsApp tətbiqinə keçid edirsiniz və bu andan etibarən WhatsApp-ın öz məxfilik siyasəti qüvvəyə minir.</li>
-            </ul>
+            <p><strong>3. İnternet bağlantısı</strong></p>
+            <p>Tətbiq uyğunluq bazasını yeniləmək məqsədilə internetə qoşulur və məlumatları açıq mənbədən yükləyir. Bu proses zamanı heç bir şəxsi məlumat ötürülmür.</p>
+            <p>Tətbiqdə yerləşən əlaqə düyməsi vasitəsilə WhatsApp-a keçid edildikdə, həmin andan etibarən WhatsApp-ın öz məxfilik siyasəti tətbiq olunur və ProTector həmin prosesə cavabdeh deyil.</p>
             <br>
-            <p><strong>4. Tətbiqin bloklanması (Məhdudiyyətlər)</strong></p>
-            <p>Məlumatların aktuallığını qorumaq məqsədilə, əgər Tətbiq 3 gündən çox internetə qoşulub yenilənməzsə, təhlükəsizlik və düzgün məlumatlandırma səbəbindən Tətbiq fəaliyyətini müvəqqəti olaraq bloklayır. Tətbiqə yenidən giriş yalnız internet bağlantısı təmin edilib baza yeniləndikdən sonra mümkündür.</p>
+            <p><strong>4. Tətbiqin fəaliyyətinin məhdudlaşdırılması</strong></p>
+            <p>Məlumatların aktuallığını və düzgünlüyünü təmin etmək məqsədilə, baza 3 gündən artıq müddətdə yenilənmədikdə tətbiqin fəaliyyəti müvəqqəti olaraq məhdudlaşdırılır. Yenidən istifadə üçün internet bağlantısı təmin edilməli və baza yenilənməlidir.</p>
             <br>
-            <p><strong>5. Uşaqların Məxfiliyi</strong></p>
-            <p>Tətbiq hər yaş qrupu üçün təhlükəsizdir və xüsusi olaraq uşaqlardan hər hansı məlumat tələb etmir və ya toplamır.</p>
+            <p><strong>5. Uşaqların hüquqlarının qorunması</strong></p>
+            <p>Tətbiq uşaqlar üçün təhlükəsizdir. Uşaqlardan heç bir məlumat tələb edilmir, toplanmır və ya emal edilmir. Tətbiq uşaqların hüquqlarını qoruyur və onların şəxsi məlumatlarının hər hansı formada toplanmasına yol vermir.</p>
             <br>
-            <p><strong>6. Məxfilik Siyasətində Dəyişikliklər</strong></p>
-            <p>ProTector qrupu ehtiyac yarandıqda bu Məxfilik Siyasətində dəyişiklik etmək hüququnu özündə saxlayır. Siyasətdə hər hansı dəyişiklik edildikdə, Tətbiq daxilində və ya bu səhifədə müvafiq yenilənmə tarixi qeyd ediləcəkdir.</p>
+            <p><strong>6. Siyasətdə dəyişikliklər və hüquqi tənzimləmə</strong></p>
+            <p>ProTector bu Məxfilik Siyasətində istənilən vaxt dəyişiklik etmək hüququnu özündə saxlayır. Dəyişikliklər qüvvəyə mindiyi andan etibarən tətbiq olunur və tətbiq daxilində əks etdirilir.</p>
+            <p>Gələcəkdə qanunvericilikdə, dövlət tənzimləmələrində və ya beynəlxalq normalarda baş verə biləcək dəyişikliklər nəzərə alınaraq, bu siyasət yenilənə bilər. Belə hallarda istifadəçilər tətbiqdən istifadə etməyə davam etməklə yenilənmiş siyasəti qəbul etmiş hesab olunurlar.</p>
             <br>
-            <p><strong>7. Bizimlə Əlaqə</strong></p>
-            <p>Bu Məxfilik Siyasəti ilə bağlı hər hansı sualınız, irad və ya təklifiniz olarsa, Tətbiqin "Tənzimləmələr" bölməsində yerləşən "WhatsApp ilə əlaqə" düyməsi vasitəsilə ProTector qrupu ilə əlaqə saxlaya bilərsiniz.</p>
+            <p><strong>7. Məsuliyyət və tətbiq olunan hüquq</strong></p>
+            <p>ProTector heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər Azərbaycan Respublikasının qanunvericiliyinə uyğun tənzimlənir.</p>
+            <br>
+            <p><strong>8. Əlaqə</strong></p>
+            <p>Bu Məxfilik Siyasəti ilə bağlı suallarınız olduqda, tətbiqin Tənzimləmələr bölməsindəki WhatsApp ilə əlaqə düyməsi vasitəsilə müraciət edə bilərsiniz.</p>
             <br><br>
         </div>
     </div>
