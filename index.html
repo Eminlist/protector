@@ -63,7 +63,7 @@
             background: var(--bg);
             color: var(--text);
             font-size: calc(16px * var(--font-scale));
-            overscroll-behavior-y: auto; /* Rubber-band scrolling support */
+            overscroll-behavior-y: auto;
         }
 
         body {
@@ -101,6 +101,8 @@
             letter-spacing: 1px;
             z-index: 1200;
             position: relative;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
         }
 
         #app {
@@ -154,7 +156,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border-radius: 16px;
+            border-radius: 18px;
             transition: background 0.2s, transform 0.1s;
         }
 
@@ -167,6 +169,7 @@
             padding: 24px;
         }
 
+        /* AXTARIŞ SƏTRİ VƏ İÇİNDƏKİ X (TƏMİZLƏMƏ) DÜYMƏSİNİN SƏLİQƏLİ DİZAYNI */
         .search-wrapper {
             width: 100%;
             height: 72px;
@@ -175,9 +178,10 @@
             align-items: center;
             background: var(--surface);
             margin-bottom: 16px;
-            border-radius: 18px;
+            border-radius: 20px;
             box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
             overflow: hidden;
+            position: relative;
         }
 
         .search-input {
@@ -188,31 +192,38 @@
             background: transparent;
             color: var(--text);
             font-size: calc(20px * var(--font-scale));
-            padding: 0 22px;
+            padding: 0 54px 0 22px; /* Sağ tərəfdə X düyməsi üçün boşluq saxlanıldı */
         }
 
         .search-input::placeholder {
             color: var(--muted);
-            transition: opacity 0.3s ease;
+            transition: opacity 0.25s ease-in-out;
         }
 
         .clear-button {
-            width: 60px;
-            height: 100%;
+            position: absolute;
+            right: 12px;
+            width: 42px;
+            height: 42px;
             border: none;
-            background: transparent;
+            border-radius: 12px;
+            background: var(--surface-2);
             color: var(--accent-color);
-            font-size: 28px;
+            font-size: 22px;
             font-weight: 700;
             display: none;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, background 0.2s;
+        }
+
+        .clear-button:active {
+            background: var(--border);
         }
 
         .clear-button.visible {
             display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .clear-button.rotate {
@@ -243,7 +254,7 @@
             background: transparent;
             cursor: pointer;
             transition: background 0.15s;
-            border-radius: 12px;
+            border-radius: 16px;
             margin-bottom: 4px;
         }
 
@@ -265,7 +276,7 @@
             letter-spacing: 2px;
             font-weight: 700;
             text-transform: uppercase;
-            border-radius: 10px;
+            border-radius: 12px;
         }
 
         .result-model {
@@ -355,7 +366,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border-radius: 16px;
+            border-radius: 18px;
         }
 
         .detail-heading {
@@ -411,7 +422,7 @@
             border-bottom: 1px solid var(--border);
             background: transparent;
             padding: 12px 16px;
-            border-radius: 12px;
+            border-radius: 16px;
             margin: 2px 8px;
         }
 
@@ -444,7 +455,7 @@
             letter-spacing: 2px;
             font-weight: 700;
             text-transform: uppercase;
-            border-radius: 10px;
+            border-radius: 12px;
         }
 
         .compat-model {
@@ -505,7 +516,7 @@
             color: var(--accent-color);
             font-size: 30px;
             cursor: pointer;
-            border-radius: 16px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -545,7 +556,7 @@
         .settings-box {
             border: 1px solid var(--border);
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
         }
 
@@ -580,7 +591,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            border-radius: 16px;
+            border-radius: 18px;
         }
 
         .spinner {
@@ -628,7 +639,7 @@
             font-weight: 700;
             letter-spacing: 0.5px;
             text-decoration: none;
-            border-radius: 16px;
+            border-radius: 18px;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
             transition: background 0.2s;
         }
@@ -640,7 +651,7 @@
         .theme-selector {
             display: flex;
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 16px;
             overflow: hidden;
             background: var(--surface);
         }
@@ -674,7 +685,7 @@
         }
         .color-swatch {
             height: 44px;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
             border: 2px solid var(--border);
             transition: transform 0.2s;
@@ -750,7 +761,7 @@
         .recent-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .recent-title { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; color: var(--accent-color); }
         .recent-clear { background: none; border: none; color: var(--muted); font-size: calc(12px * var(--font-scale)); letter-spacing: 2px; cursor: pointer; padding: 8px 0 8px 12px; }
-        .recent-item { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: calc(16px * var(--font-scale)); cursor: pointer; display: flex; justify-content: space-between; border-radius: 12px; margin-bottom: 2px; }
+        .recent-item { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: calc(16px * var(--font-scale)); cursor: pointer; display: flex; justify-content: space-between; border-radius: 14px; margin-bottom: 2px; }
         .recent-item:active { background: var(--result-hover); }
         .recent-item span:last-child { color: var(--accent-color); }
         .nf-button { margin-top: 18px; }
@@ -761,10 +772,10 @@
         .status-dot.gray { background: #8a8a8a; }
         .status-dot.yellow { background: #f1c40f; box-shadow: 0 0 12px rgba(241,196,15,0.7); }
         
-        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; z-index: 1100; display: none; letter-spacing: 1px; }
+        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; z-index: 1100; display: none; letter-spacing: 1px; }
 
-        #toast { position: fixed; right: 16px; bottom: calc(50px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--text); border: 1px solid var(--accent-color); padding: 10px 14px; font-size: calc(13px * var(--font-scale)); z-index: 1100; display: none; border-radius: 12px; }
-        .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+        #toast { position: fixed; right: 16px; bottom: calc(50px + env(safe-area-inset-bottom, 0px)); background: var(--surface-2); color: var(--text); border: 1px solid var(--accent-color); padding: 10px 14px; font-size: calc(13px * var(--font-scale)); z-index: 1100; display: none; border-radius: 14px; }
+        .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
         .lang-option { padding: 16px 8px; text-align: center; font-size: calc(13px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
         .lang-option.active { background: var(--accent-color); color: #111111; font-weight: 800; }
     </style>
@@ -913,7 +924,7 @@
                     </div>
                     <div class="settings-row">
                         <span data-i18n="soundTypeLbl">Səs Tembri</span>
-                        <select id="soundTypeSelect" onchange="changeSoundType(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; outline:none;">
+                        <select id="soundTypeSelect" onchange="changeSoundType(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:10px; outline:none;">
                             <option value="bip">Bip (Standart)</option>
                             <option value="click">Yumşaq Klik</option>
                             <option value="pop">Pop Səsi</option>
@@ -928,7 +939,7 @@
                     </div>
                     <div class="settings-row">
                         <span data-i18n="hapticIntensityLbl">Vibrasiya Gücü</span>
-                        <select id="hapticIntensitySelect" onchange="changeHapticIntensity(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:8px; outline:none;">
+                        <select id="hapticIntensitySelect" onchange="changeHapticIntensity(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:10px; outline:none;">
                             <option value="light">Zəif</option>
                             <option value="medium" selected>Orta</option>
                             <option value="heavy">Güclü</option>
@@ -1050,7 +1061,7 @@ let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medi
 let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
 
 /* =============================================================
-   PAGE LOAD & RESPONSIVE TYPOGRAPHY / DYNAMIC PLACEHOLDER
+   PAGE LOAD & INITIALIZATION
 ============================================================= */
 document.addEventListener("DOMContentLoaded", function () {
     initTheme();
@@ -1071,7 +1082,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     window.addEventListener("online", () => {
         updateNetworkStatus();
-        backgroundCheckUpdate(); // Background Sync on online event
+        backgroundCheckUpdate();
     });
     window.addEventListener("offline", updateNetworkStatus);
     updateNetworkStatus();
@@ -1081,7 +1092,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 /* =============================================================
-   RESPONSIVE TYPOGRAPHY (Dynamic Scaling based on Viewport)
+   RESPONSIVE TYPOGRAPHY
 ============================================================= */
 function initResponsiveTypography() {
     function adjustTypography() {
@@ -1096,7 +1107,7 @@ function initResponsiveTypography() {
 }
 
 /* =============================================================
-   EDGE SWIPE GESTURES (Swipe right to close detail/settings)
+   EDGE SWIPE GESTURES
 ============================================================= */
 function initEdgeSwipeGestures() {
     let touchStartX = 0;
@@ -1113,7 +1124,6 @@ function initEdgeSwipeGestures() {
         const diffX = touchEndX - touchStartX;
         const diffY = Math.abs(touchEndY - touchStartY);
 
-        // Swipe from left edge (X < 50px) to right (> 80px distance) with minimal vertical drift
         if (touchStartX < 50 && diffX > 80 && diffY < 60) {
             const detailView = document.getElementById("detail-view");
             const settingsView = document.getElementById("settings-view");
@@ -1131,23 +1141,29 @@ function initEdgeSwipeGestures() {
 }
 
 /* =============================================================
-   DYNAMIC PLACEHOLDER CYCLING
+   DİNAMİK PLACEHOLDER CYCLING (Hər saniyədə bazadan yeni modellər)
 ============================================================= */
 let placeholderInterval = null;
-const placeholderSamples = ["Samsung", "iPhone 13", "Xiaomi Mi 11", "Redmi Note 10", "Huawei P40", "Honor X9", "Oppo Reno"];
 function initDynamicPlaceholder() {
     const input = document.getElementById("searchInput");
-    let index = 0;
+    
     placeholderInterval = setInterval(() => {
         if (document.activeElement !== input && !input.value) {
+            let sampleModel = "Samsung Galaxy S23";
+            if (Array.isArray(database) && database.length > 0) {
+                const randomGroup = database[Math.floor(Math.random() * database.length)];
+                if (Array.isArray(randomGroup) && randomGroup.length > 0) {
+                    sampleModel = randomGroup[Math.floor(Math.random() * randomGroup.length)];
+                }
+            }
+
             input.style.opacity = 0;
             setTimeout(() => {
-                input.placeholder = "Axtar: " + placeholderSamples[index] + " ...";
+                input.placeholder = "Axtar: " + sampleModel + " ...";
                 input.style.opacity = 1;
-                index = (index + 1) % placeholderSamples.length;
-            }, 300);
+            }, 250);
         }
-    }, 3500);
+    }, 1000);
 }
 
 /* =============================================================
@@ -1170,7 +1186,7 @@ function setAccentColor(accent, dark, save = true) {
 }
 
 /* =============================================================
-   SOUND SYNTHESIZER (Fərqli Tembrlər: Bip, Klik, Pop)
+   SOUND SYNTHESIZER
 ============================================================= */
 function playSoundEffect() {
     if (!soundEnabled) return;
@@ -1195,7 +1211,6 @@ function playSoundEffect() {
             osc.start();
             osc.stop(audioCtx.currentTime + 0.08);
         } else {
-            // Default Bip
             osc.type = "sine";
             osc.frequency.setValueAtTime(580, audioCtx.currentTime);
             gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
@@ -1213,9 +1228,9 @@ function playSuccessSound() {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
         gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
         osc.connect(gain);
@@ -1232,7 +1247,7 @@ function changeSoundType(el) {
 }
 
 /* =============================================================
-   HAPTIC VIBRATION (İntensivlik seçimi ilə)
+   HAPTIC VIBRATION
 ============================================================= */
 function triggerHaptic(customDuration = null) {
     if (hapticEnabled && navigator.vibrate) {
@@ -1260,7 +1275,7 @@ function toggleLowPower(el) {
 }
 
 /* =============================================================
-   NETWORK STATUS & OFFLINE BANNER
+   NETWORK STATUS
 ============================================================= */
 function updateNetworkStatus() {
     const isOnline = navigator.onLine;
@@ -1277,7 +1292,7 @@ function updateNetworkStatus() {
 }
 
 /* =============================================================
-   THEME & AUTO THEME AUTOMATION
+   THEME & AUTO THEME
 ============================================================= */
 function initTheme() {
     const savedTheme = localStorage.getItem("antiudar_theme") || "system";
@@ -1317,7 +1332,7 @@ setInterval(() => {
 }, 60 * 1000);
 
 /* =============================================================
-   FONT SIZE (ACCESSIBILITY)
+   FONT SIZE
 ============================================================= */
 function initFontScale() {
     const scale = localStorage.getItem("antiudar_font_scale") || "1.0";
@@ -1364,7 +1379,7 @@ function toggleHaptic(el) {
 }
 
 /* =============================================================
-   SEARCH CLEAR (with rotation animation)
+   SEARCH CLEAR
 ============================================================= */
 function updateClearButton() {
     const input = document.getElementById("searchInput");
@@ -1392,7 +1407,7 @@ function clearSearch() {
 }
 
 /* =============================================================
-   NORMALIZE DATABASE & DIFF VIEWER
+   NORMALIZE DATABASE
 ============================================================= */
 function normalizeDatabase(data) {
     if (!Array.isArray(data)) return [];
@@ -1439,7 +1454,7 @@ const I18N = {
  en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE NOW",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode"},
  tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"ŞİMDİ GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod"}
 };
-const APP_VERSION = "1.3.0";
+const APP_VERSION = "1.3.2";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -1627,9 +1642,6 @@ function showNotFound(query) {
     results.appendChild(a);
 }
 
-/* =============================================================
-   TERM HIGHLIGHTING IN SEARCH RESULTS
-============================================================= */
 function highlightMatch(text, query) {
     if (!query) return text;
     try {
@@ -1796,7 +1808,7 @@ function closePrivacy() {
 }
 
 /* =============================================================
-   DATABASE FETCHING WITH AUTO-RETRY & NOTIFICATION SOUND
+   DATABASE FETCHING & BACKGROUND SYNC
 ============================================================= */
 async function fetchDatabase(retries = 3) {
     const updateButton = document.getElementById("updateButton");
@@ -1829,13 +1841,12 @@ async function fetchDatabase(retries = 3) {
         updateButton.querySelector("span").innerText = t("updateNow");
         spinner.style.display = "none";
         updateButton.disabled = false;
-        playSuccessSound(); // Success notification sound
+        playSuccessSound();
         triggerHaptic(50);
 
     } catch (error) {
         console.error("Baza xətası:", error);
         if (retries > 0) {
-            // Auto-retry with delay if network glitches
             setTimeout(() => fetchDatabase(retries - 1), 2000);
             return;
         }
@@ -1859,7 +1870,6 @@ async function backgroundCheckUpdate() {
             const data = await response.json();
             const parsed = normalizeDatabase(data);
             if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
-                // Background sync execution
                 localStorage.setItem(DB_KEY, JSON.stringify(parsed));
                 localStorage.setItem(UPDATE_KEY, Date.now().toString());
                 database = parsed;
