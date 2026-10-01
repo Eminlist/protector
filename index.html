@@ -779,138 +779,6 @@
         .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
         .lang-option { padding: 16px 8px; text-align: center; font-size: calc(13px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
         .lang-option.active { background: var(--accent-color); color: #111111; font-weight: 800; }
-        
-        /* =========================================================
-           CHAT BÖLMƏSİ (WHATSAPP STİLİ)
-        ========================================================= */
-        .floating-chat-btn {
-            position: fixed;
-            right: 18px;
-            bottom: 80px; 
-            width: 56px;
-            height: 56px;
-            background: #25D366;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
-            cursor: pointer;
-            z-index: 400;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s;
-        }
-        .floating-chat-btn:active {
-            transform: scale(0.9);
-        }
-
-        #chat-view {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background: #efe7dd;
-            z-index: 800;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            opacity: 0;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-            pointer-events: none;
-        }
-        #chat-view.active {
-            transform: translateX(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        :root[data-theme="dark"] #chat-view {
-            background: #0b141a;
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .chat-bubble {
-            max-width: 80%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: calc(15px * var(--font-scale));
-            line-height: 1.4;
-            position: relative;
-            word-break: break-word;
-        }
-
-        .chat-bubble.received {
-            background: #ffffff;
-            color: #111111;
-            align-self: flex-start;
-            border-top-left-radius: 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        :root[data-theme="dark"] .chat-bubble.received {
-            background: #202c33;
-            color: #e9edef;
-        }
-
-        .chat-bubble.sent {
-            background: #dcf8c6;
-            color: #111111;
-            align-self: flex-end;
-            border-top-right-radius: 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        :root[data-theme="dark"] .chat-bubble.sent {
-            background: #005c4b;
-            color: #e9edef;
-        }
-
-        .chat-input-area {
-            display: flex;
-            padding: 12px;
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            gap: 10px;
-            align-items: center;
-        }
-
-        .chat-input-area input {
-            flex: 1;
-            border: none;
-            border-radius: 24px;
-            padding: 14px 18px;
-            font-size: calc(15px * var(--font-scale));
-            background: var(--bg);
-            color: var(--text);
-            outline: none;
-        }
-
-        .chat-input-area button {
-            width: 48px;
-            height: 48px;
-            background: #00a884;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .chat-input-area button:active {
-            background: #008f6f;
-        }
     </style>
 </head>
 
@@ -1165,29 +1033,6 @@
             ProTector heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən icazəsiz istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər qüvvədə olan qanunvericilik çərçivəsində tənzimlənir. Proqramdan istifadə edən hər bir şəxs bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</p>
         </div>
     </div>
-    
-    <!-- CHAT AÇMAQ ÜÇÜN ÜZƏN DÜYMƏ -->
-    <button class="floating-chat-btn" onclick="openChat()">💬</button>
-
-    <!-- CHAT VIEW (YAZIŞMA BÖLMƏSİ) -->
-    <div id="chat-view">
-        <header class="detail-header" style="background: #075e54; border-bottom: none;">
-            <button class="detail-back" onclick="closeChat()" style="color: white; border-color: transparent;">‹</button>
-            <div class="detail-heading">
-                <div class="detail-small" style="color: #dcf8c6; letter-spacing: 2px;">SÖHBƏT</div>
-                <div id="chat-title" class="detail-model" style="color: white;">Canlı Dəstək</div>
-            </div>
-        </header>
-
-        <div id="chat-messages" class="chat-messages">
-            <div class="chat-bubble received">Salam! Sizə necə kömək edə bilərəm?</div>
-        </div>
-
-        <div class="chat-input-area">
-            <input type="text" id="chatInput" placeholder="Mesajınızı yazın..." onkeypress="handleChatKey(event)">
-            <button onclick="sendChatMessage()">➤</button>
-        </div>
-    </div>
 
     <button id="statusDot" class="status-dot gray" onclick="showDotInfo()" aria-label="status"></button>
     <div id="offlineCorner" class="offline-corner">OFFLINE</div>
@@ -1205,6 +1050,20 @@
     </div>
 
 </div>
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6abe76cb3847003446340f8b/1k3s0037v';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
 
 <script>
 /* =============================================================
@@ -1294,14 +1153,11 @@ function initEdgeSwipeGestures() {
             const detailView = document.getElementById("detail-view");
             const settingsView = document.getElementById("settings-view");
             const privacyView = document.getElementById("privacy-view");
-            const chatView = document.getElementById("chat-view");
 
             if (privacyView.classList.contains("active")) {
                 closePrivacy();
             } else if (settingsView.classList.contains("active")) {
                 closeSettings();
-            } else if (chatView && chatView.classList.contains("active")) {
-                closeChat();
             } else if (detailView.classList.contains("active")) {
                 closeDetail();
             }
@@ -1464,7 +1320,7 @@ function updateNetworkStatus() {
     } else {
         banner.style.display = "none";
         corner.style.display = "none";
-        updateStatusDot(); // Rəngi orijinal bazanın yaşına görə bərpa edir
+        updateStatusDot(); 
     }
 }
 
@@ -1665,7 +1521,6 @@ function applyLang() {
     document.getElementById("appVersion").innerText = "v" + APP_VERSION;
     updateLastUpdate();
     
-    // Əgər online-dırsa status yenilənsin (offline-dırsa onsuz qırmızı qalır)
     if (navigator.onLine) {
         updateStatusDot();
     }
@@ -2133,54 +1988,6 @@ window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", fu
         setTheme("system");
     }
 });
-
-/* =============================================================
-   CHAT İDARƏETMƏSİ
-============================================================= */
-function openChat() {
-    document.getElementById("chat-view").classList.add("active");
-    document.body.style.overflow = "hidden"; 
-    triggerHaptic(20);
-}
-
-function closeChat() {
-    document.getElementById("chat-view").classList.remove("active");
-    document.body.style.overflow = "";
-    triggerHaptic(15);
-}
-
-function sendChatMessage() {
-    const input = document.getElementById("chatInput");
-    const messageText = input.value.trim();
-    
-    if (!messageText) return;
-
-    const messagesContainer = document.getElementById("chat-messages");
-
-    const sentBubble = document.createElement("div");
-    sentBubble.className = "chat-bubble sent";
-    sentBubble.innerText = messageText;
-    messagesContainer.appendChild(sentBubble);
-
-    input.value = "";
-    messagesContainer.scrollTop = messagesContainer.scrollHeight; 
-    playSoundEffect(); 
-
-    setTimeout(() => {
-        const receivedBubble = document.createElement("div");
-        receivedBubble.className = "chat-bubble received";
-        receivedBubble.innerText = "Sizin mesajınız qeydə alındı: " + messageText;
-        messagesContainer.appendChild(receivedBubble);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        triggerHaptic(30);
-    }, 1000);
-}
-
-function handleChatKey(event) {
-    if (event.key === "Enter") {
-        sendChatMessage();
-    }
-}
 </script>
 
 </body>
