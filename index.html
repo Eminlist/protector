@@ -169,7 +169,6 @@
             padding: 24px;
         }
 
-        /* AXTARIŞ SƏTRİ VƏ İÇİNDƏKİ X (TƏMİZLƏMƏ) DÜYMƏSİNİN SƏLİQƏLİ DİZAYNI */
         .search-wrapper {
             width: 100%;
             height: 72px;
@@ -192,7 +191,7 @@
             background: transparent;
             color: var(--text);
             font-size: calc(20px * var(--font-scale));
-            padding: 0 54px 0 22px; /* Sağ tərəfdə X düyməsi üçün boşluq saxlanıldı */
+            padding: 0 54px 0 22px; 
         }
 
         .search-input::placeholder {
@@ -771,6 +770,8 @@
         .status-dot.green { background: #2ecc71; box-shadow: 0 0 12px rgba(46,204,113,0.7); }
         .status-dot.gray { background: #8a8a8a; }
         .status-dot.yellow { background: #f1c40f; box-shadow: 0 0 12px rgba(241,196,15,0.7); }
+        /* QIRMIZI BİLDİRİŞ (OFFLİNE ÜÇÜN) */
+        .status-dot.red { background: #e74c3c; box-shadow: 0 0 12px rgba(231,76,60,0.7); }
         
         .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; z-index: 1100; display: none; letter-spacing: 1px; }
 
@@ -778,6 +779,138 @@
         .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
         .lang-option { padding: 16px 8px; text-align: center; font-size: calc(13px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
         .lang-option.active { background: var(--accent-color); color: #111111; font-weight: 800; }
+        
+        /* =========================================================
+           CHAT BÖLMƏSİ (WHATSAPP STİLİ)
+        ========================================================= */
+        .floating-chat-btn {
+            position: fixed;
+            right: 18px;
+            bottom: 80px; 
+            width: 56px;
+            height: 56px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            cursor: pointer;
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .floating-chat-btn:active {
+            transform: scale(0.9);
+        }
+
+        #chat-view {
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: #efe7dd;
+            z-index: 800;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            pointer-events: none;
+        }
+        #chat-view.active {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        :root[data-theme="dark"] #chat-view {
+            background: #0b141a;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: calc(15px * var(--font-scale));
+            line-height: 1.4;
+            position: relative;
+            word-break: break-word;
+        }
+
+        .chat-bubble.received {
+            background: #ffffff;
+            color: #111111;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        :root[data-theme="dark"] .chat-bubble.received {
+            background: #202c33;
+            color: #e9edef;
+        }
+
+        .chat-bubble.sent {
+            background: #dcf8c6;
+            color: #111111;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        :root[data-theme="dark"] .chat-bubble.sent {
+            background: #005c4b;
+            color: #e9edef;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 12px;
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            border: none;
+            border-radius: 24px;
+            padding: 14px 18px;
+            font-size: calc(15px * var(--font-scale));
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+        }
+
+        .chat-input-area button {
+            width: 48px;
+            height: 48px;
+            background: #00a884;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .chat-input-area button:active {
+            background: #008f6f;
+        }
     </style>
 </head>
 
@@ -858,7 +991,7 @@
                 </div>
                 <button id="updateButton" class="update-button" onclick="forceUpdate()">
                     <div class="spinner" id="updateSpinner"></div>
-                    <span data-i18n="updateNow">İNDİ YENİLƏ</span>
+                    <span data-i18n="updateNow">YENİLƏ</span>
                 </button>
             </div>
 
@@ -1016,10 +1149,43 @@
             </div>
         </header>
         <div class="settings-content" style="color: var(--text); font-size: 14px; line-height: 1.6;">
-            <p>Bu Məxfilik Siyasəti ProTector tətbiqinin məlumat emalı prinsiplərini müəyyən edir. Tətbiqdən istifadə etməklə siz bu siyasətin bütün şərtlərini qəbul etmiş sayılırsınız.</p>
-            <br>
-            <p><strong>1. Məlumat toplanması və emalı</strong></p>
-            <p>ProTector heç bir şəxsi məlumat toplamır, emal etmir, saxlamır və ya ötürtmür...</p>
+            <p><strong>1. MƏLUMAT TOPLANMASI VƏ EMALI</strong><br>
+            ProTector proqram təminatı heç bir şəxsi məlumatı toplamır, emal etmir, saxlamır və ya üçüncü tərəflərə ötürmür. Ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları, cihaz identifikatoru, IP ünvanı və ya istifadəçini birbaşa yaxud dolayı yolla müəyyənləşdirə biləcək hər hansı digər məlumatın toplanması qəti şəkildə istisna olunur. Tətbiq heç bir izləmə sistemi, analitika aləti, reklam şəbəkəsi və ya üçüncü tərəf məlumat emalı xidmətindən istifadə etmir.</p><br>
+            
+            <p><strong>2. YERLİ YADDAŞ VƏ MƏLUMAT TƏHLÜKƏSİZLİYİ</strong><br>
+            Tətbiq yalnız cihazın yerli yaddaşından (Local Storage) istifadə edir. Orada yalnız texniki parametrlər (seçilmiş mövzu, şrift ölçüsü və baza məlumatları) saxlanılır. Bu məlumatlar yalnız istifadəçinin cihazında qalır və heç bir serverə, bulud xidmətinə və ya kənar platformaya ötürülmür.</p><br>
+
+            <p><strong>3. İNTERNET BAĞLANTISI VƏ ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ</strong><br>
+            Tətbiq yalnız uyğunluq bazasını yeniləmək məqsədilə internetə qoşulur və açıq mənbədən məlumatları sinxronlaşdırır. Əlaqə bölməsindən WhatsApp platformasına keçid edildikdə, həmin andan etibarən proses WhatsApp-ın məxfilik siyasəti çərçivəsində tənzimlənir. ProTector bu xidmətin fəaliyyətinə görə heç bir məsuliyyət daşımır.</p><br>
+
+            <p><strong>4. TƏTBİQİN FƏALİYYƏTİNİN MƏHDUDLAŞDIRILMASI</strong><br>
+            Məlumatların aktuallığını, dəqiqliyini və təhlükəsizliyini təmin etmək məqsədilə, baza ardıcıl 3 (üç) gün ərzində yenilənmədikdə tətbiqin fəaliyyəti avtomatik olaraq məhdudlaşdırılır. Fəaliyyətin bərpası üçün qısa müddətli internet bağlantısı təmin edilməli və baza yenilənməlidir.</p><br>
+
+            <p><strong>5. HÜQUQİ TƏNZİMLƏMƏ VƏ MƏSULİYYƏTDƏN İMTİNA</strong><br>
+            ProTector heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən icazəsiz istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər qüvvədə olan qanunvericilik çərçivəsində tənzimlənir. Proqramdan istifadə edən hər bir şəxs bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</p>
+        </div>
+    </div>
+    
+    <!-- CHAT AÇMAQ ÜÇÜN ÜZƏN DÜYMƏ -->
+    <button class="floating-chat-btn" onclick="openChat()">💬</button>
+
+    <!-- CHAT VIEW (YAZIŞMA BÖLMƏSİ) -->
+    <div id="chat-view">
+        <header class="detail-header" style="background: #075e54; border-bottom: none;">
+            <button class="detail-back" onclick="closeChat()" style="color: white; border-color: transparent;">‹</button>
+            <div class="detail-heading">
+                <div class="detail-small" style="color: #dcf8c6; letter-spacing: 2px;">SÖHBƏT</div>
+                <div id="chat-title" class="detail-model" style="color: white;">Canlı Dəstək</div>
+            </div>
+        </header>
+
+        <div id="chat-messages" class="chat-messages">
+            <div class="chat-bubble received">Salam! Sizə necə kömək edə bilərəm?</div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Mesajınızı yazın..." onkeypress="handleChatKey(event)">
+            <button onclick="sendChatMessage()">➤</button>
         </div>
     </div>
 
@@ -1128,11 +1294,14 @@ function initEdgeSwipeGestures() {
             const detailView = document.getElementById("detail-view");
             const settingsView = document.getElementById("settings-view");
             const privacyView = document.getElementById("privacy-view");
+            const chatView = document.getElementById("chat-view");
 
             if (privacyView.classList.contains("active")) {
                 closePrivacy();
             } else if (settingsView.classList.contains("active")) {
                 closeSettings();
+            } else if (chatView && chatView.classList.contains("active")) {
+                closeChat();
             } else if (detailView.classList.contains("active")) {
                 closeDetail();
             }
@@ -1281,13 +1450,21 @@ function updateNetworkStatus() {
     const isOnline = navigator.onLine;
     const banner = document.getElementById("offline-banner");
     const corner = document.getElementById("offlineCorner");
+    const dot = document.getElementById("statusDot");
 
     if (!isOnline) {
         banner.style.display = "block";
         corner.style.display = "block";
+        if (dot) {
+            dot.className = "status-dot red";
+            dot.setAttribute("data-key", "offlineDot");
+            dot.setAttribute("title", t("offlineDot"));
+            dot.setAttribute("aria-label", t("offlineDot"));
+        }
     } else {
         banner.style.display = "none";
         corner.style.display = "none";
+        updateStatusDot(); // Rəngi orijinal bazanın yaşına görə bərpa edir
     }
 }
 
@@ -1449,10 +1626,10 @@ function getBrand(model) {
    SEARCH & I18N
 ============================================================= */
 const I18N = {
- az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"İNDİ YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz"},
- ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн"},
- en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE NOW",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode"},
- tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"ŞİMDİ GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod"}
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok"}
 };
 const APP_VERSION = "1.3.2";
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -1487,7 +1664,11 @@ function applyLang() {
     document.querySelectorAll(".lang-option").forEach(function (el) { el.classList.toggle("active", el.id === "lang-" + currentLang); });
     document.getElementById("appVersion").innerText = "v" + APP_VERSION;
     updateLastUpdate();
-    updateStatusDot();
+    
+    // Əgər online-dırsa status yenilənsin (offline-dırsa onsuz qırmızı qalır)
+    if (navigator.onLine) {
+        updateStatusDot();
+    }
     performSearch(document.getElementById("searchInput").value);
 }
 
@@ -1952,6 +2133,54 @@ window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", fu
         setTheme("system");
     }
 });
+
+/* =============================================================
+   CHAT İDARƏETMƏSİ
+============================================================= */
+function openChat() {
+    document.getElementById("chat-view").classList.add("active");
+    document.body.style.overflow = "hidden"; 
+    triggerHaptic(20);
+}
+
+function closeChat() {
+    document.getElementById("chat-view").classList.remove("active");
+    document.body.style.overflow = "";
+    triggerHaptic(15);
+}
+
+function sendChatMessage() {
+    const input = document.getElementById("chatInput");
+    const messageText = input.value.trim();
+    
+    if (!messageText) return;
+
+    const messagesContainer = document.getElementById("chat-messages");
+
+    const sentBubble = document.createElement("div");
+    sentBubble.className = "chat-bubble sent";
+    sentBubble.innerText = messageText;
+    messagesContainer.appendChild(sentBubble);
+
+    input.value = "";
+    messagesContainer.scrollTop = messagesContainer.scrollHeight; 
+    playSoundEffect(); 
+
+    setTimeout(() => {
+        const receivedBubble = document.createElement("div");
+        receivedBubble.className = "chat-bubble received";
+        receivedBubble.innerText = "Sizin mesajınız qeydə alındı: " + messageText;
+        messagesContainer.appendChild(receivedBubble);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        triggerHaptic(30);
+    }, 1000);
+}
+
+function handleChatKey(event) {
+    if (event.key === "Enter") {
+        sendChatMessage();
+    }
+}
 </script>
 
 </body>
