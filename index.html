@@ -2074,14 +2074,41 @@ function adminSaveDatabase() {
     renderAdminList();
 }
 
+/** Firestore nested array qəbul etmir → uyğun formata çevir */
+function groupsToFirestore(groups) {
+    return (groups || []).map(function (g) {
+        return { models: Array.isArray(g) ? g.map(String) : [] };
+    });
+}
+
+function groupsFromFirestore(data) {
+    if (!data) return [];
+    if (typeof data.dataJson === "string" && data.dataJson.length > 2) {
+        try {
+            const parsed = JSON.parse(data.dataJson);
+            if (Array.isArray(parsed)) return normalizeDatabase(parsed);
+        } catch (e) {}
+    }
+    if (Array.isArray(data.groups)) {
+        return normalizeDatabase(data.groups.map(function (g) {
+            if (Array.isArray(g)) return g;
+            if (g && Array.isArray(g.models)) return g.models;
+            return [];
+        }));
+    }
+    return [];
+}
+
 async function adminPublishDatabase() {
     if (!isAdmin) return;
     const cleaned = adminNormalizeEditDb();
     adminEditDb = cleaned;
     setAdminStatus("Dərc edilir...");
     try {
+        // Nested array yox: ya [{models:[...]}], ya dataJson string
         await db.doc(FS_DB_DOC).set({
-            groups: cleaned,
+            groups: groupsToFirestore(cleaned),
+            dataJson: JSON.stringify(cleaned),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             updatedBy: (auth.currentUser && auth.currentUser.email) || ADMIN_EMAIL,
             groupCount: cleaned.length
@@ -2160,17 +2187,15 @@ async function loadDatabaseFromFirestore() {
         const snap = await db.doc(FS_DB_DOC).get();
         if (snap.exists) {
             const data = snap.data();
-            if (data && Array.isArray(data.groups) && data.groups.length > 0) {
-                const parsed = normalizeDatabase(data.groups);
-                if (parsed.length > 0) {
-                    database = parsed;
-                    localStorage.setItem(DB_KEY, JSON.stringify(parsed));
-                    localStorage.setItem(UPDATE_KEY, Date.now().toString());
-                    updateLastUpdate();
-                    checkBlockStatus();
-                    indexFor = null;
-                    return true;
-                }
+            const parsed = groupsFromFirestore(data);
+            if (parsed.length > 0) {
+                database = parsed;
+                localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+                localStorage.setItem(UPDATE_KEY, Date.now().toString());
+                updateLastUpdate();
+                checkBlockStatus();
+                indexFor = null;
+                return true;
             }
         }
     } catch (e) {
@@ -3162,10 +3187,7 @@ async function fetchDatabase(retries = 3) {
         // Yalnız Firebase
         const snap = await db.doc(FS_DB_DOC).get();
         if (snap.exists) {
-            const data = snap.data();
-            if (data && Array.isArray(data.groups) && data.groups.length > 0) {
-                parsed = normalizeDatabase(data.groups);
-            }
+            parsed = groupsFromFirestore(snap.data());
         }
 
         if (!parsed || parsed.length === 0) {
@@ -3216,9 +3238,7 @@ async function backgroundCheckUpdate() {
     try {
         const snap = await db.doc(FS_DB_DOC).get();
         if (!snap.exists) return;
-        const data = snap.data();
-        if (!data || !Array.isArray(data.groups) || data.groups.length === 0) return;
-        const parsed = normalizeDatabase(data.groups);
+        const parsed = groupsFromFirestore(snap.data());
         if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
             const oldDatabase = JSON.parse(JSON.stringify(database));
             localStorage.setItem(DB_KEY, JSON.stringify(parsed));
