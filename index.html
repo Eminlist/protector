@@ -1018,6 +1018,200 @@
         .settings-box .phone-field {
             margin: 6px 0 14px 0;
         }
+
+        /* ===== ADMIN PANEL ===== */
+        #admin-view {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: var(--bg);
+            z-index: 650;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            pointer-events: none;
+        }
+        #admin-view.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .admin-header {
+            height: 110px;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--accent-color);
+            background: var(--header-bg);
+        }
+        .admin-back {
+            width: 54px; height: 54px;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            font-size: 30px;
+            cursor: pointer;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .admin-heading { margin-left: 18px; overflow: hidden; }
+        .admin-small { color: var(--accent-color); font-size: 12px; letter-spacing: 4px; }
+        .admin-title { font-size: 22px; font-weight: 800; color: var(--text); }
+        .admin-toolbar {
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+        }
+        .admin-btn {
+            height: 40px;
+            padding: 0 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-btn-primary {
+            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
+            color: #fff;
+        }
+        .admin-btn-secondary {
+            background: var(--surface-2);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .admin-btn-danger {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .admin-btn-success {
+            background: #27ae60;
+            color: #fff;
+        }
+        .admin-search {
+            flex: 1;
+            min-width: 140px;
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface-2);
+            color: var(--text);
+            padding: 0 12px;
+            font-size: 14px;
+            outline: none;
+        }
+        .admin-list {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 12px;
+        }
+        .admin-group {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: var(--card-bg);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .admin-group-head {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 14px;
+            cursor: pointer;
+            background: var(--surface);
+            border-bottom: 1px solid transparent;
+        }
+        .admin-group.open .admin-group-head {
+            border-bottom-color: var(--border);
+        }
+        .admin-group-num {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 13px;
+            min-width: 28px;
+        }
+        .admin-group-info {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .admin-group-count {
+            font-size: 12px;
+            color: var(--muted);
+            margin-right: 4px;
+        }
+        .admin-group-body {
+            display: none;
+            padding: 10px 12px 14px;
+        }
+        .admin-group.open .admin-group-body {
+            display: block;
+        }
+        .admin-model-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .admin-model-row input {
+            flex: 1;
+            height: 38px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface-2);
+            color: var(--text);
+            padding: 0 10px;
+            font-size: 14px;
+            outline: none;
+        }
+        .admin-icon-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            background: var(--surface-2);
+            color: var(--text);
+        }
+        .admin-icon-btn.del { background: rgba(231,76,60,0.15); color: #e74c3c; }
+        .admin-icon-btn.add { background: rgba(39,174,96,0.15); color: #27ae60; }
+        .admin-empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 40px 16px;
+            font-size: 14px;
+        }
+        .admin-status {
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--muted);
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+        #adminBtn {
+            display: none;
+        }
     </style>
 </head>
 
@@ -1085,6 +1279,7 @@
                 <a class="profile-btn" href="https://wa.me/994553115544?text=Salam,%20ProTector%20t%C9%99tbiqi%20il%C9%99%20ba%C4%9Fl%C4%B1%20yaz%C4%B1ram." target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp" style="width: 50px; height: 50px; border: 2px solid #25D366; background: transparent; color: #25D366; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; text-decoration: none;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 </a>
+                <button id="adminBtn" class="profile-btn" onclick="openAdmin()" title="Admin Panel" style="width: 50px; height: 50px; border: 2px solid #e74c3c; background: transparent; color: #e74c3c; font-size: 18px; display: none; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">⚙</button>
                 <button class="profile-btn" onclick="openProfile()" title="Profil" style="width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">👤</button>
                 <button class="menu-button" onclick="openSettings()">☰</button>
             </div>
@@ -1156,6 +1351,25 @@
             </div>
             <div id="profMsg" style="text-align:center; font-size:13px; margin-top:10px;"></div>
         </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-view">
+        <header class="admin-header">
+            <button class="admin-back" onclick="closeAdmin()">‹</button>
+            <div class="admin-heading">
+                <div class="admin-small">ADMIN</div>
+                <div class="admin-title">Baza İdarəetməsi</div>
+            </div>
+        </header>
+        <div class="admin-toolbar">
+            <input type="text" id="adminSearch" class="admin-search" placeholder="Qrup / model axtar..." oninput="renderAdminList()">
+            <button class="admin-btn admin-btn-secondary" onclick="adminAddGroup()">+ Yeni qrup</button>
+            <button class="admin-btn admin-btn-success" onclick="adminSaveDatabase()">💾 Yadda saxla</button>
+            <button class="admin-btn admin-btn-primary" onclick="adminPublishDatabase()">☁ Dərc et</button>
+        </div>
+        <div id="adminList" class="admin-list"></div>
+        <div id="adminStatus" class="admin-status">Admin paneli hazırdır</div>
     </div>
 
     <div id="detail-view">
@@ -1415,17 +1629,22 @@ const db = firebase.firestore();
 
 const RAW_URL = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Base.json";
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+const ADMIN_EMAIL = "o553115544@gmail.com";
 
 const DB_KEY = "antiudar_db_v3";
 const UPDATE_KEY = "antiudar_last_update_v3";
 const CHANGELOG_KEY = "antiudar_changelog_v2";
 const INSTALL_DISMISS_KEY = "antiudar_install_dismiss";
 const SEARCH_COUNT_KEY = "antiudar_search_count";
+const FS_DB_DOC = "app_data/database";
 
 let database = [];
 let selectedModel = "";
 let selectedGroup = null;
 let deferredPrompt = null;
+let isAdmin = false;
+let adminEditDb = [];
+let adminOpenGroups = new Set();
 
 // SƏS VƏ HAPTİK (STANDART OLARAQ AÇIQ)
 let soundEnabled = localStorage.getItem("antiudar_sound") !== "false";
@@ -1437,7 +1656,15 @@ let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
 document.addEventListener("DOMContentLoaded", function () {
     auth.onAuthStateChanged((user) => {
         if (!user) {
+            isAdmin = false;
+            updateAdminButton();
             checkSearchLimit();
+        } else {
+            isAdmin = isAdminEmail(user.email);
+            updateAdminButton();
+            if (isAdmin) {
+                showAppToast("Admin rejimindəsiniz");
+            }
         }
     });
 
@@ -1630,8 +1857,270 @@ function initPhoneMasks() {
 function logoutUser() {
     auth.signOut().then(() => {
         localStorage.removeItem(SEARCH_COUNT_KEY);
+        isAdmin = false;
+        updateAdminButton();
         location.reload();
     });
+}
+
+/* ==================== ADMIN PANEL ==================== */
+function isAdminEmail(email) {
+    if (!email) return false;
+    return String(email).trim().toLowerCase() === ADMIN_EMAIL;
+}
+
+function updateAdminButton() {
+    const btn = document.getElementById("adminBtn");
+    if (!btn) return;
+    btn.style.display = isAdmin ? "flex" : "none";
+}
+
+function openAdmin() {
+    if (!isAdmin) {
+        showAppToast("Yalnız admin daxil ola bilər!");
+        return;
+    }
+    adminEditDb = JSON.parse(JSON.stringify(database || []));
+    adminOpenGroups = new Set();
+    renderAdminList();
+    document.getElementById("admin-view").classList.add("active");
+    document.body.style.overflow = "hidden";
+    setAdminStatus("Qrup sayı: " + adminEditDb.length);
+    triggerHaptic(25);
+}
+
+function closeAdmin() {
+    document.getElementById("admin-view").classList.remove("active");
+    document.body.style.overflow = "";
+    triggerHaptic(20);
+}
+
+function setAdminStatus(msg) {
+    const el = document.getElementById("adminStatus");
+    if (el) el.innerText = msg;
+}
+
+function renderAdminList() {
+    const box = document.getElementById("adminList");
+    if (!box) return;
+    const q = (document.getElementById("adminSearch")?.value || "").trim().toLowerCase();
+    box.innerHTML = "";
+
+    if (!Array.isArray(adminEditDb) || adminEditDb.length === 0) {
+        box.innerHTML = '<div class="admin-empty">Baza boşdur. «+ Yeni qrup» ilə əlavə edin.</div>';
+        return;
+    }
+
+    let shown = 0;
+    adminEditDb.forEach((group, gi) => {
+        if (!Array.isArray(group)) return;
+        const modelsText = group.join(" ").toLowerCase();
+        if (q && !modelsText.includes(q) && !String(gi + 1).includes(q)) return;
+        shown++;
+
+        const isOpen = adminOpenGroups.has(gi);
+        const div = document.createElement("div");
+        div.className = "admin-group" + (isOpen ? " open" : "");
+
+        const head = document.createElement("div");
+        head.className = "admin-group-head";
+        head.innerHTML =
+            '<span class="admin-group-num">' + String(gi + 1).padStart(2, "0") + '</span>' +
+            '<span class="admin-group-info">' + escapeHtml(group[0] || "Boş qrup") + (group.length > 1 ? " + " + (group.length - 1) + " model" : "") + '</span>' +
+            '<span class="admin-group-count">' + group.length + '</span>' +
+            '<button class="admin-icon-btn del" title="Qrupu sil" onclick="event.stopPropagation();adminDeleteGroup(' + gi + ')">🗑</button>';
+        head.addEventListener("click", function () {
+            if (adminOpenGroups.has(gi)) adminOpenGroups.delete(gi);
+            else adminOpenGroups.add(gi);
+            renderAdminList();
+        });
+        div.appendChild(head);
+
+        const body = document.createElement("div");
+        body.className = "admin-group-body";
+        group.forEach((model, mi) => {
+            const row = document.createElement("div");
+            row.className = "admin-model-row";
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = model;
+            input.placeholder = "Model adı";
+            input.addEventListener("change", function () {
+                adminEditDb[gi][mi] = this.value.trim();
+            });
+            input.addEventListener("blur", function () {
+                adminEditDb[gi][mi] = this.value.trim();
+            });
+            const delBtn = document.createElement("button");
+            delBtn.className = "admin-icon-btn del";
+            delBtn.innerText = "×";
+            delBtn.title = "Modeli sil";
+            delBtn.onclick = function (e) {
+                e.stopPropagation();
+                adminDeleteModel(gi, mi);
+            };
+            row.appendChild(input);
+            row.appendChild(delBtn);
+            body.appendChild(row);
+        });
+
+        const addRow = document.createElement("div");
+        addRow.className = "admin-model-row";
+        const addInput = document.createElement("input");
+        addInput.type = "text";
+        addInput.placeholder = "Yeni model əlavə et...";
+        addInput.id = "adminAddInput_" + gi;
+        const addBtn = document.createElement("button");
+        addBtn.className = "admin-icon-btn add";
+        addBtn.innerText = "+";
+        addBtn.title = "Əlavə et";
+        addBtn.onclick = function (e) {
+            e.stopPropagation();
+            adminAddModel(gi);
+        };
+        addInput.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") { e.preventDefault(); adminAddModel(gi); }
+        });
+        addRow.appendChild(addInput);
+        addRow.appendChild(addBtn);
+        body.appendChild(addRow);
+
+        div.appendChild(body);
+        box.appendChild(div);
+    });
+
+    if (shown === 0) {
+        box.innerHTML = '<div class="admin-empty">Axtarışa uyğun qrup tapılmadı.</div>';
+    }
+}
+
+function escapeHtml(s) {
+    return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
+function adminAddGroup() {
+    adminEditDb.push(["Yeni Model"]);
+    adminOpenGroups.add(adminEditDb.length - 1);
+    renderAdminList();
+    setAdminStatus("Yeni qrup əlavə edildi (#" + adminEditDb.length + ")");
+    showAppToast("Yeni qrup əlavə olundu");
+}
+
+function adminDeleteGroup(gi) {
+    if (!confirm("Bu qrupu silmək istəyirsiniz?")) return;
+    adminEditDb.splice(gi, 1);
+    adminOpenGroups = new Set();
+    renderAdminList();
+    setAdminStatus("Qrup silindi. Qalan: " + adminEditDb.length);
+    showAppToast("Qrup silindi");
+}
+
+function adminAddModel(gi) {
+    const input = document.getElementById("adminAddInput_" + gi);
+    const val = (input ? input.value : "").trim();
+    if (!val) {
+        showAppToast("Model adı yazın");
+        return;
+    }
+    if (!Array.isArray(adminEditDb[gi])) adminEditDb[gi] = [];
+    adminEditDb[gi].push(val);
+    adminOpenGroups.add(gi);
+    renderAdminList();
+    setAdminStatus("Model əlavə edildi");
+}
+
+function adminDeleteModel(gi, mi) {
+    if (!adminEditDb[gi]) return;
+    adminEditDb[gi].splice(mi, 1);
+    if (adminEditDb[gi].length === 0) {
+        adminEditDb.splice(gi, 1);
+        adminOpenGroups = new Set();
+    }
+    renderAdminList();
+    setAdminStatus("Model silindi");
+}
+
+function adminNormalizeEditDb() {
+    return adminEditDb
+        .map(function (g) {
+            if (!Array.isArray(g)) return [];
+            return g.map(function (m) { return String(m).trim(); }).filter(Boolean);
+        })
+        .filter(function (g) { return g.length > 0; });
+}
+
+function adminSaveDatabase() {
+    if (!isAdmin) return;
+    const cleaned = adminNormalizeEditDb();
+    adminEditDb = cleaned;
+    database = JSON.parse(JSON.stringify(cleaned));
+    localStorage.setItem(DB_KEY, JSON.stringify(database));
+    localStorage.setItem(UPDATE_KEY, Date.now().toString());
+    updateLastUpdate();
+    checkBlockStatus();
+    indexFor = null;
+    setAdminStatus("Lokal yadda saxlanıldı · " + database.length + " qrup");
+    showAppToast("✓ Baza lokal yadda saxlanıldı");
+    triggerHaptic(40);
+    renderAdminList();
+}
+
+async function adminPublishDatabase() {
+    if (!isAdmin) return;
+    const cleaned = adminNormalizeEditDb();
+    adminEditDb = cleaned;
+    setAdminStatus("Dərc edilir...");
+    try {
+        await db.doc(FS_DB_DOC).set({
+            groups: cleaned,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedBy: (auth.currentUser && auth.currentUser.email) || ADMIN_EMAIL,
+            groupCount: cleaned.length
+        });
+        database = JSON.parse(JSON.stringify(cleaned));
+        localStorage.setItem(DB_KEY, JSON.stringify(database));
+        localStorage.setItem(UPDATE_KEY, Date.now().toString());
+        updateLastUpdate();
+        checkBlockStatus();
+        indexFor = null;
+        setAdminStatus("☁ Dərc olundu · " + cleaned.length + " qrup · " + new Date().toLocaleTimeString());
+        showAppToast("✓ Baza Firestore-a dərc olundu!");
+        triggerHaptic(50);
+        if (typeof playSuccessSound === "function") playSuccessSound();
+        renderAdminList();
+    } catch (err) {
+        console.error(err);
+        setAdminStatus("Xəta: " + (err.message || "Dərc edilə bilmədi"));
+        showAppToast("Dərc xətası: " + (err.message || "yenidən cəhd edin"));
+    }
+}
+
+async function loadDatabaseFromFirestore() {
+    try {
+        const snap = await db.doc(FS_DB_DOC).get();
+        if (snap.exists) {
+            const data = snap.data();
+            if (data && Array.isArray(data.groups) && data.groups.length > 0) {
+                const parsed = normalizeDatabase(data.groups);
+                if (parsed.length > 0) {
+                    database = parsed;
+                    localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+                    localStorage.setItem(UPDATE_KEY, Date.now().toString());
+                    updateLastUpdate();
+                    checkBlockStatus();
+                    indexFor = null;
+                    return true;
+                }
+            }
+        }
+    } catch (e) {
+        console.log("Firestore baza oxunmadı:", e);
+    }
+    return false;
 }
 
 // 3 AXTARIŞDAN SONRA QEYDİYYAT
@@ -1815,8 +2304,11 @@ function initEdgeSwipeGestures() {
             const settingsView = document.getElementById("settings-view");
             const privacyView = document.getElementById("privacy-view");
             const profileView = document.getElementById("profile-view");
+            const adminView = document.getElementById("admin-view");
 
-            if (privacyView.classList.contains("active")) {
+            if (adminView && adminView.classList.contains("active")) {
+                closeAdmin();
+            } else if (privacyView.classList.contains("active")) {
                 closePrivacy();
             } else if (settingsView.classList.contains("active")) {
                 closeSettings();
@@ -2609,12 +3101,28 @@ async function fetchDatabase(retries = 3) {
         updateButton.disabled = true;
 
         const oldDatabase = JSON.parse(JSON.stringify(database));
-        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
-        if (!response.ok) throw new Error("HTTP " + response.status);
+        let parsed = null;
 
-        const data = await response.json();
-        const parsed = normalizeDatabase(data);
-        if (parsed.length === 0) throw new Error("Baza boşdur.");
+        // 1) Əvvəl Firestore (admin dərc etmiş baza)
+        try {
+            const snap = await db.doc(FS_DB_DOC).get();
+            if (snap.exists) {
+                const data = snap.data();
+                if (data && Array.isArray(data.groups) && data.groups.length > 0) {
+                    parsed = normalizeDatabase(data.groups);
+                }
+            }
+        } catch (e) {}
+
+        // 2) Firestore boşdursa GitHub
+        if (!parsed || parsed.length === 0) {
+            const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+            if (!response.ok) throw new Error("HTTP " + response.status);
+            const data = await response.json();
+            parsed = normalizeDatabase(data);
+        }
+
+        if (!parsed || parsed.length === 0) throw new Error("Baza boşdur.");
 
         const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
         if (changelogMsg) {
@@ -2690,12 +3198,25 @@ function loadDatabaseFromCacheOnly() {
             if (database.length > 0) {
                 updateLastUpdate();
                 checkBlockStatus();
+                // Arxa planda Firestore-dan yeniləmə yoxla
+                loadDatabaseFromFirestore().then(function (ok) {
+                    if (ok) {
+                        indexFor = null;
+                        const input = document.getElementById("searchInput");
+                        if (input && input.value.trim()) performSearch(input.value);
+                    }
+                });
                 return;
             }
         } catch (e) {}
     }
-    updateLastUpdate();
-    checkBlockStatus();
+    // Keş yoxdursa əvvəl Firestore, sonra GitHub
+    loadDatabaseFromFirestore().then(function (ok) {
+        if (!ok) {
+            updateLastUpdate();
+            checkBlockStatus();
+        }
+    });
 }
 
 function forceUpdate() { fetchDatabase(3); }
