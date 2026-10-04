@@ -942,6 +942,82 @@
             font-size: 12px;
             margin-top: 6px;
         }
+
+        /* Telefon sahəsi — dairəvi bayraq + +994 + mask (Azercell üslubu) */
+        .phone-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            margin: 6px 0;
+        }
+        .phone-code-box {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 44px;
+            padding: 0 12px 0 8px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .phone-flag-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 1.5px rgba(255,255,255,0.15);
+            background: #222;
+        }
+        .phone-flag-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .phone-prefix {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .phone-input-box {
+            flex: 1;
+            height: 44px;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+        .phone-input {
+            flex: 1;
+            height: 100%;
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            padding: 0 14px !important;
+            margin: 0 !important;
+            width: 100% !important;
+            font-variant-numeric: tabular-nums;
+        }
+        .phone-input::placeholder {
+            color: var(--muted);
+            letter-spacing: 2px;
+            font-weight: 500;
+            opacity: 0.7;
+        }
+        .settings-box .phone-field {
+            margin: 6px 0 14px 0;
+        }
     </style>
 </head>
 
@@ -952,26 +1028,38 @@
 <!-- QEYDİYYAT VƏ GİRİŞ MODALI -->
 <div id="auth-modal">
     <div class="auth-box">
-        <div id="registerFormContainer">
-            <h3>Mağaza Qeydiyyatı</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Axtarış limitiniz bitdi. Davam etmək üçün daxil olun.</p>
-            <input type="text" id="regUser" placeholder="Ləqəb *" required>
-            <input type="email" id="regEmail" placeholder="E-poçt (Parol bərpası üçün) *" required>
-            <input type="password" id="regPass" placeholder="Parol *" required>
-            <input type="text" id="regStore" placeholder="Mağaza adı">
-            <input type="text" id="regAddress" placeholder="Mağaza ünvanı">
-            <input type="tel" id="regPhone" value="+994" placeholder="Telefon nömrəsi">
-            <button onclick="registerUser()">Qeydiyyatı Tamamla</button>
-            <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
-        </div>
-
-        <div id="loginFormContainer" style="display: none;">
+        <!-- İLK EKRAN: GİRİŞ (LOGIN) -->
+        <div id="loginFormContainer">
             <h3>Sistemə Giriş</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Axtarış limitiniz bitdi. Davam etmək üçün daxil olun.</p>
             <input type="email" id="logEmail" placeholder="E-poçt ünvanınız">
             <input type="password" id="logPass" placeholder="Parol">
             <button onclick="loginUser()">Daxil Ol</button>
             <span class="auth-toggle" onclick="switchAuthMode('forgot')">Parolumu unutmuşam</span>
             <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabınız yoxdur? Qeydiyyat</span>
+        </div>
+
+        <!-- QEYDİYYAT — yalnız istəyəndə açılır -->
+        <div id="registerFormContainer" style="display: none;">
+            <h3>Mağaza Qeydiyyatı</h3>
+            <input type="text" id="regUser" placeholder="Ləqəb *" required>
+            <input type="email" id="regEmail" placeholder="E-poçt (Parol bərpası üçün) *" required>
+            <input type="password" id="regPass" placeholder="Parol *" required>
+            <input type="text" id="regStore" placeholder="Mağaza adı">
+            <input type="text" id="regAddress" placeholder="Mağaza ünvanı">
+            <div class="phone-field">
+                <div class="phone-code-box">
+                    <div class="phone-flag-circle" title="Azərbaycan">
+                        <img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt="AZ" width="28" height="28" style="width:100%;height:100%;object-fit:cover;display:block;">
+                    </div>
+                    <span class="phone-prefix">+994</span>
+                </div>
+                <div class="phone-input-box">
+                    <input type="tel" id="regPhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="__ ___ __ __" maxlength="12">
+                </div>
+            </div>
+            <button onclick="registerUser()">Qeydiyyatı Tamamla</button>
+            <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
         </div>
 
         <div id="forgotFormContainer" style="display: none;">
@@ -994,6 +1082,9 @@
                 <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <div class="header-buttons" style="display: flex; gap: 10px;">
+                <a class="profile-btn" href="https://wa.me/994553115544?text=Salam,%20ProTector%20t%C9%99tbiqi%20il%C9%99%20ba%C4%9Fl%C4%B1%20yaz%C4%B1ram." target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp" style="width: 50px; height: 50px; border: 2px solid #25D366; background: transparent; color: #25D366; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; text-decoration: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
                 <button class="profile-btn" onclick="openProfile()" title="Profil" style="width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">👤</button>
                 <button class="menu-button" onclick="openSettings()">☰</button>
             </div>
@@ -1044,7 +1135,17 @@
                     <input type="text" id="profAddress" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
                     
                     <label style="font-size:12px; color:var(--muted)">Telefon Nömrəsi</label>
-                    <input type="tel" id="profPhone" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    <div class="phone-field">
+                        <div class="phone-code-box">
+                            <div class="phone-flag-circle" title="Azərbaycan">
+                                <img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt="AZ" width="28" height="28" style="width:100%;height:100%;object-fit:cover;display:block;">
+                            </div>
+                            <span class="phone-prefix">+994</span>
+                        </div>
+                        <div class="phone-input-box">
+                            <input type="tel" id="profPhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="__ ___ __ __" maxlength="12">
+                        </div>
+                    </div>
 
                     <button class="profile-save-btn" onclick="updateProfile()" style="width:100%; height:50px; background:var(--accent-color); color:#111; border:none; border-radius:12px; font-weight:800; cursor:pointer; margin-top:10px;">Dəyişiklikləri Yadda Saxla</button>
                 </div>
@@ -1348,6 +1449,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initAccentColor();
     initResponsiveTypography();
     initPWA();
+    initPhoneMasks();
 
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", function () {
@@ -1377,17 +1479,30 @@ function openProfile() {
         document.getElementById("auth-modal").style.display = "flex";
         return;
     }
-    
+
+    document.getElementById("profUser").value = "";
+    document.getElementById("profStore").value = "";
+    document.getElementById("profAddress").value = "";
+    setPhoneInput("profPhone", "");
+    document.getElementById("profMsg").innerText = "";
+
     db.collection("users").doc(user.uid).get().then((doc) => {
         if (doc.exists) {
             let data = doc.data();
             document.getElementById("profUser").value = data.username || "";
             document.getElementById("profStore").value = data.storeName || "";
             document.getElementById("profAddress").value = data.storeAddress || "";
-            document.getElementById("profPhone").value = data.phoneNumber || "+994";
+            setPhoneInput("profPhone", data.phoneNumber || "");
+        } else {
+            setPhoneInput("profPhone", "");
         }
         document.getElementById("profile-view").classList.add("active");
         document.body.style.overflow = "hidden";
+    }).catch((err) => {
+        console.error("Profil oxuma xətası:", err);
+        document.getElementById("profile-view").classList.add("active");
+        document.body.style.overflow = "hidden";
+        showAppToast("Profil məlumatları yüklənmədi. İnterneti yoxlayın.");
     });
 }
 
@@ -1396,56 +1511,119 @@ function closeProfile() {
     document.body.style.overflow = "";
 }
 
-// BİLDİRİŞ (TOAST) ÜÇÜN ÜMUMİ FUNKSİYA
-function showToast(msg) {
-    if (!msg) return;
-    const toast = document.getElementById("toast");
-    if (!toast) return;
-
-    toast.innerText = msg;
-    toast.classList.remove("show");
-    void toast.offsetWidth;
-    toast.style.display = "block";
-    toast.classList.add("show");
-
-    clearTimeout(window._customToastTimer);
-    window._customToastTimer = setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => { toast.style.display = "none"; }, 350);
-    }, 3000);
-}
-
 function updateProfile() {
     let user = auth.currentUser;
-    if (!user) return;
+    if (!user) {
+        showAppToast("Daxil olmamısınız!");
+        return;
+    }
 
     let username = document.getElementById("profUser").value.trim();
     let storeName = document.getElementById("profStore").value.trim();
     let storeAddress = document.getElementById("profAddress").value.trim();
-    let phoneNumber = document.getElementById("profPhone").value.trim();
+    let phoneNumber = getFullPhone("profPhone");
     let msgDiv = document.getElementById("profMsg");
 
     if (!username) {
         msgDiv.style.color = "red";
         msgDiv.innerText = "Ləqəb boş ola bilməz!";
+        showAppToast("Ləqəb boş ola bilməz!");
         return;
     }
 
-    // UPDATE yox, SET {merge: true} ulandyk, çünki öňden firebase doc ýok bolsa error bermez.
+    msgDiv.style.color = "var(--muted)";
+    msgDiv.innerText = "Yadda saxlanılır...";
+
+    // merge:true ilə sənəd yoxdursa da yaradılır / mövcuddursa yenilənir
     db.collection("users").doc(user.uid).set({
         username: username,
         storeName: storeName,
         storeAddress: storeAddress,
-        phoneNumber: phoneNumber
+        phoneNumber: phoneNumber,
+        email: user.email || "",
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }).then(() => {
         msgDiv.style.color = "green";
         msgDiv.innerText = "Məlumatlar uğurla yeniləndi!";
-        showToast("Profil məlumatları yeniləndi!"); // Bildiriş bu ýerde geler
-        setTimeout(() => msgDiv.innerText = "", 3000);
+        showAppToast("✓ Dəyişikliklər yadda saxlanıldı!");
+        setTimeout(() => { if (msgDiv) msgDiv.innerText = ""; }, 3500);
+        triggerHaptic(40);
+        playSuccessSound && playSuccessSound();
     }).catch((error) => {
+        console.error("Profil yeniləmə xətası:", error);
         msgDiv.style.color = "red";
-        msgDiv.innerText = "Xəta baş verdi: " + error.message;
-        showToast("Xəta: " + error.message); // Ýalňyşlyk bildirişi
+        msgDiv.innerText = "Xəta: " + (error.message || "Naməlum xəta");
+        showAppToast("Xəta baş verdi: " + (error.message || "Yenidən cəhd edin"));
+    });
+}
+
+function showAppToast(text) {
+    const toast = document.getElementById("toast");
+    if (!toast) return;
+    toast.innerText = text;
+    toast.classList.remove("show");
+    void toast.offsetWidth;
+    toast.style.display = "block";
+    toast.classList.add("show");
+    clearTimeout(window._appToastTimer);
+    window._appToastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => { toast.style.display = "none"; }, 350);
+    }, 3200);
+}
+
+/* ===== Telefon maskası: __ ___ __ __  →  50 123 45 67 ===== */
+function formatPhoneMask(digits) {
+    digits = String(digits || "").replace(/\D/g, "").slice(0, 9);
+    let out = "";
+    if (digits.length > 0) out += digits.slice(0, 2);
+    if (digits.length > 2) out += " " + digits.slice(2, 5);
+    if (digits.length > 5) out += " " + digits.slice(5, 7);
+    if (digits.length > 7) out += " " + digits.slice(7, 9);
+    return out;
+}
+
+function extractPhoneDigits(value) {
+    let d = String(value || "").replace(/\D/g, "");
+    // Əgər +994 və ya 994 ilə başlayırsa çıxar
+    if (d.startsWith("994")) d = d.slice(3);
+    return d.slice(0, 9);
+}
+
+function setPhoneInput(inputId, fullOrPartial) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    el.value = formatPhoneMask(extractPhoneDigits(fullOrPartial));
+}
+
+function getFullPhone(inputId) {
+    const el = document.getElementById(inputId);
+    if (!el) return "+994";
+    const digits = extractPhoneDigits(el.value);
+    return digits ? ("+994" + digits) : "+994";
+}
+
+function onPhoneInput(e) {
+    const el = e.target;
+    const digits = extractPhoneDigits(el.value);
+    const formatted = formatPhoneMask(digits);
+    el.value = formatted;
+    // Kursoru sona qoy (sadə və stabil)
+    try { el.setSelectionRange(formatted.length, formatted.length); } catch (_) {}
+}
+
+function initPhoneMasks() {
+    ["regPhone", "profPhone"].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", onPhoneInput);
+        el.addEventListener("paste", function (e) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData("text");
+            el.value = formatPhoneMask(extractPhoneDigits(text));
+        });
+        // Başlanğıc placeholder görünür
+        if (!el.value) el.value = "";
     });
 }
 
@@ -1477,7 +1655,7 @@ function registerUser() {
     let pass = document.getElementById("regPass").value.trim();
     let store = document.getElementById("regStore").value.trim();
     let address = document.getElementById("regAddress").value.trim();
-    let phone = document.getElementById("regPhone").value.trim();
+    let phone = getFullPhone("regPhone");
     let msgDiv = document.getElementById("authMsg");
 
     if (!user || !email || !pass) {
@@ -1485,21 +1663,28 @@ function registerUser() {
         return;
     }
 
+    msgDiv.style.color = "var(--muted)";
+    msgDiv.innerText = "Qeydiyyat aparılır...";
+
     auth.createUserWithEmailAndPassword(email, pass)
         .then((userCredential) => {
             let uid = userCredential.user.uid;
-            db.collection("users").doc(uid).set({
+            return db.collection("users").doc(uid).set({
                 username: user,
                 email: email,
                 storeName: store || "",
                 storeAddress: address || "",
-                phoneNumber: phone || "+994"
+                phoneNumber: phone,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 localStorage.setItem(SEARCH_COUNT_KEY, "0");
                 document.getElementById("auth-modal").style.display = "none";
+                showAppToast("Qeydiyyat uğurla tamamlandı!");
             });
         })
         .catch((error) => {
+            msgDiv.style.color = "red";
             msgDiv.innerText = "Xəta: " + error.message;
         });
 }
@@ -1518,8 +1703,10 @@ function loginUser() {
         .then(() => {
             localStorage.setItem(SEARCH_COUNT_KEY, "0");
             document.getElementById("auth-modal").style.display = "none";
+            showAppToast("Uğurla daxil oldunuz!");
         })
         .catch((error) => {
+            msgDiv.style.color = "red";
             msgDiv.innerText = "E-poçt və ya parol səhvdir!";
         });
 }
