@@ -158,22 +158,27 @@
             color: var(--text);
         }
 
-        .menu-button {
-            width: 60px;
-            height: 60px;
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .menu-button, .profile-btn {
+            width: 50px;
+            height: 50px;
             border: 2px solid var(--accent-color);
             background: transparent;
             color: var(--accent-color);
-            font-size: 28px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            border-radius: 18px;
+            border-radius: 16px;
             transition: background 0.2s, transform 0.1s;
         }
 
-        .menu-button:active {
+        .menu-button:active, .profile-btn:active {
             background: var(--result-hover);
             transform: scale(0.95);
         }
@@ -328,14 +333,10 @@
             padding-top: 50px;
         }
 
-        #detail-view {
+        #detail-view, #profile-view {
             position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; right: 0; bottom: 0; left: 0;
+            width: 100%; height: 100%;
             background: var(--bg);
             z-index: 500;
             display: flex;
@@ -347,19 +348,13 @@
             pointer-events: none;
         }
 
-        :root[data-theme="dark"] #detail-view {
-            background:
-                radial-gradient(ellipse at 30% 10%, rgba(212, 175, 55, 0.07) 0%, transparent 50%),
-                linear-gradient(160deg, #0a0a0a 0%, #111111 100%);
-        }
-
-        #detail-view.active {
+        #detail-view.active, #profile-view.active {
             transform: translateY(0);
             opacity: 1;
             pointer-events: auto;
         }
 
-        .detail-header {
+        .detail-header, .profile-header {
             height: 110px;
             min-height: 110px;
             display: flex;
@@ -369,7 +364,7 @@
             background: var(--header-bg);
         }
 
-        .detail-back {
+        .detail-back, .profile-back {
             width: 54px;
             height: 54px;
             flex-shrink: 0;
@@ -385,12 +380,12 @@
             border-radius: 18px;
         }
 
-        .detail-heading {
+        .detail-heading, .profile-heading {
             margin-left: 20px;
             overflow: hidden;
         }
 
-        .detail-small {
+        .detail-small, .profile-small {
             font-size: calc(13px * var(--font-scale));
             letter-spacing: 4px;
             color: var(--accent-color);
@@ -398,12 +393,9 @@
             text-transform: uppercase;
         }
 
-        .detail-model {
-            font-size: calc(26px * var(--font-scale));
+        .detail-model, .profile-title {
+            font-size: calc(24px * var(--font-scale));
             font-weight: 800;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             color: var(--text);
         }
 
@@ -488,10 +480,7 @@
 
         #settings-view {
             position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+            top: 0; right: 0; bottom: 0; left: 0;
             background: var(--bg);
             z-index: 600;
             display: block;
@@ -501,12 +490,6 @@
             opacity: 0;
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
             pointer-events: none;
-        }
-
-        :root[data-theme="dark"] #settings-view {
-            background:
-                radial-gradient(ellipse at 70% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
-                linear-gradient(160deg, #0a0a0a 0%, #111111 100%);
         }
 
         #settings-view.active {
@@ -591,7 +574,7 @@
             border-bottom: none;
         }
 
-        .update-button {
+        .update-button, .profile-save-btn {
             width: 100%;
             height: 56px;
             border: none;
@@ -608,6 +591,11 @@
             justify-content: center;
             gap: 10px;
             border-radius: 18px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
 
         .spinner {
@@ -715,21 +703,12 @@
 
         #privacy-view {
             position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+            top: 0; right: 0; bottom: 0; left: 0;
             background: var(--bg);
             z-index: 700;
             display: none;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-        }
-
-        :root[data-theme="dark"] #privacy-view {
-            background:
-                radial-gradient(ellipse at 70% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
-                linear-gradient(160deg, #0a0a0a 0%, #111111 100%);
         }
 
         #privacy-view.active {
@@ -738,10 +717,7 @@
 
         #block-screen {
             position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+            top: 0; right: 0; bottom: 0; left: 0;
             background: var(--bg);
             z-index: 1000;
             display: none;
@@ -750,12 +726,6 @@
             justify-content: center;
             text-align: center;
             padding: 30px;
-        }
-
-        :root[data-theme="dark"] #block-screen {
-            background:
-                radial-gradient(ellipse at 50% 30%, rgba(212, 175, 55, 0.08) 0%, transparent 60%),
-                #0a0a0a;
         }
 
         .block-title {
@@ -845,73 +815,7 @@
             font-size: 13px;
         }
 
-        #install-banner {
-            position: fixed;
-            bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-            left: 50%;
-            transform: translateX(-50%) translateY(120%);
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 16px;
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1150;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            max-width: 94%;
-        }
-        #install-banner.show {
-            transform: translateX(-50%) translateY(0);
-        }
-        .install-icon {
-            width: 36px;
-            height: 36px;
-            background: #2a2a2a;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .install-icon svg {
-            width: 22px;
-            height: 22px;
-            fill: #d4af37;
-        }
-        .install-text {
-            flex: 1;
-            font-size: 13px;
-            color: #f5f5f5;
-            line-height: 1.3;
-        }
-        .install-text strong {
-            color: var(--accent-color);
-            font-weight: 700;
-        }
-        .install-btn {
-            background: var(--accent-color);
-            color: #111;
-            border: none;
-            border-radius: 12px;
-            padding: 8px 14px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .install-close {
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 0 4px;
-            line-height: 1;
-        }
-
-        /* QEYDİYYAT / GİRİŞ MODAL PƏNCƏRƏSİ ÜÇÜN ÜSLUBLAR */
+        /* QEYDİYYAT / GİRİŞ VƏ PROFİL MODALLARI */
         #auth-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -982,7 +886,6 @@
 <!-- QEYDİYYAT VƏ GİRİŞ MODALI -->
 <div id="auth-modal">
     <div class="auth-box">
-        <!-- QEYDİYYAT FORMASI -->
         <div id="registerFormContainer">
             <h3 id="authModalTitle">Qeydiyyat Tələb Olunur</h3>
             <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Pulsuz 3 axtarış limitiniz bitdi. Davam etmək üçün qeydiyyatdan keçin.</p>
@@ -996,7 +899,6 @@
             <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq hesabın var? Giriş et</span>
         </div>
 
-        <!-- GİRİŞ FORMASI -->
         <div id="loginFormContainer" style="display: none;">
             <h3>Giriş Et</h3>
             <input type="email" id="logEmail" placeholder="E-poçt ünvanınız">
@@ -1006,7 +908,6 @@
             <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabın yoxdur? Qeydiyyatdan keç</span>
         </div>
 
-        <!-- PAROLU BƏRPA FORMASI -->
         <div id="forgotFormContainer" style="display: none;">
             <h3>Parolu Bərpa Et</h3>
             <input type="email" id="forgotEmail" placeholder="Qeydiyyat e-poçtunuz">
@@ -1026,7 +927,10 @@
                 <div class="header-small">Antiudar</div>
                 <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
-            <button class="menu-button" onclick="openSettings()">☰</button>
+            <div class="header-buttons">
+                <button class="profile-btn" onclick="openProfile()" title="Profil">👤</button>
+                <button class="menu-button" onclick="openSettings()">☰</button>
+            </div>
         </header>
 
         <main class="main-content">
@@ -1048,6 +952,43 @@
             <div id="status" class="status"></div>
             <div id="results"></div>
         </main>
+    </div>
+
+    <!-- PROFİL SƏHİFƏSİ -->
+    <div id="profile-view">
+        <header class="profile-header">
+            <button class="profile-back" onclick="closeProfile()">‹</button>
+            <div class="profile-heading">
+                <div class="profile-small">Hesab</div>
+                <div class="profile-title">Mağaza Profili</div>
+            </div>
+        </header>
+
+        <div class="settings-content">
+            <div class="settings-section">
+                <div class="settings-section-title">İSTİFADƏÇİ MƏLUMATLARI</div>
+                <div class="settings-box" style="padding: 16px;">
+                    <label style="font-size:12px; color:var(--muted)">Ləqəb</label>
+                    <input type="text" id="profUser" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)">Mağaza Adı</label>
+                    <input type="text" id="profStore" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)">Mağaza Ünvanı</label>
+                    <input type="text" id="profAddress" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)">Telefon Nömrəsi</label>
+                    <input type="tel" id="profPhone" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+
+                    <button class="profile-save-btn" onclick="updateProfile()">Yadda Saxla</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <button class="profile-save-btn logout-btn" onclick="logoutUser()">Hesabdan Çıxış Et</button>
+            </div>
+            <div id="profMsg" style="text-align:center; font-size:13px; margin-top:10px;"></div>
+        </div>
     </div>
 
     <div id="detail-view">
@@ -1326,7 +1267,6 @@ let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medi
 let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Firebase giriş yoxlaması
     auth.onAuthStateChanged((user) => {
         if (!user) {
             checkSearchLimit();
@@ -1363,7 +1303,65 @@ document.addEventListener("DOMContentLoaded", function () {
     initEdgeSwipeGestures();
 });
 
-// Qeydiyyat və Giriş funksiyaları
+// PROFİL FUNKSİYALARI
+function openProfile() {
+    let user = auth.currentUser;
+    if (!user) {
+        document.getElementById("auth-modal").style.display = "flex";
+        return;
+    }
+    
+    // Bazadan istifadəçi məlumatlarını çəkək
+    db.collection("users").doc(user.uid).get().then((doc) => {
+        if (doc.exists) {
+            let data = doc.data();
+            document.getElementById("profUser").value = data.username || "";
+            document.getElementById("profStore").value = data.storeName || "";
+            document.getElementById("profAddress").value = data.storeAddress || "";
+            document.getElementById("profPhone").value = data.phoneNumber || "";
+        }
+        document.getElementById("profile-view").classList.add("active");
+        document.body.style.overflow = "hidden";
+    });
+}
+
+function closeProfile() {
+    document.getElementById("profile-view").classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+function updateProfile() {
+    let user = auth.currentUser;
+    if (!user) return;
+
+    let username = document.getElementById("profUser").value.trim();
+    let storeName = document.getElementById("profStore").value.trim();
+    let storeAddress = document.getElementById("profAddress").value.trim();
+    let phoneNumber = document.getElementById("profPhone").value.trim();
+    let msgDiv = document.getElementById("profMsg");
+
+    db.collection("users").doc(user.uid).update({
+        username,
+        storeName,
+        storeAddress,
+        phoneNumber
+    }).then(() => {
+        msgDiv.style.color = "green";
+        msgDiv.innerText = "Məlumatlar uğurla yeniləndi!";
+        setTimeout(() => msgDiv.innerText = "", 3000);
+    }).catch((error) => {
+        msgDiv.style.color = "red";
+        msgDiv.innerText = "Xəta baş verdi: " + error.message;
+    });
+}
+
+function logoutUser() {
+    auth.signOut().then(() => {
+        localStorage.removeItem(SEARCH_COUNT_KEY);
+        location.reload();
+    });
+}
+
 function checkSearchLimit() {
     let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
     if (count >= 3) {
@@ -1444,7 +1442,6 @@ function resetPassword() {
         });
 }
 
-// SERVICE WORKER QEYDİYYATI ÜÇÜN SADƏLƏŞDİRİLMİŞ FUNKSİYA
 function initDynamicPWA() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1525,11 +1522,14 @@ function initEdgeSwipeGestures() {
             const detailView = document.getElementById("detail-view");
             const settingsView = document.getElementById("settings-view");
             const privacyView = document.getElementById("privacy-view");
+            const profileView = document.getElementById("profile-view");
 
             if (privacyView.classList.contains("active")) {
                 closePrivacy();
             } else if (settingsView.classList.contains("active")) {
                 closeSettings();
+            } else if (profileView.classList.contains("active")) {
+                closeProfile();
             } else if (detailView.classList.contains("active")) {
                 closeDetail();
             }
@@ -1537,9 +1537,6 @@ function initEdgeSwipeGestures() {
     }, {passive: true});
 }
 
-/* =============================================================
-   DİNAMİK PLACEHOLDER – PARLAQ RƏNGLƏR (DUMANSIZ)
-============================================================= */
 const PLACEHOLDER_PALETTE = [
     { color: "#FFE566" },
     { color: "#C77DFF" },
@@ -1556,7 +1553,6 @@ let placeholderInterval = null;
 
 function initDynamicPlaceholder() {
     const input = document.getElementById("searchInput");
-    
     const first = PLACEHOLDER_PALETTE[0];
     document.documentElement.style.setProperty("--placeholder-color", first.color);
 
@@ -1714,14 +1710,11 @@ function initTheme() {
 
 function setTheme(theme) {
     localStorage.setItem("antiudar_theme", theme);
-
     document.querySelectorAll(".theme-option").forEach(function (el) {
         if(el.id.startsWith("theme-")) el.classList.remove("active");
     });
-
     const selected = document.getElementById("theme-" + theme);
     if (selected) selected.classList.add("active");
-
     applyThemeLogic(theme);
 }
 
@@ -1867,9 +1860,7 @@ function generateChangelogMessage(oldDb, newDb) {
     newModels.forEach(m => { if (!oldModels.has(m)) added++; });
     oldModels.forEach(m => { if (!newModels.has(m)) removed++; });
 
-    if (added === 0 && removed === 0) {
-        return null;
-    }
+    if (added === 0 && removed === 0) return null;
 
     const now = new Date();
     const dateStr =
@@ -1878,7 +1869,6 @@ function generateChangelogMessage(oldDb, newDb) {
         String(now.getFullYear()).slice(-2);
 
     let msg = "";
-
     if (added > 0 && removed > 0) {
         msg = `${dateStr} bazaya ${added} model əlavə edildi, ${removed} model çıxarıldı`;
     } else if (added > 0) {
@@ -1886,24 +1876,18 @@ function generateChangelogMessage(oldDb, newDb) {
     } else {
         msg = `${dateStr} bazadan ${removed} model çıxarıldı`;
     }
-
     return msg;
 }
 
 function saveChangelog(msg) {
     if (!msg) return;
-
     try {
         let list = [];
         const raw = localStorage.getItem(CHANGELOG_KEY);
         if (raw) list = JSON.parse(raw);
         if (!Array.isArray(list)) list = [];
 
-        list.unshift({
-            text: msg,
-            ts: Date.now()
-        });
-
+        list.unshift({ text: msg, ts: Date.now() });
         list = list.slice(0, 3);
         localStorage.setItem(CHANGELOG_KEY, JSON.stringify(list));
     } catch (e) {}
@@ -1915,9 +1899,7 @@ function getChangelogList() {
         if (!raw) return [];
         const list = JSON.parse(raw);
         return Array.isArray(list) ? list : [];
-    } catch (e) {
-        return [];
-    }
+    } catch (e) { return []; }
 }
 
 function showChangelogToast(msg) {
@@ -1934,9 +1916,7 @@ function showChangelogToast(msg) {
     clearTimeout(window._changelogToastTimer);
     window._changelogToastTimer = setTimeout(() => {
         toast.classList.remove("show");
-        setTimeout(() => {
-            toast.style.display = "none";
-        }, 350);
+        setTimeout(() => { toast.style.display = "none"; }, 350);
     }, 4800);
 }
 
@@ -2169,13 +2149,10 @@ function highlightMatch(text, query) {
         const escaped = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
         const regex = new RegExp("(" + escaped.split(/\s+/).filter(Boolean).join("|") + ")", "gi");
         return text.replace(regex, "<mark>$1</mark>");
-    } catch (e) {
-        return text;
-    }
+    } catch (e) { return text; }
 }
 
 function performSearch(query) {
-    // 3 axtarış limiti yoxlaması (Əgər istifadəçi Firebase-də login olmayıbsa)
     if (!auth.currentUser) {
         let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
         if (query.trim().length > 0) {
@@ -2352,13 +2329,11 @@ async function fetchDatabase(retries = 3) {
         updateButton.disabled = true;
 
         const oldDatabase = JSON.parse(JSON.stringify(database));
-
         const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
         if (!response.ok) throw new Error("HTTP " + response.status);
 
         const data = await response.json();
         const parsed = normalizeDatabase(data);
-
         if (parsed.length === 0) throw new Error("Baza boşdur.");
 
         const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
@@ -2386,19 +2361,14 @@ async function fetchDatabase(retries = 3) {
         triggerHaptic(50);
 
     } catch (error) {
-        console.error("Baza xətası:", error);
         if (retries > 0) {
             setTimeout(() => fetchDatabase(retries - 1), 2000);
             return;
         }
-
         updateButton.querySelector("span").innerText = t("updateNow");
         spinner.style.display = "none";
         updateButton.disabled = false;
-
-        if (database.length === 0) {
-            alert(t("alertFail"));
-        }
+        if (database.length === 0) alert(t("alertFail"));
         checkBlockStatus();
     }
 }
@@ -2448,9 +2418,7 @@ function loadDatabaseFromCacheOnly() {
     checkBlockStatus();
 }
 
-function forceUpdate() {
-    fetchDatabase(3);
-}
+function forceUpdate() { fetchDatabase(3); }
 
 function updateLastUpdate() {
     updateDbCount();
@@ -2494,13 +2462,6 @@ function checkBlockStatus() {
 }
 
 setInterval(checkBlockStatus, 60 * 1000);
-
-window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function () {
-    const current = localStorage.getItem("antiudar_theme");
-    if (current === "system" || !current) {
-        setTheme("system");
-    }
-});
 </script>
 
 </body>
