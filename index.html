@@ -1396,6 +1396,25 @@ function closeProfile() {
     document.body.style.overflow = "";
 }
 
+// BİLDİRİŞ (TOAST) ÜÇÜN ÜMUMİ FUNKSİYA
+function showToast(msg) {
+    if (!msg) return;
+    const toast = document.getElementById("toast");
+    if (!toast) return;
+
+    toast.innerText = msg;
+    toast.classList.remove("show");
+    void toast.offsetWidth;
+    toast.style.display = "block";
+    toast.classList.add("show");
+
+    clearTimeout(window._customToastTimer);
+    window._customToastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => { toast.style.display = "none"; }, 350);
+    }, 3000);
+}
+
 function updateProfile() {
     let user = auth.currentUser;
     if (!user) return;
@@ -1412,18 +1431,21 @@ function updateProfile() {
         return;
     }
 
-    db.collection("users").doc(user.uid).update({
-        username,
-        storeName,
-        storeAddress,
-        phoneNumber
-    }).then(() => {
+    // UPDATE yox, SET {merge: true} ulandyk, çünki öňden firebase doc ýok bolsa error bermez.
+    db.collection("users").doc(user.uid).set({
+        username: username,
+        storeName: storeName,
+        storeAddress: storeAddress,
+        phoneNumber: phoneNumber
+    }, { merge: true }).then(() => {
         msgDiv.style.color = "green";
         msgDiv.innerText = "Məlumatlar uğurla yeniləndi!";
+        showToast("Profil məlumatları yeniləndi!"); // Bildiriş bu ýerde geler
         setTimeout(() => msgDiv.innerText = "", 3000);
     }).catch((error) => {
         msgDiv.style.color = "red";
         msgDiv.innerText = "Xəta baş verdi: " + error.message;
+        showToast("Xəta: " + error.message); // Ýalňyşlyk bildirişi
     });
 }
 
