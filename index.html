@@ -8,14 +8,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
+    <title>Qoruyucu şüşə uyğunluğu</title>
     
-    <!-- Ekrana düşən ikonun adını sabitləyən teqlər -->
-    <meta name="apple-mobile-web-app-title" content="ProTechtor">
-    <meta name="application-name" content="ProTechtor">
-    
-    <!-- Brauzer tabında görünən ad -->
-    <title>ProTechtor</title>
-    
+    <!-- Firebase SDK (Giriş və Baza üçün) -->
+    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
+
     <!-- Fiziki manifest.json faylına keçid -->
     <link rel="manifest" href="./manifest.json">
 
@@ -209,7 +208,6 @@
             transition: color 0.4s ease;
         }
 
-        /* ===== PARLAQ PLACEHOLDER (DUMANSIZ) ===== */
         .search-input::placeholder {
             color: var(--placeholder-color);
             font-weight: 600;
@@ -912,6 +910,68 @@
             padding: 0 4px;
             line-height: 1;
         }
+
+        /* QEYDİYYAT / GİRİŞ MODAL PƏNCƏRƏSİ ÜÇÜN ÜSLUBLAR */
+        #auth-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-box {
+            width: 100%;
+            max-width: 380px;
+            background: var(--surface);
+            border: 2px solid var(--accent-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .auth-box h3 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 16px;
+            outline: none;
+        }
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-color);
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .auth-toggle {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 15px;
+            display: block;
+        }
+        .auth-error {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 8px;
+        }
     </style>
 </head>
 
@@ -919,13 +979,52 @@
 
 <div id="offline-banner" data-i18n="offlineBanner">İnternet bağlantısı yoxdur — Offline rejimdəsiniz</div>
 
+<!-- QEYDİYYAT VƏ GİRİŞ MODALI -->
+<div id="auth-modal">
+    <div class="auth-box">
+        <!-- QEYDİYYAT FORMASI -->
+        <div id="registerFormContainer">
+            <h3 id="authModalTitle">Qeydiyyat Tələb Olunur</h3>
+            <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Pulsuz 3 axtarış limitiniz bitdi. Davam etmək üçün qeydiyyatdan keçin.</p>
+            <input type="text" id="regUser" placeholder="Ləqəb">
+            <input type="email" id="regEmail" placeholder="E-poçt (Parolu bərpa üçün)">
+            <input type="password" id="regPass" placeholder="Parol">
+            <input type="text" id="regStore" placeholder="Mağaza adı">
+            <input type="text" id="regAddress" placeholder="Mağaza ünvanı">
+            <input type="tel" id="regPhone" placeholder="Telefon nömrəsi">
+            <button onclick="registerUser()">Qeydiyyatdan Keç</button>
+            <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq hesabın var? Giriş et</span>
+        </div>
+
+        <!-- GİRİŞ FORMASI -->
+        <div id="loginFormContainer" style="display: none;">
+            <h3>Giriş Et</h3>
+            <input type="email" id="logEmail" placeholder="E-poçt ünvanınız">
+            <input type="password" id="logPass" placeholder="Parol">
+            <button onclick="loginUser()">Daxil Ol</button>
+            <span class="auth-toggle" onclick="switchAuthMode('forgot')">Parolumu unutmuşam</span>
+            <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabın yoxdur? Qeydiyyatdan keç</span>
+        </div>
+
+        <!-- PAROLU BƏRPA FORMASI -->
+        <div id="forgotFormContainer" style="display: none;">
+            <h3>Parolu Bərpa Et</h3>
+            <input type="email" id="forgotEmail" placeholder="Qeydiyyat e-poçtunuz">
+            <button onclick="resetPassword()">Bərpa Linki Göndər</button>
+            <span class="auth-toggle" onclick="switchAuthMode('login')">Girişə qayıt</span>
+        </div>
+
+        <div id="authMsg" class="auth-error"></div>
+    </div>
+</div>
+
 <div id="app">
 
     <div id="main-view">
         <header class="top-header">
             <div class="header-left">
                 <div class="header-small">Antiudar</div>
-                <div class="header-title" data-i18n="title">ProTechtor</div>
+                <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <button class="menu-button" onclick="openSettings()">☰</button>
         </header>
@@ -1108,7 +1207,7 @@
 
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secContact">ƏLAQƏ</div>
-                <a href="https://wa.me/994553115544?text=Salam,%20ProTechtor%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">
+                <a href="https://wa.me/994553115544?text=Salam,%20ProTector%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">
                     WhatsApp ilə əlaqə
                 </a>
             </div>
@@ -1144,19 +1243,19 @@
         </header>
         <div class="settings-content" style="color: var(--text); font-size: 14px; line-height: 1.6;">
             <p><strong>1. MƏLUMAT TOPLANMASI VƏ EMALI</strong><br>
-            ProTechtor proqram təminatı heç bir şəxsi məlumatı toplamır, emal etmir, saxlamır və ya üçüncü tərəflərə ötürmür. Ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları, cihaz identifikatoru, IP ünvanı və ya istifadəçini birbaşa yaxud dolayı yolla müəyyənləşdirə biləcək hər hansı digər məlumatın toplanması qəti şəkildə istisna olunur. Tətbiq heç bir izləmə sistemi, analitika aləti, reklam şəbəkəsi və ya üçüncü tərəf məlumat emalı xidmətindən istifadə etmir.</p><br>
+            ProTector proqram təminatı heç bir şəxsi məlumatı toplamır, emal etmir, saxlamır və ya üçüncü tərəflərə ötürmür. Ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları, cihaz identifikatoru, IP ünvanı və ya istifadəçini birbaşa yaxud dolayı yolla müəyyənləşdirə biləcək hər hansı digər məlumatın toplanması qəti şəkildə istisna olunur. Tətbiq heç bir izləmə sistemi, analitika aləti, reklam şəbəkəsi və ya üçüncü tərəf məlumat emalı xidmətindən istifadə etmir.</p><br>
             
             <p><strong>2. YERLİ YADDAŞ VƏ MƏLUMAT TƏHLÜKƏSİZLİYİ</strong><br>
             Tətbiq yalnız cihazın yerli yaddaşından (Local Storage) istifadə edir. Orada yalnız texniki parametrlər (seçilmiş mövzu, şrift ölçüsü və baza məlumatları) saxlanılır. Bu məlumatlar yalnız istifadəçinin cihazında qalır və heç bir serverə, bulud xidmətinə və ya kənar platformaya ötürülmür.</p><br>
 
             <p><strong>3. İNTERNET BAĞLANTISI VƏ ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ</strong><br>
-            Tətbiq yalnız uyğunluq bazasını yeniləmək məqsədilə internetə qoşulur və açıq mənbədən məlumatları sinxronlaşdırır. Əlaqə bölməsindən WhatsApp platformasına keçid edildikdə, həmin andan etibarən proses WhatsApp-ın məxfilik siyasəti çərçivəsində tənzimlənir. ProTechtor bu xidmətin fəaliyyətinə görə heç bir məsuliyyət daşımır.</p><br>
+            Tətbiq yalnız uyğunluq bazasını yeniləmək məqsədilə internetə qoşulur və açıq mənbədən məlumatları sinxronlaşdırır. Əlaqə bölməsindən WhatsApp platformasına keçid edildikdə, həmin andan etibarən proses WhatsApp-ın məxfilik siyasəti çərçivəsində tənzimlənir. ProTector bu xidmətin fəaliyyətinə görə heç bir məsuliyyət daşımır.</p><br>
 
             <p><strong>4. TƏTBİQİN FƏALİYYƏTİNİN MƏHDUDLAŞDIRILMASI</strong><br>
             Məlumatların aktuallığını, dəqiqliyini və təhlükəsizliyini təmin etmək məqsədilə, baza ardıcıl 3 (üç) gün ərzində yenilənmədikdə tətbiqin fəaliyyəti avtomatik olaraq məhdudlaşdırılır. Fəaliyyətin bərpası üçün qısa müddətli internet bağlantısı təmin edilməli və baza yenilənməlidir.</p><br>
 
             <p><strong>5. HÜQUQİ TƏNZİMLƏMƏ VƏ MƏSULİYYƏTDƏN İMTİNA</strong><br>
-            ProTechtor heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən icazəsiz istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər qüvvədə olan qanunvericilik çərçivəsində tənzimlənir. Proqramdan istifadə edən hər bir şəxs bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</p>
+            ProTector heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən icazəsiz istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər qüvvədə olan qanunvericilik çərçivəsində tənzimlənir. Proqramdan istifadə edən hər bir şəxs bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</p>
         </div>
     </div>
 
@@ -1191,6 +1290,21 @@
 </div>
 
 <script>
+// FİREBASE QOŞULMASI
+const firebaseConfig = {
+    apiKey: "AIzaSyB-kuPK97aaUbXNf1vJqUf7aFAKEJVvY8o",
+    authDomain: "protechtor-99407.firebaseapp.com",
+    projectId: "protechtor-99407",
+    storageBucket: "protechtor-99407.firebasestorage.app",
+    messagingSenderId: "703242369784",
+    appId: "1:703242369784:web:03bc54204f753af9cb990d",
+    measurementId: "G-D5E9BP4FLH"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
 const RAW_URL = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Base.json";
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -1198,6 +1312,7 @@ const DB_KEY = "antiudar_db_v3";
 const UPDATE_KEY = "antiudar_last_update_v3";
 const CHANGELOG_KEY = "antiudar_changelog_v2";
 const INSTALL_DISMISS_KEY = "antiudar_install_dismiss";
+const SEARCH_COUNT_KEY = "antiudar_search_count";
 
 let database = [];
 let selectedModel = "";
@@ -1211,6 +1326,13 @@ let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medi
 let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Firebase giriş yoxlaması
+    auth.onAuthStateChanged((user) => {
+        if (!user) {
+            checkSearchLimit();
+        }
+    });
+
     initDynamicPWA();
     initTheme();
     initFontScale();
@@ -1241,7 +1363,88 @@ document.addEventListener("DOMContentLoaded", function () {
     initEdgeSwipeGestures();
 });
 
-// SERVICE WORKER QEYDİYYATI
+// Qeydiyyat və Giriş funksiyaları
+function checkSearchLimit() {
+    let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
+    if (count >= 3) {
+        document.getElementById("auth-modal").style.display = "flex";
+    }
+}
+
+function switchAuthMode(mode) {
+    document.getElementById("registerFormContainer").style.display = mode === "register" ? "block" : "none";
+    document.getElementById("loginFormContainer").style.display = mode === "login" ? "block" : "none";
+    document.getElementById("forgotFormContainer").style.display = mode === "forgot" ? "block" : "none";
+    document.getElementById("authMsg").innerText = "";
+}
+
+function registerUser() {
+    let user = document.getElementById("regUser").value.trim();
+    let email = document.getElementById("regEmail").value.trim();
+    let pass = document.getElementById("regPass").value.trim();
+    let store = document.getElementById("regStore").value.trim();
+    let address = document.getElementById("regAddress").value.trim();
+    let phone = document.getElementById("regPhone").value.trim();
+    let msgDiv = document.getElementById("authMsg");
+
+    if (!user || !email || !pass || !store) {
+        msgDiv.innerText = "Zəhmət olmasa vacib xanaları doldurun!";
+        return;
+    }
+
+    auth.createUserWithEmailAndPassword(email, pass)
+        .then((userCredential) => {
+            let uid = userCredential.user.uid;
+            db.collection("users").doc(uid).set({
+                username: user,
+                email: email,
+                storeName: store,
+                storeAddress: address,
+                phoneNumber: phone
+            }).then(() => {
+                localStorage.setItem(SEARCH_COUNT_KEY, "0");
+                document.getElementById("auth-modal").style.display = "none";
+            });
+        })
+        .catch((error) => {
+            msgDiv.innerText = "Xəta: " + error.message;
+        });
+}
+
+function loginUser() {
+    let email = document.getElementById("logEmail").value.trim();
+    let pass = document.getElementById("logPass").value.trim();
+    let msgDiv = document.getElementById("authMsg");
+
+    auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+            localStorage.setItem(SEARCH_COUNT_KEY, "0");
+            document.getElementById("auth-modal").style.display = "none";
+        })
+        .catch((error) => {
+            msgDiv.innerText = "E-poçt və ya parol səhvdir!";
+        });
+}
+
+function resetPassword() {
+    let email = document.getElementById("forgotEmail").value.trim();
+    let msgDiv = document.getElementById("authMsg");
+
+    if (!email) {
+        msgDiv.innerText = "E-poçt daxil edin!";
+        return;
+    }
+
+    auth.sendPasswordResetEmail(email)
+        .then(() => {
+            msgDiv.innerText = "Bərpa linki e-poçtunuza göndərildi!";
+        })
+        .catch((error) => {
+            msgDiv.innerText = "Belə e-poçt tapılmadı.";
+        });
+}
+
+// SERVICE WORKER QEYDİYYATI ÜÇÜN SADƏLƏŞDİRİLMİŞ FUNKSİYA
 function initDynamicPWA() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1334,6 +1537,9 @@ function initEdgeSwipeGestures() {
     }, {passive: true});
 }
 
+/* =============================================================
+   DİNAMİK PLACEHOLDER – PARLAQ RƏNGLƏR (DUMANSIZ)
+============================================================= */
 const PLACEHOLDER_PALETTE = [
     { color: "#FFE566" },
     { color: "#C77DFF" },
@@ -1754,15 +1960,13 @@ function renderChangelogHistory() {
     });
 }
 
-// BÜTÜN DİLLƏRDƏ BAŞLIQ (TITLE) "ProTechtor" OLARAQ DƏYİŞDİRİLDİ
 const I18N = {
- az:{title:"ProTechtor",search:"Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur"},
- ru:{title:"ProTechtor",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета"},
- en:{title:"ProTechtor",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet"},
- tr:{title:"ProTechtor",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok"}
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok"}
 };
-
-const APP_VERSION = "3.2.0";
+const APP_VERSION = "3.1.9";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -1954,7 +2158,7 @@ function showNotFound(query) {
     a.className = "whatsapp-button nf-button";
     a.target = "_blank";
     a.rel = "noopener";
-    a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTechtor: bazada tapılmayan model — " + query);
+    a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTector: bazada tapılmayan model — " + query);
     a.innerText = t("nfBtn");
     results.appendChild(a);
 }
@@ -1971,6 +2175,19 @@ function highlightMatch(text, query) {
 }
 
 function performSearch(query) {
+    // 3 axtarış limiti yoxlaması (Əgər istifadəçi Firebase-də login olmayıbsa)
+    if (!auth.currentUser) {
+        let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
+        if (query.trim().length > 0) {
+            count++;
+            localStorage.setItem(SEARCH_COUNT_KEY, count.toString());
+        }
+        if (count > 3) {
+            document.getElementById("auth-modal").style.display = "flex";
+            return;
+        }
+    }
+
     const results = document.getElementById("results");
     const status = document.getElementById("status");
     results.innerHTML = "";
