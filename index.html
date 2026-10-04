@@ -1367,6 +1367,11 @@
             <button class="admin-btn admin-btn-secondary" onclick="adminAddGroup()">+ Yeni qrup</button>
             <button class="admin-btn admin-btn-success" onclick="adminSaveDatabase()">💾 Yadda saxla</button>
             <button class="admin-btn admin-btn-primary" onclick="adminPublishDatabase()">☁ Dərc et</button>
+            <button class="admin-btn admin-btn-secondary" onclick="adminImportFromGitHub()" title="Köhnə GitHub bazasını bir dəfə Firebase-ə köçür">⬇ GitHub-dan gətir</button>
+            <label class="admin-btn admin-btn-secondary" style="cursor:pointer;margin:0;" title="JSON fayl yüklə">
+                📂 JSON yüklə
+                <input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)">
+            </label>
         </div>
         <div id="adminList" class="admin-list"></div>
         <div id="adminStatus" class="admin-status">Admin paneli hazırdır</div>
@@ -2097,6 +2102,57 @@ async function adminPublishDatabase() {
         setAdminStatus("Xəta: " + (err.message || "Dərc edilə bilmədi"));
         showAppToast("Dərc xətası: " + (err.message || "yenidən cəhd edin"));
     }
+}
+
+/** Bir dəfəlik: köhnə GitHub Base.json-u oxuyub panelə yükləyir (sonra Dərc et) */
+async function adminImportFromGitHub() {
+    if (!isAdmin) return;
+    setAdminStatus("GitHub-dan yüklənir...");
+    try {
+        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const data = await response.json();
+        const parsed = normalizeDatabase(data);
+        if (!parsed.length) throw new Error("Baza boşdur");
+        adminEditDb = parsed;
+        adminOpenGroups = new Set();
+        renderAdminList();
+        setAdminStatus("GitHub-dan gətirildi · " + parsed.length + " qrup. İndi «☁ Dərc et» basın!");
+        showAppToast(parsed.length + " qrup gətirildi — Dərc et!");
+    } catch (err) {
+        console.error(err);
+        setAdminStatus("Import xətası: " + (err.message || ""));
+        showAppToast("GitHub-dan gətirmək alınmadı");
+    }
+}
+
+/** JSON faylından import */
+function adminImportJsonFile(input) {
+    if (!isAdmin || !input.files || !input.files[0]) return;
+    const file = input.files[0];
+    setAdminStatus("JSON oxunur...");
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            const parsed = normalizeDatabase(data);
+            if (!parsed.length) throw new Error("Faylda qrup yoxdur");
+            adminEditDb = parsed;
+            adminOpenGroups = new Set();
+            renderAdminList();
+            setAdminStatus("JSON yükləndi · " + parsed.length + " qrup. «☁ Dərc et» basın!");
+            showAppToast(parsed.length + " qrup yükləndi — Dərc et!");
+        } catch (err) {
+            setAdminStatus("JSON xətası: " + (err.message || ""));
+            showAppToast("JSON oxunmadı");
+        }
+        input.value = "";
+    };
+    reader.onerror = function () {
+        showAppToast("Fayl oxunmadı");
+        input.value = "";
+    };
+    reader.readAsText(file);
 }
 
 async function loadDatabaseFromFirestore() {
@@ -3103,26 +3159,18 @@ async function fetchDatabase(retries = 3) {
         const oldDatabase = JSON.parse(JSON.stringify(database));
         let parsed = null;
 
-        // 1) Əvvəl Firestore (admin dərc etmiş baza)
-        try {
-            const snap = await db.doc(FS_DB_DOC).get();
-            if (snap.exists) {
-                const data = snap.data();
-                if (data && Array.isArray(data.groups) && data.groups.length > 0) {
-                    parsed = normalizeDatabase(data.groups);
-                }
+        // Yalnız Firebase
+        const snap = await db.doc(FS_DB_DOC).get();
+        if (snap.exists) {
+            const data = snap.data();
+            if (data && Array.isArray(data.groups) && data.groups.length > 0) {
+                parsed = normalizeDatabase(data.groups);
             }
-        } catch (e) {}
-
-        // 2) Firestore boşdursa GitHub
-        if (!parsed || parsed.length === 0) {
-            const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
-            if (!response.ok) throw new Error("HTTP " + response.status);
-            const data = await response.json();
-            parsed = normalizeDatabase(data);
         }
 
-        if (!parsed || parsed.length === 0) throw new Error("Baza boşdur.");
+        if (!parsed || parsed.length === 0) {
+            throw new Error("Firebase-də baza yoxdur. Admin: GitHub-dan gətir → Dərc et");
+        }
 
         const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
         if (changelogMsg) {
@@ -3138,7 +3186,7 @@ async function fetchDatabase(retries = 3) {
         updateLastUpdate();
 
         const input = document.getElementById("searchInput");
-        if (input.value.trim()) performSearch(input.value);
+        if (input && input.value.trim()) performSearch(input.value);
 
         checkBlockStatus();
 
@@ -3156,7 +3204,9 @@ async function fetchDatabase(retries = 3) {
         updateButton.querySelector("span").innerText = t("updateNow");
         spinner.style.display = "none";
         updateButton.disabled = false;
-        if (database.length === 0) alert(t("alertFail"));
+        if (database.length === 0) {
+            alert(t("alertFail") + "\n\nAdmin paneldən bazanı Firebase-ə dərc edin.");
+        }
         checkBlockStatus();
     }
 }
@@ -3164,25 +3214,26 @@ async function fetchDatabase(retries = 3) {
 async function backgroundCheckUpdate() {
     if (!navigator.onLine) return;
     try {
-        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
-        if (response.ok) {
-            const data = await response.json();
-            const parsed = normalizeDatabase(data);
-            if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
-                const oldDatabase = JSON.parse(JSON.stringify(database));
-                localStorage.setItem(DB_KEY, JSON.stringify(parsed));
-                localStorage.setItem(UPDATE_KEY, Date.now().toString());
-                database = parsed;
-                updateLastUpdate();
+        const snap = await db.doc(FS_DB_DOC).get();
+        if (!snap.exists) return;
+        const data = snap.data();
+        if (!data || !Array.isArray(data.groups) || data.groups.length === 0) return;
+        const parsed = normalizeDatabase(data.groups);
+        if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
+            const oldDatabase = JSON.parse(JSON.stringify(database));
+            localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+            localStorage.setItem(UPDATE_KEY, Date.now().toString());
+            database = parsed;
+            indexFor = null;
+            updateLastUpdate();
 
-                const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
-                if (changelogMsg) {
-                    saveChangelog(changelogMsg);
-                    showChangelogToast(changelogMsg);
-                    renderChangelogHistory();
-                }
-                playSuccessSound();
+            const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
+            if (changelogMsg) {
+                saveChangelog(changelogMsg);
+                showChangelogToast(changelogMsg);
+                renderChangelogHistory();
             }
+            playSuccessSound();
         }
     } catch (e) {}
 }
