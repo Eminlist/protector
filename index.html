@@ -1659,6 +1659,9 @@ let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medi
 let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Tətbiq açılan kimi ana səhifə üçün State əlavə olunur (Back History Gesture üçün)
+    history.replaceState({page: 'main'}, "");
+
     auth.onAuthStateChanged((user) => {
         if (!user) {
             isAdmin = false;
@@ -1704,6 +1707,60 @@ document.addEventListener("DOMContentLoaded", function () {
     initEdgeSwipeGestures();
 });
 
+// POPSTATE EVENT - Geri qayıtma jesti / Back button
+let exitTimer = null;
+window.addEventListener("popstate", (e) => {
+    const adminView = document.getElementById("admin-view");
+    const privacyView = document.getElementById("privacy-view");
+    const settingsView = document.getElementById("settings-view");
+    const profileView = document.getElementById("profile-view");
+    const detailView = document.getElementById("detail-view");
+
+    let modalClosed = false;
+
+    // Açıq modalları prioritetə görə yoxla və bağla
+    if (privacyView && privacyView.classList.contains("active")) {
+        privacyView.classList.remove("active");
+        triggerHaptic(20);
+        modalClosed = true;
+    }
+    else if (adminView && adminView.classList.contains("active")) {
+        adminView.classList.remove("active");
+        document.body.style.overflow = "";
+        triggerHaptic(20);
+        modalClosed = true;
+    }
+    else if (settingsView && settingsView.classList.contains("active")) {
+        settingsView.classList.remove("active");
+        document.body.style.overflow = "";
+        triggerHaptic(20);
+        modalClosed = true;
+    }
+    else if (profileView && profileView.classList.contains("active")) {
+        profileView.classList.remove("active");
+        document.body.style.overflow = "";
+        triggerHaptic(20);
+        modalClosed = true;
+    }
+    else if (detailView && detailView.classList.contains("active")) {
+        detailView.classList.remove("active");
+        document.body.style.overflow = "";
+        triggerHaptic(20);
+        modalClosed = true;
+    }
+
+    if (!modalClosed) {
+        // Ana səhifədəyik
+        if (exitTimer) {
+            // Tətbiq təbii olaraq geri gedib bağlanır (exitApp)
+        } else {
+            showAppToast("Proqramdan çıxmaq üçün yenidən geri qayıdın");
+            history.pushState({page: 'main'}, ""); // Vəziyyəti bərpa edirik ki, dərhal çıxmasın
+            exitTimer = setTimeout(() => { exitTimer = null; }, 2000);
+        }
+    }
+});
+
 // PROFİL SƏHİFƏSİ
 function openProfile() {
     let user = auth.currentUser;
@@ -1728,10 +1785,12 @@ function openProfile() {
         } else {
             setPhoneInput("profPhone", "");
         }
+        history.pushState({modal: 'profile'}, "");
         document.getElementById("profile-view").classList.add("active");
         document.body.style.overflow = "hidden";
     }).catch((err) => {
         console.error("Profil oxuma xətası:", err);
+        history.pushState({modal: 'profile'}, "");
         document.getElementById("profile-view").classList.add("active");
         document.body.style.overflow = "hidden";
         showAppToast("Profil məlumatları yüklənmədi. İnterneti yoxlayın.");
@@ -1739,8 +1798,7 @@ function openProfile() {
 }
 
 function closeProfile() {
-    document.getElementById("profile-view").classList.remove("active");
-    document.body.style.overflow = "";
+    history.back();
 }
 
 function updateProfile() {
@@ -1766,7 +1824,6 @@ function updateProfile() {
     msgDiv.style.color = "var(--muted)";
     msgDiv.innerText = "Yadda saxlanılır...";
 
-    // merge:true ilə sənəd yoxdursa da yaradılır / mövcuddursa yenilənir
     db.collection("users").doc(user.uid).set({
         username: username,
         storeName: storeName,
@@ -1780,7 +1837,7 @@ function updateProfile() {
         showAppToast("✓ Dəyişikliklər yadda saxlanıldı!");
         setTimeout(() => { if (msgDiv) msgDiv.innerText = ""; }, 3500);
         triggerHaptic(40);
-        playSuccessSound && playSuccessSound();
+        if (typeof playSuccessSound === "function") playSuccessSound();
     }).catch((error) => {
         console.error("Profil yeniləmə xətası:", error);
         msgDiv.style.color = "red";
@@ -1817,7 +1874,6 @@ function formatPhoneMask(digits) {
 
 function extractPhoneDigits(value) {
     let d = String(value || "").replace(/\D/g, "");
-    // Əgər +994 və ya 994 ilə başlayırsa çıxar
     if (d.startsWith("994")) d = d.slice(3);
     return d.slice(0, 9);
 }
@@ -1840,7 +1896,6 @@ function onPhoneInput(e) {
     const digits = extractPhoneDigits(el.value);
     const formatted = formatPhoneMask(digits);
     el.value = formatted;
-    // Kursoru sona qoy (sadə və stabil)
     try { el.setSelectionRange(formatted.length, formatted.length); } catch (_) {}
 }
 
@@ -1854,7 +1909,6 @@ function initPhoneMasks() {
             const text = (e.clipboardData || window.clipboardData).getData("text");
             el.value = formatPhoneMask(extractPhoneDigits(text));
         });
-        // Başlanğıc placeholder görünür
         if (!el.value) el.value = "";
     });
 }
@@ -1888,6 +1942,7 @@ function openAdmin() {
     adminEditDb = JSON.parse(JSON.stringify(database || []));
     adminOpenGroups = new Set();
     renderAdminList();
+    history.pushState({modal: 'admin'}, "");
     document.getElementById("admin-view").classList.add("active");
     document.body.style.overflow = "hidden";
     setAdminStatus("Qrup sayı: " + adminEditDb.length);
@@ -1895,9 +1950,7 @@ function openAdmin() {
 }
 
 function closeAdmin() {
-    document.getElementById("admin-view").classList.remove("active");
-    document.body.style.overflow = "";
-    triggerHaptic(20);
+    history.back();
 }
 
 function setAdminStatus(msg) {
@@ -2074,7 +2127,6 @@ function adminSaveDatabase() {
     renderAdminList();
 }
 
-/** Firestore nested array qəbul etmir → uyğun formata çevir */
 function groupsToFirestore(groups) {
     return (groups || []).map(function (g) {
         return { models: Array.isArray(g) ? g.map(String) : [] };
@@ -2140,7 +2192,6 @@ async function adminPublishDatabase() {
     }
 }
 
-/** Bir dəfəlik: köhnə GitHub Base.json-u oxuyub panelə yükləyir (sonra Dərc et) */
 async function adminImportFromGitHub() {
     if (!isAdmin) return;
     setAdminStatus("GitHub-dan yüklənir...");
@@ -2162,7 +2213,6 @@ async function adminImportFromGitHub() {
     }
 }
 
-/** JSON faylından import */
 function adminImportJsonFile(input) {
     if (!isAdmin || !input.files || !input.files[0]) return;
     const file = input.files[0];
@@ -2233,7 +2283,6 @@ async function loadDatabaseFromFirestore() {
     return false;
 }
 
-// 3 AXTARIŞDAN SONRA QEYDİYYAT
 function checkSearchLimit() {
     let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
     if (count >= 3) {
@@ -2330,7 +2379,6 @@ function resetPassword() {
         });
 }
 
-// PWA 48 SAAT QAYDASI
 function initPWA() {
     window.addEventListener("beforeinstallprompt", (e) => {
         deferredPrompt = e;
@@ -2410,22 +2458,19 @@ function initEdgeSwipeGestures() {
         const diffY = Math.abs(touchEndY - touchStartY);
 
         if (touchStartX < 50 && diffX > 80 && diffY < 60) {
-            const detailView = document.getElementById("detail-view");
-            const settingsView = document.getElementById("settings-view");
-            const privacyView = document.getElementById("privacy-view");
-            const profileView = document.getElementById("profile-view");
             const adminView = document.getElementById("admin-view");
+            const privacyView = document.getElementById("privacy-view");
+            const settingsView = document.getElementById("settings-view");
+            const profileView = document.getElementById("profile-view");
+            const detailView = document.getElementById("detail-view");
 
-            if (adminView && adminView.classList.contains("active")) {
-                closeAdmin();
-            } else if (privacyView.classList.contains("active")) {
-                closePrivacy();
-            } else if (settingsView.classList.contains("active")) {
-                closeSettings();
-            } else if (profileView.classList.contains("active")) {
-                closeProfile();
-            } else if (detailView.classList.contains("active")) {
-                closeDetail();
+            if ((adminView && adminView.classList.contains("active")) ||
+                (privacyView && privacyView.classList.contains("active")) ||
+                (settingsView && settingsView.classList.contains("active")) ||
+                (profileView && profileView.classList.contains("active")) ||
+                (detailView && detailView.classList.contains("active"))) {
+                // Programmatik və ya Edge Swipe ilə bağlananda State qeydini pozmamaq üçün `history.back()` istifadə edilir 
+                history.back();
             }
         }
     }, {passive: true});
@@ -2746,7 +2791,6 @@ function formatDateShort(d) {
         String(dt.getFullYear()).slice(-2);
 }
 
-/** Gündəlik dəyişiklik mesajı: "04.10.26 yeniləndi... 3 model əlavə olundu" */
 function generateChangelogMessage(oldDb, newDb) {
     const oldModels = getAllModels(oldDb || []);
     const newModels = getAllModels(newDb || []);
@@ -2770,7 +2814,6 @@ function generateChangelogMessage(oldDb, newDb) {
     return dateStr + " yeniləndi... " + detail;
 }
 
-/** Eyni gün üçün bir qeyd — yenilənir; köhnə günlər saxlanılır */
 function saveChangelog(msg, dateKey) {
     if (!msg) return;
     try {
@@ -2783,7 +2826,6 @@ function saveChangelog(msg, dateKey) {
         } else {
             list.unshift(entry);
         }
-        // Yenidən tarixə görə sırala (yeni üstdə)
         list.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
         list = list.slice(0, 30);
         localStorage.setItem(CHANGELOG_KEY, JSON.stringify(list));
@@ -3158,15 +3200,14 @@ function openDetail(model, group) {
     document.getElementById("detail-model").innerText = model;
     renderCompatibilityList(group, model);
 
+    history.pushState({modal: 'detail'}, "");
     document.getElementById("detail-view").classList.add("active");
     document.getElementById("compatibility-list").scrollTop = 0;
     document.body.style.overflow = "hidden";
 }
 
 function closeDetail() {
-    document.getElementById("detail-view").classList.remove("active");
-    document.body.style.overflow = "";
-    triggerHaptic(20);
+    history.back();
 }
 
 function renderCompatibilityList(group, selected) {
@@ -3203,6 +3244,7 @@ function renderCompatibilityList(group, selected) {
 }
 
 function openSettings() {
+    history.pushState({modal: 'settings'}, "");
     document.getElementById("settings-view").classList.add("active");
     document.body.style.overflow = "hidden";
     renderChangelogHistory();
@@ -3210,19 +3252,18 @@ function openSettings() {
 }
 
 function closeSettings() {
-    document.getElementById("settings-view").classList.remove("active");
-    document.body.style.overflow = "";
-    triggerHaptic(20);
+    history.back();
 }
 
 function openPrivacy() {
+    history.pushState({modal: 'privacy'}, "");
     document.getElementById("privacy-view").classList.add("active");
     document.getElementById("privacy-view").scrollTop = 0;
     document.body.style.overflow = "hidden";
 }
 
 function closePrivacy() {
-    document.getElementById("privacy-view").classList.remove("active");
+    history.back();
 }
 
 async function fetchDatabase(retries = 3) {
@@ -3237,7 +3278,6 @@ async function fetchDatabase(retries = 3) {
         const oldDatabase = JSON.parse(JSON.stringify(database));
         let parsed = null;
 
-        // Yalnız Firebase
         const snap = await db.doc(FS_DB_DOC).get();
         let fsData = null;
         if (snap.exists) {
@@ -3250,7 +3290,6 @@ async function fetchDatabase(retries = 3) {
             throw new Error("Firebase-də baza yoxdur. Admin: GitHub-dan gətir → Dərc et");
         }
 
-        // Əgər Firebase-də changelog yoxdursa, lokal müqayisə et
         if (!fsData || !Array.isArray(fsData.changelog) || fsData.changelog.length === 0) {
             const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
             if (changelogMsg) {
@@ -3332,7 +3371,6 @@ function loadDatabaseFromCacheOnly() {
             if (database.length > 0) {
                 updateLastUpdate();
                 checkBlockStatus();
-                // Arxa planda Firestore-dan yeniləmə yoxla
                 loadDatabaseFromFirestore().then(function (ok) {
                     if (ok) {
                         indexFor = null;
@@ -3344,7 +3382,6 @@ function loadDatabaseFromCacheOnly() {
             }
         } catch (e) {}
     }
-    // Keş yoxdursa əvvəl Firestore, sonra GitHub
     loadDatabaseFromFirestore().then(function (ok) {
         if (!ok) {
             updateLastUpdate();
