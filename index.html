@@ -15,245 +15,1438 @@
     <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
 
+    <!-- Fiziki manifest.json faylına keçid -->
     <link rel="manifest" href="./manifest.json">
+
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
 
     <style>
         :root[data-theme="dark"] {
-            --bg: #0a0a0a; --surface: #111111; --surface-2: #1a1a1a;
-            --border: #333333; --text: #f5f5f5; --muted: #999999;
-            --accent-color: #d4af37; --accent-dark: #8a6d1d;
-            --header-bg: rgba(10, 10, 10, 0.9); --card-bg: rgba(20, 20, 20, 0.7);
+            --bg: #0a0a0a;
+            --surface: #111111;
+            --surface-2: #1a1a1a;
+            --border: #333333;
+            --text: #f5f5f5;
+            --muted: #999999;
+            --orange: #ff5722;
+            --selected: #551b0b;
+            --white: #ffffff;
+            --gold: #d4af37;
+            --gold-dark: #8a6d1d;
+            --header-bg: rgba(10, 10, 10, 0.9);
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --result-hover: rgba(212, 175, 55, 0.1);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        html, body { width: 100%; min-height: 100%; background: var(--bg); color: var(--text); }
-        .top-header { height: 110px; padding: 22px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--accent-color); background: var(--header-bg); }
-        .header-title { font-size: 24px; font-weight: 800; color: var(--text); }
-        .main-content { padding: 24px; }
-        .search-wrapper { width: 100%; height: 72px; border: 2px solid var(--accent-color); display: flex; align-items: center; background: var(--surface); margin-bottom: 16px; border-radius: 20px; overflow: hidden; position: relative; }
-        .search-input { flex: 1; height: 100%; border: none; outline: none; background: transparent; color: var(--text); font-size: 20px; padding: 0 22px; }
-        .menu-btn-group { display: flex; gap: 10px; }
-        .btn-custom { width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; }
+
+        :root[data-theme="light"] {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface-2: #eeeeee;
+            --border: #dddddd;
+            --text: #111111;
+            --muted: #666666;
+            --orange: #ff5722;
+            --selected: #ffe0d0;
+            --white: #ffffff;
+            --gold: #b8860b;
+            --gold-dark: #8b6914;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: #ffffff;
+            --result-hover: rgba(184, 134, 11, 0.08);
+        }
+
+        :root {
+            --font-scale: 1;
+            --accent-color: #d4af37;
+            --accent-dark: #8a6d1d;
+            --placeholder-color: #ffe566;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-size: calc(16px * var(--font-scale));
+            overscroll-behavior-y: auto;
+        }
+
+        body {
+            overflow-x: hidden;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        :root[data-theme="dark"] body {
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.09) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(139, 105, 20, 0.04) 0%, transparent 70%),
+                radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
+                linear-gradient(160deg, #0a0a0a 0%, #111111 40%, #0d0d0d 100%);
+            background-attachment: fixed;
+        }
+
+        button, input, a {
+            font-family: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #offline-banner {
+            width: 100%;
+            background: #ff5722;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            padding: 8px;
+            display: none;
+            letter-spacing: 1px;
+            z-index: 1200;
+            position: relative;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        #app {
+            width: 100%;
+            min-height: 100vh;
+            background: transparent;
+        }
+
+        .top-header {
+            height: 110px;
+            padding: 22px 28px 18px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--accent-color);
+            background: var(--header-bg);
+            backdrop-filter: blur(8px);
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-small {
+            font-size: calc(13px * var(--font-scale));
+            letter-spacing: 5px;
+            color: var(--accent-color);
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .header-title {
+            font-size: calc(24px * var(--font-scale) * var(--responsive-scale, 1));
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            color: var(--text);
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .menu-button, .profile-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 16px;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .menu-button:active, .profile-btn:active {
+            background: var(--result-hover);
+            transform: scale(0.95);
+        }
+
+        .main-content {
+            padding: 24px;
+        }
+
+        .search-wrapper {
+            width: 100%;
+            height: 72px;
+            border: 2px solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            margin-bottom: 16px;
+            border-radius: 20px;
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .search-input {
+            flex: 1;
+            height: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--text);
+            font-size: calc(20px * var(--font-scale));
+            padding: 0 54px 0 22px;
+            transition: color 0.4s ease;
+        }
+
+        .search-input::placeholder {
+            color: var(--placeholder-color);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            opacity: 1;
+            transition: color 0.6s ease, opacity 0.3s ease;
+        }
+
+        .clear-button {
+            position: absolute;
+            right: 12px;
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 12px;
+            background: var(--surface-2);
+            color: var(--accent-color);
+            font-size: 22px;
+            font-weight: 700;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.2s;
+        }
+
+        .clear-button:active {
+            background: var(--border);
+        }
+
+        .clear-button.visible {
+            display: flex;
+        }
+
+        .clear-button.rotate {
+            transform: rotate(180deg);
+        }
+
+        .status {
+            height: 36px;
+            font-size: calc(14px * var(--font-scale));
+            letter-spacing: 3px;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            padding-left: 2px;
+            margin-bottom: 6px;
+        }
+
+        #results {
+            width: 100%;
+        }
+
+        .result-item {
+            width: 100%;
+            min-height: 78px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-radius: 16px;
+            margin-bottom: 4px;
+        }
+
+        .result-item:active {
+            background: var(--result-hover);
+        }
+
+        .brand-badge {
+            flex-shrink: 0;
+            min-width: 110px;
+            height: 36px;
+            padding: 0 12px;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
+            color: #111111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(13px * var(--font-scale));
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 12px;
+        }
+
+        .result-model {
+            flex: 1;
+            font-size: calc(19px * var(--font-scale));
+            margin-left: 18px;
+            color: var(--text);
+            font-weight: 400;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .result-model mark {
+            background: transparent;
+            color: var(--accent-color);
+            font-weight: 800;
+            text-decoration: underline;
+        }
+
+        .result-arrow {
+            flex-shrink: 0;
+            font-size: 32px;
+            color: var(--accent-color);
+            margin-left: 10px;
+            line-height: 1;
+            opacity: 0.75;
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--muted);
+            font-size: calc(15px * var(--font-scale));
+            padding-top: 50px;
+        }
+
+        #detail-view, #profile-view {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        #detail-view.active, #profile-view.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .detail-header, .profile-header {
+            height: 110px;
+            min-height: 110px;
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--accent-color);
+            background: var(--header-bg);
+        }
+
+        .detail-back, .profile-back {
+            width: 54px;
+            height: 54px;
+            flex-shrink: 0;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            font-size: 32px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 18px;
+        }
+
+        .detail-heading, .profile-heading {
+            margin-left: 20px;
+            overflow: hidden;
+        }
+
+        .detail-small, .profile-small {
+            font-size: calc(13px * var(--font-scale));
+            letter-spacing: 4px;
+            color: var(--accent-color);
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .detail-model, .profile-title {
+            font-size: calc(24px * var(--font-scale));
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .compatibility-title {
+            min-height: 48px;
+            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 16px;
+            font-size: calc(12px * var(--font-scale));
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .compatibility-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .compatibility-item {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background: transparent;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin: 2px 8px;
+        }
+
+        .compatibility-item.selected {
+            background: var(--selected);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .compat-number {
+            width: 48px;
+            flex-shrink: 0;
+            color: var(--accent-color);
+            font-size: calc(15px * var(--font-scale));
+            text-align: center;
+            font-weight: 500;
+            opacity: 0.85;
+        }
+
+        .compat-brand {
+            min-width: 105px;
+            height: 34px;
+            padding: 0 10px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
+            color: #111111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(12px * var(--font-scale));
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 12px;
+        }
+
+        .compat-model {
+            margin-left: 16px;
+            font-size: calc(18px * var(--font-scale));
+            color: var(--text);
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .compatibility-item.selected .compat-model {
+            font-weight: 700;
+        }
+
+        #settings-view {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: var(--bg);
+            z-index: 600;
+            display: block;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        #settings-view.active {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-header {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 2px solid var(--accent-color);
+            background: var(--header-bg);
+        }
+
+        .settings-back {
+            width: 54px;
+            height: 54px;
+            border: 2px solid var(--accent-color);
+            background: transparent;
+            color: var(--accent-color);
+            font-size: 30px;
+            cursor: pointer;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-heading {
+            margin-left: 18px;
+        }
+
+        .settings-small {
+            color: var(--accent-color);
+            font-size: calc(12px * var(--font-scale));
+            letter-spacing: 4px;
+        }
+
+        .settings-title {
+            font-size: calc(24px * var(--font-scale));
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .settings-content {
+            padding: 24px;
+        }
+
+        .settings-section {
+            margin-bottom: 28px;
+        }
+
+        .settings-section-title {
+            font-size: calc(12px * var(--font-scale));
+            letter-spacing: 3px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .settings-box {
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .settings-row {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: calc(14px * var(--font-scale));
+            color: var(--text);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .update-button, .profile-save-btn {
+            width: 100%;
+            height: 56px;
+            border: none;
+            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
+            color: #ffffff;
+            font-size: calc(15px * var(--font-scale));
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-top: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border-radius: 18px;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border); transition: .3s; border-radius: 26px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .whatsapp-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            height: 56px;
+            background: #25D366;
+            color: #ffffff;
+            font-size: calc(16px * var(--font-scale));
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            transition: background 0.2s;
+        }
+
+        .whatsapp-button:active {
+            background: #1da851;
+        }
+
+        .theme-selector {
+            display: flex;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: 16px 4px;
+            text-align: center;
+            border-right: 1px solid var(--border);
+            font-size: calc(12px * var(--font-scale));
+            cursor: pointer;
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .theme-option:last-child {
+            border-right: none;
+        }
+
+        .theme-option.active {
+            background: var(--accent-color);
+            color: #111111;
+            font-weight: 800;
+        }
+
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .color-swatch {
+            height: 44px;
+            border-radius: 14px;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            transition: transform 0.2s;
+        }
+        .color-swatch:active {
+            transform: scale(0.92);
+        }
+        .color-swatch.active {
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        #privacy-view {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: var(--bg);
+            z-index: 700;
+            display: none;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #privacy-view.active {
+            display: block;
+        }
+
+        #block-screen {
+            position: fixed;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .block-title {
+            color: var(--accent-color);
+            font-size: calc(26px * var(--font-scale));
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .block-text {
+            color: var(--muted);
+            font-size: calc(15px * var(--font-scale));
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        #recent { display: none; margin-bottom: 8px; }
+        .recent-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .recent-title { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; color: var(--accent-color); }
+        .recent-clear { background: none; border: none; color: var(--muted); font-size: calc(12px * var(--font-scale)); letter-spacing: 2px; cursor: pointer; padding: 8px 0 8px 12px; }
+        .recent-item { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: calc(16px * var(--font-scale)); cursor: pointer; display: flex; justify-content: space-between; border-radius: 14px; margin-bottom: 2px; }
+        .recent-item:active { background: var(--result-hover); }
+        .recent-item span:last-child { color: var(--accent-color); }
+        .nf-button { margin-top: 18px; }
         
-        /* Modallar */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-box { width: 100%; max-width: 400px; background: var(--surface); border: 2px solid var(--accent-color); border-radius: 20px; padding: 24px; text-align: center; }
-        .modal-box input, .modal-box textarea { width: 100%; padding: 12px; margin: 8px 0; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); outline: none; }
-        .modal-box button { width: 100%; padding: 12px; background: var(--accent-color); color: #111; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; }
-        .close-link { color: var(--accent-color); font-size: 13px; cursor: pointer; display: block; margin-top: 12px; }
+        .status-dot { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 18px; height: 18px; border-radius: 50%; z-index: 1100; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; padding: 0; }
+        .status-dot::after { content: ""; position: absolute; top: -12px; right: -12px; bottom: -12px; left: -12px; }
+        .status-dot.green { background: #2ecc71; box-shadow: 0 0 12px rgba(46,204,113,0.7); }
+        .status-dot.gray { background: #8a8a8a; }
+        .status-dot.yellow { background: #f1c40f; box-shadow: 0 0 12px rgba(241,196,15,0.7); }
+        .status-dot.red { background: #e74c3c; box-shadow: 0 0 12px rgba(231,76,60,0.7); }
         
-        #install-banner { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(150%); background: #1a1a1a; border: 1px solid #333; border-radius: 16px; padding: 12px 18px; display: flex; align-items: center; gap: 15px; z-index: 1150; transition: transform 0.4s ease; }
-        #install-banner.show { transform: translateX(-50%) translateY(0); }
+        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; z-index: 1100; display: none; letter-spacing: 1px; }
+
+        #toast {
+            position: fixed;
+            left: 50%;
+            bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+            transform: translateX(-50%) translateY(30px);
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
+            color: #111111;
+            border: none;
+            padding: 14px 22px;
+            font-size: calc(14px * var(--font-scale));
+            font-weight: 700;
+            z-index: 1200;
+            display: none;
+            border-radius: 18px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+            max-width: 90%;
+            text-align: center;
+            line-height: 1.35;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #toast.show {
+            display: block;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .lang-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .lang-option { padding: 16px 8px; text-align: center; font-size: calc(13px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
+        .lang-option.active { background: var(--accent-color); color: #111111; font-weight: 800; }
+
+        .changelog-item {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: calc(13px * var(--font-scale));
+            color: var(--text);
+            line-height: 1.4;
+        }
+        .changelog-item:last-child {
+            border-bottom: none;
+        }
+        .changelog-date {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+        .changelog-empty {
+            padding: 18px 16px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        #install-banner {
+            position: fixed;
+            bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%) translateY(120%);
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1150;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 94%;
+        }
+        #install-banner.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        .install-icon {
+            width: 36px;
+            height: 36px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .install-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #d4af37;
+        }
+        .install-text {
+            flex: 1;
+            font-size: 13px;
+            color: #f5f5f5;
+            line-height: 1.3;
+        }
+        .install-text strong {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+        .install-btn {
+            background: var(--accent-color);
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .install-close {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+        }
+
+        /* QEYDİYYAT / GİRİŞ VƏ PROFİL MODALLARI */
+        #auth-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-box {
+            width: 100%;
+            max-width: 380px;
+            background: var(--surface);
+            border: 2px solid var(--accent-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .auth-box h3 {
+            color: var(--accent-color);
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 6px 0;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 15px;
+            outline: none;
+        }
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-color);
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .auth-toggle {
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 12px;
+            display: block;
+        }
+        .auth-error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 6px;
+        }
     </style>
 </head>
 
 <body>
 
-<!-- QEYDİYYAT / GİRİŞ MODALI -->
-<div id="auth-modal" class="modal">
-    <div class="modal-box">
+<div id="offline-banner" data-i18n="offlineBanner">İnternet bağlantısı yoxdur — Offline rejimdəsiniz</div>
+
+<!-- QEYDİYYAT VƏ GİRİŞ MODALI -->
+<div id="auth-modal">
+    <div class="auth-box">
         <div id="registerFormContainer">
-            <h3 style="color:var(--accent-color); margin-bottom:12px;">Mağaza Qeydiyyatı</h3>
-            <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Limit bitdi. Davam etmək üçün daxil olun.</p>
+            <h3>Mağaza Qeydiyyatı</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Axtarış limitiniz bitdi. Davam etmək üçün daxil olun.</p>
             <input type="text" id="regUser" placeholder="Ləqəb *" required>
-            <input type="email" id="regEmail" placeholder="E-poçt *">
-            <input type="password" id="regPass" placeholder="Parol *">
+            <input type="email" id="regEmail" placeholder="E-poçt (Parol bərpası üçün) *" required>
+            <input type="password" id="regPass" placeholder="Parol *" required>
             <input type="text" id="regStore" placeholder="Mağaza adı">
             <input type="text" id="regAddress" placeholder="Mağaza ünvanı">
-            <input type="tel" id="regPhone" value="+994" placeholder="Telefon">
+            <input type="tel" id="regPhone" value="+994" placeholder="Telefon nömrəsi">
             <button onclick="registerUser()">Qeydiyyatı Tamamla</button>
-            <span class="close-link" onclick="switchAuthMode('login')">Artıq hesabınız var? Giriş et</span>
+            <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
         </div>
+
         <div id="loginFormContainer" style="display: none;">
-            <h3 style="color:var(--accent-color); margin-bottom:12px;">Giriş Et</h3>
-            <input type="email" id="logEmail" placeholder="E-poçt">
+            <h3>Sistemə Giriş</h3>
+            <input type="email" id="logEmail" placeholder="E-poçt ünvanınız">
             <input type="password" id="logPass" placeholder="Parol">
             <button onclick="loginUser()">Daxil Ol</button>
-            <span class="close-link" onclick="switchAuthMode('register')">Hesabın yoxdur? Qeydiyyat</span>
+            <span class="auth-toggle" onclick="switchAuthMode('forgot')">Parolumu unutmuşam</span>
+            <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabınız yoxdur? Qeydiyyat</span>
         </div>
-        <div id="authMsg" style="color:#e74c3c; font-size:12px; margin-top:8px;"></div>
-    </div>
-</div>
 
-<!-- PROFİL MODALI -->
-<div id="profile-modal" class="modal">
-    <div class="modal-box">
-        <h3 style="color:var(--accent-color); margin-bottom:15px;">Mağaza Profili</h3>
-        <input type="text" id="profUser" placeholder="Ləqəb">
-        <input type="text" id="profStore" placeholder="Mağaza adı">
-        <input type="text" id="profAddress" placeholder="Mağaza ünvanı">
-        <input type="tel" id="profPhone" placeholder="Telefon">
-        <button onclick="updateProfile()">Yadda Saxla</button>
-        <button onclick="logoutUser()" style="background:#e74c3c; color:#fff;">Hesabdan Çıxış Et</button>
-        <span class="close-link" onclick="closeProfile()">Bağla</span>
-        <div id="profMsg" style="font-size:12px; margin-top:8px;"></div>
-    </div>
-</div>
+        <div id="forgotFormContainer" style="display: none;">
+            <h3>Parolu Bərpa Et</h3>
+            <input type="email" id="forgotEmail" placeholder="Qeydiyyat e-poçtunuz">
+            <button onclick="resetPassword()">Bərpa Linki Göndər</button>
+            <span class="auth-toggle" onclick="switchAuthMode('login')">Girişə qayıt</span>
+        </div>
 
-<!-- ADMIN PANEL MODALI -->
-<div id="admin-modal" class="modal">
-    <div class="modal-box" style="max-width: 450px;">
-        <h3 style="color:var(--accent-color); margin-bottom:10px;">Admin Panel</h3>
-        <p style="font-size:12px; color:var(--muted); margin-bottom:10px;">Vergüllə ayıraraq modelləri yazın:</p>
-        <textarea id="adminNewModels" rows="4" placeholder="Model 1, Model 2"></textarea>
-        <button onclick="addNewModelGroup()">Bazaya Əlavə Et</button>
-        <button onclick="closeAdminPanel()" style="background:#e74c3c; color:#fff;">Bağla</button>
-        <div id="adminMsg" style="font-size:12px; margin-top:8px;"></div>
+        <div id="authMsg" class="auth-error"></div>
     </div>
 </div>
 
 <div id="app">
-    <header class="top-header">
-        <div>
-            <div style="font-size:12px; color:var(--accent-color); letter-spacing:3px;">ANTİUDAR</div>
-            <div class="header-title">Qoruyucu şüşə uyğunluğu</div>
-        </div>
-        <div class="menu-btn-group">
-            <button class="btn-custom" id="adminBtn" onclick="openAdminPanel()" style="display:none;" title="Admin Panel">⚙️</button>
-            <button class="btn-custom" onclick="openProfile()" title="Profil">👤</button>
-        </div>
-    </header>
 
-    <main class="main-content">
-        <div class="search-wrapper">
-            <input id="searchInput" class="search-input" type="text" placeholder="Model axtar..." autocomplete="off">
-        </div>
-        <div id="status" style="color:var(--accent-color); font-size:14px; margin-bottom:10px; text-transform:uppercase;"></div>
-        <div id="results"></div>
-    </main>
-</div>
+    <div id="main-view">
+        <header class="top-header">
+            <div class="header-left">
+                <div class="header-small">Antiudar</div>
+                <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
+            </div>
+            <div class="header-buttons" style="display: flex; gap: 10px;">
+                <button class="profile-btn" onclick="openProfile()" title="Profil" style="width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">👤</button>
+                <button class="menu-button" onclick="openSettings()">☰</button>
+            </div>
+        </header>
 
-<!-- PWA BANNER (48 SAAT QAYDASI) -->
-<div id="install-banner">
-    <div><strong>ProTechtor</strong><br><span style="font-size:12px; color:#aaa;">Tətbiqi quraşdırın</span></div>
-    <button onclick="installPWA()" style="background:var(--accent-color); border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer;">Quraşdır</button>
-    <button onclick="dismissInstall()" style="background:none; border:none; color:#aaa; font-size:18px; cursor:pointer;">×</button>
+        <main class="main-content">
+            <div class="search-wrapper">
+                <input
+                    id="searchInput"
+                    class="search-input"
+                    type="text"
+                    placeholder="Samsung Galaxy S23"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                >
+                <button id="clearButton" class="clear-button" onclick="clearSearch()">×</button>
+            </div>
+
+            <div id="recent"></div>
+            <div id="status" class="status"></div>
+            <div id="results"></div>
+        </main>
+    </div>
+
+    <!-- PROFİL SƏHİFƏSİ -->
+    <div id="profile-view">
+        <header class="profile-header" style="height: 110px; display: flex; align-items: center; padding: 16px 24px; border-bottom: 2px solid var(--accent-color); background: var(--header-bg);">
+            <button class="profile-back" onclick="closeProfile()" style="width: 54px; height: 54px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 30px; cursor: pointer; border-radius: 18px; display: flex; align-items: center; justify-content: center;">‹</button>
+            <div class="profile-heading" style="margin-left: 18px;">
+                <div class="profile-small" style="color: var(--accent-color); font-size: 12px; letter-spacing: 4px;">İDARƏETMƏ</div>
+                <div class="profile-title" style="font-size: 24px; font-weight: 800; color: var(--text);">Mağaza Profili</div>
+            </div>
+        </header>
+
+        <div class="settings-content">
+            <div class="settings-section">
+                <div class="settings-section-title">ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI</div>
+                <div class="settings-box" style="padding: 16px;">
+                    <label style="font-size:12px; color:var(--muted)">Ləqəb</label>
+                    <input type="text" id="profUser" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)">Mağaza Adı</label>
+                    <input type="text" id="profStore" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)">Mağaza Ünvanı</label>
+                    <input type="text" id="profAddress" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)">Telefon Nömrəsi</label>
+                    <input type="tel" id="profPhone" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+
+                    <button class="profile-save-btn" onclick="updateProfile()" style="width:100%; height:50px; background:var(--accent-color); color:#111; border:none; border-radius:12px; font-weight:800; cursor:pointer; margin-top:10px;">Dəyişiklikləri Yadda Saxla</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <button class="profile-save-btn logout-btn" onclick="logoutUser()" style="width:100%; height:50px; background:#e74c3c; color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">Hesabdan Çıxış Et</button>
+            </div>
+            <div id="profMsg" style="text-align:center; font-size:13px; margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <div id="detail-view">
+        <header class="detail-header">
+            <button class="detail-back" onclick="closeDetail()">‹</button>
+            <div class="detail-heading">
+                <div class="detail-small" data-i18n="selected">SEÇİLƏN MODEL</div>
+                <div id="detail-model" class="detail-model"></div>
+            </div>
+        </header>
+
+        <div class="compatibility-title" data-i18n="compat">
+            BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR
+        </div>
+
+        <div id="compatibility-list" class="compatibility-list"></div>
+    </div>
+
+    <div id="settings-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="closeSettings()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">By Emin</div>
+                <div class="settings-title" data-i18n="settings">Tənzimləmələr</div>
+            </div>
+        </header>
+
+        <div class="settings-content">
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secBase">BAZA</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="lastUpd">SON YENİLƏNMƏ</span>
+                        <span id="lastUpdateText">Bilinmir</span>
+                    </div>
+                </div>
+                <button id="updateButton" class="update-button" onclick="forceUpdate()">
+                    <div class="spinner" id="updateSpinner"></div>
+                    <span data-i18n="updateNow">YENİLƏ</span>
+                </button>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title">YENİLƏMƏ TARİXÇƏSİ</div>
+                <div class="settings-box" id="changelogBox">
+                    <div class="changelog-empty">Hələ yeniləmə yoxdur</div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secAccent"> AKSENT RƏNGİ</div>
+                <div class="settings-box" style="padding: 16px;">
+                    <div class="color-picker-grid">
+                        <div class="color-swatch" style="background: #d4af37;" onclick="setAccentColor('#d4af37', '#8a6d1d')"></div>
+                        <div class="color-swatch" style="background: #3498db;" onclick="setAccentColor('#3498db', '#1b4f72')"></div>
+                        <div class="color-swatch" style="background: #2ecc71;" onclick="setAccentColor('#2ecc71', '#145a32')"></div>
+                        <div class="color-swatch" style="background: #9b59b6;" onclick="setAccentColor('#9b59b6', '#512e5f')"></div>
+                        <div class="color-swatch" style="background: #e74c3c;" onclick="setAccentColor('#e74c3c', '#78281f')"></div>
+                        <div class="color-swatch" style="background: #e67e22;" onclick="setAccentColor('#e67e22', '#7e5109')"></div>
+                        <div class="color-swatch" style="background: #1abc9c;" onclick="setAccentColor('#1abc9c', '#0e6251')"></div>
+                        <div class="color-swatch" style="background: #e91e63;" onclick="setAccentColor('#e91e63', '#880e4f')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secTheme">MÖVZU</div>
+                <div class="theme-selector">
+                    <div id="theme-system" data-i18n="system" class="theme-option" onclick="setTheme('system')">SİSTEM</div>
+                    <div id="theme-auto" data-i18n="auto" class="theme-option" onclick="setTheme('auto')">AVTO</div>
+                    <div id="theme-light" data-i18n="light" class="theme-option" onclick="setTheme('light')">AÇIQ</div>
+                    <div id="theme-dark" data-i18n="dark" class="theme-option" onclick="setTheme('dark')">TÜND</div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secFont">ŞRİFT ÖLÇÜSÜ</div>
+                <div class="theme-selector">
+                    <div id="font-small" class="theme-option" onclick="setFontScale(0.9)">KİÇİK</div>
+                    <div id="font-normal" class="theme-option" onclick="setFontScale(1.0)">NORMAL</div>
+                    <div id="font-large" class="theme-option" onclick="setFontScale(1.15)">BÖYÜK</div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secLang">DİL</div>
+                <div class="lang-selector">
+                    <div id="lang-az" class="lang-option" onclick="setLang('az')">Azərbaycan</div>
+                    <div id="lang-ru" class="lang-option" onclick="setLang('ru')">Русский</div>
+                    <div id="lang-en" class="lang-option" onclick="setLang('en')">English</div>
+                    <div id="lang-tr" class="lang-option" onclick="setLang('tr')">Türkçe</div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secSoundHaptic">SƏS VƏ HAPTİK</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span data-i18n="soundLbl">Səs effektləri</span>
+                        <label class="switch">
+                            <input type="checkbox" id="soundToggle" onchange="toggleSound(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <span data-i18n="soundTypeLbl">Səs Tembri</span>
+                        <select id="soundTypeSelect" onchange="changeSoundType(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:10px; outline:none;">
+                            <option value="bip">Bip (Standart)</option>
+                            <option value="click">Yumşaq Klik</option>
+                            <option value="pop">Pop Səsi</option>
+                        </select>
+                    </div>
+                    <div class="settings-row">
+                        <span data-i18n="hapticLbl">Haptik Vibrasiya</span>
+                        <label class="switch">
+                            <input type="checkbox" id="hapticToggle" onchange="toggleHaptic(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-row">
+                        <span data-i18n="hapticIntensityLbl">Vibrasiya Gücü</span>
+                        <select id="hapticIntensitySelect" onchange="changeHapticIntensity(this)" style="background:var(--surface); color:var(--text); border:1px solid var(--border); padding:6px 10px; border-radius:10px; outline:none;">
+                            <option value="light">Zəif</option>
+                            <option value="medium" selected>Orta</option>
+                            <option value="heavy">Güclü</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secPerformance">PERFORMANS</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <div>
+                            <div data-i18n="lowPowerLbl">Batareya Qənaət Rejimi</div>
+                            <div style="font-size:11px; color:var(--muted);" data-i18n="lowPowerDesc">Ağır animasiyaları məhdudlaşdırır</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="lowPowerToggle" onchange="toggleLowPower(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secPrivacy">MƏXFİLİK</div>
+                <div class="settings-box" onclick="openPrivacy()" style="cursor: pointer;">
+                    <div class="settings-row">
+                        <span data-i18n="privacy">Məxfilik Siyasəti</span>
+                        <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secContact">ƏLAQƏ</div>
+                <a href="https://wa.me/994553115544?text=Salam,%20ProTector%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">
+                    WhatsApp ilə əlaqə
+                </a>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secApp">PROQRAM</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="version">VERSİYA</span>
+                        <span id="appVersion"></span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="dbSize">BAZADA QRUP</span>
+                        <span id="dbCount">0</span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="modelCountLbl">BAZADA MODEL</span>
+                        <span id="modelCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div id="privacy-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="closePrivacy()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">By Emin</div>
+                <div class="settings-title" data-i18n="privacy">Məxfilik Siyasəti</div>
+            </div>
+        </header>
+        <div class="settings-content" style="color: var(--text); font-size: 14px; line-height: 1.6;">
+            <p><strong>1. MƏLUMAT TOPLANMASI VƏ EMALI</strong><br>
+            ProTector proqram təminatı heç bir şəxsi məlumatı toplamır, emal etmir, saxlamır və ya üçüncü tərəflərə ötürmür. Ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları, cihaz identifikatoru, IP ünvanı və ya istifadəçini birbaşa yaxud dolayı yolla müəyyənləşdirə biləcək hər hansı digər məlumatın toplanması qəti şəkildə istisna olunur. Tətbiq heç bir izləmə sistemi, analitika aləti, reklam şəbəkəsi və ya üçüncü tərəf məlumat emalı xidmətindən istifadə etmir.</p><br>
+            
+            <p><strong>2. YERLİ YADDAŞ VƏ MƏLUMAT TƏHLÜKƏSİZLİYİ</strong><br>
+            Tətbiq yalnız cihazın yerli yaddaşından (Local Storage) istifadə edir. Orada yalnız texniki parametrlər (seçilmiş mövzu, şrift ölçüsü və baza məlumatları) saxlanılır. Bu məlumatlar yalnız istifadəçinin cihazında qalır və heç bir serverə, bulud xidmətinə və ya kənar platformaya ötürülmür.</p><br>
+
+            <p><strong>3. İNTERNET BAĞLANTISI VƏ ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ</strong><br>
+            Tətbiq yalnız uyğunluq bazasını yeniləmək məqsədilə internetə qoşulur və açıq mənbədən məlumatları sinxronlaşdırır. Əlaqə bölməsindən WhatsApp platformasına keçid edildikdə, həmin andan etibarən proses WhatsApp-ın məxfilik siyasəti çərçivəsində tənzimlənir. ProTector bu xidmətin fəaliyyətinə görə heç bir məsuliyyət daşımır.</p><br>
+
+            <p><strong>4. TƏTBİQİN FƏALİYYƏTİNİN MƏHDUDLAŞDIRILMASI</strong><br>
+            Məlumatların aktuallığını, dəqiqliyini və təhlükəsizliyini təmin etmək məqsədilə, baza ardıcıl 3 (üç) gün ərzində yenilənmədikdə tətbiqin fəaliyyəti avtomatik olaraq məhdudlaşdırılır. Fəaliyyətin bərpası üçün qısa müddətli internet bağlantısı təmin edilməli və baza yenilənməlidir.</p><br>
+
+            <p><strong>5. HÜQUQİ TƏNZİMLƏMƏ VƏ MƏSULİYYƏTDƏN İMTİNA</strong><br>
+            ProTector heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən icazəsiz istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər qüvvədə olan qanunvericilik çərçivəsində tənzimlənir. Proqramdan istifadə edən hər bir şəxs bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</p>
+        </div>
+    </div>
+
+    <button id="statusDot" class="status-dot gray" onclick="showDotInfo()" aria-label="status"></button>
+    <div id="offlineCorner" class="offline-corner">OFFLINE</div>
+    <div id="toast"></div>
+
+    <div id="install-banner">
+        <div class="install-icon">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 6h16v10H4V6zm0-2c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H4zm8 14l4-4h-3V9h-2v5H8l4 4z"/>
+            </svg>
+        </div>
+        <div class="install-text">
+            <strong>ProTechtor</strong><br>
+            Tətbiqi quraşdır
+        </div>
+        <button class="install-btn" onclick="installPWA()">Quraşdır</button>
+        <button class="install-close" onclick="dismissInstall()">×</button>
+    </div>
+
+    <div id="block-screen">
+        <div class="block-title" data-i18n="blockTitle">Proqram Bloklanıb</div>
+        <div class="block-text" data-i18n-html="blockText">
+            Baza 3 gündən çoxdur ki yenilənmir.
+            <br><br>
+            Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.
+        </div>
+        <button class="update-button" data-i18n="updateBase" onclick="forceUpdate()">BAZANI YENİLƏ</button>
+    </div>
+
 </div>
 
 <script>
+// FİREBASE QOŞULMASI
 const firebaseConfig = {
     apiKey: "AIzaSyB-kuPK97aaUbXNf1vJqUf7aFAKEJVvY8o",
     authDomain: "protechtor-99407.firebaseapp.com",
     projectId: "protechtor-99407",
     storageBucket: "protechtor-99407.firebasestorage.app",
     messagingSenderId: "703242369784",
-    appId: "1:703242369784:web:03bc54204f753af9cb990d"
+    appId: "1:703242369784:web:03bc54204f753af9cb990d",
+    measurementId: "G-D5E9BP4FLH"
 };
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const ADMIN_EMAIL = "o553115544@gmail.com";
+const RAW_URL = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Base.json";
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+
+const DB_KEY = "antiudar_db_v3";
+const UPDATE_KEY = "antiudar_last_update_v3";
+const CHANGELOG_KEY = "antiudar_changelog_v2";
+const INSTALL_DISMISS_KEY = "antiudar_install_dismiss";
+const SEARCH_COUNT_KEY = "antiudar_search_count";
+
 let database = [];
-let searchCount = parseInt(localStorage.getItem("search_count") || "0");
-let soundEnabled = localStorage.getItem("antiudar_sound") !== "false";
+let selectedModel = "";
+let selectedGroup = null;
 let deferredPrompt = null;
 
+// SƏS VƏ HAPTİK (STANDART OLARAQ AÇIQ)
+let soundEnabled = localStorage.getItem("antiudar_sound") !== "false";
+let hapticEnabled = localStorage.getItem("antiudar_haptic") !== "false";
+let soundType = localStorage.getItem("antiudar_sound_type") || "bip";
+let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medium";
+let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
+
 document.addEventListener("DOMContentLoaded", function () {
-    loadDatabaseFromFirebase();
-
     auth.onAuthStateChanged((user) => {
-        if (user) {
-            if (user.email === ADMIN_EMAIL) {
-                document.getElementById("adminBtn").style.display = "flex";
-            }
-        } else {
-            if (searchCount >= 3) {
-                document.getElementById("auth-modal").style.display = "flex";
-            }
+        if (!user) {
+            checkSearchLimit();
         }
     });
 
-    document.getElementById("searchInput").addEventListener("input", function(e) {
-        if (!auth.currentUser) {
-            searchCount++;
-            localStorage.setItem("search_count", searchCount);
-            if (searchCount > 3) {
-                document.getElementById("auth-modal").style.display = "flex";
-                return;
-            }
-        }
-        playSoundEffect();
-        performSearch(e.target.value);
+    initDynamicPWA();
+    initTheme();
+    initFontScale();
+    initLang();
+    initToggles();
+    initAccentColor();
+    initResponsiveTypography();
+    initPWA();
+
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", function () {
+        updateClearButton();
+        performSearch(this.value);
     });
 
-    // PWA 48 Saat yoxlaması
-    window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        let dismissed = localStorage.getItem("install_dismiss");
-        let FORTY_EIGHT_HOURS = 48 * 60 * 60 * 1000;
-        if (!dismissed || Date.now() - parseInt(dismissed) > FORTY_EIGHT_HOURS) {
-            setTimeout(() => document.getElementById("install-banner").classList.add("show"), 1500);
-        }
+    loadDatabaseFromCacheOnly();
+    backgroundCheckUpdate();
+    renderChangelogHistory();
+
+    window.addEventListener("online", () => {
+        updateNetworkStatus();
+        backgroundCheckUpdate();
     });
+    window.addEventListener("offline", updateNetworkStatus);
+    updateNetworkStatus();
+
+    initDynamicPlaceholder();
+    initEdgeSwipeGestures();
 });
 
-function playSoundEffect() {
-    if (!soundEnabled) return;
-    try {
-        let ctx = new (window.AudioContext || window.webkitAudioContext)();
-        let osc = ctx.createOscillator();
-        let gain = ctx.createGain();
-        osc.frequency.setValueAtTime(580, ctx.currentTime);
-        gain.gain.setValueAtTime(0.05, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.start(); osc.stop(ctx.currentTime + 0.1);
-    } catch(e) {}
-}
-
-function loadDatabaseFromFirebase() {
-    db.collection("protector_db").get().then((querySnapshot) => {
-        database = [];
-        querySnapshot.forEach((doc) => {
-            database.push(doc.data().models);
-        });
-    });
-}
-
-function addNewModelGroup() {
-    let text = document.getElementById("adminNewModels").value.trim();
-    if (!text) return;
-    let modelsArray = text.split(",").map(m => m.trim()).filter(m => m.length > 0);
-
-    db.collection("protector_db").add({ models: modelsArray }).then(() => {
-        document.getElementById("adminMsg").style.color = "green";
-        document.getElementById("adminMsg").innerText = "Uğurla əlavə edildi!";
-        document.getElementById("adminNewModels").value = "";
-        loadDatabaseFromFirebase();
-    }).catch(err => {
-        document.getElementById("adminMsg").style.color = "red";
-        document.getElementById("adminMsg").innerText = "Xəta: " + err.message;
-    });
-}
-
-function performSearch(query) {
-    let resultsDiv = document.getElementById("results");
-    resultsDiv.innerHTML = "";
-    query = query.toLowerCase().trim();
-    if (!query) return;
-
-    let foundMatches = [];
-    database.forEach(group => {
-        if (group.some(m => m.toLowerCase().includes(query))) {
-            foundMatches.push(group);
+// PROFİL SƏHİFƏSİ
+function openProfile() {
+    let user = auth.currentUser;
+    if (!user) {
+        document.getElementById("auth-modal").style.display = "flex";
+        return;
+    }
+    
+    db.collection("users").doc(user.uid).get().then((doc) => {
+        if (doc.exists) {
+            let data = doc.data();
+            document.getElementById("profUser").value = data.username || "";
+            document.getElementById("profStore").value = data.storeName || "";
+            document.getElementById("profAddress").value = data.storeAddress || "";
+            document.getElementById("profPhone").value = data.phoneNumber || "+994";
         }
+        document.getElementById("profile-view").classList.add("active");
+        document.body.style.overflow = "hidden";
     });
+}
 
-    document.getElementById("status").innerText = foundMatches.length + " nəticə tapıldı";
-    foundMatches.forEach(group => {
-        let div = document.createElement("div");
-        div.style.cssText = "padding:15px; background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:8px;";
-        div.innerHTML = "<b>Uyğun modellər:</b> " + group.join(" ↔ ");
-        resultsDiv.appendChild(div);
+function closeProfile() {
+    document.getElementById("profile-view").classList.remove("active");
+    document.body.style.overflow = "";
+}
+
+function updateProfile() {
+    let user = auth.currentUser;
+    if (!user) return;
+
+    let username = document.getElementById("profUser").value.trim();
+    let storeName = document.getElementById("profStore").value.trim();
+    let storeAddress = document.getElementById("profAddress").value.trim();
+    let phoneNumber = document.getElementById("profPhone").value.trim();
+    let msgDiv = document.getElementById("profMsg");
+
+    if (!username) {
+        msgDiv.style.color = "red";
+        msgDiv.innerText = "Ləqəb boş ola bilməz!";
+        return;
+    }
+
+    db.collection("users").doc(user.uid).update({
+        username,
+        storeName,
+        storeAddress,
+        phoneNumber
+    }).then(() => {
+        msgDiv.style.color = "green";
+        msgDiv.innerText = "Məlumatlar uğurla yeniləndi!";
+        setTimeout(() => msgDiv.innerText = "", 3000);
+    }).catch((error) => {
+        msgDiv.style.color = "red";
+        msgDiv.innerText = "Xəta baş verdi: " + error.message;
     });
+}
+
+function logoutUser() {
+    auth.signOut().then(() => {
+        localStorage.removeItem(SEARCH_COUNT_KEY);
+        location.reload();
+    });
+}
+
+// 3 AXTARIŞDAN SONRA QEYDİYYAT
+function checkSearchLimit() {
+    let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
+    if (count >= 3) {
+        document.getElementById("auth-modal").style.display = "flex";
+    }
 }
 
 function switchAuthMode(mode) {
     document.getElementById("registerFormContainer").style.display = mode === "register" ? "block" : "none";
     document.getElementById("loginFormContainer").style.display = mode === "login" ? "block" : "none";
+    document.getElementById("forgotFormContainer").style.display = mode === "forgot" ? "block" : "none";
+    document.getElementById("authMsg").innerText = "";
 }
 
 function registerUser() {
@@ -263,73 +1456,1084 @@ function registerUser() {
     let store = document.getElementById("regStore").value.trim();
     let address = document.getElementById("regAddress").value.trim();
     let phone = document.getElementById("regPhone").value.trim();
+    let msgDiv = document.getElementById("authMsg");
 
-    if(!user || !email || !pass) { document.getElementById("authMsg").innerText = "Ləqəb, e-poçt və parol doldurulmalıdır!"; return; }
+    if (!user || !email || !pass) {
+        msgDiv.innerText = "Zəhmət olmasa ləqəb, e-poçt və parol sahələrini doldurun!";
+        return;
+    }
 
-    auth.createUserWithEmailAndPassword(email, pass).then((res) => {
-        db.collection("users").doc(res.user.uid).set({ username: user, email, storeName: store, storeAddress: address, phoneNumber: phone });
-        localStorage.setItem("search_count", "0");
-        document.getElementById("auth-modal").style.display = "none";
-    }).catch(err => document.getElementById("auth-modal").style.display = "none", alert(err.message));
+    auth.createUserWithEmailAndPassword(email, pass)
+        .then((userCredential) => {
+            let uid = userCredential.user.uid;
+            db.collection("users").doc(uid).set({
+                username: user,
+                email: email,
+                storeName: store || "",
+                storeAddress: address || "",
+                phoneNumber: phone || "+994"
+            }).then(() => {
+                localStorage.setItem(SEARCH_COUNT_KEY, "0");
+                document.getElementById("auth-modal").style.display = "none";
+            });
+        })
+        .catch((error) => {
+            msgDiv.innerText = "Xəta: " + error.message;
+        });
 }
 
 function loginUser() {
     let email = document.getElementById("logEmail").value.trim();
     let pass = document.getElementById("logPass").value.trim();
-    auth.signInWithEmailAndPassword(email, pass).then(() => {
-        localStorage.setItem("search_count", "0");
-        document.getElementById("auth-modal").style.display = "none";
-        location.reload();
-    }).catch(() => document.getElementById("authMsg").innerText = "E-poçt və ya parol səhvdir!");
+    let msgDiv = document.getElementById("authMsg");
+
+    if (!email || !pass) {
+        msgDiv.innerText = "E-poçt və parolu daxil edin!";
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+            localStorage.setItem(SEARCH_COUNT_KEY, "0");
+            document.getElementById("auth-modal").style.display = "none";
+        })
+        .catch((error) => {
+            msgDiv.innerText = "E-poçt və ya parol səhvdir!";
+        });
 }
 
-function openProfile() {
-    let user = auth.currentUser;
-    if(!user) { document.getElementById("auth-modal").style.display = "flex"; return; }
-    db.collection("users").doc(user.uid).get().then((doc) => {
-        if(doc.exists) {
-            let data = doc.data();
-            document.getElementById("profUser").value = data.username || "";
-            document.getElementById("profStore").value = data.storeName || "";
-            document.getElementById("profAddress").value = data.storeAddress || "";
-            document.getElementById("profPhone").value = data.phoneNumber || "+994";
-        }
-        document.getElementById("profile-modal").style.display = "flex";
+function resetPassword() {
+    let email = document.getElementById("forgotEmail").value.trim();
+    let msgDiv = document.getElementById("forgotMsg") || document.getElementById("authMsg");
+
+    if (!email) {
+        msgDiv.innerText = "E-poçt daxil edin!";
+        return;
+    }
+
+    auth.sendPasswordResetEmail(email)
+        .then(() => {
+            msgDiv.style.color = "green";
+            msgDiv.innerText = "Bərpa linki e-poçtunuza göndərildi!";
+        })
+        .catch((error) => {
+            msgDiv.style.color = "red";
+            msgDiv.innerText = "Belə e-poçt tapılmadı.";
+        });
+}
+
+// PWA 48 SAAT QAYDASI
+function initPWA() {
+    window.addEventListener("beforeinstallprompt", (e) => {
+        deferredPrompt = e;
+        const dismissed = localStorage.getItem(INSTALL_DISMISS_KEY);
+        const FORTY_EIGHT_HOURS = 48 * 60 * 60 * 1000;
+        
+        if (dismissed && Date.now() - parseInt(dismissed) < FORTY_EIGHT_HOURS) return;
+
+        setTimeout(() => {
+            const banner = document.getElementById("install-banner");
+            if (banner) banner.classList.add("show");
+        }, 1000);
+    });
+
+    window.addEventListener("appinstalled", () => {
+        deferredPrompt = null;
+        hideInstallBanner();
     });
 }
-function closeProfile() { document.getElementById("profile-modal").style.display = "none"; }
-
-function updateProfile() {
-    let user = auth.currentUser;
-    if(!user) return;
-    db.collection("users").doc(user.uid).update({
-        username: document.getElementById("profUser").value.trim(),
-        storeName: document.getElementById("profStore").value.trim(),
-        storeAddress: document.getElementById("profAddress").value.trim(),
-        phoneNumber: document.getElementById("profPhone").value.trim()
-    }).then(() => {
-        document.getElementById("profMsg").style.color = "green";
-        document.getElementById("profMsg").innerText = "Yeniləndi!";
-        setTimeout(() => closeProfile(), 1500);
-    });
-}
-
-function logoutUser() {
-    auth.signOut().then(() => { localStorage.removeItem("search_count"); location.reload(); });
-}
-
-function openAdminPanel() { document.getElementById("admin-modal").style.display = "flex"; }
-function closeAdminPanel() { document.getElementById("admin-modal").style.display = "none"; }
 
 function installPWA() {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(() => { deferredPrompt = null; document.getElementById("install-banner").classList.remove("show"); });
+    deferredPrompt.userChoice.then((choice) => {
+        if (choice.outcome === "accepted") {
+            hideInstallBanner();
+        }
+        deferredPrompt = null;
+    });
 }
+
 function dismissInstall() {
-    localStorage.setItem("install_dismiss", Date.now().toString());
-    document.getElementById("install-banner").classList.remove("show");
+    localStorage.setItem(INSTALL_DISMISS_KEY, Date.now().toString());
+    hideInstallBanner();
 }
+
+function hideInstallBanner() {
+    const banner = document.getElementById("install-banner");
+    if (banner) banner.classList.remove("show");
+}
+
+function initDynamicPWA() {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(err => {
+                console.log("Service Worker xətası:", err);
+            });
+        });
+    }
+}
+
+function initResponsiveTypography() {
+    function adjustTypography() {
+        const width = window.innerWidth;
+        let scale = 1;
+        if (width < 360) scale = 0.92;
+        else if (width > 768) scale = 1.08;
+        document.documentElement.style.setProperty("--responsive-scale", scale);
+    }
+    window.addEventListener("resize", adjustTypography);
+    adjustTypography();
+}
+
+function initEdgeSwipeGestures() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    document.addEventListener("touchstart", e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, {passive: true});
+
+    document.addEventListener("touchend", e => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+        const diffX = touchEndX - touchStartX;
+        const diffY = Math.abs(touchEndY - touchStartY);
+
+        if (touchStartX < 50 && diffX > 80 && diffY < 60) {
+            const detailView = document.getElementById("detail-view");
+            const settingsView = document.getElementById("settings-view");
+            const privacyView = document.getElementById("privacy-view");
+            const profileView = document.getElementById("profile-view");
+
+            if (privacyView.classList.contains("active")) {
+                closePrivacy();
+            } else if (settingsView.classList.contains("active")) {
+                closeSettings();
+            } else if (profileView.classList.contains("active")) {
+                closeProfile();
+            } else if (detailView.classList.contains("active")) {
+                closeDetail();
+            }
+        }
+    }, {passive: true});
+}
+
+const PLACEHOLDER_PALETTE = [
+    { color: "#FFE566" }, { color: "#C77DFF" }, { color: "#5CE1FF" },
+    { color: "#57F287" }, { color: "#FF8A65" }, { color: "#FF6BCB" },
+    { color: "#7CFFB2" }, { color: "#A5B4FC" }
+];
+
+let placeholderColorIndex = 0;
+let placeholderInterval = null;
+
+function initDynamicPlaceholder() {
+    const input = document.getElementById("searchInput");
+    const first = PLACEHOLDER_PALETTE[0];
+    document.documentElement.style.setProperty("--placeholder-color", first.color);
+
+    placeholderInterval = setInterval(() => {
+        if (document.activeElement !== input && !input.value) {
+            let sampleModel = "Samsung Galaxy S23";
+            if (Array.isArray(database) && database.length > 0) {
+                const randomGroup = database[Math.floor(Math.random() * database.length)];
+                if (Array.isArray(randomGroup) && randomGroup.length > 0) {
+                    sampleModel = randomGroup[Math.floor(Math.random() * randomGroup.length)];
+                }
+            }
+            placeholderColorIndex = (placeholderColorIndex + 1) % PLACEHOLDER_PALETTE.length;
+            const next = PLACEHOLDER_PALETTE[placeholderColorIndex];
+            document.documentElement.style.setProperty("--placeholder-color", next.color);
+
+            input.style.opacity = 0.4;
+            setTimeout(() => {
+                input.placeholder = sampleModel;
+                input.style.opacity = 1;
+            }, 280);
+        }
+    }, 2000);
+}
+
+function initAccentColor() {
+    const savedAccent = localStorage.getItem("antiudar_accent") || "#d4af37";
+    const savedDark = localStorage.getItem("antiudar_accent_dark") || "#8a6d1d";
+    setAccentColor(savedAccent, savedDark, false);
+}
+
+function setAccentColor(accent, dark, save = true) {
+    if (save) {
+        localStorage.setItem("antiudar_accent", accent);
+        localStorage.setItem("antiudar_accent_dark", dark);
+        triggerHaptic(30);
+    }
+    document.documentElement.style.setProperty("--accent-color", accent);
+    document.documentElement.style.setProperty("--accent-dark", dark);
+}
+
+function playSoundEffect() {
+    if (!soundEnabled) return;
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        if (soundType === "click") {
+            osc.type = "triangle";
+            osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+        } else if (soundType === "pop") {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+        } else {
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(580, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+    } catch (e) {}
+}
+
+function playSuccessSound() {
+    if (!soundEnabled) return;
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+    } catch (e) {}
+}
+
+function changeSoundType(el) {
+    soundType = el.value;
+    localStorage.setItem("antiudar_sound_type", soundType);
+    playSoundEffect();
+}
+
+function triggerHaptic(customDuration = null) {
+    if (hapticEnabled && navigator.vibrate) {
+        try {
+            let duration = customDuration;
+            if (!duration) {
+                if (hapticIntensity === "light") duration = 15;
+                else if (hapticIntensity === "heavy") duration = 65;
+                else duration = 35;
+            }
+            navigator.vibrate(duration);
+        } catch (e) {}
+    }
+}
+
+function changeHapticIntensity(el) {
+    hapticIntensity = el.value;
+    localStorage.setItem("antiudar_haptic_intensity", hapticIntensity);
+    triggerHaptic();
+}
+
+function toggleLowPower(el) {
+    lowPowerMode = el.checked;
+    localStorage.setItem("antiudar_low_power", lowPowerMode);
+}
+
+function updateNetworkStatus() {
+    const isOnline = navigator.onLine;
+    const banner = document.getElementById("offline-banner");
+    const corner = document.getElementById("offlineCorner");
+    const dot = document.getElementById("statusDot");
+
+    if (!isOnline) {
+        banner.style.display = "block";
+        corner.style.display = "block";
+        if (dot) {
+            dot.className = "status-dot red";
+            dot.setAttribute("data-key", "offlineDot");
+            dot.setAttribute("title", t("offlineDot"));
+            dot.setAttribute("aria-label", t("offlineDot"));
+        }
+    } else {
+        banner.style.display = "none";
+        corner.style.display = "none";
+        updateStatusDot(); 
+    }
+}
+
+function initTheme() {
+    const savedTheme = localStorage.getItem("antiudar_theme") || "system";
+    setTheme(savedTheme);
+}
+
+function setTheme(theme) {
+    localStorage.setItem("antiudar_theme", theme);
+    document.querySelectorAll(".theme-option").forEach(function (el) {
+        if(el.id.startsWith("theme-")) el.classList.remove("active");
+    });
+    const selected = document.getElementById("theme-" + theme);
+    if (selected) selected.classList.add("active");
+    applyThemeLogic(theme);
+}
+
+function applyThemeLogic(theme) {
+    if (theme === "system") {
+        const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+        document.documentElement.setAttribute("data-theme", prefersLight ? "light" : "dark");
+    } else if (theme === "auto") {
+        const hour = new Date().getHours();
+        const isNight = hour >= 20 || hour < 8;
+        document.documentElement.setAttribute("data-theme", isNight ? "dark" : "light");
+    } else {
+        document.documentElement.setAttribute("data-theme", theme);
+    }
+}
+
+setInterval(() => {
+    if ((localStorage.getItem("antiudar_theme") || "system") === "auto") {
+        applyThemeLogic("auto");
+    }
+}, 60 * 1000);
+
+function initFontScale() {
+    const scale = localStorage.getItem("antiudar_font_scale") || "1.0";
+    setFontScale(parseFloat(scale), false);
+}
+
+function setFontScale(scale, save = true) {
+    if (save) localStorage.setItem("antiudar_font_scale", scale);
+    document.documentElement.style.setProperty("--font-scale", scale);
+
+    document.querySelectorAll("[id^='font-']").forEach(el => el.classList.remove("active"));
+    if (scale < 1) document.getElementById("font-small").classList.add("active");
+    else if (scale > 1) document.getElementById("font-large").classList.add("active");
+    else document.getElementById("font-normal").classList.add("active");
+}
+
+function initToggles() {
+    const sToggle = document.getElementById("soundToggle");
+    const hToggle = document.getElementById("hapticToggle");
+    const lpToggle = document.getElementById("lowPowerToggle");
+    const sTypeSel = document.getElementById("soundTypeSelect");
+    const hIntSel = document.getElementById("hapticIntensitySelect");
+
+    if (sToggle) sToggle.checked = soundEnabled;
+    if (hToggle) hToggle.checked = hapticEnabled;
+    if (lpToggle) lpToggle.checked = lowPowerMode;
+    if (sTypeSel) sTypeSel.value = soundType;
+    if (hIntSel) hIntSel.value = hapticIntensity;
+}
+
+function toggleSound(el) {
+    soundEnabled = el.checked;
+    localStorage.setItem("antiudar_sound", soundEnabled);
+    if (soundEnabled) playSoundEffect();
+}
+
+function toggleHaptic(el) {
+    hapticEnabled = el.checked;
+    localStorage.setItem("antiudar_haptic", hapticEnabled);
+    if (hapticEnabled) triggerHaptic(40);
+}
+
+function updateClearButton() {
+    const input = document.getElementById("searchInput");
+    const button = document.getElementById("clearButton");
+    if (input.value.trim().length > 0) {
+        button.classList.add("visible");
+    } else {
+        button.classList.remove("visible");
+    }
+}
+
+function clearSearch() {
+    const input = document.getElementById("searchInput");
+    const button = document.getElementById("clearButton");
+    button.classList.add("rotate");
+    setTimeout(() => button.classList.remove("rotate"), 300);
+
+    input.value = "";
+    updateClearButton();
+    document.getElementById("status").innerText = "";
+    document.getElementById("results").innerHTML = "";
+    input.focus();
+    renderRecent();
+    triggerHaptic(20);
+}
+
+function normalizeDatabase(data) {
+    if (!Array.isArray(data)) return [];
+    const result = [];
+    data.forEach(function (group) {
+        if (typeof group === "string") {
+            const models = group.split(",").map(m => m.trim()).filter(m => m.length > 0);
+            if (models.length > 0) result.push(models);
+            return;
+        }
+        if (Array.isArray(group)) {
+            const models = group.map(m => String(m).trim()).filter(m => m.length > 0);
+            if (models.length > 0) result.push(models);
+            return;
+        }
+        if (group && typeof group === "object") {
+            Object.values(group).forEach(function (value) {
+                if (typeof value === "string") {
+                    const models = value.split(",").map(m => m.trim()).filter(m => m.length > 0);
+                    if (models.length > 0) result.push(models);
+                }
+                if (Array.isArray(value)) {
+                    const models = value.map(m => String(m).trim()).filter(m => m.length > 0);
+                    if (models.length > 0) result.push(models);
+                }
+            });
+        }
+    });
+    return result;
+}
+
+function getBrand(model) {
+    if (!model) return "";
+    const parts = String(model).trim().split(/\s+/);
+    return parts.length > 0 ? parts[0] : "";
+}
+
+function getAllModels(db) {
+    const set = new Set();
+    if (!Array.isArray(db)) return set;
+    db.forEach(group => {
+        if (Array.isArray(group)) {
+            group.forEach(m => set.add(String(m).trim().toLowerCase()));
+        }
+    });
+    return set;
+}
+
+function generateChangelogMessage(oldDb, newDb) {
+    const oldModels = getAllModels(oldDb);
+    const newModels = getAllModels(newDb);
+
+    let added = 0;
+    let removed = 0;
+
+    newModels.forEach(m => { if (!oldModels.has(m)) added++; });
+    oldModels.forEach(m => { if (!newModels.has(m)) removed++; });
+
+    if (added === 0 && removed === 0) return null;
+
+    const now = new Date();
+    const dateStr =
+        String(now.getDate()).padStart(2, "0") + "." +
+        String(now.getMonth() + 1).padStart(2, "0") + "." +
+        String(now.getFullYear()).slice(-2);
+
+    let msg = "";
+    if (added > 0 && removed > 0) {
+        msg = `${dateStr} bazaya ${added} model əlavə edildi, ${removed} model çıxarıldı`;
+    } else if (added > 0) {
+        msg = `${dateStr} bazaya ${added} model əlavə edildi`;
+    } else {
+        msg = `${dateStr} bazadan ${removed} model çıxarıldı`;
+    }
+    return msg;
+}
+
+function saveChangelog(msg) {
+    if (!msg) return;
+    try {
+        let list = [];
+        const raw = localStorage.getItem(CHANGELOG_KEY);
+        if (raw) list = JSON.parse(raw);
+        if (!Array.isArray(list)) list = [];
+
+        list.unshift({ text: msg, ts: Date.now() });
+        list = list.slice(0, 3);
+        localStorage.setItem(CHANGELOG_KEY, JSON.stringify(list));
+    } catch (e) {}
+}
+
+function getChangelogList() {
+    try {
+        const raw = localStorage.getItem(CHANGELOG_KEY);
+        if (!raw) return [];
+        const list = JSON.parse(raw);
+        return Array.isArray(list) ? list : [];
+    } catch (e) { return []; }
+}
+
+function showChangelogToast(msg) {
+    if (!msg) return;
+    const toast = document.getElementById("toast");
+    if (!toast) return;
+
+    toast.innerText = msg;
+    toast.classList.remove("show");
+    void toast.offsetWidth;
+    toast.style.display = "block";
+    toast.classList.add("show");
+
+    clearTimeout(window._changelogToastTimer);
+    window._changelogToastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => { toast.style.display = "none"; }, 350);
+    }, 4800);
+}
+
+function renderChangelogHistory() {
+    const box = document.getElementById("changelogBox");
+    if (!box) return;
+
+    const list = getChangelogList();
+    box.innerHTML = "";
+
+    if (list.length === 0) {
+        box.innerHTML = '<div class="changelog-empty">Hələ yeniləmə yoxdur</div>';
+        return;
+    }
+
+    list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "changelog-item";
+        div.innerHTML = `<div class="changelog-date">${item.text.split(" ")[0]}</div>${item.text}`;
+        box.appendChild(div);
+    });
+}
+
+const I18N = {
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok"}
+};
+const APP_VERSION = "3.1.9";
+const DAY_MS = 24 * 60 * 60 * 1000;
+const LANG_KEY = "antiudar_lang";
+const RECENT_KEY = "antiudar_recent_v1";
+const WA_NUMBER = "994553115544";
+let currentLang = "az";
+let indexFor = null;
+let searchEntries = [];
+
+function t(k) { return (I18N[currentLang] && I18N[currentLang][k]) || I18N.az[k] || k; }
+
+function initLang() {
+    let l = null;
+    try { l = localStorage.getItem(LANG_KEY); } catch (e) {}
+    setLang(I18N[l] ? l : "az", false);
+}
+
+function setLang(l, save) {
+    if (!I18N[l]) l = "az";
+    currentLang = l;
+    if (save !== false) { try { localStorage.setItem(LANG_KEY, l); } catch (e) {} }
+    applyLang();
+}
+
+function applyLang() {
+    document.documentElement.lang = currentLang;
+    document.title = t("title");
+    document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-ph]").forEach(function (el) { el.placeholder = t(el.getAttribute("data-i18n-ph")); });
+    document.querySelectorAll(".lang-option").forEach(function (el) { el.classList.toggle("active", el.id === "lang-" + currentLang); });
+    document.getElementById("appVersion").innerText = "v" + APP_VERSION;
+    updateLastUpdate();
+    
+    if (navigator.onLine) {
+        updateStatusDot();
+    }
+    performSearch(document.getElementById("searchInput").value);
+}
+
+function updateStatusDot() {
+    const dot = document.getElementById("statusDot");
+    const last = localStorage.getItem(UPDATE_KEY);
+    let cls = "gray", key = "stOld";
+    if (last) {
+        const age = Date.now() - parseInt(last, 10);
+        if (age > THREE_DAYS_MS) { cls = "yellow"; key = "stStale"; }
+        else if (age < DAY_MS) { cls = "green"; key = "stFresh"; }
+    }
+    dot.className = "status-dot " + cls;
+    dot.setAttribute("title", t(key));
+    dot.setAttribute("aria-label", t(key));
+    dot.setAttribute("data-key", key);
+}
+
+let toastTimer = null;
+function showDotInfo() {
+    const toast = document.getElementById("toast");
+    toast.innerText = t(document.getElementById("statusDot").getAttribute("data-key"));
+    toast.classList.remove("show");
+    void toast.offsetWidth;
+    toast.style.display = "block";
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+        toast.classList.remove("show");
+        setTimeout(() => toast.style.display = "none", 350);
+    }, 2200);
+}
+
+function updateDbCount() {
+    document.getElementById("dbCount").innerText = Array.isArray(database) ? database.length : 0;
+    let totalModels = 0;
+    if (Array.isArray(database)) {
+        database.forEach(group => {
+            if (Array.isArray(group)) totalModels += group.length;
+        });
+    }
+    document.getElementById("modelCount").innerText = totalModels;
+}
+
+function getRecent() {
+    try {
+        const a = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+        return Array.isArray(a) ? a.filter(function (x) { return typeof x === "string"; }).slice(0, 10) : [];
+    } catch (e) { return []; }
+}
+
+function saveRecent(q) {
+    q = String(q || "").trim();
+    if (!q) return;
+    let a = getRecent().filter(function (x) { return x.toLowerCase() !== q.toLowerCase(); });
+    a.unshift(q);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(a.slice(0, 10))); } catch (e) {}
+}
+
+function clearRecent() {
+    try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+    renderRecent();
+}
+
+function hideRecent() { document.getElementById("recent").style.display = "none"; }
+
+function renderRecent() {
+    const box = document.getElementById("recent");
+    const list = getRecent();
+    box.innerHTML = "";
+    if (list.length === 0) { box.style.display = "none"; return; }
+    box.style.display = "block";
+
+    const head = document.createElement("div");
+    head.className = "recent-head";
+    const title = document.createElement("div");
+    title.className = "recent-title";
+    title.innerText = t("recent");
+    const clr = document.createElement("button");
+    clr.className = "recent-clear";
+    clr.innerText = t("clear");
+    clr.addEventListener("click", clearRecent);
+    head.appendChild(title);
+    head.appendChild(clr);
+    box.appendChild(head);
+
+    list.forEach(function (q) {
+        const row = document.createElement("div");
+        row.className = "recent-item";
+        const a = document.createElement("span");
+        a.innerText = q;
+        const b = document.createElement("span");
+        b.innerText = "›";
+        row.appendChild(a);
+        row.appendChild(b);
+        row.addEventListener("click", function () {
+            const input = document.getElementById("searchInput");
+            input.value = q;
+            updateClearButton();
+            performSearch(q);
+        });
+        box.appendChild(row);
+    });
+}
+
+function norm(s) {
+    const map = { "ə": "e", "ı": "i", "ö": "o", "ü": "u", "ş": "s", "ç": "c", "ğ": "g" };
+    return String(s).toLowerCase().replace(/[əıöüşçğ]/g, function (c) { return map[c]; }).replace(/[^a-z0-9а-яё]+/g, "");
+}
+
+function lev(a, b) {
+    const prev = [];
+    for (let j = 0; j <= b.length; j++) prev[j] = j;
+    for (let i = 1; i <= a.length; i++) {
+        let diag = prev[0];
+        prev[0] = i;
+        for (let j = 1; j <= b.length; j++) {
+            const tmp = prev[j];
+            prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1));
+            diag = tmp;
+        }
+    }
+    return prev[b.length];
+}
+
+function buildIndex() {
+    if (indexFor === database) return;
+    searchEntries = [];
+    database.forEach(function (group) {
+        if (!Array.isArray(group)) return;
+        group.forEach(function (model) {
+            searchEntries.push({
+                model: model,
+                group: group,
+                key: norm(model),
+                words: String(model).toLowerCase().split(/\s+/).map(norm).filter(Boolean)
+            });
+        });
+    });
+    indexFor = database;
+}
+
+function showNotFound(query) {
+    const results = document.getElementById("results");
+    document.getElementById("status").innerText = t("none");
+
+    const noResult = document.createElement("div");
+    noResult.className = "no-results";
+    noResult.innerText = '"' + query + '": ' + t("noneText");
+    results.appendChild(noResult);
+
+    const a = document.createElement("a");
+    a.className = "whatsapp-button nf-button";
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTector: bazada tapılmayan model — " + query);
+    a.innerText = t("nfBtn");
+    results.appendChild(a);
+}
+
+function highlightMatch(text, query) {
+    if (!query) return text;
+    try {
+        const escaped = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regex = new RegExp("(" + escaped.split(/\s+/).filter(Boolean).join("|") + ")", "gi");
+        return text.replace(regex, "<mark>$1</mark>");
+    } catch (e) { return text; }
+}
+
+function performSearch(query) {
+    if (!auth.currentUser) {
+        let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
+        if (query.trim().length > 0) {
+            count++;
+            localStorage.setItem(SEARCH_COUNT_KEY, count.toString());
+        }
+        if (count > 3) {
+            document.getElementById("auth-modal").style.display = "flex";
+            return;
+        }
+    }
+
+    const results = document.getElementById("results");
+    const status = document.getElementById("status");
+    results.innerHTML = "";
+    query = String(query || "").trim();
+
+    if (!query) {
+        status.innerText = "";
+        renderRecent();
+        return;
+    }
+    hideRecent();
+
+    if (!Array.isArray(database) || database.length === 0) {
+        status.innerText = t("noDb");
+        return;
+    }
+
+    const whole = norm(query);
+    const tokens = query.split(/\s+/).map(norm).filter(function (x) { return x.length > 0; });
+    if (tokens.length === 0) { showNotFound(query); return; }
+
+    buildIndex();
+    const seen = new Set();
+    const matches = [];
+    function pass(test) {
+        searchEntries.forEach(function (e) {
+            if (seen.has(e.key)) return;
+            if (test(e)) { seen.add(e.key); matches.push(e); }
+        });
+    }
+
+    pass(function (e) { return e.key.includes(whole) || tokens.every(function (tk) { return e.key.includes(tk); }); });
+
+    let fuzzy = false;
+    if (matches.length === 0) {
+        fuzzy = true;
+        pass(function (e) {
+            return tokens.every(function (tk) {
+                return e.key.includes(tk) || (tk.length >= 4 && e.words.some(function (w) {
+                    return Math.abs(w.length - tk.length) <= 1 && lev(w, tk) <= 1;
+                }));
+            });
+        });
+    }
+
+    if (matches.length === 0) { showNotFound(query); return; }
+
+    status.innerText = matches.length + " " + (fuzzy ? t("similar") : t("found"));
+
+    matches.forEach(function (item) {
+        const row = document.createElement("div");
+        row.className = "result-item";
+
+        const brand = document.createElement("div");
+        brand.className = "brand-badge";
+        brand.innerText = getBrand(item.model);
+
+        const modelEl = document.createElement("div");
+        modelEl.className = "result-model";
+        modelEl.innerHTML = highlightMatch(item.model, query);
+
+        const arrow = document.createElement("div");
+        arrow.className = "result-arrow";
+        arrow.innerText = "›";
+
+        row.appendChild(brand);
+        row.appendChild(modelEl);
+        row.appendChild(arrow);
+
+        row.addEventListener("click", function () {
+            playSoundEffect();
+            triggerHaptic(30);
+            openDetail(item.model, item.group);
+        });
+
+        results.appendChild(row);
+    });
+}
+
+function openDetail(model, group) {
+    selectedModel = model;
+    selectedGroup = group;
+    saveRecent(model);
+
+    document.getElementById("detail-model").innerText = model;
+    renderCompatibilityList(group, model);
+
+    document.getElementById("detail-view").classList.add("active");
+    document.getElementById("compatibility-list").scrollTop = 0;
+    document.body.style.overflow = "hidden";
+}
+
+function closeDetail() {
+    document.getElementById("detail-view").classList.remove("active");
+    document.body.style.overflow = "";
+    triggerHaptic(20);
+}
+
+function renderCompatibilityList(group, selected) {
+    const list = document.getElementById("compatibility-list");
+    list.innerHTML = "";
+
+    if (!Array.isArray(group)) return;
+
+    group.forEach(function (model, index) {
+        const item = document.createElement("div");
+        item.className = "compatibility-item";
+
+        if (String(model).trim().toLowerCase() === String(selected).trim().toLowerCase()) {
+            item.classList.add("selected");
+        }
+
+        const number = document.createElement("div");
+        number.className = "compat-number";
+        number.innerText = String(index + 1).padStart(2, "0");
+
+        const brand = document.createElement("div");
+        brand.className = "compat-brand";
+        brand.innerText = getBrand(model);
+
+        const modelName = document.createElement("div");
+        modelName.className = "compat-model";
+        modelName.innerText = model;
+
+        item.appendChild(number);
+        item.appendChild(brand);
+        item.appendChild(modelName);
+        list.appendChild(item);
+    });
+}
+
+function openSettings() {
+    document.getElementById("settings-view").classList.add("active");
+    document.body.style.overflow = "hidden";
+    renderChangelogHistory();
+    triggerHaptic(25);
+}
+
+function closeSettings() {
+    document.getElementById("settings-view").classList.remove("active");
+    document.body.style.overflow = "";
+    triggerHaptic(20);
+}
+
+function openPrivacy() {
+    document.getElementById("privacy-view").classList.add("active");
+    document.getElementById("privacy-view").scrollTop = 0;
+    document.body.style.overflow = "hidden";
+}
+
+function closePrivacy() {
+    document.getElementById("privacy-view").classList.remove("active");
+}
+
+async function fetchDatabase(retries = 3) {
+    const updateButton = document.getElementById("updateButton");
+    const spinner = document.getElementById("updateSpinner");
+
+    try {
+        updateButton.querySelector("span").innerText = t("updating");
+        spinner.style.display = "block";
+        updateButton.disabled = true;
+
+        const oldDatabase = JSON.parse(JSON.stringify(database));
+        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+
+        const data = await response.json();
+        const parsed = normalizeDatabase(data);
+        if (parsed.length === 0) throw new Error("Baza boşdur.");
+
+        const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
+        if (changelogMsg) {
+            saveChangelog(changelogMsg);
+            showChangelogToast(changelogMsg);
+            renderChangelogHistory();
+        }
+
+        localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+        localStorage.setItem(UPDATE_KEY, Date.now().toString());
+
+        database = parsed;
+        updateLastUpdate();
+
+        const input = document.getElementById("searchInput");
+        if (input.value.trim()) performSearch(input.value);
+
+        checkBlockStatus();
+
+        updateButton.querySelector("span").innerText = t("updateNow");
+        spinner.style.display = "none";
+        updateButton.disabled = false;
+        playSuccessSound();
+        triggerHaptic(50);
+
+    } catch (error) {
+        if (retries > 0) {
+            setTimeout(() => fetchDatabase(retries - 1), 2000);
+            return;
+        }
+        updateButton.querySelector("span").innerText = t("updateNow");
+        spinner.style.display = "none";
+        updateButton.disabled = false;
+        if (database.length === 0) alert(t("alertFail"));
+        checkBlockStatus();
+    }
+}
+
+async function backgroundCheckUpdate() {
+    if (!navigator.onLine) return;
+    try {
+        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+        if (response.ok) {
+            const data = await response.json();
+            const parsed = normalizeDatabase(data);
+            if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
+                const oldDatabase = JSON.parse(JSON.stringify(database));
+                localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+                localStorage.setItem(UPDATE_KEY, Date.now().toString());
+                database = parsed;
+                updateLastUpdate();
+
+                const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
+                if (changelogMsg) {
+                    saveChangelog(changelogMsg);
+                    showChangelogToast(changelogMsg);
+                    renderChangelogHistory();
+                }
+                playSuccessSound();
+            }
+        }
+    } catch (e) {}
+}
+
+function loadDatabaseFromCacheOnly() {
+    const cached = localStorage.getItem(DB_KEY);
+    const lastUpdate = localStorage.getItem(UPDATE_KEY);
+
+    if (cached && lastUpdate) {
+        try {
+            const parsed = JSON.parse(cached);
+            database = normalizeDatabase(parsed);
+            if (database.length > 0) {
+                updateLastUpdate();
+                checkBlockStatus();
+                return;
+            }
+        } catch (e) {}
+    }
+    updateLastUpdate();
+    checkBlockStatus();
+}
+
+function forceUpdate() { fetchDatabase(3); }
+
+function updateLastUpdate() {
+    updateDbCount();
+    const last = localStorage.getItem(UPDATE_KEY);
+    const element = document.getElementById("lastUpdateText");
+
+    if (!last) {
+        element.innerText = t("unknown");
+        return;
+    }
+
+    const date = new Date(parseInt(last, 10));
+    const formatted =
+        String(date.getDate()).padStart(2, "0") + "." +
+        String(date.getMonth() + 1).padStart(2, "0") + "." +
+        date.getFullYear() + " " +
+        String(date.getHours()).padStart(2, "0") + ":" +
+        String(date.getMinutes()).padStart(2, "0");
+
+    element.innerText = formatted;
+}
+
+function checkBlockStatus() {
+    updateStatusDot();
+    const last = localStorage.getItem(UPDATE_KEY);
+    const block = document.getElementById("block-screen");
+
+    if (!last) {
+        block.style.display = "none";
+        return false;
+    }
+
+    const passed = Date.now() - parseInt(last, 10);
+    if (passed > THREE_DAYS_MS) {
+        block.style.display = "flex";
+        return true;
+    }
+
+    block.style.display = "none";
+    return false;
+}
+
+setInterval(checkBlockStatus, 60 * 1000);
 </script>
+
 </body>
 </html>
