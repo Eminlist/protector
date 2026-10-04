@@ -10,8 +10,11 @@
     <meta name="mobile-web-app-capable" content="yes">
     <title>Qoruyucu şüşə uyğunluğu</title>
     
-    <link rel="icon" type="image/png" href="11.png">
-    <link rel="apple-touch-icon" href="11.png">
+    <!-- Dinamik Manifest üçün link (Avtomatik dolacaq) -->
+    <link rel="manifest" id="pwa-manifest">
+
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
 
     <style>
         :root[data-theme="dark"] {
@@ -52,6 +55,7 @@
             --font-scale: 1;
             --accent-color: #d4af37;
             --accent-dark: #8a6d1d;
+            --placeholder-color: #ffe566;
         }
 
         * {
@@ -195,12 +199,17 @@
             background: transparent;
             color: var(--text);
             font-size: calc(20px * var(--font-scale));
-            padding: 0 54px 0 22px; 
+            padding: 0 54px 0 22px;
+            transition: color 0.4s ease;
         }
 
+        /* ===== PARLAQ PLACEHOLDER (DUMANSIZ) ===== */
         .search-input::placeholder {
-            color: var(--muted);
-            transition: opacity 0.25s ease-in-out;
+            color: var(--placeholder-color);
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            opacity: 1;
+            transition: color 0.6s ease, opacity 0.3s ease;
         }
 
         .clear-button {
@@ -777,7 +786,6 @@
         
         .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; z-index: 1100; display: none; letter-spacing: 1px; }
 
-        /* ===== GÖZƏL TOAST ===== */
         #toast {
             position: fixed;
             left: 50%;
@@ -809,7 +817,6 @@
         .lang-option { padding: 16px 8px; text-align: center; font-size: calc(13px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
         .lang-option.active { background: var(--accent-color); color: #111111; font-weight: 800; }
 
-        /* ===== YENİLƏMƏ TARİXÇƏSİ ===== */
         .changelog-item {
             padding: 14px 16px;
             border-bottom: 1px solid var(--border);
@@ -834,7 +841,6 @@
             font-size: 13px;
         }
 
-        /* ===== PWA INSTALL BANNER (sadə və rəsmi) ===== */
         #install-banner {
             position: fixed;
             bottom: calc(24px + env(safe-area-inset-bottom, 0px));
@@ -909,7 +915,6 @@
 
 <div id="app">
 
-    <!-- MAIN VIEW -->
     <div id="main-view">
         <header class="top-header">
             <div class="header-left">
@@ -925,7 +930,7 @@
                     id="searchInput"
                     class="search-input"
                     type="text"
-                    placeholder="Axtar: Samsung,Mi,iPhone ..."
+                    placeholder="Samsung Galaxy S23"
                     autocomplete="off"
                     autocorrect="off"
                     autocapitalize="off"
@@ -940,7 +945,6 @@
         </main>
     </div>
 
-    <!-- DETAIL VIEW -->
     <div id="detail-view">
         <header class="detail-header">
             <button class="detail-back" onclick="closeDetail()">‹</button>
@@ -957,7 +961,6 @@
         <div id="compatibility-list" class="compatibility-list"></div>
     </div>
 
-    <!-- SETTINGS -->
     <div id="settings-view">
         <header class="settings-header">
             <button class="settings-back" onclick="closeSettings()">‹</button>
@@ -969,7 +972,6 @@
 
         <div class="settings-content">
 
-            <!-- BAZA -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secBase">BAZA</div>
                 <div class="settings-box">
@@ -984,7 +986,6 @@
                 </button>
             </div>
 
-            <!-- YENİLƏMƏ TARİXÇƏSİ -->
             <div class="settings-section">
                 <div class="settings-section-title">YENİLƏMƏ TARİXÇƏSİ</div>
                 <div class="settings-box" id="changelogBox">
@@ -992,7 +993,6 @@
                 </div>
             </div>
 
-            <!-- AKSENT RƏNG SEÇİCİ -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secAccent"> AKSENT RƏNGİ</div>
                 <div class="settings-box" style="padding: 16px;">
@@ -1009,7 +1009,6 @@
                 </div>
             </div>
 
-            <!-- MÖVZU -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secTheme">MÖVZU</div>
                 <div class="theme-selector">
@@ -1020,7 +1019,6 @@
                 </div>
             </div>
 
-            <!-- EKRAN / ŞRİFT ÖLÇÜSÜ -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secFont">ŞRİFT ÖLÇÜSÜ</div>
                 <div class="theme-selector">
@@ -1030,7 +1028,6 @@
                 </div>
             </div>
             
-            <!-- DİL -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secLang">DİL</div>
                 <div class="lang-selector">
@@ -1041,7 +1038,6 @@
                 </div>
             </div>
 
-            <!-- SƏS VƏ VİBRASİYA -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secSoundHaptic">SƏS VƏ HAPTİK</div>
                 <div class="settings-box">
@@ -1078,7 +1074,6 @@
                 </div>
             </div>
 
-            <!-- PERFORMANS -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secPerformance">PERFORMANS</div>
                 <div class="settings-box">
@@ -1095,7 +1090,6 @@
                 </div>
             </div>
 
-            <!-- MƏXFİLİK -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secPrivacy">MƏXFİLİK</div>
                 <div class="settings-box" onclick="openPrivacy()" style="cursor: pointer;">
@@ -1106,7 +1100,6 @@
                 </div>
             </div>
 
-            <!-- ƏLAQƏ -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secContact">ƏLAQƏ</div>
                 <a href="https://wa.me/994553115544?text=Salam,%20ProTector%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">
@@ -1114,7 +1107,6 @@
                 </a>
             </div>
 
-            <!-- PROQRAM -->
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secApp">PROQRAM</div>
                 <div class="settings-box">
@@ -1136,7 +1128,6 @@
         </div>
     </div>
     
-    <!-- PRIVACY VIEW -->
     <div id="privacy-view">
         <header class="settings-header">
             <button class="settings-back" onclick="closePrivacy()">‹</button>
@@ -1167,7 +1158,6 @@
     <div id="offlineCorner" class="offline-corner">OFFLINE</div>
     <div id="toast"></div>
 
-    <!-- PWA INSTALL BANNER -->
     <div id="install-banner">
         <div class="install-icon">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -1182,7 +1172,6 @@
         <button class="install-close" onclick="dismissInstall()">×</button>
     </div>
 
-    <!-- BLOCK SCREEN -->
     <div id="block-screen">
         <div class="block-title" data-i18n="blockTitle">Proqram Bloklanıb</div>
         <div class="block-text" data-i18n-html="blockText">
@@ -1196,9 +1185,6 @@
 </div>
 
 <script>
-/* =============================================================
-   CONFIGURATION & STATE
-============================================================= */
 const RAW_URL = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Base.json";
 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -1218,10 +1204,8 @@ let soundType = localStorage.getItem("antiudar_sound_type") || "bip";
 let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medium";
 let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
 
-/* =============================================================
-   PAGE LOAD & INITIALIZATION
-============================================================= */
 document.addEventListener("DOMContentLoaded", function () {
+    initDynamicPWA(); // Tətbiqin PWA məlumatlarını dinamik doldurur
     initTheme();
     initFontScale();
     initLang();
@@ -1251,23 +1235,44 @@ document.addEventListener("DOMContentLoaded", function () {
     initEdgeSwipeGestures();
 });
 
-/* =============================================================
-   PWA INSTALL
-============================================================= */
+// PWA DİNAMİK YÜKLƏNMƏ (Manifest və Service Worker)
+function initDynamicPWA() {
+    const manifest = {
+        "name": "Qoruyucu şüşə uyğunluğu",
+        "short_name": "Antiudar",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#0a0a0a",
+        "theme_color": "#0a0a0a",
+        "icons": [
+            { "src": "https://raw.githubusercontent.com/Eminlist/protector/main/11.png", "sizes": "192x192", "type": "image/png" },
+            { "src": "https://raw.githubusercontent.com/Eminlist/protector/main/11.png", "sizes": "512x512", "type": "image/png" }
+        ]
+    };
+    document.getElementById('pwa-manifest').href = 'data:application/manifest+json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifest));
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(err => {
+                console.log("PWA Qeydi: Brauzer quraşdırma ekranı üçün 'sw.js' faylı tələb edir.");
+            });
+        });
+    }
+}
+
 function initPWA() {
     window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
+        // e.preventDefault(); Yoxdur! Brauzer artıq öz orijinal pəncərəsini telefonda və ya kompyuterdə göstərəcək (Youtube kimi).
         deferredPrompt = e;
 
-        // Əgər istifadəçi son 3 gündə bağlayıbsa, göstərmə
         const dismissed = localStorage.getItem(INSTALL_DISMISS_KEY);
         if (dismissed && Date.now() - parseInt(dismissed) < THREE_DAYS_MS) return;
 
-        // Bir az gecikmə ilə göstər (bezdirməsin)
+        // Əlavə olaraq öz pəncərəmiz də tez (1 saniyəyə) çıxsın, istifadəçi görsün
         setTimeout(() => {
             const banner = document.getElementById("install-banner");
             if (banner) banner.classList.add("show");
-        }, 2500);
+        }, 1000);
     });
 
     window.addEventListener("appinstalled", () => {
@@ -1297,9 +1302,6 @@ function hideInstallBanner() {
     if (banner) banner.classList.remove("show");
 }
 
-/* =============================================================
-   RESPONSIVE TYPOGRAPHY
-============================================================= */
 function initResponsiveTypography() {
     function adjustTypography() {
         const width = window.innerWidth;
@@ -1312,9 +1314,6 @@ function initResponsiveTypography() {
     adjustTypography();
 }
 
-/* =============================================================
-   EDGE SWIPE GESTURES
-============================================================= */
 function initEdgeSwipeGestures() {
     let touchStartX = 0;
     let touchStartY = 0;
@@ -1347,12 +1346,29 @@ function initEdgeSwipeGestures() {
 }
 
 /* =============================================================
-   DİNAMİK PLACEHOLDER
+   DİNAMİK PLACEHOLDER – PARLAQ RƏNGLƏR (DUMANSIZ)
 ============================================================= */
+const PLACEHOLDER_PALETTE = [
+    { color: "#FFE566" },   // parlaq sarı
+    { color: "#C77DFF" },   // parlaq bənövşəyi
+    { color: "#5CE1FF" },   // parlaq mavi
+    { color: "#57F287" },   // parlaq yaşıl
+    { color: "#FF8A65" },   // parlaq narıncı
+    { color: "#FF6BCB" },   // parlaq çəhrayı
+    { color: "#7CFFB2" },   // mint
+    { color: "#A5B4FC" }    // soft indigo
+];
+
+let placeholderColorIndex = 0;
 let placeholderInterval = null;
+
 function initDynamicPlaceholder() {
     const input = document.getElementById("searchInput");
     
+    // İlk rəng
+    const first = PLACEHOLDER_PALETTE[0];
+    document.documentElement.style.setProperty("--placeholder-color", first.color);
+
     placeholderInterval = setInterval(() => {
         if (document.activeElement !== input && !input.value) {
             let sampleModel = "Samsung Galaxy S23";
@@ -1363,18 +1379,20 @@ function initDynamicPlaceholder() {
                 }
             }
 
-            input.style.opacity = 0;
+            placeholderColorIndex = (placeholderColorIndex + 1) % PLACEHOLDER_PALETTE.length;
+            const next = PLACEHOLDER_PALETTE[placeholderColorIndex];
+
+            document.documentElement.style.setProperty("--placeholder-color", next.color);
+
+            input.style.opacity = 0.4;
             setTimeout(() => {
-                input.placeholder = "Axtar: " + sampleModel + " ...";
+                input.placeholder = sampleModel;
                 input.style.opacity = 1;
-            }, 250);
+            }, 280);
         }
-    }, 1000);
+    }, 2000);
 }
 
-/* =============================================================
-   ACCENT COLOR
-============================================================= */
 function initAccentColor() {
     const savedAccent = localStorage.getItem("antiudar_accent") || "#d4af37";
     const savedDark = localStorage.getItem("antiudar_accent_dark") || "#8a6d1d";
@@ -1391,9 +1409,6 @@ function setAccentColor(accent, dark, save = true) {
     document.documentElement.style.setProperty("--accent-dark", dark);
 }
 
-/* =============================================================
-   SOUND
-============================================================= */
 function playSoundEffect() {
     if (!soundEnabled) return;
     try {
@@ -1454,9 +1469,6 @@ function changeSoundType(el) {
     playSoundEffect();
 }
 
-/* =============================================================
-   HAPTIC
-============================================================= */
 function triggerHaptic(customDuration = null) {
     if (hapticEnabled && navigator.vibrate) {
         try {
@@ -1482,9 +1494,6 @@ function toggleLowPower(el) {
     localStorage.setItem("antiudar_low_power", lowPowerMode);
 }
 
-/* =============================================================
-   NETWORK STATUS
-============================================================= */
 function updateNetworkStatus() {
     const isOnline = navigator.onLine;
     const banner = document.getElementById("offline-banner");
@@ -1507,9 +1516,6 @@ function updateNetworkStatus() {
     }
 }
 
-/* =============================================================
-   THEME
-============================================================= */
 function initTheme() {
     const savedTheme = localStorage.getItem("antiudar_theme") || "system";
     setTheme(savedTheme);
@@ -1547,9 +1553,6 @@ setInterval(() => {
     }
 }, 60 * 1000);
 
-/* =============================================================
-   FONT SIZE
-============================================================= */
 function initFontScale() {
     const scale = localStorage.getItem("antiudar_font_scale") || "1.0";
     setFontScale(parseFloat(scale), false);
@@ -1565,9 +1568,6 @@ function setFontScale(scale, save = true) {
     else document.getElementById("font-normal").classList.add("active");
 }
 
-/* =============================================================
-   TOGGLES
-============================================================= */
 function initToggles() {
     const sToggle = document.getElementById("soundToggle");
     const hToggle = document.getElementById("hapticToggle");
@@ -1594,9 +1594,6 @@ function toggleHaptic(el) {
     if (hapticEnabled) triggerHaptic(40);
 }
 
-/* =============================================================
-   SEARCH CLEAR
-============================================================= */
 function updateClearButton() {
     const input = document.getElementById("searchInput");
     const button = document.getElementById("clearButton");
@@ -1622,9 +1619,6 @@ function clearSearch() {
     triggerHaptic(20);
 }
 
-/* =============================================================
-   NORMALIZE DATABASE
-============================================================= */
 function normalizeDatabase(data) {
     if (!Array.isArray(data)) return [];
     const result = [];
@@ -1661,9 +1655,6 @@ function getBrand(model) {
     return parts.length > 0 ? parts[0] : "";
 }
 
-/* =============================================================
-   CHANGELOG (Son 3 + düzülüş mesajı)
-============================================================= */
 function getAllModels(db) {
     const set = new Set();
     if (!Array.isArray(db)) return set;
@@ -1685,6 +1676,10 @@ function generateChangelogMessage(oldDb, newDb) {
     newModels.forEach(m => { if (!oldModels.has(m)) added++; });
     oldModels.forEach(m => { if (!newModels.has(m)) removed++; });
 
+    if (added === 0 && removed === 0) {
+        return null;
+    }
+
     const now = new Date();
     const dateStr =
         String(now.getDate()).padStart(2, "0") + "." +
@@ -1697,17 +1692,16 @@ function generateChangelogMessage(oldDb, newDb) {
         msg = `${dateStr} bazaya ${added} model əlavə edildi, ${removed} model çıxarıldı`;
     } else if (added > 0) {
         msg = `${dateStr} bazaya ${added} model əlavə edildi`;
-    } else if (removed > 0) {
-        msg = `${dateStr} bazadan ${removed} model çıxarıldı`;
     } else {
-        // Heç model əlavə/çıxarılmayıbsa → düzülüş mesajı
-        msg = `${dateStr} bazada model düzülüşü edildi`;
+        msg = `${dateStr} bazadan ${removed} model çıxarıldı`;
     }
 
     return msg;
 }
 
 function saveChangelog(msg) {
+    if (!msg) return;
+
     try {
         let list = [];
         const raw = localStorage.getItem(CHANGELOG_KEY);
@@ -1736,6 +1730,7 @@ function getChangelogList() {
 }
 
 function showChangelogToast(msg) {
+    if (!msg) return;
     const toast = document.getElementById("toast");
     if (!toast) return;
 
@@ -1774,16 +1769,13 @@ function renderChangelogHistory() {
     });
 }
 
-/* =============================================================
-   SEARCH & I18N
-============================================================= */
 const I18N = {
- az:{title:"Qoruyucu şüşə uyğunluğu",search:"Axtar: Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur"},
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur"},
  ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета"},
  en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet"},
  tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok"}
 };
-const APP_VERSION = "3.1.5";
+const APP_VERSION = "3.1.8";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -2146,9 +2138,6 @@ function closePrivacy() {
     document.getElementById("privacy-view").classList.remove("active");
 }
 
-/* =============================================================
-   DATABASE FETCHING
-============================================================= */
 async function fetchDatabase(retries = 3) {
     const updateButton = document.getElementById("updateButton");
     const spinner = document.getElementById("updateSpinner");
@@ -2169,9 +2158,11 @@ async function fetchDatabase(retries = 3) {
         if (parsed.length === 0) throw new Error("Baza boşdur.");
 
         const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
-        saveChangelog(changelogMsg);
-        showChangelogToast(changelogMsg);
-        renderChangelogHistory();
+        if (changelogMsg) {
+            saveChangelog(changelogMsg);
+            showChangelogToast(changelogMsg);
+            renderChangelogHistory();
+        }
 
         localStorage.setItem(DB_KEY, JSON.stringify(parsed));
         localStorage.setItem(UPDATE_KEY, Date.now().toString());
@@ -2223,9 +2214,11 @@ async function backgroundCheckUpdate() {
                 updateLastUpdate();
 
                 const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
-                saveChangelog(changelogMsg);
-                showChangelogToast(changelogMsg);
-                renderChangelogHistory();
+                if (changelogMsg) {
+                    saveChangelog(changelogMsg);
+                    showChangelogToast(changelogMsg);
+                    renderChangelogHistory();
+                }
                 playSuccessSound();
             }
         }
