@@ -815,6 +815,72 @@
             font-size: 13px;
         }
 
+        #install-banner {
+            position: fixed;
+            bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+            left: 50%;
+            transform: translateX(-50%) translateY(120%);
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1150;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 94%;
+        }
+        #install-banner.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        .install-icon {
+            width: 36px;
+            height: 36px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .install-icon svg {
+            width: 22px;
+            height: 22px;
+            fill: #d4af37;
+        }
+        .install-text {
+            flex: 1;
+            font-size: 13px;
+            color: #f5f5f5;
+            line-height: 1.3;
+        }
+        .install-text strong {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+        .install-btn {
+            background: var(--accent-color);
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .install-close {
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 4px;
+            line-height: 1;
+        }
+
         /* QEYDİYYAT / GİRİŞ VƏ PROFİL MODALLARI */
         #auth-modal {
             position: fixed;
@@ -838,18 +904,18 @@
         }
         .auth-box h3 {
             color: var(--accent-color);
-            margin-bottom: 15px;
-            font-size: 22px;
+            margin-bottom: 12px;
+            font-size: 20px;
         }
         .auth-box input {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
+            padding: 10px 12px;
+            margin: 6px 0;
             background: var(--surface-2);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             color: var(--text);
-            font-size: 16px;
+            font-size: 15px;
             outline: none;
         }
         .auth-box button {
@@ -860,21 +926,21 @@
             border: none;
             border-radius: 12px;
             font-weight: 800;
-            font-size: 16px;
+            font-size: 15px;
             cursor: pointer;
             margin-top: 10px;
         }
         .auth-toggle {
             color: var(--accent-color);
             cursor: pointer;
-            font-size: 13px;
-            margin-top: 15px;
+            font-size: 12px;
+            margin-top: 12px;
             display: block;
         }
         .auth-error {
             color: #e74c3c;
-            font-size: 13px;
-            margin-top: 8px;
+            font-size: 12px;
+            margin-top: 6px;
         }
     </style>
 </head>
@@ -887,25 +953,25 @@
 <div id="auth-modal">
     <div class="auth-box">
         <div id="registerFormContainer">
-            <h3 id="authModalTitle">Qeydiyyat Tələb Olunur</h3>
-            <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">Pulsuz 3 axtarış limitiniz bitdi. Davam etmək üçün qeydiyyatdan keçin.</p>
-            <input type="text" id="regUser" placeholder="Ləqəb">
-            <input type="email" id="regEmail" placeholder="E-poçt (Parolu bərpa üçün)">
-            <input type="password" id="regPass" placeholder="Parol">
+            <h3>Mağaza Qeydiyyatı</h3>
+            <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Axtarış limitiniz bitdi. Davam etmək üçün daxil olun.</p>
+            <input type="text" id="regUser" placeholder="Ləqəb *" required>
+            <input type="email" id="regEmail" placeholder="E-poçt (Parol bərpası üçün) *" required>
+            <input type="password" id="regPass" placeholder="Parol *" required>
             <input type="text" id="regStore" placeholder="Mağaza adı">
             <input type="text" id="regAddress" placeholder="Mağaza ünvanı">
-            <input type="tel" id="regPhone" placeholder="Telefon nömrəsi">
-            <button onclick="registerUser()">Qeydiyyatdan Keç</button>
-            <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq hesabın var? Giriş et</span>
+            <input type="tel" id="regPhone" value="+994" placeholder="Telefon nömrəsi">
+            <button onclick="registerUser()">Qeydiyyatı Tamamla</button>
+            <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
         </div>
 
         <div id="loginFormContainer" style="display: none;">
-            <h3>Giriş Et</h3>
+            <h3>Sistemə Giriş</h3>
             <input type="email" id="logEmail" placeholder="E-poçt ünvanınız">
             <input type="password" id="logPass" placeholder="Parol">
             <button onclick="loginUser()">Daxil Ol</button>
             <span class="auth-toggle" onclick="switchAuthMode('forgot')">Parolumu unutmuşam</span>
-            <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabın yoxdur? Qeydiyyatdan keç</span>
+            <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabınız yoxdur? Qeydiyyat</span>
         </div>
 
         <div id="forgotFormContainer" style="display: none;">
@@ -927,8 +993,8 @@
                 <div class="header-small">Antiudar</div>
                 <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
-            <div class="header-buttons">
-                <button class="profile-btn" onclick="openProfile()" title="Profil">👤</button>
+            <div class="header-buttons" style="display: flex; gap: 10px;">
+                <button class="profile-btn" onclick="openProfile()" title="Profil" style="width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">👤</button>
                 <button class="menu-button" onclick="openSettings()">☰</button>
             </div>
         </header>
@@ -956,17 +1022,17 @@
 
     <!-- PROFİL SƏHİFƏSİ -->
     <div id="profile-view">
-        <header class="profile-header">
-            <button class="profile-back" onclick="closeProfile()">‹</button>
-            <div class="profile-heading">
-                <div class="profile-small">Hesab</div>
-                <div class="profile-title">Mağaza Profili</div>
+        <header class="profile-header" style="height: 110px; display: flex; align-items: center; padding: 16px 24px; border-bottom: 2px solid var(--accent-color); background: var(--header-bg);">
+            <button class="profile-back" onclick="closeProfile()" style="width: 54px; height: 54px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 30px; cursor: pointer; border-radius: 18px; display: flex; align-items: center; justify-content: center;">‹</button>
+            <div class="profile-heading" style="margin-left: 18px;">
+                <div class="profile-small" style="color: var(--accent-color); font-size: 12px; letter-spacing: 4px;">İDARƏETMƏ</div>
+                <div class="profile-title" style="font-size: 24px; font-weight: 800; color: var(--text);">Mağaza Profili</div>
             </div>
         </header>
 
         <div class="settings-content">
             <div class="settings-section">
-                <div class="settings-section-title">İSTİFADƏÇİ MƏLUMATLARI</div>
+                <div class="settings-section-title">ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI</div>
                 <div class="settings-box" style="padding: 16px;">
                     <label style="font-size:12px; color:var(--muted)">Ləqəb</label>
                     <input type="text" id="profUser" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
@@ -980,12 +1046,12 @@
                     <label style="font-size:12px; color:var(--muted)">Telefon Nömrəsi</label>
                     <input type="tel" id="profPhone" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
 
-                    <button class="profile-save-btn" onclick="updateProfile()">Yadda Saxla</button>
+                    <button class="profile-save-btn" onclick="updateProfile()" style="width:100%; height:50px; background:var(--accent-color); color:#111; border:none; border-radius:12px; font-weight:800; cursor:pointer; margin-top:10px;">Dəyişiklikləri Yadda Saxla</button>
                 </div>
             </div>
 
             <div class="settings-section">
-                <button class="profile-save-btn logout-btn" onclick="logoutUser()">Hesabdan Çıxış Et</button>
+                <button class="profile-save-btn logout-btn" onclick="logoutUser()" style="width:100%; height:50px; background:#e74c3c; color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">Hesabdan Çıxış Et</button>
             </div>
             <div id="profMsg" style="text-align:center; font-size:13px; margin-top:10px;"></div>
         </div>
@@ -1260,7 +1326,8 @@ let selectedModel = "";
 let selectedGroup = null;
 let deferredPrompt = null;
 
-let soundEnabled = localStorage.getItem("antiudar_sound") === "true";
+// SƏS EFFECTLƏRİ STANDART OLARAQ AÇIQ (TRUE)
+let soundEnabled = localStorage.getItem("antiudar_sound") !== "false";
 let hapticEnabled = localStorage.getItem("antiudar_haptic") !== "false";
 let soundType = localStorage.getItem("antiudar_sound_type") || "bip";
 let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medium";
@@ -1303,7 +1370,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initEdgeSwipeGestures();
 });
 
-// PROFİL FUNKSİYALARI
+// PROFİL SƏHİFƏSİ FUNKSİYALARI
 function openProfile() {
     let user = auth.currentUser;
     if (!user) {
@@ -1311,14 +1378,13 @@ function openProfile() {
         return;
     }
     
-    // Bazadan istifadəçi məlumatlarını çəkək
     db.collection("users").doc(user.uid).get().then((doc) => {
         if (doc.exists) {
             let data = doc.data();
             document.getElementById("profUser").value = data.username || "";
             document.getElementById("profStore").value = data.storeName || "";
             document.getElementById("profAddress").value = data.storeAddress || "";
-            document.getElementById("profPhone").value = data.phoneNumber || "";
+            document.getElementById("profPhone").value = data.phoneNumber || "+994";
         }
         document.getElementById("profile-view").classList.add("active");
         document.body.style.overflow = "hidden";
@@ -1340,6 +1406,12 @@ function updateProfile() {
     let phoneNumber = document.getElementById("profPhone").value.trim();
     let msgDiv = document.getElementById("profMsg");
 
+    if (!username) {
+        msgDiv.style.color = "red";
+        msgDiv.innerText = "Ləqəb boş ola bilməz!";
+        return;
+    }
+
     db.collection("users").doc(user.uid).update({
         username,
         storeName,
@@ -1351,7 +1423,7 @@ function updateProfile() {
         setTimeout(() => msgDiv.innerText = "", 3000);
     }).catch((error) => {
         msgDiv.style.color = "red";
-        msgDiv.innerText = "Xəta baş verdi: " + error.message;
+        msgDiv.innerText = "Xəta: " + error.message;
     });
 }
 
@@ -1362,6 +1434,7 @@ function logoutUser() {
     });
 }
 
+// 3 AXTARIŞDAN SONRA QEYDİYYAT TƏLƏBİ
 function checkSearchLimit() {
     let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
     if (count >= 3) {
@@ -1376,6 +1449,7 @@ function switchAuthMode(mode) {
     document.getElementById("authMsg").innerText = "";
 }
 
+// QEYDİYYAT (Vacib: Ləqəb, E-poçt, Parol)
 function registerUser() {
     let user = document.getElementById("regUser").value.trim();
     let email = document.getElementById("regEmail").value.trim();
@@ -1385,8 +1459,8 @@ function registerUser() {
     let phone = document.getElementById("regPhone").value.trim();
     let msgDiv = document.getElementById("authMsg");
 
-    if (!user || !email || !pass || !store) {
-        msgDiv.innerText = "Zəhmət olmasa vacib xanaları doldurun!";
+    if (!user || !email || !pass) {
+        msgDiv.innerText = "Zəhmət olmasa ləqəb, e-poçt və parol sahələrini doldurun!";
         return;
     }
 
@@ -1396,9 +1470,9 @@ function registerUser() {
             db.collection("users").doc(uid).set({
                 username: user,
                 email: email,
-                storeName: store,
-                storeAddress: address,
-                phoneNumber: phone
+                storeName: store || "",
+                storeAddress: address || "",
+                phoneNumber: phone || "+994"
             }).then(() => {
                 localStorage.setItem(SEARCH_COUNT_KEY, "0");
                 document.getElementById("auth-modal").style.display = "none";
@@ -1413,6 +1487,11 @@ function loginUser() {
     let email = document.getElementById("logEmail").value.trim();
     let pass = document.getElementById("logPass").value.trim();
     let msgDiv = document.getElementById("authMsg");
+
+    if (!email || !pass) {
+        msgDiv.innerText = "E-poçt və parolu daxil edin!";
+        return;
+    }
 
     auth.signInWithEmailAndPassword(email, pass)
         .then(() => {
@@ -1442,6 +1521,7 @@ function resetPassword() {
         });
 }
 
+// SERVICE WORKER QEYDİYYATI
 function initDynamicPWA() {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -1452,11 +1532,14 @@ function initDynamicPWA() {
     }
 }
 
+// 48 SAAT QAYDASI İLƏ PWA QURAŞDIRMA BANNERI
 function initPWA() {
     window.addEventListener("beforeinstallprompt", (e) => {
         deferredPrompt = e;
         const dismissed = localStorage.getItem(INSTALL_DISMISS_KEY);
-        if (dismissed && Date.now() - parseInt(dismissed) < THREE_DAYS_MS) return;
+        const FORTY_EIGHT_HOURS = 48 * 60 * 60 * 1000;
+        
+        if (dismissed && Date.now() - parseInt(dismissed) < FORTY_EIGHT_HOURS) return;
 
         setTimeout(() => {
             const banner = document.getElementById("install-banner");
