@@ -2105,10 +2105,17 @@ async function adminPublishDatabase() {
     adminEditDb = cleaned;
     setAdminStatus("Dərc edilir...");
     try {
-        // Nested array yox: ya [{models:[...]}], ya dataJson string
+        const oldDb = JSON.parse(JSON.stringify(database || []));
+        const changelogMsg = generateChangelogMessage(oldDb, cleaned);
+        saveChangelog(changelogMsg);
+        const changelogList = getChangelogList();
+
         await db.doc(FS_DB_DOC).set({
             groups: groupsToFirestore(cleaned),
             dataJson: JSON.stringify(cleaned),
+            changelog: changelogList.map(function (x) {
+                return { text: x.text || "", dateKey: x.dateKey || "", ts: x.ts || 0 };
+            }),
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             updatedBy: (auth.currentUser && auth.currentUser.email) || ADMIN_EMAIL,
             groupCount: cleaned.length
@@ -2119,8 +2126,10 @@ async function adminPublishDatabase() {
         updateLastUpdate();
         checkBlockStatus();
         indexFor = null;
+        renderChangelogHistory();
         setAdminStatus("☁ Dərc olundu · " + cleaned.length + " qrup · " + new Date().toLocaleTimeString());
-        showAppToast("✓ Baza Firestore-a dərc olundu!");
+        showAppToast(changelogMsg || "✓ Baza dərc olundu!");
+        showChangelogToast(changelogMsg);
         triggerHaptic(50);
         if (typeof playSuccessSound === "function") playSuccessSound();
         renderAdminList();
@@ -2182,11 +2191,31 @@ function adminImportJsonFile(input) {
     reader.readAsText(file);
 }
 
+function applyChangelogFromFirestore(data) {
+    if (!data || !Array.isArray(data.changelog) || data.changelog.length === 0) return;
+    try {
+        const list = data.changelog
+            .map(function (x) {
+                return {
+                    text: (x && x.text) || "",
+                    dateKey: (x && x.dateKey) || "",
+                    ts: (x && x.ts) || 0
+                };
+            })
+            .filter(function (x) { return x.text; });
+        if (list.length > 0) {
+            setChangelogList(list);
+            renderChangelogHistory();
+        }
+    } catch (e) {}
+}
+
 async function loadDatabaseFromFirestore() {
     try {
         const snap = await db.doc(FS_DB_DOC).get();
         if (snap.exists) {
             const data = snap.data();
+            applyChangelogFromFirestore(data);
             const parsed = groupsFromFirestore(data);
             if (parsed.length > 0) {
                 database = parsed;
@@ -2703,45 +2732,60 @@ function getAllModels(db) {
     return set;
 }
 
+function getDateKey(d) {
+    const dt = d instanceof Date ? d : new Date(d || Date.now());
+    return dt.getFullYear() + "-" +
+        String(dt.getMonth() + 1).padStart(2, "0") + "-" +
+        String(dt.getDate()).padStart(2, "0");
+}
+
+function formatDateShort(d) {
+    const dt = d instanceof Date ? d : new Date(d || Date.now());
+    return String(dt.getDate()).padStart(2, "0") + "." +
+        String(dt.getMonth() + 1).padStart(2, "0") + "." +
+        String(dt.getFullYear()).slice(-2);
+}
+
+/** Gündəlik dəyişiklik mesajı: "04.10.26 yeniləndi... 3 model əlavə olundu" */
 function generateChangelogMessage(oldDb, newDb) {
-    const oldModels = getAllModels(oldDb);
-    const newModels = getAllModels(newDb);
+    const oldModels = getAllModels(oldDb || []);
+    const newModels = getAllModels(newDb || []);
 
     let added = 0;
     let removed = 0;
-
     newModels.forEach(m => { if (!oldModels.has(m)) added++; });
     oldModels.forEach(m => { if (!newModels.has(m)) removed++; });
 
-    if (added === 0 && removed === 0) return null;
-
-    const now = new Date();
-    const dateStr =
-        String(now.getDate()).padStart(2, "0") + "." +
-        String(now.getMonth() + 1).padStart(2, "0") + "." +
-        String(now.getFullYear()).slice(-2);
-
-    let msg = "";
+    const dateStr = formatDateShort(new Date());
+    let detail = "";
     if (added > 0 && removed > 0) {
-        msg = `${dateStr} bazaya ${added} model əlavə edildi, ${removed} model çıxarıldı`;
+        detail = added + " model əlavə olundu, " + removed + " model çıxarıldı";
     } else if (added > 0) {
-        msg = `${dateStr} bazaya ${added} model əlavə edildi`;
+        detail = added + " model əlavə olundu";
+    } else if (removed > 0) {
+        detail = removed + " model çıxarıldı";
     } else {
-        msg = `${dateStr} bazadan ${removed} model çıxarıldı`;
+        detail = "Model ayarları edildi";
     }
-    return msg;
+    return dateStr + " yeniləndi... " + detail;
 }
 
-function saveChangelog(msg) {
+/** Eyni gün üçün bir qeyd — yenilənir; köhnə günlər saxlanılır */
+function saveChangelog(msg, dateKey) {
     if (!msg) return;
     try {
-        let list = [];
-        const raw = localStorage.getItem(CHANGELOG_KEY);
-        if (raw) list = JSON.parse(raw);
-        if (!Array.isArray(list)) list = [];
-
-        list.unshift({ text: msg, ts: Date.now() });
-        list = list.slice(0, 3);
+        let list = getChangelogList();
+        const key = dateKey || getDateKey(new Date());
+        const existing = list.findIndex(function (x) { return x.dateKey === key; });
+        const entry = { text: msg, dateKey: key, ts: Date.now() };
+        if (existing >= 0) {
+            list[existing] = entry;
+        } else {
+            list.unshift(entry);
+        }
+        // Yenidən tarixə görə sırala (yeni üstdə)
+        list.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+        list = list.slice(0, 30);
         localStorage.setItem(CHANGELOG_KEY, JSON.stringify(list));
     } catch (e) {}
 }
@@ -2753,6 +2797,13 @@ function getChangelogList() {
         const list = JSON.parse(raw);
         return Array.isArray(list) ? list : [];
     } catch (e) { return []; }
+}
+
+function setChangelogList(list) {
+    try {
+        if (!Array.isArray(list)) return;
+        localStorage.setItem(CHANGELOG_KEY, JSON.stringify(list.slice(0, 30)));
+    } catch (e) {}
 }
 
 function showChangelogToast(msg) {
@@ -2785,10 +2836,12 @@ function renderChangelogHistory() {
         return;
     }
 
-    list.forEach(item => {
+    list.forEach(function (item) {
         const div = document.createElement("div");
         div.className = "changelog-item";
-        div.innerHTML = `<div class="changelog-date">${item.text.split(" ")[0]}</div>${item.text}`;
+        const datePart = (item.text || "").split(" ")[0] || "";
+        const rest = (item.text || "").replace(datePart, "").trim();
+        div.innerHTML = '<div class="changelog-date">' + datePart + '</div>' + (rest || item.text || "");
         box.appendChild(div);
     });
 }
@@ -3186,20 +3239,26 @@ async function fetchDatabase(retries = 3) {
 
         // Yalnız Firebase
         const snap = await db.doc(FS_DB_DOC).get();
+        let fsData = null;
         if (snap.exists) {
-            parsed = groupsFromFirestore(snap.data());
+            fsData = snap.data();
+            parsed = groupsFromFirestore(fsData);
+            applyChangelogFromFirestore(fsData);
         }
 
         if (!parsed || parsed.length === 0) {
             throw new Error("Firebase-də baza yoxdur. Admin: GitHub-dan gətir → Dərc et");
         }
 
-        const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
-        if (changelogMsg) {
-            saveChangelog(changelogMsg);
-            showChangelogToast(changelogMsg);
-            renderChangelogHistory();
+        // Əgər Firebase-də changelog yoxdursa, lokal müqayisə et
+        if (!fsData || !Array.isArray(fsData.changelog) || fsData.changelog.length === 0) {
+            const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
+            if (changelogMsg) {
+                saveChangelog(changelogMsg);
+                showChangelogToast(changelogMsg);
+            }
         }
+        renderChangelogHistory();
 
         localStorage.setItem(DB_KEY, JSON.stringify(parsed));
         localStorage.setItem(UPDATE_KEY, Date.now().toString());
@@ -3238,7 +3297,9 @@ async function backgroundCheckUpdate() {
     try {
         const snap = await db.doc(FS_DB_DOC).get();
         if (!snap.exists) return;
-        const parsed = groupsFromFirestore(snap.data());
+        const fsData = snap.data();
+        applyChangelogFromFirestore(fsData);
+        const parsed = groupsFromFirestore(fsData);
         if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
             const oldDatabase = JSON.parse(JSON.stringify(database));
             localStorage.setItem(DB_KEY, JSON.stringify(parsed));
@@ -3247,12 +3308,14 @@ async function backgroundCheckUpdate() {
             indexFor = null;
             updateLastUpdate();
 
-            const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
-            if (changelogMsg) {
-                saveChangelog(changelogMsg);
-                showChangelogToast(changelogMsg);
-                renderChangelogHistory();
+            if (!fsData || !Array.isArray(fsData.changelog) || fsData.changelog.length === 0) {
+                const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
+                if (changelogMsg) {
+                    saveChangelog(changelogMsg);
+                    showChangelogToast(changelogMsg);
+                }
             }
+            renderChangelogHistory();
             playSuccessSound();
         }
     } catch (e) {}
