@@ -1,8 +1,7 @@
 const CACHE_NAME = 'protector-v1';
 const ASSETS = [
   './',
-  './index.html',
-  './manifest.json'
+  './index.html'
 ];
 
 self.addEventListener('install', (e) => {
