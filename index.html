@@ -1212,6 +1212,27 @@
         #adminBtn {
             display: none;
         }
+    
+        /* AUTH əlavələri */
+        .auth-box{position:relative;max-height:92vh;overflow-y:auto}
+        .auth-box button.auth-close{position:absolute;top:10px;right:10px;width:36px;height:36px;padding:0;margin:0;background:var(--surface-2);color:var(--accent-color);font-size:20px;border-radius:10px;line-height:1}
+        .auth-box button.alt{background:transparent;color:var(--text);border:1px solid var(--border);font-weight:700}
+        .auth-sep{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin-top:14px}
+        .auth-sep:before,.auth-sep:after{content:"";flex:1;height:1px;background:var(--border)}
+        .auth-note{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
+        /* MƏXFİLİK SİYASƏTİ */
+        .pp-intro{border:1px solid var(--accent-color);border-radius:14px;padding:12px 14px;margin-bottom:16px;background:var(--surface);font-size:12px;color:var(--muted);text-align:center;letter-spacing:.5px;line-height:1.5}
+        .pp-item{background:var(--surface);border:1px solid var(--border);border-left:6px solid var(--c);border-radius:14px;margin-bottom:14px;overflow:hidden}
+        .pp-head{display:flex;align-items:center;gap:12px;padding:12px 14px;background:linear-gradient(90deg,var(--cb),transparent)}
+        .pp-num{min-width:40px;height:40px;border-radius:10px;background:var(--c);color:#111;font-weight:900;font-size:17px;display:flex;align-items:center;justify-content:center}
+        .pp-title{color:var(--c);font-weight:800;font-size:13px;letter-spacing:1px;line-height:1.3}
+        :root[data-theme="light"] .pp-title{color:var(--text)}
+        .pp-body{padding:12px 14px 4px;font-size:14px;line-height:1.65;color:var(--text)}
+        .pp-body p{margin-bottom:10px}
+        .pp-sub{color:var(--c);font-weight:900;margin-right:6px}
+        .pp-item.warn{border:2px solid #ef5350;border-left-width:8px}
+        .pp-item.warn .pp-body{background:rgba(239,83,80,.08)}
+        .pp-foot{text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;padding:10px 0 30px}
     </style>
 </head>
 
@@ -1222,15 +1243,21 @@
 <!-- QEYDİYYAT VƏ GİRİŞ MODALI -->
 <div id="auth-modal">
     <div class="auth-box">
+        <button class="auth-close" onclick="closeAuthModal()" aria-label="Bağla">&times;</button>
         <!-- İLK EKRAN: GİRİŞ (LOGIN) -->
         <div id="loginFormContainer">
             <h3>Sistemə Giriş</h3>
-            <p style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Axtarış limitiniz bitdi. Davam etmək üçün daxil olun.</p>
+            <p id="authInfo" style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Axtarış limitiniz bitdi. Davam etmək üçün daxil olun.</p>
             <input type="email" id="logEmail" placeholder="E-poçt ünvanınız">
             <input type="password" id="logPass" placeholder="Parol">
             <button onclick="loginUser()">Daxil Ol</button>
             <span class="auth-toggle" onclick="switchAuthMode('forgot')">Parolumu unutmuşam</span>
             <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabınız yoxdur? Qeydiyyat</span>
+            <div class="auth-sep"><span>və ya</span></div>
+            <button class="alt" onclick="signInGoogle()">Google ilə davam et</button>
+            <button class="alt" onclick="switchAuthMode('phone')">Telefon nömrəsi ilə davam et</button>
+            <button class="alt" id="anonBtn" onclick="signInAnon()">Anonim davam et (5 axtarış)</button>
+            <div class="auth-note" id="anonNote">Anonim istifadədə cəmi 5 əlavə axtarış hüququ verilir. Limit bitdikdən sonra qeydiyyat tələb olunur.</div>
         </div>
 
         <!-- QEYDİYYAT — yalnız istəyəndə açılır -->
@@ -1256,6 +1283,26 @@
             <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
         </div>
 
+        <div id="phoneFormContainer" style="display: none;">
+            <h3>Telefonla Giriş / Qeydiyyat</h3>
+            <div class="phone-field">
+                <div class="phone-code-box">
+                    <div class="phone-flag-circle" title="Azərbaycan"><img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt="AZ" width="28" height="28" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+                    <span class="phone-prefix">+994</span>
+                </div>
+                <div class="phone-input-box">
+                    <input type="tel" id="authPhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="__ ___ __ __" maxlength="12">
+                </div>
+            </div>
+            <button id="sendCodeBtn" onclick="sendPhoneCode()">SMS kod göndər</button>
+            <div id="codeBox" style="display:none;">
+                <input type="text" id="smsCode" inputmode="numeric" maxlength="6" placeholder="SMS kod (6 rəqəm)">
+                <button onclick="confirmPhoneCode()">Təsdiqlə</button>
+            </div>
+            <span class="auth-toggle" onclick="switchAuthMode('login')">Geri</span>
+        </div>
+        <div id="recaptcha-container"></div>
+
         <div id="forgotFormContainer" style="display: none;">
             <h3>Parolu Bərpa Et</h3>
             <input type="email" id="forgotEmail" placeholder="Qeydiyyat e-poçtunuz">
@@ -1276,7 +1323,7 @@
                 <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <div class="header-buttons" style="display: flex; gap: 10px;">
-                <a class="profile-btn" href="https://wa.me/994553115544?text=Salam,%20ProTector%20t%C9%99tbiqi%20il%C9%99%20ba%C4%9Fl%C4%B1%20yaz%C4%B1ram." target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp" style="width: 50px; height: 50px; border: 2px solid #25D366; background: transparent; color: #25D366; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; text-decoration: none;">
+                <a class="profile-btn" href="https://wa.me/994553115544?text=Salam,%20ProTechtor%E2%84%A2%20t%C9%99tbiqi%20il%C9%99%20ba%C4%9Fl%C4%B1%20yaz%C4%B1ram." target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp" style="width: 50px; height: 50px; border: 2px solid #25D366; background: transparent; color: #25D366; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; text-decoration: none;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 </a>
                 <button id="adminBtn" class="profile-btn" onclick="openAdmin()" title="Admin Panel" style="width: 50px; height: 50px; border: 2px solid #e74c3c; background: transparent; color: #e74c3c; font-size: 18px; display: none; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">⚙</button>
@@ -1397,7 +1444,7 @@
         <header class="settings-header">
             <button class="settings-back" onclick="closeSettings()">‹</button>
             <div class="settings-heading">
-                <div class="settings-small">By Emin</div>
+                <div class="settings-small">©By Emin</div>
                 <div class="settings-title" data-i18n="settings">Tənzimləmələr</div>
             </div>
         </header>
@@ -1534,7 +1581,7 @@
 
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secContact">ƏLAQƏ</div>
-                <a href="https://wa.me/994553115544?text=Salam,%20ProTector%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">
+                <a href="https://wa.me/994553115544?text=Salam,%20ProTechtor™%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">
                     WhatsApp ilə əlaqə
                 </a>
             </div>
@@ -1564,25 +1611,87 @@
         <header class="settings-header">
             <button class="settings-back" onclick="closePrivacy()">‹</button>
             <div class="settings-heading">
-                <div class="settings-small">By Emin</div>
+                <div class="settings-small">©By Emin</div>
                 <div class="settings-title" data-i18n="privacy">Məxfilik Siyasəti</div>
             </div>
         </header>
         <div class="settings-content" style="color: var(--text); font-size: 14px; line-height: 1.6;">
-            <p><strong>1. MƏLUMAT TOPLANMASI VƏ EMALI</strong><br>
-            ProTector proqram təminatı heç bir şəxsi məlumatı toplamır, emal etmir, saxlamır və ya üçüncü tərəflərə ötürmür. Ad, soyad, e-poçt ünvanı, telefon nömrəsi, məkan məlumatları, cihaz identifikatoru, IP ünvanı və ya istifadəçini birbaşa yaxud dolayı yolla müəyyənləşdirə biləcək hər hansı digər məlumatın toplanması qəti şəkildə istisna olunur. Tətbiq heç bir izləmə sistemi, analitika aləti, reklam şəbəkəsi və ya üçüncü tərəf məlumat emalı xidmətindən istifadə etmir.</p><br>
-            
-            <p><strong>2. YERLİ YADDAŞ VƏ MƏLUMAT TƏHLÜKƏSİZLİYİ</strong><br>
-            Tətbiq yalnız cihazın yerli yaddaşından (Local Storage) istifadə edir. Orada yalnız texniki parametrlər (seçilmiş mövzu, şrift ölçüsü və baza məlumatları) saxlanılır. Bu məlumatlar yalnız istifadəçinin cihazında qalır və heç bir serverə, bulud xidmətinə və ya kənar platformaya ötürülmür.</p><br>
-
-            <p><strong>3. İNTERNET BAĞLANTISI VƏ ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ</strong><br>
-            Tətbiq yalnız uyğunluq bazasını yeniləmək məqsədilə internetə qoşulur və açıq mənbədən məlumatları sinxronlaşdırır. Əlaqə bölməsindən WhatsApp platformasına keçid edildikdə, həmin andan etibarən proses WhatsApp-ın məxfilik siyasəti çərçivəsində tənzimlənir. ProTector bu xidmətin fəaliyyətinə görə heç bir məsuliyyət daşımır.</p><br>
-
-            <p><strong>4. TƏTBİQİN FƏALİYYƏTİNİN MƏHDUDLAŞDIRILMASI</strong><br>
-            Məlumatların aktuallığını, dəqiqliyini və təhlükəsizliyini təmin etmək məqsədilə, baza ardıcıl 3 (üç) gün ərzində yenilənmədikdə tətbiqin fəaliyyəti avtomatik olaraq məhdudlaşdırılır. Fəaliyyətin bərpası üçün qısa müddətli internet bağlantısı təmin edilməli və baza yenilənməlidir.</p><br>
-
-            <p><strong>5. HÜQUQİ TƏNZİMLƏMƏ VƏ MƏSULİYYƏTDƏN İMTİNA</strong><br>
-            ProTector heç bir şəxsi məlumat emal etmədiyi üçün məlumatların itirilməsi, sızması və ya üçüncü tərəflər tərəfindən icazəsiz istifadəsinə görə məsuliyyət daşımır. Tətbiqdən istifadə ilə bağlı yaranan bütün münasibətlər qüvvədə olan qanunvericilik çərçivəsində tənzimlənir. Proqramdan istifadə edən hər bir şəxs bu şərtləri tam və qeyd-şərtsiz qəbul etmiş sayılır.</p>
+            <div class="pp-intro">ProTechtor™ · MƏXFİLİK SİYASƏTİ VƏ İSTİFADƏ ŞƏRTLƏRİ<br>Proqramdan istifadə etməzdən əvvəl bütün 10 bəndi diqqətlə oxuyun.</div>
+            <section class="pp-item" style="--c:#d4af37;--cb:rgba(212,175,55,0.16)">
+                <div class="pp-head"><span class="pp-num">01</span><span class="pp-title">ÜMUMİ MÜDDƏALAR</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">1.1</b>Bu Məxfilik Siyasəti ProTechtor™ proqramının (bundan sonra – «Proqram») istifadəsi zamanı məlumatların toplanması, istifadəsi və mühafizəsi qaydalarını, habelə istifadəçilərin hüquq və öhdəliklərini müəyyən edir.</p>
+                    <p><b class="pp-sub">1.2</b>Proqramın və bazanın mülkiyyət və müəllif hüquqları ©By Emin-ə məxsusdur.</p>
+                    <p><b class="pp-sub">1.3</b>Proqramdan istifadə bu Siyasətin bütün şərtlərinin tam və qeyd-şərtsiz qəbul edilməsi deməkdir. Şərtlərlə razı olmayan şəxs Proqramdan istifadəni dayandırmalıdır.</p>
+                </div>
+            </section>
+            <section class="pp-item warn" style="--c:#ef5350;--cb:rgba(239,83,80,0.16)">
+                <div class="pp-head"><span class="pp-num">02</span><span class="pp-title">UYĞUNLUQ ÖLÇÜLƏRİNİN DƏQİQLİYİ (ƏSAS XƏBƏRDARLIQ)</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">2.1</b>Proqramda təqdim edilən qoruyucu şüşə uyğunluğu və ölçülər məlumat xarakteri daşıyır və TAM DƏQİQ OLMAYA BİLƏR. Cihaz modifikasiyaları, bölgə versiyaları, istehsal partiyaları və istehsalçı fərqləri real ölçülərə təsir edə bilər.</p>
+                    <p><b class="pp-sub">2.2</b>İstifadəçi məhsulu satmazdan, kəsməzdən, yapışdırmazdan və ya tətbiq etməzdən əvvəl cihazın və məhsulun ölçülərini MÜSTƏQİL ŞƏKİLDƏ ÖLÇMƏLİ və uyğunluğu özü yoxlamalıdır.</p>
+                    <p><b class="pp-sub">2.3</b>Proqramdakı məlumatlara əsaslanan qərarlara, alınmış və ya satılmış məhsullara, yarana biləcək maddi zərərə və cihazın zədələnməsinə görə məsuliyyət istifadəçiyə aiddir. Operator bu hallara görə qanunvericiliklə icazə verilən maksimal həddə məsuliyyət daşımır.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#26c6da;--cb:rgba(38,198,218,0.16)">
+                <div class="pp-head"><span class="pp-num">03</span><span class="pp-title">TOPLANAN MƏLUMATLAR</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">3.1</b>Proqram yalnız qeydiyyat və ya giriş zamanı istifadəçi tərəfindən təqdim edilən və ya seçilmiş giriş üsulu ilə əldə olunan məlumatları emal edir: ləqəb, e-poçt ünvanı, telefon nömrəsi, mağaza adı və ünvanı, Google hesabının e-poçt ünvanı, anonim girişdə sistemin yaratdığı texniki identifikator.</p>
+                    <p><b class="pp-sub">3.2</b>Giriş etmədən məhdud istifadə zamanı şəxsi məlumat tələb olunmur. Proqram məkan məlumatlarını, reklam və davranış izləmə alətlərini istifadə etmir.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#66bb6a;--cb:rgba(102,187,106,0.16)">
+                <div class="pp-head"><span class="pp-num">04</span><span class="pp-title">İSTİFADƏ MƏQSƏDİ VƏ ÖTÜRÜLMƏ</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">4.1</b>Məlumatlar yalnız hesabın identifikasiyası, girişin təmin olunması, axtarış limitlərinin tətbiqi, profilin idarə edilməsi, əlaqə və təhlükəsizlik məqsədilə istifadə olunur.</p>
+                    <p><b class="pp-sub">4.2</b>Məlumatlar satılmır, reklam məqsədilə istifadə edilmir və qanuni əsas olmadan üçüncü şəxslərə ötürülmür. Qanunvericiliyin tələbi ilə səlahiyyətli dövlət orqanlarına təqdim edilə bilər.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#ab47bc;--cb:rgba(171,71,188,0.16)">
+                <div class="pp-head"><span class="pp-num">05</span><span class="pp-title">YERLİ YADDAŞ</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">5.1</b>Proqram cihazın yerli yaddaşından (Local Storage) istifadə edir: mövzu, şrift, dil, səs və vibrasiya parametrləri, baza surəti, axtarış limiti sayğacları və son axtarışlar.</p>
+                    <p><b class="pp-sub">5.2</b>Bu məlumatlar cihazda qalır və brauzer yaddaşı təmizləndikdə silinir.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#5c9dff;--cb:rgba(92,157,255,0.16)">
+                <div class="pp-head"><span class="pp-num">06</span><span class="pp-title">ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">6.1</b>Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən, SMS vasitəsilə telefon doğrulamasından və Google reCAPTCHA-dan istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.</p>
+                    <p><b class="pp-sub">6.2</b>Operator üçüncü tərəf xidmətlərinin fəaliyyətinə və qaydalarına görə məsuliyyət daşımır.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#ffa726;--cb:rgba(255,167,38,0.16)">
+                <div class="pp-head"><span class="pp-num">07</span><span class="pp-title">MƏLUMATLARIN MÜHAFİZƏSİ VƏ İSTİFADƏÇİ HÜQUQLARI</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">7.1</b>Operator məlumatların qorunması üçün məqbul texniki və təşkilati tədbirlər görür. İnternet üzərindən ötürmənin mütləq təhlükəsizliyi təmin edilə bilməz.</p>
+                    <p><b class="pp-sub">7.2</b>Məlumatlar hesab aktiv olduğu müddətdə saxlanılır. İstifadəçi öz məlumatlarına baxmaq, onları düzəltmək (Profil bölməsi) və silinməsini tələb etmək hüququna malikdir. Müraciət «Əlaqə» bölməsindəki WhatsApp vasitəsilə həyata keçirilir.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#ec407a;--cb:rgba(236,64,122,0.16)">
+                <div class="pp-head"><span class="pp-num">08</span><span class="pp-title">UŞAQLARIN HÜQUQLARI</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">8.1</b>Qeydiyyat yalnız 18 yaşı tamam olmuş şəxslər üçün nəzərdə tutulub. 18 yaşınadək şəxslərin məlumatları qanuni nümayəndənin (valideyn, himayəçi) razılığı olmadan toplanmır.</p>
+                    <p><b class="pp-sub">8.2</b>Operator uşaqlardan məlumatı bilərəkdən toplamır. Belə məlumatın aşkar edilməsi halında o, dərhal silinir. Valideyn və ya qanuni nümayəndə uşağa aid məlumatın silinməsini istənilən vaxt tələb edə bilər.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#26a69a;--cb:rgba(38,166,154,0.16)">
+                <div class="pp-head"><span class="pp-num">09</span><span class="pp-title">MAĞAZA İSTİFADƏÇİLƏRİNİN HÜQUQ VƏ ÖHDƏLİKLƏRİ</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">9.1</b>Mağaza adı, ünvanı və telefon nömrəsi dəqiq və aktual olmalıdır. Saxta məlumatla və ya üçüncü şəxsin adından qeydiyyat qadağandır.</p>
+                    <p><b class="pp-sub">9.2</b>Mağaza öz müştəriləri qarşısında satış, zəmanət və geri qaytarma üzrə məsuliyyəti özü daşıyır. Proqram mağaza ilə müştəri arasındakı münasibətlərin tərəfi deyil.</p>
+                    <p><b class="pp-sub">9.3</b>Mağaza öz profil məlumatlarını idarə etmək, düzəltmək və silinməsini tələb etmək hüququna malikdir. Qaydalar pozulduqda, sui-istifadə və ya bazanın icazəsiz surətinin çıxarılması halında Operator hesabı məhdudlaşdırmaq və ya silmək hüququnu saxlayır.</p>
+                </div>
+            </section>
+            <section class="pp-item" style="--c:#ff7043;--cb:rgba(255,112,67,0.16)">
+                <div class="pp-head"><span class="pp-num">10</span><span class="pp-title">MƏSULİYYƏT, DƏYİŞİKLİKLƏR VƏ HÜQUQİ TƏNZİMLƏMƏ</span></div>
+                <div class="pp-body">
+                    <p><b class="pp-sub">10.1</b>Baza ardıcıl 3 (üç) gün yenilənmədikdə Proqramın fəaliyyəti avtomatik məhdudlaşdırılır; bərpa üçün internetə qoşulub bazanı yeniləmək lazımdır.</p>
+                    <p><b class="pp-sub">10.2</b>ProTechtor™ adı, Proqram, baza və dizayn ©By Emin-in mülkiyyətidir. İcazəsiz surətçıxarma, yayma və kommersiya məqsədilə istifadə qadağandır.</p>
+                    <p><b class="pp-sub">10.3</b>Operator Siyasətə birtərəfli qaydada dəyişiklik etmək hüququnu saxlayır; yeni redaksiya Proqramda dərc edildiyi andan qüvvəyə minir. Münasibətlər Azərbaycan Respublikasının qüvvədə olan qanunvericiliyi ilə tənzimlənir.</p>
+                </div>
+            </section>
+            <div class="pp-foot">ProTechtor™ · ©By Emin · Bütün hüquqlar qorunur.</div>
         </div>
     </div>
 
@@ -1597,7 +1706,7 @@
             </svg>
         </div>
         <div class="install-text">
-            <strong>ProTechtor</strong><br>
+            <strong>ProTechtor™</strong><br>
             Tətbiqi quraşdır
         </div>
         <button class="install-btn" onclick="installPWA()">Quraşdır</button>
@@ -1641,6 +1750,9 @@ const UPDATE_KEY = "antiudar_last_update_v3";
 const CHANGELOG_KEY = "antiudar_changelog_v2";
 const INSTALL_DISMISS_KEY = "antiudar_install_dismiss";
 const SEARCH_COUNT_KEY = "antiudar_search_count";
+const ANON_COUNT_KEY = "antiudar_anon_count";
+const FREE_LIMIT = 3;
+const ANON_LIMIT = 5;
 const FS_DB_DOC = "app_data/database";
 
 let database = [];
@@ -1668,6 +1780,7 @@ document.addEventListener("DOMContentLoaded", function () {
             updateAdminButton();
             checkSearchLimit();
         } else {
+            if (user.isAnonymous) { checkSearchLimit(); }
             isAdmin = isAdminEmail(user.email);
             updateAdminButton();
             if (isAdmin) {
@@ -1704,7 +1817,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateNetworkStatus();
 
     initDynamicPlaceholder();
-    initEdgeSwipeGestures();
+    // Edge swipe jesti ləğv edilib
 });
 
 // POPSTATE EVENT - Geri qayıtma jesti / Back button
@@ -1764,8 +1877,8 @@ window.addEventListener("popstate", (e) => {
 // PROFİL SƏHİFƏSİ
 function openProfile() {
     let user = auth.currentUser;
-    if (!user) {
-        document.getElementById("auth-modal").style.display = "flex";
+    if (!user || user.isAnonymous) {
+        openAuthModal("profile");
         return;
     }
 
@@ -1900,7 +2013,7 @@ function onPhoneInput(e) {
 }
 
 function initPhoneMasks() {
-    ["regPhone", "profPhone"].forEach(function (id) {
+    ["regPhone", "profPhone", "authPhone"].forEach(function (id) {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener("input", onPhoneInput);
@@ -2283,18 +2396,147 @@ async function loadDatabaseFromFirestore() {
     return false;
 }
 
+function isAnonUser() { const u = auth.currentUser; return !!(u && u.isAnonymous); }
+function getCount(key) { return parseInt(localStorage.getItem(key) || "0", 10) || 0; }
+
+function isSearchBlocked() {
+    const u = auth.currentUser;
+    if (u && !u.isAnonymous) return false;
+    if (u && u.isAnonymous) return getCount(ANON_COUNT_KEY) >= ANON_LIMIT;
+    return getCount(SEARCH_COUNT_KEY) >= FREE_LIMIT;
+}
+
+// Axtarış: seçilmiş modelin açılması 1 axtarış hesab olunur
+function countSearchUse() {
+    const u = auth.currentUser;
+    if (u && !u.isAnonymous) return;
+    const key = u ? ANON_COUNT_KEY : SEARCH_COUNT_KEY;
+    localStorage.setItem(key, String(getCount(key) + 1));
+}
+
 function checkSearchLimit() {
-    let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
-    if (count >= 3) {
-        document.getElementById("auth-modal").style.display = "flex";
-    }
+    if (isSearchBlocked()) openAuthModal(isAnonUser() ? "anonEnded" : "limit");
+}
+
+function openAuthModal(reason) {
+    const msgs = {
+        limit: "Pulsuz axtarış limitiniz bitdi. Daxil olun, qeydiyyatdan keçin və ya anonim davam edin (5 əlavə axtarış).",
+        required: "Axtarışı davam etdirmək üçün giriş və ya qeydiyyat tələb olunur.",
+        anonEnded: "Anonim istifadə üçün nəzərdə tutulan 5 axtarış limiti bitdi. Davam etmək üçün qeydiyyat tələb olunur.",
+        profile: "Mağaza profili üçün giriş və ya qeydiyyat tələb olunur."
+    };
+    const info = document.getElementById("authInfo");
+    if (info) info.innerText = msgs[reason] || msgs.required;
+    const hideAnon = isAnonUser() || getCount(ANON_COUNT_KEY) >= ANON_LIMIT;
+    const ab = document.getElementById("anonBtn"), an = document.getElementById("anonNote");
+    if (ab) ab.style.display = hideAnon ? "none" : "block";
+    if (an) an.style.display = hideAnon ? "none" : "block";
+    switchAuthMode("login");
+    document.getElementById("auth-modal").style.display = "flex";
+}
+
+function closeAuthModal() {
+    document.getElementById("auth-modal").style.display = "none";
+    if (isSearchBlocked()) showAppToast("Axtarış üçün giriş və ya qeydiyyat tələb olunur");
 }
 
 function switchAuthMode(mode) {
     document.getElementById("registerFormContainer").style.display = mode === "register" ? "block" : "none";
     document.getElementById("loginFormContainer").style.display = mode === "login" ? "block" : "none";
     document.getElementById("forgotFormContainer").style.display = mode === "forgot" ? "block" : "none";
+    document.getElementById("phoneFormContainer").style.display = mode === "phone" ? "block" : "none";
     document.getElementById("authMsg").innerText = "";
+}
+
+function authMsgSet(text, color) {
+    const m = document.getElementById("authMsg");
+    m.style.color = color || "red";
+    m.innerText = text;
+}
+
+function authErrText(err) {
+    const c = err && err.code;
+    if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return "Giriş ləğv edildi.";
+    if (c === "auth/popup-blocked") return "Brauzer pəncərəni blokladı. İcazə verib yenidən cəhd edin.";
+    if (c === "auth/unauthorized-domain") return "Bu domen Firebase-də icazəli deyil (Authorized domains).";
+    if (c === "auth/operation-not-allowed") return "Bu giriş üsulu Firebase-də aktiv deyil və ya region bloklanıb.";
+    if (c === "auth/invalid-phone-number") return "Telefon nömrəsi yanlışdır.";
+    if (c === "auth/too-many-requests") return "Çox cəhd edildi. Bir az sonra yenidən yoxlayın.";
+    if (c === "auth/invalid-verification-code") return "SMS kod yanlışdır.";
+    if (c === "auth/code-expired") return "SMS kodun vaxtı bitib. Yenisini göndərin.";
+    return "Xəta: " + ((err && err.message) || "naməlum");
+}
+
+// Google / Telefon ilə girişdən sonra: profil tamamlanmayıbsa Şəxsi səhifəyə yönləndir
+function afterSocialLogin(cred) {
+    const user = cred.user;
+    const ref = db.collection("users").doc(user.uid);
+    return ref.get().then((doc) => {
+        const needsProfile = !doc.exists || !(doc.data() && doc.data().username);
+        const base = {
+            email: user.email || "",
+            phoneNumber: user.phoneNumber || "",
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if (!doc.exists) base.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        return ref.set(base, { merge: true }).then(() => needsProfile);
+    }).catch(() => true).then((needsProfile) => {
+        localStorage.setItem(SEARCH_COUNT_KEY, "0");
+        document.getElementById("auth-modal").style.display = "none";
+        if (needsProfile) {
+            showAppToast("Qeydiyyatı tamamlamaq üçün profil məlumatlarını doldurun");
+            setTimeout(openProfile, 400);
+        } else {
+            showAppToast("Uğurla daxil oldunuz!");
+        }
+    });
+}
+
+function signInGoogle() {
+    authMsgSet("Google ilə əlaqə qurulur...", "var(--muted)");
+    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+        .then(afterSocialLogin)
+        .catch((err) => authMsgSet(authErrText(err)));
+}
+
+function signInAnon() {
+    const used = getCount(ANON_COUNT_KEY);
+    if (used >= ANON_LIMIT) { openAuthModal("anonEnded"); return; }
+    authMsgSet("Anonim giriş edilir...", "var(--muted)");
+    auth.signInAnonymously().then(() => {
+        document.getElementById("auth-modal").style.display = "none";
+        showAppToast("Anonim rejim: " + (ANON_LIMIT - used) + " axtarış hüququnuz var. Sonra qeydiyyat tələb olunacaq.");
+    }).catch((err) => authMsgSet(authErrText(err)));
+}
+
+let phoneConfirmation = null, phoneRecaptcha = null;
+
+function sendPhoneCode() {
+    const digits = extractPhoneDigits(document.getElementById("authPhone").value);
+    if (digits.length !== 9) { authMsgSet("Telefon nömrəsini tam daxil edin!"); return; }
+    const btn = document.getElementById("sendCodeBtn");
+    btn.disabled = true;
+    authMsgSet("SMS kod göndərilir...", "var(--muted)");
+    try {
+        if (!phoneRecaptcha) phoneRecaptcha = new firebase.auth.RecaptchaVerifier("recaptcha-container", { size: "invisible" });
+    } catch (e) { btn.disabled = false; authMsgSet(authErrText(e)); return; }
+    auth.signInWithPhoneNumber("+994" + digits, phoneRecaptcha).then((c) => {
+        phoneConfirmation = c;
+        document.getElementById("codeBox").style.display = "block";
+        btn.disabled = false;
+        authMsgSet("SMS kod göndərildi.", "green");
+    }).catch((err) => {
+        try { phoneRecaptcha.clear(); } catch (e) {}
+        phoneRecaptcha = null;
+        btn.disabled = false;
+        authMsgSet(authErrText(err));
+    });
+}
+
+function confirmPhoneCode() {
+    const code = document.getElementById("smsCode").value.trim();
+    if (!phoneConfirmation || code.length < 6) { authMsgSet("6 rəqəmli SMS kodu daxil edin!"); return; }
+    phoneConfirmation.confirm(code).then(afterSocialLogin).catch((err) => authMsgSet(authErrText(err)));
 }
 
 function registerUser() {
@@ -3086,7 +3328,7 @@ function showNotFound(query) {
     a.className = "whatsapp-button nf-button";
     a.target = "_blank";
     a.rel = "noopener";
-    a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTector: bazada tapılmayan model — " + query);
+    a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTechtor™: bazada tapılmayan model — " + query);
     a.innerText = t("nfBtn");
     results.appendChild(a);
 }
@@ -3101,16 +3343,9 @@ function highlightMatch(text, query) {
 }
 
 function performSearch(query) {
-    if (!auth.currentUser) {
-        let count = parseInt(localStorage.getItem(SEARCH_COUNT_KEY) || "0");
-        if (query.trim().length > 0) {
-            count++;
-            localStorage.setItem(SEARCH_COUNT_KEY, count.toString());
-        }
-        if (count > 3) {
-            document.getElementById("auth-modal").style.display = "flex";
-            return;
-        }
+    if (String(query || "").trim() && isSearchBlocked()) {
+        openAuthModal(isAnonUser() ? "anonEnded" : "required");
+        return;
     }
 
     const results = document.getElementById("results");
@@ -3193,6 +3428,7 @@ function performSearch(query) {
 }
 
 function openDetail(model, group) {
+    countSearchUse();
     selectedModel = model;
     selectedGroup = group;
     saveRecent(model);
