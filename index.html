@@ -58,8 +58,8 @@
 
         :root {
             --font-scale: 1;
-            --accent-color: #d4af37;
-            --accent-dark: #8a6d1d;
+            --accent-color: #2ecc71;
+            --accent-dark: #145a32;
             --placeholder-color: #ffe566;
         }
 
@@ -1237,6 +1237,27 @@
         .pp-item.warn{border:2px solid #ef5350;border-left-width:8px}
         .pp-item.warn .pp-body{background:rgba(239,83,80,.08)}
         .pp-foot{text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;padding:10px 0 30px}
+
+        /* Dil siyahısı */
+        .lang-selector{display:flex;flex-direction:column;gap:0;background:var(--surface)}
+        .lang-option{display:flex;align-items:center;gap:12px;text-align:left;padding:14px 16px;border-bottom:1px solid var(--border)}
+        .lang-option:last-child{border-bottom:none}
+        .lang-code{min-width:40px;height:28px;border-radius:8px;background:var(--surface-2);color:var(--accent-color);font-size:12px;font-weight:800;letter-spacing:1px;display:flex;align-items:center;justify-content:center}
+        .lang-name{flex:1}
+        .lang-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent}
+        .lang-option.active .lang-code{background:#111}
+        .lang-option.active .lang-check{background:#111;border-color:#111;color:var(--accent-color)}
+        /* Proqram məlumatı */
+        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+        .info-card{display:flex;align-items:center;gap:12px;padding:14px;border-radius:18px;border:1px solid var(--border);border:1px solid color-mix(in srgb,var(--c) 45%,var(--border));background:var(--surface);background:linear-gradient(135deg,color-mix(in srgb,var(--c) 20%,var(--surface)),color-mix(in srgb,var(--c) 6%,var(--surface)))}
+        .info-wide{grid-column:1 / -1}
+        .info-ico{min-width:42px;height:42px;border-radius:12px;background:var(--c);color:#111;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900}
+        .info-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+        .info-lbl{font-size:11px;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+        .info-val{font-size:26px;font-weight:800;color:var(--c);line-height:1.1}
+        /* Məxfilik qutusu */
+        .privacy-box{background:rgba(46,204,113,.12);background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 24%,var(--surface)),color-mix(in srgb,var(--accent-color) 8%,var(--surface)));border-color:color-mix(in srgb,var(--accent-color) 55%,var(--border))}
+        .pp-intro{white-space:pre-line}
     </style>
 </head>
 
@@ -1472,9 +1493,9 @@
                 <div class="settings-section-title" data-i18n="secAccent"> AKSENT RƏNGİ</div>
                 <div class="settings-box" style="padding: 16px;">
                     <div class="color-picker-grid">
+                        <div class="color-swatch" style="background: #2ecc71;" onclick="setAccentColor('#2ecc71', '#145a32')"></div>
                         <div class="color-swatch" style="background: #d4af37;" onclick="setAccentColor('#d4af37', '#8a6d1d')"></div>
                         <div class="color-swatch" style="background: #3498db;" onclick="setAccentColor('#3498db', '#1b4f72')"></div>
-                        <div class="color-swatch" style="background: #2ecc71;" onclick="setAccentColor('#2ecc71', '#145a32')"></div>
                         <div class="color-swatch" style="background: #9b59b6;" onclick="setAccentColor('#9b59b6', '#512e5f')"></div>
                         <div class="color-swatch" style="background: #e74c3c;" onclick="setAccentColor('#e74c3c', '#78281f')"></div>
                         <div class="color-swatch" style="background: #e67e22;" onclick="setAccentColor('#e67e22', '#7e5109')"></div>
@@ -1506,10 +1527,10 @@
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secLang">DİL</div>
                 <div class="lang-selector">
-                    <div id="lang-az" class="lang-option" onclick="setLang('az')">Azərbaycan</div>
-                    <div id="lang-ru" class="lang-option" onclick="setLang('ru')">Русский</div>
-                    <div id="lang-en" class="lang-option" onclick="setLang('en')">English</div>
-                    <div id="lang-tr" class="lang-option" onclick="setLang('tr')">Türkçe</div>
+                    <div id="lang-az" class="lang-option" onclick="setLang('az')"><span class="lang-code">AZ</span><span class="lang-name">Azərbaycan</span><span class="lang-check">&#10003;</span></div>
+                    <div id="lang-ru" class="lang-option" onclick="setLang('ru')"><span class="lang-code">RU</span><span class="lang-name">Русский</span><span class="lang-check">&#10003;</span></div>
+                    <div id="lang-tr" class="lang-option" onclick="setLang('tr')"><span class="lang-code">TR</span><span class="lang-name">Türk</span><span class="lang-check">&#10003;</span></div>
+                    <div id="lang-en" class="lang-option" onclick="setLang('en')"><span class="lang-code">EN</span><span class="lang-name">English</span><span class="lang-check">&#10003;</span></div>
                 </div>
             </div>
 
@@ -1567,7 +1588,7 @@
 
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secPrivacy">MƏXFİLİK</div>
-                <div class="settings-box" onclick="openPrivacy()" style="cursor: pointer;">
+                <div class="settings-box privacy-box" onclick="openPrivacy()" style="cursor: pointer;">
                     <div class="settings-row">
                         <span data-i18n="privacy">Məxfilik Siyasəti</span>
                         <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
@@ -1584,19 +1605,10 @@
 
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="secApp">PROQRAM</div>
-                <div class="settings-box">
-                    <div class="settings-row">
-                        <span style="color:var(--muted)" data-i18n="version">VERSİYA</span>
-                        <span id="appVersion"></span>
-                    </div>
-                    <div class="settings-row">
-                        <span style="color:var(--muted)" data-i18n="dbSize">BAZADA QRUP</span>
-                        <span id="dbCount">0</span>
-                    </div>
-                    <div class="settings-row">
-                        <span style="color:var(--muted)" data-i18n="modelCountLbl">BAZADA MODEL</span>
-                        <span id="modelCount">0</span>
-                    </div>
+                <div class="info-grid">
+                    <div class="info-card info-wide" style="--c:var(--accent-color)"><span class="info-ico">&#9672;</span><span class="info-txt"><span class="info-lbl" data-i18n="version">VERSİYA</span><span class="info-val" id="appVersion"></span></span></div>
+                    <div class="info-card" style="--c:#5c9dff"><span class="info-ico">&#9636;</span><span class="info-txt"><span class="info-lbl" data-i18n="dbSize">BAZADA QRUP</span><span class="info-val" id="dbCount">0</span></span></div>
+                    <div class="info-card" style="--c:#ab47bc"><span class="info-ico">&#9635;</span><span class="info-txt"><span class="info-lbl" data-i18n="modelCountLbl">BAZADA MODEL</span><span class="info-val" id="modelCount">0</span></span></div>
                 </div>
             </div>
 
@@ -1611,84 +1623,7 @@
                 <div class="settings-title" data-i18n="privacy">Məxfilik Siyasəti</div>
             </div>
         </header>
-        <div class="settings-content" style="color: var(--text); font-size: 14px; line-height: 1.6;">
-            <div class="pp-intro">ProTechtor™ · MƏXFİLİK SİYASƏTİ VƏ İSTİFADƏ ŞƏRTLƏRİ<br>Proqramdan istifadə etməzdən əvvəl bütün 10 bəndi diqqətlə oxuyun.</div>
-            <section class="pp-item" style="--c:#d4af37;--cb:rgba(212,175,55,0.16)">
-                <div class="pp-head"><span class="pp-num">01</span><span class="pp-title">ÜMUMİ MÜDDƏALAR</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">1.1</b>Bu Məxfilik Siyasəti ProTechtor™ proqramının (bundan sonra – «Proqram») istifadəsi zamanı məlumatların toplanması, istifadəsi və mühafizəsi qaydalarını, habelə istifadəçilərin hüquq və öhdəliklərini müəyyən edir.</p>
-                    <p><b class="pp-sub">1.2</b>Proqramın və bazanın mülkiyyət və müəllif hüquqları ©By Emin-ə məxsusdur.</p>
-                    <p><b class="pp-sub">1.3</b>Proqramdan istifadə bu Siyasətin bütün şərtlərinin tam və qeyd-şərtsiz qəbul edilməsi deməkdir. Şərtlərlə razı olmayan şəxs Proqramdan istifadəni dayandırmalıdır.</p>
-                </div>
-            </section>
-            <section class="pp-item warn" style="--c:#ef5350;--cb:rgba(239,83,80,0.16)">
-                <div class="pp-head"><span class="pp-num">02</span><span class="pp-title">UYĞUNLUQ ÖLÇÜLƏRİNİN DƏQİQLİYİ (ƏSAS XƏBƏRDARLIQ)</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">2.1</b>Proqramda təqdim edilən qoruyucu şüşə uyğunluğu və ölçülər məlumat xarakteri daşıyır və TAM DƏQİQ OLMAYA BİLƏR. Cihaz modifikasiyaları, bölgə versiyaları, istehsal partiyaları və istehsalçı fərqləri real ölçülərə təsir edə bilər.</p>
-                    <p><b class="pp-sub">2.2</b>İstifadəçi məhsulu satmazdan, kəsməzdən, yapışdırmazdan və ya tətbiq etməzdən əvvəl cihazın və məhsulun ölçülərini MÜSTƏQİL ŞƏKİLDƏ ÖLÇMƏLİ və uyğunluğu özü yoxlamalıdır.</p>
-                    <p><b class="pp-sub">2.3</b>Proqramdakı məlumatlara əsaslanan qərarlara, alınmış və ya satılmış məhsullara, yarana biləcək maddi zərərə və cihazın zədələnməsinə görə məsuliyyət istifadəçiyə aiddir. Operator bu hallara görə qanunvericiliklə icazə verilən maksimal həddə məsuliyyət daşımır.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#26c6da;--cb:rgba(38,198,218,0.16)">
-                <div class="pp-head"><span class="pp-num">03</span><span class="pp-title">TOPLANAN MƏLUMATLAR</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">3.1</b>Proqram yalnız qeydiyyat və ya giriş zamanı istifadəçi tərəfindən təqdim edilən və ya seçilmiş giriş üsulu ilə əldə olunan məlumatları emal edir: ləqəb, e-poçt ünvanı, telefon nömrəsi, mağaza adı və ünvanı, Google hesabının e-poçt ünvanı, anonim girişdə sistemin yaratdığı texniki identifikator.</p>
-                    <p><b class="pp-sub">3.2</b>Giriş etmədən məhdud istifadə zamanı şəxsi məlumat tələb olunmur. Proqram məkan məlumatlarını, reklam və davranış izləmə alətlərini istifadə etmir.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#66bb6a;--cb:rgba(102,187,106,0.16)">
-                <div class="pp-head"><span class="pp-num">04</span><span class="pp-title">İSTİFADƏ MƏQSƏDİ VƏ ÖTÜRÜLMƏ</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">4.1</b>Məlumatlar yalnız hesabın identifikasiyası, girişin təmin olunması, axtarış limitlərinin tətbiqi, profilin idarə edilməsi, əlaqə və təhlükəsizlik məqsədilə istifadə olunur.</p>
-                    <p><b class="pp-sub">4.2</b>Məlumatlar satılmır, reklam məqsədilə istifadə edilmir və qanuni əsas olmadan üçüncü şəxslərə ötürülmür. Qanunvericiliyin tələbi ilə səlahiyyətli dövlət orqanlarına təqdim edilə bilər.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#ab47bc;--cb:rgba(171,71,188,0.16)">
-                <div class="pp-head"><span class="pp-num">05</span><span class="pp-title">YERLİ YADDAŞ</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">5.1</b>Proqram cihazın yerli yaddaşından (Local Storage) istifadə edir: mövzu, şrift, dil, səs və vibrasiya parametrləri, baza surəti, axtarış limiti sayğacları və son axtarışlar.</p>
-                    <p><b class="pp-sub">5.2</b>Bu məlumatlar cihazda qalır və brauzer yaddaşı təmizləndikdə silinir.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#5c9dff;--cb:rgba(92,157,255,0.16)">
-                <div class="pp-head"><span class="pp-num">06</span><span class="pp-title">ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">6.1</b>Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.</p>
-                    <p><b class="pp-sub">6.2</b>Operator üçüncü tərəf xidmətlərinin fəaliyyətinə və qaydalarına görə məsuliyyət daşımır.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#ffa726;--cb:rgba(255,167,38,0.16)">
-                <div class="pp-head"><span class="pp-num">07</span><span class="pp-title">MƏLUMATLARIN MÜHAFİZƏSİ VƏ İSTİFADƏÇİ HÜQUQLARI</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">7.1</b>Operator məlumatların qorunması üçün məqbul texniki və təşkilati tədbirlər görür. İnternet üzərindən ötürmənin mütləq təhlükəsizliyi təmin edilə bilməz.</p>
-                    <p><b class="pp-sub">7.2</b>Məlumatlar hesab aktiv olduğu müddətdə saxlanılır. İstifadəçi öz məlumatlarına baxmaq, onları düzəltmək (Profil bölməsi) və silinməsini tələb etmək hüququna malikdir. Müraciət «Əlaqə» bölməsindəki WhatsApp vasitəsilə həyata keçirilir.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#ec407a;--cb:rgba(236,64,122,0.16)">
-                <div class="pp-head"><span class="pp-num">08</span><span class="pp-title">UŞAQLARIN HÜQUQLARI</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">8.1</b>Qeydiyyat yalnız 18 yaşı tamam olmuş şəxslər üçün nəzərdə tutulub. 18 yaşınadək şəxslərin məlumatları qanuni nümayəndənin (valideyn, himayəçi) razılığı olmadan toplanmır.</p>
-                    <p><b class="pp-sub">8.2</b>Operator uşaqlardan məlumatı bilərəkdən toplamır. Belə məlumatın aşkar edilməsi halında o, dərhal silinir. Valideyn və ya qanuni nümayəndə uşağa aid məlumatın silinməsini istənilən vaxt tələb edə bilər.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#26a69a;--cb:rgba(38,166,154,0.16)">
-                <div class="pp-head"><span class="pp-num">09</span><span class="pp-title">MAĞAZA İSTİFADƏÇİLƏRİNİN HÜQUQ VƏ ÖHDƏLİKLƏRİ</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">9.1</b>Mağaza adı, ünvanı və telefon nömrəsi dəqiq və aktual olmalıdır. Saxta məlumatla və ya üçüncü şəxsin adından qeydiyyat qadağandır.</p>
-                    <p><b class="pp-sub">9.2</b>Mağaza öz müştəriləri qarşısında satış, zəmanət və geri qaytarma üzrə məsuliyyəti özü daşıyır. Proqram mağaza ilə müştəri arasındakı münasibətlərin tərəfi deyil.</p>
-                    <p><b class="pp-sub">9.3</b>Mağaza öz profil məlumatlarını idarə etmək, düzəltmək və silinməsini tələb etmək hüququna malikdir. Qaydalar pozulduqda, sui-istifadə və ya bazanın icazəsiz surətinin çıxarılması halında Operator hesabı məhdudlaşdırmaq və ya silmək hüququnu saxlayır.</p>
-                </div>
-            </section>
-            <section class="pp-item" style="--c:#ff7043;--cb:rgba(255,112,67,0.16)">
-                <div class="pp-head"><span class="pp-num">10</span><span class="pp-title">MƏSULİYYƏT, DƏYİŞİKLİKLƏR VƏ HÜQUQİ TƏNZİMLƏMƏ</span></div>
-                <div class="pp-body">
-                    <p><b class="pp-sub">10.1</b>Baza ardıcıl 3 (üç) gün yenilənmədikdə Proqramın fəaliyyəti avtomatik məhdudlaşdırılır; bərpa üçün internetə qoşulub bazanı yeniləmək lazımdır.</p>
-                    <p><b class="pp-sub">10.2</b>ProTechtor™ adı, Proqram, baza və dizayn ©By Emin-in mülkiyyətidir. İcazəsiz surətçıxarma, yayma və kommersiya məqsədilə istifadə qadağandır.</p>
-                    <p><b class="pp-sub">10.3</b>Operator Siyasətə birtərəfli qaydada dəyişiklik etmək hüququnu saxlayır; yeni redaksiya Proqramda dərc edildiyi andan qüvvəyə minir. Münasibətlər Azərbaycan Respublikasının qüvvədə olan qanunvericiliyi ilə tənzimlənir.</p>
-                </div>
-            </section>
-            <div class="pp-foot">ProTechtor™ · ©By Emin · Bütün hüquqlar qorunur.</div>
-        </div>
+        <div class="settings-content" id="privacyBody" style="color: var(--text); font-size: 14px; line-height: 1.6;"></div>
     </div>
 
     <button id="statusDot" class="status-dot gray" onclick="showDotInfo()" aria-label="status"></button>
@@ -2408,6 +2343,12 @@ function countSearchUse() {
     if (u && !u.isAnonymous) return;
     const key = u ? ANON_COUNT_KEY : SEARCH_COUNT_KEY;
     localStorage.setItem(key, String(getCount(key) + 1));
+    if (u) {
+        const left = ANON_LIMIT - getCount(ANON_COUNT_KEY);
+        showAppToast(left > 0
+            ? "Anonim rejim: qalan axtarış " + left + ". Davam etmək üçün qeydiyyatdan keçin."
+            : "Anonim axtarış limiti bitdi. Davam etmək üçün qeydiyyat tələb olunur.");
+    }
 }
 
 function checkSearchLimit() {
@@ -2575,7 +2516,7 @@ function resetPassword() {
     auth.sendPasswordResetEmail(email)
         .then(() => {
             msgDiv.style.color = "green";
-            msgDiv.innerText = "Bərpa linki e-poçtunuza göndərildi!";
+            msgDiv.innerText = "Bərpa linki e-poçtunuza göndərildi! Gəlmədisə, Spam qovluğuna baxın.";
         })
         .catch((error) => {
             msgDiv.style.color = "red";
@@ -2717,8 +2658,8 @@ function initDynamicPlaceholder() {
 }
 
 function initAccentColor() {
-    const savedAccent = localStorage.getItem("antiudar_accent") || "#d4af37";
-    const savedDark = localStorage.getItem("antiudar_accent_dark") || "#8a6d1d";
+    const savedAccent = localStorage.getItem("antiudar_accent") || "#2ecc71";
+    const savedDark = localStorage.getItem("antiudar_accent_dark") || "#145a32";
     setAccentColor(savedAccent, savedDark, false);
 }
 
@@ -2835,7 +2776,7 @@ function updateNetworkStatus() {
 }
 
 function initTheme() {
-    const savedTheme = localStorage.getItem("antiudar_theme") || "system";
+    const savedTheme = localStorage.getItem("antiudar_theme") || "dark";
     setTheme(savedTheme);
 }
 
@@ -3053,6 +2994,7 @@ function setChangelogList(list) {
 }
 
 function showChangelogToast(msg) {
+    return; // bu günün dəyişikliyi bildiriş kimi göstərilmir, sabahdan tarixçədə görünür
     if (!msg) return;
     const toast = document.getElementById("toast");
     if (!toast) return;
@@ -3074,7 +3016,8 @@ function renderChangelogHistory() {
     const box = document.getElementById("changelogBox");
     if (!box) return;
 
-    const list = getChangelogList();
+    const todayKey = getDateKey(new Date());
+    const list = getChangelogList().filter(function (x) { return x.dateKey !== todayKey; });
     box.innerHTML = "";
 
     if (list.length === 0) {
@@ -3098,6 +3041,38 @@ const I18N = {
  en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet"},
  tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok"}
 };
+const PRIVACY = {"az": {"intro": "ProTechtor™ · MƏXFİLİK SİYASƏTİ VƏ İSTİFADƏ ŞƏRTLƏRİ\nProqramdan istifadə etməzdən əvvəl bütün 10 bəndi diqqətlə oxuyun.", "items": [["ÜMUMİ MÜDDƏALAR", ["Bu Məxfilik Siyasəti ProTechtor™ proqramının (bundan sonra – «Proqram») istifadəsi zamanı məlumatların toplanması, istifadəsi və mühafizəsi qaydalarını, habelə istifadəçilərin hüquq və öhdəliklərini müəyyən edir.", "Proqramın və bazanın mülkiyyət və müəllif hüquqları ©By Emin-ə məxsusdur.", "Proqramdan istifadə bu Siyasətin bütün şərtlərinin tam və qeyd-şərtsiz qəbul edilməsi deməkdir. Şərtlərlə razı olmayan şəxs Proqramdan istifadəni dayandırmalıdır."]], ["UYĞUNLUQ ÖLÇÜLƏRİNİN DƏQİQLİYİ (ƏSAS XƏBƏRDARLIQ)", ["Proqramda təqdim edilən qoruyucu şüşə uyğunluğu və ölçülər məlumat xarakteri daşıyır və TAM DƏQİQ OLMAYA BİLƏR. Cihaz modifikasiyaları, bölgə versiyaları, istehsal partiyaları və istehsalçı fərqləri real ölçülərə təsir edə bilər.", "İstifadəçi məhsulu satmazdan, kəsməzdən, yapışdırmazdan və ya tətbiq etməzdən əvvəl cihazın və məhsulun ölçülərini MÜSTƏQİL ŞƏKİLDƏ ÖLÇMƏLİ və uyğunluğu özü yoxlamalıdır.", "Proqramdakı məlumatlara əsaslanan qərarlara, alınmış və ya satılmış məhsullara, yarana biləcək maddi zərərə və cihazın zədələnməsinə görə məsuliyyət istifadəçiyə aiddir. Operator bu hallara görə qanunvericiliklə icazə verilən maksimal həddə məsuliyyət daşımır."]], ["TOPLANAN MƏLUMATLAR", ["Proqram yalnız qeydiyyat və ya giriş zamanı istifadəçi tərəfindən təqdim edilən və ya seçilmiş giriş üsulu ilə əldə olunan məlumatları emal edir: ləqəb, e-poçt ünvanı, telefon nömrəsi, mağaza adı və ünvanı, Google hesabının e-poçt ünvanı, anonim girişdə sistemin yaratdığı texniki identifikator.", "Giriş etmədən məhdud istifadə zamanı şəxsi məlumat tələb olunmur. Proqram məkan məlumatlarını, reklam və davranış izləmə alətlərini istifadə etmir."]], ["İSTİFADƏ MƏQSƏDİ VƏ ÖTÜRÜLMƏ", ["Məlumatlar yalnız hesabın identifikasiyası, girişin təmin olunması, axtarış limitlərinin tətbiqi, profilin idarə edilməsi, əlaqə və təhlükəsizlik məqsədilə istifadə olunur.", "Məlumatlar satılmır, reklam məqsədilə istifadə edilmir və qanuni əsas olmadan üçüncü şəxslərə ötürülmür. Qanunvericiliyin tələbi ilə səlahiyyətli dövlət orqanlarına təqdim edilə bilər."]], ["YERLİ YADDAŞ", ["Proqram cihazın yerli yaddaşından (Local Storage) istifadə edir: mövzu, şrift, dil, səs və vibrasiya parametrləri, baza surəti, axtarış limiti sayğacları və son axtarışlar.", "Bu məlumatlar cihazda qalır və brauzer yaddaşı təmizləndikdə silinir."]], ["ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ", ["Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.", "Operator üçüncü tərəf xidmətlərinin fəaliyyətinə və qaydalarına görə məsuliyyət daşımır."]], ["MƏLUMATLARIN MÜHAFİZƏSİ VƏ İSTİFADƏÇİ HÜQUQLARI", ["Operator məlumatların qorunması üçün məqbul texniki və təşkilati tədbirlər görür. İnternet üzərindən ötürmənin mütləq təhlükəsizliyi təmin edilə bilməz.", "Məlumatlar hesab aktiv olduğu müddətdə saxlanılır. İstifadəçi öz məlumatlarına baxmaq, onları düzəltmək (Profil bölməsi) və silinməsini tələb etmək hüququna malikdir. Müraciət «Əlaqə» bölməsindəki WhatsApp vasitəsilə həyata keçirilir."]], ["UŞAQLARIN HÜQUQLARI", ["Qeydiyyat yalnız 18 yaşı tamam olmuş şəxslər üçün nəzərdə tutulub. 18 yaşınadək şəxslərin məlumatları qanuni nümayəndənin (valideyn, himayəçi) razılığı olmadan toplanmır.", "Operator uşaqlardan məlumatı bilərəkdən toplamır. Belə məlumatın aşkar edilməsi halında o, dərhal silinir. Valideyn və ya qanuni nümayəndə uşağa aid məlumatın silinməsini istənilən vaxt tələb edə bilər."]], ["MAĞAZA İSTİFADƏÇİLƏRİNİN HÜQUQ VƏ ÖHDƏLİKLƏRİ", ["Mağaza adı, ünvanı və telefon nömrəsi dəqiq və aktual olmalıdır. Saxta məlumatla və ya üçüncü şəxsin adından qeydiyyat qadağandır.", "Mağaza öz müştəriləri qarşısında satış, zəmanət və geri qaytarma üzrə məsuliyyəti özü daşıyır. Proqram mağaza ilə müştəri arasındakı münasibətlərin tərəfi deyil.", "Mağaza öz profil məlumatlarını idarə etmək, düzəltmək və silinməsini tələb etmək hüququna malikdir. Qaydalar pozulduqda, sui-istifadə və ya bazanın icazəsiz surətinin çıxarılması halında Operator hesabı məhdudlaşdırmaq və ya silmək hüququnu saxlayır."]], ["MƏSULİYYƏT, DƏYİŞİKLİKLƏR VƏ HÜQUQİ TƏNZİMLƏMƏ", ["Baza ardıcıl 3 (üç) gün yenilənmədikdə Proqramın fəaliyyəti avtomatik məhdudlaşdırılır; bərpa üçün internetə qoşulub bazanı yeniləmək lazımdır.", "ProTechtor™ adı, Proqram, baza və dizayn ©By Emin-in mülkiyyətidir. İcazəsiz surətçıxarma, yayma və kommersiya məqsədilə istifadə qadağandır.", "Operator Siyasətə birtərəfli qaydada dəyişiklik etmək hüququnu saxlayır; yeni redaksiya Proqramda dərc edildiyi andan qüvvəyə minir. Münasibətlər Azərbaycan Respublikasının qüvvədə olan qanunvericiliyi ilə tənzimlənir."]]], "foot": "ProTechtor™ · ©By Emin · Bütün hüquqlar qorunur."}, "ru": {"intro": "ProTechtor™ · ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ И УСЛОВИЯ ИСПОЛЬЗОВАНИЯ\nПеред использованием приложения внимательно прочитайте все 10 пунктов.", "foot": "ProTechtor™ · ©By Emin · Все права защищены.", "items": [["ОБЩИЕ ПОЛОЖЕНИЯ", ["Настоящая Политика конфиденциальности определяет правила сбора, использования и защиты данных при использовании приложения ProTechtor™ (далее — «Приложение»), а также права и обязанности пользователей.", "Права собственности и авторские права на Приложение и его базу данных принадлежат ©By Emin.", "Использование Приложения означает полное и безоговорочное принятие всех условий настоящей Политики. Лицо, не согласное с условиями, должно прекратить использование Приложения."]], ["ТОЧНОСТЬ ДАННЫХ О СОВМЕСТИМОСТИ И РАЗМЕРАХ (ГЛАВНОЕ ПРЕДУПРЕЖДЕНИЕ)", ["Информация о совместимости и размерах защитных стёкол, представленная в Приложении, носит справочный характер и МОЖЕТ БЫТЬ НЕ ПОЛНОСТЬЮ ТОЧНОЙ. Модификации устройств, региональные версии, производственные партии и различия между производителями могут влиять на фактические размеры.", "Перед продажей, нарезкой, наклеиванием или применением продукта пользователь ОБЯЗАН САМОСТОЯТЕЛЬНО ИЗМЕРИТЬ устройство и продукт и лично проверить совместимость.", "Ответственность за решения, принятые на основании информации в Приложении, за приобретённые или проданные товары, а также за возможный материальный ущерб и повреждение устройства лежит на пользователе. В максимально допустимой законом степени Оператор не несёт ответственности в таких случаях."]], ["СОБИРАЕМЫЕ ДАННЫЕ", ["Приложение обрабатывает только данные, предоставленные пользователем при регистрации или входе либо полученные через выбранный способ входа: псевдоним, адрес электронной почты, номер телефона, название и адрес магазина, адрес электронной почты аккаунта Google, а при анонимном входе — технический идентификатор, созданный системой.", "При ограниченном использовании без входа персональные данные не запрашиваются. Приложение не использует данные о местоположении, рекламные инструменты и инструменты отслеживания поведения."]], ["ЦЕЛИ ИСПОЛЬЗОВАНИЯ И ПЕРЕДАЧА ДАННЫХ", ["Данные используются исключительно для идентификации аккаунта, обеспечения входа, применения лимитов поиска, управления профилем, связи и обеспечения безопасности.", "Данные не продаются, не используются в рекламных целях и не передаются третьим лицам без законных оснований. Они могут быть предоставлены уполномоченным государственным органам в случаях, предусмотренных законодательством."]], ["ЛОКАЛЬНОЕ ХРАНИЛИЩЕ", ["Приложение использует локальное хранилище устройства (Local Storage): тему, размер шрифта, язык, настройки звука и вибрации, копию базы данных, счётчики лимита поиска и последние запросы.", "Эти данные остаются на устройстве и удаляются при очистке памяти браузера."]], ["СТОРОННИЕ СЕРВИСЫ", ["Приложение использует сервисы Google Firebase (Authentication и Firestore) и вход через аккаунт Google. При переходе в WhatsApp дальнейший процесс регулируется правилами этой платформы.", "Оператор не несёт ответственности за работу и правила сторонних сервисов."]], ["ЗАЩИТА ДАННЫХ И ПРАВА ПОЛЬЗОВАТЕЛЕЙ", ["Оператор принимает разумные технические и организационные меры для защиты данных. Абсолютная безопасность передачи данных через интернет не может быть гарантирована.", "Данные хранятся, пока аккаунт активен. Пользователь вправе просматривать свои данные, исправлять их (в разделе «Профиль») и требовать их удаления. Обращение осуществляется через WhatsApp в разделе «Связь»."]], ["ПРАВА ДЕТЕЙ", ["Регистрация предназначена только для лиц, достигших 18 лет. Данные лиц младше 18 лет не собираются без согласия законного представителя (родителя, опекуна).", "Оператор не собирает данные детей сознательно. В случае обнаружения таких данных они немедленно удаляются. Родитель или законный представитель может в любое время потребовать удаления данных ребёнка."]], ["ПРАВА И ОБЯЗАННОСТИ МАГАЗИНОВ", ["Название, адрес и номер телефона магазина должны быть точными и актуальными. Регистрация с ложными данными или от имени третьего лица запрещена.", "Магазин самостоятельно несёт ответственность перед своими клиентами за продажу, гарантию и возврат. Приложение не является стороной отношений между магазином и клиентами.", "Магазин вправе управлять данными своего профиля, исправлять их и требовать их удаления. В случае нарушения правил, злоупотреблений или несанкционированного копирования базы данных Оператор оставляет за собой право ограничить или удалить аккаунт."]], ["ОТВЕТСТВЕННОСТЬ, ИЗМЕНЕНИЯ И ПРИМЕНИМОЕ ПРАВО", ["Если база данных не обновляется 3 (три) дня подряд, работа Приложения автоматически ограничивается; для восстановления необходимо подключиться к интернету и обновить базу.", "Название ProTechtor™, Приложение, база данных и дизайн являются собственностью ©By Emin. Несанкционированное копирование, распространение и коммерческое использование запрещены.", "Оператор оставляет за собой право в одностороннем порядке вносить изменения в Политику; новая редакция вступает в силу с момента публикации в Приложении. Отношения регулируются действующим законодательством Азербайджанской Республики."]]]}, "tr": {"intro": "ProTechtor™ · GİZLİLİK POLİTİKASI VE KULLANIM KOŞULLARI\nUygulamayı kullanmadan önce 10 maddenin tamamını dikkatle okuyunuz.", "foot": "ProTechtor™ · ©By Emin · Tüm hakları saklıdır.", "items": [["GENEL HÜKÜMLER", ["Bu Gizlilik Politikası, ProTechtor™ uygulamasının (bundan sonra “Uygulama”) kullanımı sırasında verilerin toplanması, kullanılması ve korunmasına ilişkin kuralları ile kullanıcıların hak ve yükümlülüklerini belirler.", "Uygulamanın ve veri tabanının mülkiyet ve telif hakları ©By Emin'e aittir.", "Uygulamanın kullanılması, bu Politikanın tüm koşullarının tam ve kayıtsız şartsız kabul edildiği anlamına gelir. Koşulları kabul etmeyen kişi Uygulamayı kullanmayı bırakmalıdır."]], ["UYUMLULUK VE ÖLÇÜ BİLGİLERİNİN DOĞRULUĞU (ÖNEMLİ UYARI)", ["Uygulamada sunulan cam koruyucu uyumluluğu ve ölçü bilgileri bilgilendirme niteliğindedir ve TAM DOĞRU OLMAYABİLİR. Cihaz modifikasyonları, bölgesel sürümler, üretim partileri ve üretici farklılıkları gerçek ölçüleri etkileyebilir.", "Kullanıcı, ürünü satmadan, kesmeden, yapıştırmadan veya uygulamadan önce cihazın ve ürünün ölçülerini KENDİSİ ÖLÇMELİ ve uyumluluğu bizzat kontrol etmelidir.", "Uygulamadaki bilgilere dayanarak verilen kararlardan, satın alınan veya satılan ürünlerden, ortaya çıkabilecek maddi zarardan ve cihazın hasar görmesinden kullanıcı sorumludur. İşletmeci, bu durumlardan dolayı yasaların izin verdiği azami ölçüde sorumluluk kabul etmez."]], ["TOPLANAN VERİLER", ["Uygulama yalnızca kayıt veya giriş sırasında kullanıcı tarafından sağlanan ya da seçilen giriş yöntemiyle elde edilen verileri işler: takma ad, e-posta adresi, telefon numarası, mağaza adı ve adresi, Google hesabının e-posta adresi, anonim girişte ise sistem tarafından oluşturulan teknik tanımlayıcı.", "Giriş yapmadan sınırlı kullanımda kişisel veri istenmez. Uygulama konum verilerini, reklam ve davranış izleme araçlarını kullanmaz."]], ["KULLANIM AMACI VE AKTARIM", ["Veriler yalnızca hesabın tanımlanması, girişin sağlanması, arama sınırlarının uygulanması, profilin yönetilmesi, iletişim ve güvenlik amacıyla kullanılır.", "Veriler satılmaz, reklam amacıyla kullanılmaz ve hukuki dayanak olmaksızın üçüncü kişilere aktarılmaz. Mevzuatın gerektirdiği hâllerde yetkili devlet kurumlarına sunulabilir."]], ["YEREL DEPOLAMA", ["Uygulama, cihazın yerel depolama alanını (Local Storage) kullanır: tema, yazı boyutu, dil, ses ve titreşim ayarları, veri tabanı kopyası, arama sınırı sayaçları ve son aramalar.", "Bu veriler cihazda kalır ve tarayıcı belleği temizlendiğinde silinir."]], ["ÜÇÜNCÜ TARAF HİZMETLERİ", ["Uygulama, Google Firebase (Authentication ve Firestore) hizmetlerini ve Google hesabıyla girişi kullanır. WhatsApp'a geçiş yapıldığında süreç söz konusu platformun kurallarına tabi olur.", "İşletmeci, üçüncü taraf hizmetlerinin işleyişinden ve kurallarından sorumlu değildir."]], ["VERİLERİN KORUNMASI VE KULLANICI HAKLARI", ["İşletmeci, verilerin korunması için makul teknik ve idari tedbirler alır. İnternet üzerinden iletimin mutlak güvenliği garanti edilemez.", "Veriler hesap etkin olduğu sürece saklanır. Kullanıcı, verilerini görme, düzeltme (Profil bölümünde) ve silinmesini talep etme hakkına sahiptir. Başvuru, “İletişim” bölümündeki WhatsApp üzerinden yapılır."]], ["ÇOCUKLARIN HAKLARI", ["Kayıt yalnızca 18 yaşını doldurmuş kişiler için öngörülmüştür. 18 yaşın altındaki kişilerin verileri yasal temsilcinin (ebeveyn, vasi) onayı olmaksızın toplanmaz.", "İşletmeci çocuklardan bilerek veri toplamaz. Bu tür bir verinin tespit edilmesi hâlinde veri derhal silinir. Ebeveyn veya yasal temsilci, çocuğa ait verinin silinmesini her zaman talep edebilir."]], ["MAĞAZA KULLANICILARININ HAK VE YÜKÜMLÜLÜKLERİ", ["Mağaza adı, adresi ve telefon numarası doğru ve güncel olmalıdır. Sahte bilgilerle veya üçüncü bir kişi adına kayıt yaptırmak yasaktır.", "Mağaza, müşterilerine karşı satış, garanti ve iade konularındaki sorumluluğu kendisi taşır. Uygulama, mağaza ile müşteri arasındaki ilişkilerin tarafı değildir.", "Mağaza, profil verilerini yönetme, düzeltme ve silinmesini talep etme hakkına sahiptir. Kuralların ihlali, kötüye kullanım veya veri tabanının izinsiz kopyalanması hâlinde İşletmeci hesabı kısıtlama veya silme hakkını saklı tutar."]], ["SORUMLULUK, DEĞİŞİKLİKLER VE UYGULANACAK HUKUK", ["Veri tabanı art arda 3 (üç) gün güncellenmezse Uygulamanın çalışması otomatik olarak kısıtlanır; yeniden çalıştırmak için internete bağlanıp veri tabanını güncellemek gerekir.", "ProTechtor™ adı, Uygulama, veri tabanı ve tasarım ©By Emin'in mülkiyetindedir. İzinsiz kopyalama, dağıtma ve ticari amaçla kullanma yasaktır.", "İşletmeci, Politikada tek taraflı değişiklik yapma hakkını saklı tutar; yeni sürüm Uygulamada yayımlandığı andan itibaren yürürlüğe girer. İlişkiler, Azerbaycan Cumhuriyeti'nin yürürlükteki mevzuatıyla düzenlenir."]]]}, "en": {"intro": "ProTechtor™ · PRIVACY POLICY AND TERMS OF USE\nPlease read all 10 clauses carefully before using the application.", "foot": "ProTechtor™ · ©By Emin · All rights reserved.", "items": [["GENERAL PROVISIONS", ["This Privacy Policy sets out the rules for the collection, use and protection of data when using the ProTechtor™ application (hereinafter, the “Application”), as well as the rights and obligations of users.", "The ownership and copyright of the Application and its database belong to ©By Emin.", "Use of the Application constitutes full and unconditional acceptance of all terms of this Policy. A person who does not agree with these terms must stop using the Application."]], ["ACCURACY OF COMPATIBILITY AND SIZE DATA (MAIN WARNING)", ["The screen protector compatibility and size information provided in the Application is for reference only and MAY NOT BE FULLY ACCURATE. Device modifications, regional versions, production batches and manufacturer differences may affect actual dimensions.", "Before selling, cutting, attaching or applying a product, the user MUST MEASURE the device and the product INDEPENDENTLY and verify compatibility personally.", "Responsibility for decisions based on the information in the Application, for products purchased or sold, and for any financial loss or damage to a device that may result lies with the user. To the maximum extent permitted by law, the Operator bears no liability for such cases."]], ["DATA COLLECTED", ["The Application processes only the data provided by the user during registration or login, or obtained through the chosen login method: nickname, email address, phone number, store name and address, the email address of the Google account and, for anonymous login, a technical identifier created by the system.", "Limited use without logging in does not require personal data. The Application does not use location data, advertising or behavioural tracking tools."]], ["PURPOSE OF USE AND DISCLOSURE", ["Data is used solely for account identification, providing access, applying search limits, managing the profile, communication and security.", "Data is not sold, is not used for advertising, and is not disclosed to third parties without a lawful basis. It may be provided to authorised state bodies where required by law."]], ["LOCAL STORAGE", ["The Application uses the device's local storage (Local Storage): theme, font, language, sound and vibration settings, a copy of the database, search limit counters and recent searches.", "This data remains on the device and is deleted when the browser storage is cleared."]], ["THIRD-PARTY SERVICES", ["The Application uses Google Firebase services (Authentication and Firestore) and Google account sign-in. When you switch to WhatsApp, the process is governed by the rules of that platform.", "The Operator is not responsible for the operation or rules of third-party services."]], ["DATA PROTECTION AND USER RIGHTS", ["The Operator takes reasonable technical and organisational measures to protect data. The absolute security of transmission over the internet cannot be guaranteed.", "Data is kept while the account is active. The user has the right to view their data, correct it (in the Profile section) and request its deletion. Requests are made via WhatsApp in the “Contact” section."]], ["RIGHTS OF CHILDREN", ["Registration is intended only for persons who have reached 18 years of age. Data of persons under 18 is not collected without the consent of a legal representative (parent or guardian).", "The Operator does not knowingly collect data from children. If such data is discovered, it is deleted immediately. A parent or legal representative may request deletion of a child's data at any time."]], ["RIGHTS AND OBLIGATIONS OF STORE USERS", ["The store name, address and phone number must be accurate and up to date. Registration with false information or in the name of a third party is prohibited.", "The store is itself responsible to its customers for sales, warranty and returns. The Application is not a party to relations between a store and its customers.", "A store has the right to manage and correct its profile data and to request its deletion. In case of violations, abuse or unauthorised copying of the database, the Operator reserves the right to restrict or delete the account."]], ["LIABILITY, CHANGES AND GOVERNING LAW", ["If the database is not updated for 3 (three) consecutive days, the operation of the Application is automatically restricted; to restore it, connect to the internet and update the database.", "The ProTechtor™ name, the Application, the database and the design are the property of ©By Emin. Unauthorised copying, distribution and commercial use are prohibited.", "The Operator reserves the right to amend the Policy unilaterally; the new version takes effect upon publication in the Application. Relations are governed by the applicable legislation of the Republic of Azerbaijan."]]]}};
+const PP_COLORS = ["#d4af37","#ef5350","#26c6da","#66bb6a","#ab47bc","#5c9dff","#ffa726","#ec407a","#26a69a","#ff7043"];
+
+function renderPrivacy() {
+    const box = document.getElementById("privacyBody");
+    if (!box) return;
+    const d = PRIVACY[currentLang] || PRIVACY.az;
+    const mk = function (tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; };
+    box.innerHTML = "";
+    box.appendChild(mk("div", "pp-intro", d.intro));
+    d.items.forEach(function (it, i) {
+        const c = PP_COLORS[i % PP_COLORS.length];
+        const sec = mk("section", "pp-item" + (i === 1 ? " warn" : ""));
+        sec.style.setProperty("--c", c);
+        sec.style.setProperty("--cb", "rgba(" + parseInt(c.slice(1, 3), 16) + "," + parseInt(c.slice(3, 5), 16) + "," + parseInt(c.slice(5, 7), 16) + ",0.16)");
+        const head = mk("div", "pp-head");
+        head.appendChild(mk("span", "pp-num", String(i + 1).padStart(2, "0")));
+        head.appendChild(mk("span", "pp-title", it[0]));
+        sec.appendChild(head);
+        const body = mk("div", "pp-body");
+        it[1].forEach(function (txt, j) {
+            const p = mk("p");
+            p.appendChild(mk("b", "pp-sub", (i + 1) + "." + (j + 1)));
+            p.appendChild(document.createTextNode(txt));
+            body.appendChild(p);
+        });
+        sec.appendChild(body);
+        box.appendChild(sec);
+    });
+    box.appendChild(mk("div", "pp-foot", d.foot));
+}
+
 const APP_VERSION = "3.1.3";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
@@ -3130,6 +3105,7 @@ function applyLang() {
     document.querySelectorAll("[data-i18n-ph]").forEach(function (el) { el.placeholder = t(el.getAttribute("data-i18n-ph")); });
     document.querySelectorAll(".lang-option").forEach(function (el) { el.classList.toggle("active", el.id === "lang-" + currentLang); });
     document.getElementById("appVersion").innerText = "v" + APP_VERSION;
+    renderPrivacy();
     updateLastUpdate();
     
     if (navigator.onLine) {
