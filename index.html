@@ -15,9 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
 
-    <!-- Fiziki manifest.json faylına keçid -->
     <link rel="manifest" href="./manifest.json">
-
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
 
@@ -63,991 +61,198 @@
             --placeholder-color: #ffe566;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        html, body {
-            width: 100%;
-            min-height: 100%;
-            background: var(--bg);
-            color: var(--text);
-            font-size: calc(16px * var(--font-scale));
-            overscroll-behavior-y: auto;
-        }
-
-        body {
-            overflow-x: hidden;
-            transition: background 0.3s, color 0.3s;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        html, body { width: 100%; min-height: 100%; background: var(--bg); color: var(--text); font-size: calc(16px * var(--font-scale)); overscroll-behavior-y: auto; }
+        body { overflow-x: hidden; transition: background 0.3s, color 0.3s; }
 
         :root[data-theme="dark"] body {
             background:
                 radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.09) 0%, transparent 50%),
                 radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(139, 105, 20, 0.04) 0%, transparent 70%),
-                radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
                 linear-gradient(160deg, #0a0a0a 0%, #111111 40%, #0d0d0d 100%);
             background-attachment: fixed;
         }
 
-        button, input, a, select {
-            font-family: inherit;
-        }
+        button, input, a, select, textarea { font-family: inherit; -webkit-tap-highlight-color: transparent; }
 
-        button {
-            -webkit-tap-highlight-color: transparent;
-        }
+        #offline-banner { width: 100%; background: #ff5722; color: #fff; font-size: 13px; font-weight: 700; text-align: center; padding: 8px; display: none; letter-spacing: 1px; z-index: 1200; position: relative; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+        #broadcast-banner { width: 100%; background: linear-gradient(90deg, #d4af37, #f39c12); color: #111; font-size: 13px; font-weight: 700; text-align: center; padding: 10px 16px; display: none; z-index: 1150; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 
-        #offline-banner {
-            width: 100%;
-            background: #ff5722;
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 700;
-            text-align: center;
-            padding: 8px;
-            display: none;
-            letter-spacing: 1px;
-            z-index: 1200;
-            position: relative;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-        }
+        .top-header { height: 110px; padding: 22px 28px 18px 28px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--accent-color); background: var(--header-bg); backdrop-filter: blur(8px); }
+        .header-left { display: flex; flex-direction: column; justify-content: center; }
+        .header-small { font-size: calc(13px * var(--font-scale)); letter-spacing: 5px; color: var(--accent-color); margin-bottom: 3px; text-transform: uppercase; font-weight: 500; }
+        .header-title { font-size: calc(24px * var(--font-scale) * var(--responsive-scale, 1)); line-height: 1; font-weight: 800; letter-spacing: -1.5px; color: var(--text); }
+        .header-buttons { display: flex; gap: 10px; }
+        .menu-button, .profile-btn { width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; transition: 0.2s; }
+        
+        .main-content { padding: 24px; }
+        .search-wrapper { width: 100%; height: 72px; border: 2px solid var(--accent-color); display: flex; align-items: center; background: var(--surface); margin-bottom: 16px; border-radius: 20px; box-shadow: 0 0 18px rgba(212, 175, 55, 0.12); overflow: hidden; position: relative; }
+        .search-input { flex: 1; height: 100%; border: none; outline: none; background: transparent; color: var(--text); font-size: calc(20px * var(--font-scale)); padding: 0 54px 0 22px; }
+        .search-input::placeholder { color: var(--placeholder-color); font-weight: 600; opacity: 1; }
+        .clear-button { position: absolute; right: 12px; width: 42px; height: 42px; border: none; border-radius: 12px; background: var(--surface-2); color: var(--accent-color); font-size: 22px; font-weight: 700; display: none; align-items: center; justify-content: center; cursor: pointer; }
+        .clear-button.visible { display: flex; }
 
-        #app {
-            width: 100%;
-            min-height: 100vh;
-            background: transparent;
-        }
+        .status { height: 36px; font-size: calc(14px * var(--font-scale)); letter-spacing: 3px; color: var(--accent-color); text-transform: uppercase; padding-left: 2px; margin-bottom: 6px; }
+        .result-item { width: 100%; min-height: 78px; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 14px 16px; background: transparent; cursor: pointer; border-radius: 16px; margin-bottom: 4px; transition: 0.15s; }
+        .result-item:active { background: var(--result-hover); }
+        .brand-badge { flex-shrink: 0; min-width: 110px; height: 36px; padding: 0 12px; background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); color: #111; display: flex; align-items: center; justify-content: center; font-size: calc(13px * var(--font-scale)); letter-spacing: 2px; font-weight: 700; text-transform: uppercase; border-radius: 12px; }
+        .result-model { flex: 1; font-size: calc(19px * var(--font-scale)); margin-left: 18px; color: var(--text); word-break: break-word; }
+        .result-model mark { background: transparent; color: var(--accent-color); font-weight: 800; text-decoration: underline; }
+        .result-arrow { flex-shrink: 0; font-size: 32px; color: var(--accent-color); margin-left: 10px; opacity: 0.75; }
+        .no-results { text-align: center; color: var(--muted); font-size: calc(15px * var(--font-scale)); padding-top: 50px; }
 
-        .top-header {
-            height: 110px;
-            padding: 22px 28px 18px 28px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--accent-color);
-            background: var(--header-bg);
-            backdrop-filter: blur(8px);
-        }
-
-        .header-left {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .header-small {
-            font-size: calc(13px * var(--font-scale));
-            letter-spacing: 5px;
-            color: var(--accent-color);
-            margin-bottom: 3px;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .header-title {
-            font-size: calc(24px * var(--font-scale) * var(--responsive-scale, 1));
-            line-height: 1;
-            font-weight: 800;
-            letter-spacing: -1.5px;
-            color: var(--text);
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .menu-button, .profile-btn {
-            width: 50px;
-            height: 50px;
-            border: 2px solid var(--accent-color);
-            background: transparent;
-            color: var(--accent-color);
-            font-size: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 16px;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .menu-button:active, .profile-btn:active {
-            background: var(--result-hover);
-            transform: scale(0.95);
-        }
-
-        .main-content {
-            padding: 24px;
-        }
-
-        .search-wrapper {
-            width: 100%;
-            height: 72px;
-            border: 2px solid var(--accent-color);
-            display: flex;
-            align-items: center;
-            background: var(--surface);
-            margin-bottom: 16px;
-            border-radius: 20px;
-            box-shadow: 0 0 18px rgba(212, 175, 55, 0.12);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .search-input {
-            flex: 1;
-            height: 100%;
-            border: none;
-            outline: none;
-            background: transparent;
-            color: var(--text);
-            font-size: calc(20px * var(--font-scale));
-            padding: 0 54px 0 22px;
-            transition: color 0.4s ease;
-        }
-
-        .search-input::placeholder {
-            color: var(--placeholder-color);
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            opacity: 1;
-            transition: color 0.6s ease, opacity 0.3s ease;
-        }
-
-        .clear-button {
-            position: absolute;
-            right: 12px;
-            width: 42px;
-            height: 42px;
-            border: none;
-            border-radius: 12px;
-            background: var(--surface-2);
-            color: var(--accent-color);
-            font-size: 22px;
-            font-weight: 700;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.3s ease, background 0.2s;
-        }
-
-        .clear-button:active {
-            background: var(--border);
-        }
-
-        .clear-button.visible {
-            display: flex;
-        }
-
-        .clear-button.rotate {
-            transform: rotate(180deg);
-        }
-
-        .status {
-            height: 36px;
-            font-size: calc(14px * var(--font-scale));
-            letter-spacing: 3px;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            padding-left: 2px;
-            margin-bottom: 6px;
-        }
-
-        #results {
-            width: 100%;
-        }
-
-        .result-item {
-            width: 100%;
-            min-height: 78px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 14px 16px;
-            background: transparent;
-            cursor: pointer;
-            transition: background 0.15s;
-            border-radius: 16px;
-            margin-bottom: 4px;
-        }
-
-        .result-item:active {
-            background: var(--result-hover);
-        }
-
-        .brand-badge {
-            flex-shrink: 0;
-            min-width: 110px;
-            height: 36px;
-            padding: 0 12px;
-            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
-            color: #111111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: calc(13px * var(--font-scale));
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 12px;
-        }
-
-        .result-model {
-            flex: 1;
-            font-size: calc(19px * var(--font-scale));
-            margin-left: 18px;
-            color: var(--text);
-            font-weight: 400;
-            line-height: 1.25;
-            word-break: break-word;
-        }
-
-        .result-model mark {
-            background: transparent;
-            color: var(--accent-color);
-            font-weight: 800;
-            text-decoration: underline;
-        }
-
-        .result-arrow {
-            flex-shrink: 0;
-            font-size: 32px;
-            color: var(--accent-color);
-            margin-left: 10px;
-            line-height: 1;
-            opacity: 0.75;
-        }
-
-        .no-results {
-            text-align: center;
-            color: var(--muted);
-            font-size: calc(15px * var(--font-scale));
-            padding-top: 50px;
-        }
-
-        #detail-view, #profile-view, #settings-view, #admin-view {
-            position: fixed;
-            top: 0; right: 0; bottom: 0; left: 0;
-            width: 100%; height: 100%;
-            background: var(--bg);
-            z-index: 500;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transform: translateY(100%);
-            opacity: 0;
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-            pointer-events: none;
-        }
-
+        #detail-view, #profile-view, #settings-view, #admin-view { position: fixed; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 500; display: flex; flex-direction: column; overflow: hidden; transform: translateY(100%); opacity: 0; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; pointer-events: none; }
         #settings-view { transform: translateX(100%); z-index: 600; overflow-y: auto; display: block; }
         #admin-view { z-index: 650; }
-        
-        #detail-view.active, #profile-view.active, #admin-view.active {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        #settings-view.active {
-            transform: translateX(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
+        #detail-view.active, #profile-view.active, #admin-view.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        #settings-view.active { transform: translateX(0); opacity: 1; pointer-events: auto; }
 
-        .detail-header, .profile-header, .settings-header, .admin-header {
-            height: 110px;
-            min-height: 110px;
-            display: flex;
-            align-items: center;
-            padding: 16px 24px;
-            border-bottom: 2px solid var(--accent-color);
-            background: var(--header-bg);
-        }
+        .detail-header, .profile-header, .settings-header, .admin-header { height: 110px; min-height: 110px; display: flex; align-items: center; padding: 16px 24px; border-bottom: 2px solid var(--accent-color); background: var(--header-bg); }
+        .detail-back, .profile-back, .settings-back, .admin-back { width: 54px; height: 54px; flex-shrink: 0; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 18px; }
+        .detail-heading, .profile-heading, .settings-heading, .admin-heading { margin-left: 20px; overflow: hidden; }
+        .detail-small, .profile-small, .settings-small, .admin-small { font-size: calc(13px * var(--font-scale)); letter-spacing: 4px; color: var(--accent-color); margin-bottom: 2px; text-transform: uppercase; }
+        .detail-model, .profile-title, .settings-title, .admin-title { font-size: calc(24px * var(--font-scale)); font-weight: 800; color: var(--text); }
 
-        .detail-back, .profile-back, .settings-back, .admin-back {
-            width: 54px;
-            height: 54px;
-            flex-shrink: 0;
-            border: 2px solid var(--accent-color);
-            background: transparent;
-            color: var(--accent-color);
-            font-size: 32px;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 18px;
-        }
-
-        .detail-heading, .profile-heading, .settings-heading, .admin-heading {
-            margin-left: 20px;
-            overflow: hidden;
-        }
-
-        .detail-small, .profile-small, .settings-small, .admin-small {
-            font-size: calc(13px * var(--font-scale));
-            letter-spacing: 4px;
-            color: var(--accent-color);
-            margin-bottom: 2px;
-            text-transform: uppercase;
-        }
-        .admin-small { font-size: 12px; }
-
-        .detail-model, .profile-title, .settings-title, .admin-title {
-            font-size: calc(24px * var(--font-scale));
-            font-weight: 800;
-            color: var(--text);
-        }
-        .admin-title { font-size: 22px; }
-
+        /* UYĞUNLUQ BAŞLIĞI — Solğun sarı və kiçik, xəbərdarlıq ilə */
         .compatibility-title {
-            min-height: 48px;
-            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
-            color: #ffffff;
+            min-height: 52px;
+            background: rgba(255, 235, 59, 0.05);
+            color: #ffe082;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0 16px;
-            font-size: calc(12px * var(--font-scale));
-            font-weight: 700;
-            letter-spacing: 1.5px;
+            padding: 6px 16px;
+            font-size: calc(11px * var(--font-scale));
+            font-weight: 600;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
             border-bottom: 1px solid var(--border);
             text-align: center;
             line-height: 1.3;
         }
+        .compatibility-title small { font-size: calc(9px * var(--font-scale)); opacity: 0.75; font-weight: 400; margin-top: 2px; letter-spacing: 0.3px; }
 
-        .compatibility-list {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-        }
+        .compatibility-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .compatibility-item { min-height: 72px; display: flex; align-items: center; border-bottom: 1px solid var(--border); padding: 12px 16px; border-radius: 16px; margin: 2px 8px; }
+        .compatibility-item.selected { background: var(--selected); border-left: 4px solid var(--accent-color); }
+        .compat-number { width: 48px; flex-shrink: 0; color: var(--accent-color); font-size: calc(15px * var(--font-scale)); text-align: center; }
+        .compat-brand { min-width: 105px; height: 34px; padding: 0 10px; flex-shrink: 0; background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); color: #111; display: flex; align-items: center; justify-content: center; font-size: calc(12px * var(--font-scale)); letter-spacing: 2px; font-weight: 700; text-transform: uppercase; border-radius: 12px; }
+        .compat-model { margin-left: 16px; font-size: calc(18px * var(--font-scale)); color: var(--text); word-break: break-word; }
 
-        .compatibility-item {
-            min-height: 72px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
-            background: transparent;
-            padding: 12px 16px;
-            border-radius: 16px;
-            margin: 2px 8px;
-        }
+        .settings-content { padding: 24px; }
+        .settings-section { margin-bottom: 28px; }
+        .settings-section-title { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; color: var(--accent-color); margin-bottom: 10px; }
+        .settings-box { border: 1px solid var(--border); background: var(--card-bg); border-radius: 20px; overflow: hidden; }
+        .settings-row { padding: 16px; display: flex; justify-content: space-between; align-items: center; gap: 16px; border-bottom: 1px solid var(--border); font-size: calc(14px * var(--font-scale)); color: var(--text); }
+        .settings-row:last-child { border-bottom: none; }
 
-        .compatibility-item.selected {
-            background: var(--selected);
-            border-left: 4px solid var(--accent-color);
-        }
+        .update-button, .profile-save-btn { width: 100%; height: 56px; border: none; background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%); color: #fff; font-size: calc(15px * var(--font-scale)); font-weight: 800; letter-spacing: 2px; margin-top: 12px; cursor: pointer; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .logout-btn { background: #e74c3c; }
+        .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .compat-number {
-            width: 48px;
-            flex-shrink: 0;
-            color: var(--accent-color);
-            font-size: calc(15px * var(--font-scale));
-            text-align: center;
-            font-weight: 500;
-            opacity: 0.85;
-        }
-
-        .compat-brand {
-            min-width: 105px;
-            height: 34px;
-            padding: 0 10px;
-            flex-shrink: 0;
-            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
-            color: #111111;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: calc(12px * var(--font-scale));
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-transform: uppercase;
-            border-radius: 12px;
-        }
-
-        .compat-model {
-            margin-left: 16px;
-            font-size: calc(18px * var(--font-scale));
-            color: var(--text);
-            line-height: 1.25;
-            word-break: break-word;
-        }
-
-        .compatibility-item.selected .compat-model {
-            font-weight: 700;
-        }
-
-        .settings-content {
-            padding: 24px;
-        }
-
-        .settings-section {
-            margin-bottom: 28px;
-        }
-
-        .settings-section-title {
-            font-size: calc(12px * var(--font-scale));
-            letter-spacing: 3px;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-        }
-
-        .settings-box {
-            border: 1px solid var(--border);
-            background: var(--card-bg);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .settings-row {
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            border-bottom: 1px solid var(--border);
-            font-size: calc(14px * var(--font-scale));
-            color: var(--text);
-        }
-
-        .settings-row:last-child {
-            border-bottom: none;
-        }
-
-        .update-button, .profile-save-btn {
-            width: 100%;
-            height: 56px;
-            border: none;
-            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
-            color: #ffffff;
-            font-size: calc(15px * var(--font-scale));
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-top: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            border-radius: 18px;
-        }
-        
-        .update-button:disabled, .profile-save-btn:disabled {
-            background: #555;
-            box-shadow: none;
-            cursor: not-allowed;
-            color: #aaa;
-        }
-
-        .logout-btn {
-            background: #e74c3c;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-        }
-
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 26px;
-        }
+        .switch { position: relative; display: inline-block; width: 48px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--border); transition: .3s; border-radius: 26px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .3s; border-radius: 26px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        .whatsapp-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            height: 56px;
-            background: #25D366;
-            color: #ffffff;
-            font-size: calc(16px * var(--font-scale));
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-decoration: none;
-            border-radius: 18px;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
-            transition: background 0.2s;
-        }
+        .whatsapp-button { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 56px; background: #25D366; color: #fff; font-size: calc(16px * var(--font-scale)); font-weight: 700; text-decoration: none; border-radius: 18px; }
+        .theme-selector { display: flex; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; background: var(--surface); }
+        .theme-option { flex: 1; padding: 16px 4px; text-align: center; border-right: 1px solid var(--border); font-size: calc(12px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
+        .theme-option:last-child { border-right: none; }
+        .theme-option.active { background: var(--accent-color); color: #111; font-weight: 800; }
 
-        .whatsapp-button:active {
-            background: #1da851;
-        }
+        .color-picker-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .color-swatch { height: 44px; border-radius: 14px; cursor: pointer; border: 2px solid var(--border); }
+        .color-swatch.active { border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
-        .theme-selector {
-            display: flex;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            overflow: hidden;
-            background: var(--surface);
-        }
+        #privacy-view { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: var(--bg); z-index: 700; display: none; overflow-y: auto; }
+        #privacy-view.active { display: block; }
 
-        .theme-option {
-            flex: 1;
-            padding: 16px 4px;
-            text-align: center;
-            border-right: 1px solid var(--border);
-            font-size: calc(12px * var(--font-scale));
-            cursor: pointer;
-            color: var(--text);
-            background: var(--surface);
-        }
-
-        .theme-option:last-child {
-            border-right: none;
-        }
-
-        .theme-option.active {
-            background: var(--accent-color);
-            color: #111111;
-            font-weight: 800;
-        }
-
-        .color-picker-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        .color-swatch {
-            height: 44px;
-            border-radius: 14px;
-            cursor: pointer;
-            border: 2px solid var(--border);
-            transition: transform 0.2s;
-        }
-        .color-swatch:active {
-            transform: scale(0.92);
-        }
-        .color-swatch.active {
-            border-color: #ffffff;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
-        }
-
-        #privacy-view {
-            position: fixed;
-            top: 0; right: 0; bottom: 0; left: 0;
-            background: var(--bg);
-            z-index: 700;
-            display: none;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        #privacy-view.active {
-            display: block;
-        }
-
-        #block-screen {
-            position: fixed;
-            top: 0; right: 0; bottom: 0; left: 0;
-            background: var(--bg);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .block-title {
-            color: var(--accent-color);
-            font-size: calc(26px * var(--font-scale));
-            margin-bottom: 16px;
-            font-weight: 800;
-        }
-
-        .block-text {
-            color: var(--muted);
-            font-size: calc(15px * var(--font-scale));
-            line-height: 1.6;
-            margin-bottom: 22px;
-        }
+        #block-screen { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: var(--bg); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
+        .block-title { color: var(--accent-color); font-size: calc(26px * var(--font-scale)); margin-bottom: 16px; font-weight: 800; }
+        .block-text { color: var(--muted); font-size: calc(15px * var(--font-scale)); line-height: 1.6; margin-bottom: 22px; }
 
         #recent { display: none; margin-bottom: 8px; }
         .recent-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
         .recent-title { font-size: calc(12px * var(--font-scale)); letter-spacing: 3px; color: var(--accent-color); }
-        .recent-clear { background: none; border: none; color: var(--muted); font-size: calc(12px * var(--font-scale)); letter-spacing: 2px; cursor: pointer; padding: 8px 0 8px 12px; }
+        .recent-clear { background: none; border: none; color: var(--muted); font-size: calc(12px * var(--font-scale)); cursor: pointer; padding: 8px 0 8px 12px; }
         .recent-item { padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: calc(16px * var(--font-scale)); cursor: pointer; display: flex; justify-content: space-between; border-radius: 14px; margin-bottom: 2px; }
-        .recent-item:active { background: var(--result-hover); }
         .recent-item span:last-child { color: var(--accent-color); }
         .nf-button { margin-top: 18px; }
-        
-        .status-dot { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 18px; height: 18px; border-radius: 50%; z-index: 1100; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; padding: 0; }
-        .status-dot::after { content: ""; position: absolute; top: -12px; right: -12px; bottom: -12px; left: -12px; }
+
+        .status-dot { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 18px; height: 18px; border-radius: 50%; z-index: 1100; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; }
         .status-dot.green { background: #2ecc71; box-shadow: 0 0 12px rgba(46,204,113,0.7); }
         .status-dot.gray { background: #8a8a8a; }
         .status-dot.yellow { background: #f1c40f; box-shadow: 0 0 12px rgba(241,196,15,0.7); }
         .status-dot.red { background: #e74c3c; box-shadow: 0 0 12px rgba(231,76,60,0.7); }
         
-        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; z-index: 1100; display: none; letter-spacing: 1px; }
+        .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; z-index: 1100; display: none; }
 
-        #toast {
-            position: fixed;
-            left: 50%;
-            bottom: calc(70px + env(safe-area-inset-bottom, 0px));
-            transform: translateX(-50%) translateY(30px);
-            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%);
-            color: #111111;
-            border: none;
-            padding: 14px 22px;
-            font-size: calc(14px * var(--font-scale));
-            font-weight: 700;
-            z-index: 1200;
-            display: none;
-            border-radius: 18px;
-            box-shadow: 0 8px 28px rgba(0,0,0,0.35);
-            max-width: 90%;
-            text-align: center;
-            line-height: 1.35;
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        #toast.show {
-            display: block;
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        #toast { position: fixed; left: 50%; bottom: calc(70px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(30px); background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-dark) 100%); color: #111; padding: 14px 22px; font-size: calc(14px * var(--font-scale)); font-weight: 700; z-index: 1200; display: none; border-radius: 18px; box-shadow: 0 8px 28px rgba(0,0,0,0.35); max-width: 90%; text-align: center; opacity: 0; transition: 0.3s; }
+        #toast.show { display: block; opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        .lang-selector { display: flex; flex-direction: column; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
-        .lang-option { display: flex; align-items: center; gap: 12px; text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: calc(15px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
+        .lang-selector { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+        .lang-option { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: calc(15px * var(--font-scale)); cursor: pointer; color: var(--text); background: var(--surface); }
         .lang-option:last-child { border-bottom: none; }
-        .lang-code { min-width: 40px; height: 28px; border-radius: 8px; background: var(--surface-2); color: var(--accent-color); font-size: 12px; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; }
+        .lang-code { min-width: 40px; height: 28px; border-radius: 8px; background: var(--surface-2); color: var(--accent-color); font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
         .lang-name { flex: 1; font-weight: 500; }
-        .lang-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 13px; color: transparent; transition: 0.2s; }
-        .lang-option.active .lang-code { background: #111; color: var(--accent-color); }
+        .lang-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 13px; color: transparent; }
         .lang-option.active { background: var(--accent-color); color: #111; font-weight: 800; }
-        .lang-option.active .lang-check { background: #111; border-color: #111; color: var(--accent-color); }
+        .lang-option.active .lang-code, .lang-option.active .lang-check { background: #111; border-color: #111; color: var(--accent-color); }
 
-        .changelog-item {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border);
-            font-size: calc(13px * var(--font-scale));
-            color: var(--text);
-            line-height: 1.4;
-        }
-        .changelog-item:last-child {
-            border-bottom: none;
-        }
-        .changelog-date {
-            color: var(--accent-color);
-            font-weight: 700;
-            font-size: 12px;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-        .changelog-empty {
-            padding: 18px 16px;
-            text-align: center;
-            color: var(--muted);
-            font-size: 13px;
-        }
+        .changelog-item { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: calc(13px * var(--font-scale)); color: var(--text); line-height: 1.4; }
+        .changelog-date { color: var(--accent-color); font-weight: 700; font-size: 12px; margin-bottom: 4px; }
+        .changelog-empty { padding: 18px 16px; text-align: center; color: var(--muted); font-size: 13px; }
 
-        #install-banner {
-            position: fixed;
-            bottom: calc(24px + env(safe-area-inset-bottom, 0px));
-            left: 50%;
-            transform: translateX(-50%) translateY(120%);
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 16px;
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1150;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            max-width: 94%;
-        }
-        #install-banner.show {
-            transform: translateX(-50%) translateY(0);
-        }
-        .install-icon {
-            width: 36px;
-            height: 36px;
-            background: #2a2a2a;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .install-icon svg {
-            width: 22px;
-            height: 22px;
-            fill: #d4af37;
-        }
-        .install-text {
-            flex: 1;
-            font-size: 13px;
-            color: #f5f5f5;
-            line-height: 1.3;
-        }
-        .install-text strong {
-            color: var(--accent-color);
-            font-weight: 700;
-        }
-        .install-btn {
-            background: var(--accent-color);
-            color: #111;
-            border: none;
-            border-radius: 12px;
-            padding: 8px 14px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .install-close {
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 0 4px;
-            line-height: 1;
-        }
+        #install-banner { position: fixed; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%) translateY(120%); background: #1a1a1a; border: 1px solid #333; border-radius: 16px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; z-index: 1150; box-shadow: 0 8px 32px rgba(0,0,0,0.5); transition: transform 0.4s; max-width: 94%; }
+        #install-banner.show { transform: translateX(-50%) translateY(0); }
+        .install-icon { width: 36px; height: 36px; background: #2a2a2a; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .install-icon svg { width: 22px; height: 22px; fill: #d4af37; }
+        .install-text { flex: 1; font-size: 13px; color: #f5f5f5; line-height: 1.3; }
+        .install-text strong { color: var(--accent-color); }
+        .install-btn { background: var(--accent-color); color: #111; border: none; border-radius: 12px; padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+        .install-close { background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; }
 
-        /* QEYDİYYAT / GİRİŞ VƏ PROFİL MODALLARI */
-        #auth-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .auth-box {
-            width: 100%;
-            max-width: 380px;
-            background: var(--surface);
-            border: 2px solid var(--accent-color);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        .auth-box h3 {
-            color: var(--accent-color);
-            margin-bottom: 12px;
-            font-size: 20px;
-            margin-top: 15px;
-        }
-        .auth-box input {
-            width: 100%;
-            padding: 10px 12px;
-            margin: 6px 0;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text);
-            font-size: 15px;
-            outline: none;
-        }
-        .auth-box button {
-            width: 100%;
-            padding: 12px;
-            background: var(--accent-color);
-            color: #111;
-            border: none;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 15px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .auth-box button:disabled {
-            background: #555;
-            color: #aaa;
-            cursor: not-allowed;
-        }
-        .auth-toggle {
-            color: var(--accent-color);
-            cursor: pointer;
-            font-size: 12px;
-            margin-top: 12px;
-            display: block;
-        }
-        .auth-error {
-            color: #e74c3c;
-            font-size: 12px;
-            margin-top: 6px;
-        }
+        #auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { width: 100%; max-width: 380px; background: var(--surface); border: 2px solid var(--accent-color); border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; position: relative; max-height: 92vh; overflow-y: auto; }
+        .auth-box h3 { color: var(--accent-color); margin-bottom: 12px; font-size: 20px; margin-top: 15px; }
+        .auth-box input, .auth-box textarea { width: 100%; padding: 10px 12px; margin: 6px 0; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; outline: none; }
+        .auth-box button { width: 100%; padding: 12px; background: var(--accent-color); color: #111; border: none; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; margin-top: 10px; }
+        .auth-box button:disabled { background: #555; color: #aaa; cursor: not-allowed; }
+        .auth-toggle { color: var(--accent-color); cursor: pointer; font-size: 12px; margin-top: 12px; display: block; }
+        .auth-error { color: #e74c3c; font-size: 12px; margin-top: 6px; }
+        .input-error-msg { color: #e74c3c; font-size: 11px; text-align: left; margin-top: -2px; margin-bottom: 8px; display: none; padding-left: 5px; }
+
+        .phone-field { display: flex; align-items: center; gap: 8px; width: 100%; margin: 6px 0; }
+        .phone-code-box { flex-shrink: 0; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 12px 0 8px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; }
+        .phone-flag-circle { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; background: #222; }
+        .phone-flag-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .phone-prefix { font-size: 14px; font-weight: 700; color: var(--text); }
+        .phone-input-box { flex: 1; height: 44px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; overflow: hidden; }
+        .phone-input { flex: 1; height: 100%; border: none !important; outline: none !important; background: transparent !important; color: var(--text); font-size: 15px; font-weight: 600; padding: 0 14px !important; }
+
+        /* YENİ GÜCLƏNDİRİLMİŞ ADMIN PANEL TABLAR */
+        .admin-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); overflow-x: auto; }
+        .admin-tab { padding: 12px 18px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+        .admin-tab.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
         
-        .input-error-msg {
-            color: #e74c3c;
-            font-size: 11px;
-            text-align: left;
-            margin-top: -2px;
-            margin-bottom: 8px;
-            display: none;
-            padding-left: 5px;
-        }
-
-        /* Telefon sahəsi — dairəvi bayraq + +994 + mask (Azercell üslubu) */
-        .phone-field {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            margin: 6px 0;
-        }
-        .phone-code-box {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            height: 44px;
-            padding: 0 12px 0 8px;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-        }
-        .phone-flag-circle {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-            box-shadow: 0 0 0 1.5px rgba(255,255,255,0.15);
-            background: #222;
-        }
-        .phone-flag-circle img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .phone-prefix {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-        }
-        .phone-input-box {
-            flex: 1;
-            height: 44px;
-            background: var(--surface-2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-        }
-        .phone-input {
-            flex: 1;
-            height: 100%;
-            border: none !important;
-            outline: none !important;
-            background: transparent !important;
-            color: var(--text);
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            padding: 0 14px !important;
-            margin: 0 !important;
-            width: 100% !important;
-            font-variant-numeric: tabular-nums;
-        }
-        .phone-input::placeholder {
-            color: var(--muted);
-            letter-spacing: 2px;
-            font-weight: 500;
-            opacity: 0.7;
-        }
-        .settings-box .phone-field {
-            margin: 6px 0 2px 0;
-        }
-
-        /* ===== ADMIN PANEL ===== */
-        .admin-toolbar {
-            padding: 12px 16px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            border-bottom: 1px solid var(--border);
-            background: var(--surface);
-        }
-        .admin-btn {
-            height: 40px;
-            padding: 0 14px;
-            border: none;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+        .admin-toolbar { padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 1px solid var(--border); background: var(--surface); }
+        .admin-btn { height: 40px; padding: 0 14px; border: none; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .admin-btn-primary { background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%); color: #fff; }
         .admin-btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
         .admin-btn-danger { background: #e74c3c; color: #fff; }
         .admin-btn-success { background: #27ae60; color: #fff; }
-        .admin-search {
-            flex: 1;
-            min-width: 140px;
-            height: 40px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--surface-2);
-            color: var(--text);
-            padding: 0 12px;
-            font-size: 14px;
-            outline: none;
-        }
-        .admin-list {
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding: 12px;
-        }
+        .admin-search { flex: 1; min-width: 140px; height: 40px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-2); color: var(--text); padding: 0 12px; font-size: 14px; outline: none; }
+        
+        .admin-list { flex: 1; overflow-y: auto; padding: 12px; }
         .admin-group { border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg); margin-bottom: 12px; overflow: hidden; }
-        .admin-group-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; cursor: pointer; background: var(--surface); border-bottom: 1px solid transparent; }
-        .admin-group.open .admin-group-head { border-bottom-color: var(--border); }
+        .admin-group-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; cursor: pointer; background: var(--surface); }
         .admin-group-num { color: var(--accent-color); font-weight: 700; font-size: 13px; min-width: 28px; }
         .admin-group-info { flex: 1; font-size: 14px; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .admin-group-count { font-size: 12px; color: var(--muted); margin-right: 4px; }
         .admin-group-body { display: none; padding: 10px 12px 14px; }
         .admin-group.open .admin-group-body { display: block; }
         .admin-model-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
@@ -1055,53 +260,39 @@
         .admin-icon-btn { width: 36px; height: 36px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--surface-2); color: var(--text); }
         .admin-icon-btn.del { background: rgba(231,76,60,0.15); color: #e74c3c; }
         .admin-icon-btn.add { background: rgba(39,174,96,0.15); color: #27ae60; }
+        
+        /* İstifadəçi və Sorğu kartları */
+        .admin-card { border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg); padding: 14px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .admin-card-title { font-weight: 700; font-size: 15px; color: var(--text); display: flex; justify-content: space-between; }
+        .admin-card-sub { font-size: 12px; color: var(--muted); }
+        .admin-card-actions { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+        
         .admin-empty { text-align: center; color: var(--muted); padding: 40px 16px; font-size: 14px; }
         .admin-status { padding: 8px 16px; font-size: 12px; color: var(--muted); text-align: center; border-top: 1px solid var(--border); }
         #adminBtn { display: none; }
-    
-        /* AUTH əlavələri */
-        .auth-box{position:relative;max-height:92vh;overflow-y:auto}
+
         .auth-box button.auth-close{position:absolute;top:10px;right:10px;width:36px;height:36px;padding:0;margin:0;background:var(--surface-2);color:var(--accent-color);font-size:20px;border-radius:10px;line-height:1}
-        .auth-box button.alt{background:transparent;color:var(--text);border:1px solid var(--border);font-weight:700}
-        .auth-box button.m-card{display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface-2);color:var(--text);border:1px solid var(--border);font-weight:700;padding:11px 12px;margin-top:8px}
-        .m-ico{min-width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#111}
-        .m-txt{display:flex;flex-direction:column;line-height:1.25}
-        .m-txt small{font-weight:500;font-size:11px;color:var(--muted)}
-        .auth-sep{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin-top:14px}
-        .auth-sep:before,.auth-sep:after{content:"";flex:1;height:1px;background:var(--border)}
-        .auth-note{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
         .auth-lang-selector { position: absolute; top: 12px; left: 12px; }
-        .auth-lang-selector select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 8px; outline: none; font-size: 12px; font-weight: 700; }
-        
-        /* MƏXFİLİK SİYASƏTİ */
-        .pp-intro{border:1px solid var(--accent-color);border-radius:14px;padding:12px 14px;margin-bottom:16px;background:var(--surface);font-size:12px;color:var(--muted);text-align:center;letter-spacing:.5px;line-height:1.5}
+        .auth-lang-selector select { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 700; outline: none; }
+
+        .pp-intro{border:1px solid var(--accent-color);border-radius:14px;padding:12px 14px;margin-bottom:16px;background:var(--surface);font-size:12px;color:var(--muted);text-align:center;line-height:1.5}
         .pp-item{background:var(--surface);border:1px solid var(--border);border-left:6px solid var(--c);border-radius:14px;margin-bottom:14px;overflow:hidden}
         .pp-head{display:flex;align-items:center;gap:12px;padding:12px 14px;background:linear-gradient(90deg,var(--cb),transparent)}
         .pp-num{min-width:40px;height:40px;border-radius:10px;background:var(--c);color:#111;font-weight:900;font-size:17px;display:flex;align-items:center;justify-content:center}
-        .pp-title{color:var(--c);font-weight:800;font-size:13px;letter-spacing:1px;line-height:1.3}
-        :root[data-theme="light"] .pp-title{color:var(--text)}
+        .pp-title{color:var(--c);font-weight:800;font-size:13px;letter-spacing:1px}
         .pp-body{padding:12px 14px 4px;font-size:14px;line-height:1.65;color:var(--text)}
         .pp-body p{margin-bottom:10px}
         .pp-sub{color:var(--c);font-weight:900;margin-right:6px}
-        .pp-item.warn{border:2px solid #ef5350;border-left-width:8px}
-        .pp-item.warn .pp-body{background:rgba(239,83,80,.08)}
-        .pp-foot{text-align:center;color:var(--muted);font-size:12px;letter-spacing:1px;padding:10px 0 30px}
+        .pp-foot{text-align:center;color:var(--muted);font-size:12px;padding:10px 0 30px}
 
-        /* Proqram məlumatı */
         .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .info-card{display:flex;align-items:center;gap:12px;padding:16px;border-radius:20px;border:1px solid color-mix(in srgb,var(--c) 45%,var(--border));background:linear-gradient(135deg,color-mix(in srgb,var(--c) 15%,var(--surface)),color-mix(in srgb,var(--c) 5%,var(--surface))); box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
         .info-wide{grid-column:1 / -1}
-        .info-ico{min-width:46px;height:46px;border-radius:14px;background:var(--c);color:#111;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900; box-shadow: 0 2px 8px color-mix(in srgb,var(--c) 50%,transparent);}
+        .info-ico{min-width:46px;height:46px;border-radius:14px;background:var(--c);color:#111;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;}
         .info-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
         .info-lbl{font-size:11px;letter-spacing:1.5px;color:var(--text); opacity: 0.8; font-weight: 700}
         .info-val{font-size:24px;font-weight:800;color:var(--c);line-height:1}
-        
-        /* Məxfilik qutusu */
-        .privacy-box{background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 24%,var(--surface)),color-mix(in srgb,var(--accent-color) 8%,var(--surface));border: 1px solid color-mix(in srgb,var(--accent-color) 55%,var(--border)); transition: 0.2s;}
-        .privacy-box:active { transform: scale(0.98); }
-        .pp-intro{white-space:pre-line}
-        
-        /* Şifrə güvənliyi */
+        .privacy-box{background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 24%,var(--surface)),color-mix(in srgb,var(--accent-color) 8%,var(--surface));border: 1px solid color-mix(in srgb,var(--accent-color) 55%,var(--border)); cursor: pointer;}
         .pass-status { font-size: 11px; text-align: left; padding-left: 5px; margin-top: -2px; margin-bottom: 6px; display: block; }
     </style>
 </head>
@@ -1109,6 +300,7 @@
 <body>
 
 <div id="offline-banner" data-i18n="offlineBanner">İnternet bağlantısı yoxdur — Offline rejimdəsiniz</div>
+<div id="broadcast-banner" onclick="hideBroadcast()"></div>
 
 <!-- QEYDİYYAT VƏ GİRİŞ MODALI -->
 <div id="auth-modal">
@@ -1123,21 +315,20 @@
         </div>
         <button class="auth-close" onclick="closeAuthModal()" aria-label="Bağla">&times;</button>
         
-        <!-- İLK EKRAN: GİRİŞ (LOGIN) -->
         <div id="methodChooser">
             <h3 data-i18n="authTitle">Giriş və Qeydiyyat</h3>
             <p id="authInfo" style="font-size: 12px; color: var(--muted); margin-bottom: 6px;" data-i18n="authChoose">Davam etmək üçün üsul seçin.</p>
-            <button class="m-card" onclick="switchAuthMode('login')">
-                <span class="m-ico" style="background:#d4af37">&#9993;</span>
-                <span class="m-txt"><span data-i18n="authEmail">E-poçt və parol</span><small data-i18n="authEmailDesc">Giriş və ya yeni qeydiyyat (mağaza profili ilə)</small></span>
+            <button class="m-card" onclick="switchAuthMode('login')" style="display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface-2);color:var(--text);border:1px solid var(--border);font-weight:700;padding:11px 12px;margin-top:8px;width:100%;border-radius:12px;cursor:pointer;">
+                <span class="m-ico" style="background:#d4af37;min-width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#111">&#9993;</span>
+                <span class="m-txt" style="display:flex;flex-direction:column;line-height:1.25"><span data-i18n="authEmail">E-poçt və parol</span><small style="font-size:11px;color:var(--muted)" data-i18n="authEmailDesc">Giriş və ya yeni qeydiyyat</small></span>
             </button>
-            <button class="m-card" onclick="signInGoogle()">
-                <span class="m-ico" style="background:#fff;color:#4285F4">G</span>
-                <span class="m-txt"><span data-i18n="authGoogle">Google hesabı</span><small data-i18n="authGoogleDesc">Bir toxunuşla giriş və qeydiyyat</small></span>
+            <button class="m-card" onclick="signInGoogle()" style="display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface-2);color:var(--text);border:1px solid var(--border);font-weight:700;padding:11px 12px;margin-top:8px;width:100%;border-radius:12px;cursor:pointer;">
+                <span class="m-ico" style="background:#fff;color:#4285F4;min-width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold">G</span>
+                <span class="m-txt" style="display:flex;flex-direction:column;line-height:1.25"><span data-i18n="authGoogle">Google hesabı</span><small style="font-size:11px;color:var(--muted)" data-i18n="authGoogleDesc">Bir toxunuşla giriş</small></span>
             </button>
-            <button class="m-card" id="anonBtn" onclick="signInAnon()">
-                <span class="m-ico" style="background:#9e9e9e">&#128100;</span>
-                <span class="m-txt"><span data-i18n="authAnon">Anonim davam et</span><small id="anonNote" data-i18n="authAnonDesc">Cəmi 5 əlavə axtarış. Bitdikdən sonra qeydiyyat tələb olunur.</small></span>
+            <button class="m-card" id="anonBtn" onclick="signInAnon()" style="display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface-2);color:var(--text);border:1px solid var(--border);font-weight:700;padding:11px 12px;margin-top:8px;width:100%;border-radius:12px;cursor:pointer;">
+                <span class="m-ico" style="background:#9e9e9e;min-width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#111">&#128100;</span>
+                <span class="m-txt" style="display:flex;flex-direction:column;line-height:1.25"><span data-i18n="authAnon">Anonim davam et</span><small id="anonNote" style="font-size:11px;color:var(--muted)" data-i18n="authAnonDesc">5 axtarış limiti.</small></span>
             </button>
         </div>
 
@@ -1151,13 +342,12 @@
             <span class="auth-toggle" onclick="switchAuthMode('choose')" data-i18n="authBack">‹ Üsulları göstər</span>
         </div>
 
-        <!-- QEYDİYYAT — yalnız istəyəndə açılır -->
         <div id="registerFormContainer" style="display: none;">
             <h3 data-i18n="authRegTitle">Mağaza Qeydiyyatı</h3>
-            <input type="text" id="regUser" data-i18n-ph="authName" placeholder="Ad və Soyad (Mağaza qeydiyyatı üçün) *" required oninput="formatNameInput(event)">
+            <input type="text" id="regUser" data-i18n-ph="authName" placeholder="Ad və Soyad *" required oninput="formatNameInput(event)">
             <div id="regNameErr" class="input-error-msg"></div>
             
-            <input type="email" id="regEmail" data-i18n-ph="authEmailReq" placeholder="E-poçt (Parol bərpası üçün) *" required>
+            <input type="email" id="regEmail" data-i18n-ph="authEmailReq" placeholder="E-poçt *" required>
             
             <input type="password" id="regPass" data-i18n-ph="authPassReq" placeholder="Parol *" required oninput="validatePassInput('regPass', 'regPassMsg', 'regBtn')">
             <div id="regPassMsg" class="pass-status"></div>
@@ -1167,24 +357,22 @@
             
             <div class="phone-field">
                 <div class="phone-code-box">
-                    <div class="phone-flag-circle" title="Azərbaycan">
-                        <img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt="AZ">
-                    </div>
+                    <div class="phone-flag-circle"><img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt="AZ"></div>
                     <span class="phone-prefix">+994</span>
                 </div>
                 <div class="phone-input-box">
-                    <input type="tel" id="regPhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="__ ___ __ __" maxlength="12" oninput="onPhoneInput(event); validatePhoneLive('regPhone', 'regPhoneErr', 'regBtn');" onblur="validatePhoneLive('regPhone', 'regPhoneErr', 'regBtn')">
+                    <input type="tel" id="regPhone" class="phone-input" inputmode="numeric" placeholder="__ ___ __ __" maxlength="12" oninput="onPhoneInput(event); validatePhoneLive('regPhone', 'regPhoneErr', 'regBtn');">
                 </div>
             </div>
             <div id="regPhoneErr" class="input-error-msg">Nömrə yanlışdır, 9 rəqəm olmalıdır</div>
             
             <button id="regBtn" onclick="registerUser()" data-i18n="authRegBtn">Qeydiyyatı Tamamla</button>
-            <span class="auth-toggle" onclick="switchAuthMode('login')" data-i18n="authHasAcc">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
+            <span class="auth-toggle" onclick="switchAuthMode('login')" data-i18n="authHasAcc">Giriş et</span>
         </div>
 
         <div id="forgotFormContainer" style="display: none;">
             <h3 data-i18n="authForgotTitle">Parolu Bərpa Et</h3>
-            <input type="email" id="forgotEmail" data-i18n-ph="authForgotPh" placeholder="Qeydiyyat e-poçtunuz">
+            <input type="email" id="forgotEmail" data-i18n-ph="authForgotPh" placeholder="E-poçt">
             <button onclick="resetPassword()" data-i18n="authForgotBtn">Bərpa Linki Göndər</button>
             <span class="auth-toggle" onclick="switchAuthMode('login')" data-i18n="authForgotBack">Girişə qayıt</span>
         </div>
@@ -1194,7 +382,6 @@
 </div>
 
 <div id="app">
-
     <div id="main-view">
         <header class="top-header">
             <div class="header-left">
@@ -1202,5 +389,1257 @@
                 <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
             <div class="header-buttons" style="display: flex; gap: 10px;">
-                <a class="profile-btn" href="https://wa.me/994553115544?text=Salam,%20ProTechtor%E2%84%A2%20t%C9%99tbiqi%20il%C9%99%20ba%C4%9Fl%C4%B1%20yaz%C4%B1ram." target="_blank" rel="noopener" title="WhatsApp" aria-label="WhatsApp" style="width: 50px; height: 50px; border: 2px solid #25D366; background: transparent; color: #25D366; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; text-decoration: none;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1
+                <a class="profile-btn" href="https://wa.me/994553115544?text=Salam,%20ProTechtor%E2%84%A2%20t%C9%99tbiqi%20il%C9%99%20ba%C4%9Fl%C4%B1%20yaz%C4%B1ram." target="_blank" rel="noopener" title="WhatsApp" style="width: 50px; height: 50px; border: 2px solid #25D366; background: transparent; color: #25D366; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px; text-decoration: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </a>
+                <button id="adminBtn" class="profile-btn" onclick="openAdmin()" title="Admin Panel" style="width: 50px; height: 50px; border: 2px solid #e74c3c; background: transparent; color: #e74c3c; font-size: 18px; display: none; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">⚙</button>
+                <button class="profile-btn" onclick="openProfile()" title="Profil" style="width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">👤</button>
+                <button class="menu-button" onclick="openSettings()">☰</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="search-wrapper">
+                <input id="searchInput" class="search-input" type="text" placeholder="Samsung Galaxy S23" autocomplete="off">
+                <button id="clearButton" class="clear-button" onclick="clearSearch()">×</button>
+            </div>
+
+            <div id="recent"></div>
+            <div id="status" class="status"></div>
+            <div id="results"></div>
+            
+            <!-- Məlumat Sorğusu Göndərmə Paneli (Modeli Tapmadım / Səhv Ölçü) -->
+            <div style="margin-top:30px; background:var(--card-bg); border:1px solid var(--border); border-radius:18px; padding:16px;">
+                <h4 style="color:var(--accent-color); margin-bottom:8px; font-size:14px;" data-i18n="reqTitle">Modeli tapmadınız və ya ölçü səhvdir?</h4>
+                <p style="font-size:12px; color:var(--muted); margin-bottom:10px;" data-i18n="reqDesc">Bizə məlumat göndərin, dərhal əlavə edək.</p>
+                <input type="text" id="userReqModel" data-i18n-ph="reqPh" placeholder="Məs: Xiaomi Redmi Note 13 Və ya səhv qrup" style="width:100%; padding:10px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text); margin-bottom:8px; font-size:13px; outline:none;">
+                <textarea id="userReqDesc" data-i18n-ph="reqDescPh" placeholder="Əlavə qeyd (məsələn: iPhone 13 ilə uyğundur)" style="width:100%; padding:10px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text); margin-bottom:8px; font-size:13px; height:60px; outline:none; resize:none;"></textarea>
+                <button onclick="submitUserRequest()" style="background:var(--accent-color); color:#111; border:none; padding:10px 16px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer;" data-i18n="reqSendBtn">Sorğu Göndər</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- PROFİL SƏHİFƏSİ -->
+    <div id="profile-view">
+        <header class="profile-header">
+            <button class="profile-back" onclick="closeProfile()">‹</button>
+            <div class="profile-heading">
+                <div class="profile-small" data-i18n="profControl">İDARƏETMƏ</div>
+                <div class="profile-title" data-i18n="profTitle">Mağaza Profili</div>
+            </div>
+        </header>
+
+        <div class="settings-content">
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="profInfo">ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI</div>
+                <div class="settings-box" style="padding: 16px;">
+                    <label style="font-size:12px; color:var(--muted)" data-i18n="profNameLbl">Ad və Soyad</label>
+                    <input type="text" id="profUser" oninput="formatNameInput(event)" style="width:100%; padding:10px; margin:6px 0 2px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    <div id="profNameErr" class="input-error-msg"></div>
+                    
+                    <label style="font-size:12px; color:var(--muted); margin-top:8px; display:block;" data-i18n="profStoreLbl">Mağaza Adı</label>
+                    <input type="text" id="profStore" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)" data-i18n="profAddrLbl">Mağaza Ünvanı</label>
+                    <input type="text" id="profAddress" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);">
+                    
+                    <label style="font-size:12px; color:var(--muted)" data-i18n="profPhoneLbl">Telefon Nömrəsi</label>
+                    <div class="phone-field">
+                        <div class="phone-code-box">
+                            <div class="phone-flag-circle"><img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt="AZ"></div>
+                            <span class="phone-prefix">+994</span>
+                        </div>
+                        <div class="phone-input-box">
+                            <input type="tel" id="profPhone" class="phone-input" inputmode="numeric" placeholder="__ ___ __ __" maxlength="12" oninput="onPhoneInput(event); validatePhoneLive('profPhone', 'profPhoneErr', 'profBtn');">
+                        </div>
+                    </div>
+                    <div id="profPhoneErr" class="input-error-msg">Nömrə yanlışdır, 9 rəqəm olmalıdır</div>
+
+                    <button id="profBtn" class="profile-save-btn" onclick="updateProfile()" data-i18n="profSaveBtn">Dəyişiklikləri Yadda Saxla</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <button class="profile-save-btn logout-btn" onclick="logoutUser()" data-i18n="profLogoutBtn">Hesabdan Çıxış Et</button>
+            </div>
+            <div id="profMsg" style="text-align:center; font-size:13px; margin-top:10px;"></div>
+        </div>
+    </div>
+
+    <!-- GÜCLƏNDİRİLMİŞ ADMIN PANEL -->
+    <div id="admin-view">
+        <header class="admin-header">
+            <button class="admin-back" onclick="closeAdmin()">‹</button>
+            <div class="admin-heading">
+                <div class="admin-small">ADMIN</div>
+                <div class="admin-title">Baza və Sistem İdarəetməsi</div>
+            </div>
+        </header>
+
+        <!-- Admin Tabları -->
+        <div class="admin-tabs">
+            <div class="admin-tab active" onclick="switchAdminTab('db')">Modellər & Qruplar</div>
+            <div class="admin-tab" onclick="switchAdminTab('users')">İstifadəçilər</div>
+            <div class="admin-tab" onclick="switchAdminTab('requests')">Sorğular / Xətalar</div>
+            <div class="admin-tab" onclick="switchAdminTab('stats')">Statistika & Backup</div>
+        </div>
+
+        <!-- TAB 1: MODELLƏR & QRUPLAR -->
+        <div id="adminTab-db" class="admin-tab-content">
+            <div class="admin-toolbar">
+                <input type="text" id="adminSearch" class="admin-search" placeholder="Qrup / model axtar..." oninput="renderAdminList()">
+                <button class="admin-btn admin-btn-secondary" onclick="adminAddGroup()">+ Yeni qrup</button>
+                <button class="admin-btn admin-btn-secondary" onclick="adminCheckDuplicates()" title="Dublikat modelləri tap">🔍 Dublikat yoxla</button>
+                <button class="admin-btn admin-btn-success" onclick="adminSaveDatabase()">💾 Yadda saxla</button>
+                <button class="admin-btn admin-btn-primary" onclick="adminPublishDatabase()">☁ Dərc et</button>
+                <button class="admin-btn admin-btn-secondary" onclick="adminImportFromGitHub()">⬇ GitHub-dan gətir</button>
+            </div>
+            <div id="adminList" class="admin-list"></div>
+        </div>
+
+        <!-- TAB 2: İSTİFADƏÇİLƏR -->
+        <div id="adminTab-users" class="admin-tab-content" style="display:none; flex:1; overflow-y:auto; padding:12px;">
+            <div class="admin-toolbar" style="margin-bottom:10px;">
+                <input type="text" id="userSearch" class="admin-search" placeholder="Ad, e-poçt və ya mağaza ilə axtar..." oninput="renderAdminUsers()">
+                <select id="userFilterType" onchange="renderAdminUsers()" style="background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:0 10px; border-radius:12px; outline:none; height:40px;">
+                    <option value="all">Bütün növlər</option>
+                    <option value="google">Google</option>
+                    <option value="email">E-poçt</option>
+                    <option value="anon">Anonim</option>
+                    <option value="blocked">Bloklular</option>
+                </select>
+                <button class="admin-btn admin-btn-secondary" onclick="exportUsersCSV()">📥 Excel (CSV) yüklə</button>
+            </div>
+            <div id="adminUserList"></div>
+        </div>
+
+        <!-- TAB 3: SORĞULAR -->
+        <div id="adminTab-requests" class="admin-tab-content" style="display:none; flex:1; overflow-y:auto; padding:12px;">
+            <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">İstifadəçilərin göndərdiyi model və ölçü sorğuları:</div>
+            <div id="adminReqList"></div>
+        </div>
+
+        <!-- TAB 4: STATİSTİKA VƏ BACKUP -->
+        <div id="adminTab-stats" class="admin-tab-content" style="display:none; flex:1; overflow-y:auto; padding:20px;">
+            <div class="settings-section-title">SİSTEM STATİSTİKASI</div>
+            <div class="info-grid" style="margin-bottom:24px;">
+                <div class="info-card" style="--c:#2ecc71"><span class="info-ico">👥</span><span class="info-txt"><span class="info-lbl">ÜMUMİ İSTİFADƏÇİ</span><span class="info-val" id="statTotalUsers">0</span></span></div>
+                <div class="info-card" style="--c:#3498db"><span class="info-ico">📥</span><span class="info-txt"><span class="info-lbl">BU GÜN QEYDİYYAT</span><span class="info-val" id="statTodayUsers">0</span></span></div>
+                <div class="info-card" style="--c:#9b59b6"><span class="info-ico">📦</span><span class="info-txt"><span class="info-lbl">BAZADA QRUP</span><span class="info-val" id="statGroupCount">0</span></span></div>
+                <div class="info-card" style="--c:#e67e22"><span class="info-ico">📱</span><span class="info-txt"><span class="info-lbl">ÜMUMİ MODEL</span><span class="info-val" id="statModelCount">0</span></span></div>
+            </div>
+
+            <div class="settings-section-title">ELAN VƏ BİLDİRİŞ PANELİ (BROADCAST)</div>
+            <div class="settings-box" style="padding:16px; margin-bottom:24px;">
+                <label style="font-size:12px; color:var(--muted)">Tətbiqdə görünəcək elan mesajı:</label>
+                <input type="text" id="broadcastMsgInput" placeholder="Məs: Baza yeniləndi, yeni modellər əlavə olundu!" style="width:100%; padding:10px; margin:6px 0 12px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text); outline:none;">
+                <button class="admin-btn admin-btn-primary" onclick="publishBroadcast()">📢 Elanı Tətbiqdə Yay</button>
+                <button class="admin-btn admin-btn-danger" onclick="clearBroadcast()" style="margin-top:8px;">Elanı Sil / Dayandır</button>
+            </div>
+
+            <div class="settings-section-title">EHTİYAT SURƏTİ (BACKUP)</div>
+            <div class="settings-box" style="padding:16px;">
+                <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">Bütün baza məlumatlarını JSON formatında kompüterə və ya telefona ehtiyat surət kimi yükləyin.</p>
+                <button class="admin-btn admin-btn-secondary" onclick="exportDatabaseJSON()">💾 Baza JSON Backup Yüklə</button>
+            </div>
+        </div>
+
+        <div id="adminStatus" class="admin-status">Admin paneli hazırdır</div>
+    </div>
+
+    <!-- DETAIL VIEW -->
+    <div id="detail-view">
+        <header class="detail-header">
+            <button class="detail-back" onclick="closeDetail()">‹</button>
+            <div class="detail-heading">
+                <div class="detail-small" data-i18n="selected">SEÇİLƏN MODEL</div>
+                <div id="detail-model" class="detail-model"></div>
+            </div>
+        </header>
+
+        <div class="compatibility-title">
+            <span data-i18n="compat">BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR</span>
+            <small>Ölçülər tam dəqiq olmaya bilər</small>
+        </div>
+
+        <div id="compatibility-list" class="compatibility-list"></div>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div id="settings-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="closeSettings()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">©By Emin</div>
+                <div class="settings-title" data-i18n="settings">Tənzimləmələr</div>
+            </div>
+        </header>
+
+        <div class="settings-content">
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secBase">BAZA</div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="lastUpd">SON YENİLƏNMƏ</span>
+                        <span id="lastUpdateText">Bilinmir</span>
+                    </div>
+                </div>
+                <button id="updateButton" class="update-button" onclick="forceUpdate()">
+                    <div class="spinner" id="updateSpinner"></div>
+                    <span data-i18n="updateNow">YENİLƏ</span>
+                </button>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secHistory">YENİLƏMƏ TARİXÇƏSİ</div>
+                <div class="settings-box" id="changelogBox">
+                    <div class="changelog-empty" data-i18n="noHistory">Hələ yeniləmə yoxdur</div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secAccent">AKSENT RƏNGİ</div>
+                <div class="settings-box" style="padding: 16px;">
+                    <div class="color-picker-grid">
+                        <div class="color-swatch" style="background: #2ecc71;" onclick="setAccentColor('#2ecc71', '#145a32')"></div>
+                        <div class="color-swatch" style="background: #d4af37;" onclick="setAccentColor('#d4af37', '#8a6d1d')"></div>
+                        <div class="color-swatch" style="background: #3498db;" onclick="setAccentColor('#3498db', '#1b4f72')"></div>
+                        <div class="color-swatch" style="background: #9b59b6;" onclick="setAccentColor('#9b59b6', '#512e5f')"></div>
+                        <div class="color-swatch" style="background: #e74c3c;" onclick="setAccentColor('#e74c3c', '#78281f')"></div>
+                        <div class="color-swatch" style="background: #e67e22;" onclick="setAccentColor('#e67e22', '#7e5109')"></div>
+                        <div class="color-swatch" style="background: #1abc9c;" onclick="setAccentColor('#1abc9c', '#0e6251')"></div>
+                        <div class="color-swatch" style="background: #e91e63;" onclick="setAccentColor('#e91e63', '#880e4f')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secTheme">MÖVZU</div>
+                <div class="theme-selector">
+                    <div id="theme-system" data-i18n="system" class="theme-option" onclick="setTheme('system')">SİSTEM</div>
+                    <div id="theme-auto" data-i18n="auto" class="theme-option" onclick="setTheme('auto')">AVTO</div>
+                    <div id="theme-light" data-i18n="light" class="theme-option" onclick="setTheme('light')">AÇIQ</div>
+                    <div id="theme-dark" data-i18n="dark" class="theme-option" onclick="setTheme('dark')">TÜND</div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secFont">ŞRİFT ÖLÇÜSÜ</div>
+                <div class="theme-selector">
+                    <div id="font-small" class="theme-option" onclick="setFontScale(0.9)" data-i18n="fontSmall">KİÇİK</div>
+                    <div id="font-normal" class="theme-option" onclick="setFontScale(1.0)" data-i18n="fontNormal">NORMAL</div>
+                    <div id="font-large" class="theme-option" onclick="setFontScale(1.15)" data-i18n="fontLarge">BÖYÜK</div>
+                </div>
+            </div>
+            
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secLang">DİL</div>
+                <div class="lang-selector">
+                    <div id="lang-az" class="lang-option" onclick="setLang('az')"><span class="lang-code">AZ</span><span class="lang-name">Azərbaycan</span><span class="lang-check">&#10003;</span></div>
+                    <div id="lang-ru" class="lang-option" onclick="setLang('ru')"><span class="lang-code">RU</span><span class="lang-name">Русский язык</span><span class="lang-check">&#10003;</span></div>
+                    <div id="lang-tr" class="lang-option" onclick="setLang('tr')"><span class="lang-code">TR</span><span class="lang-name">Türk dili</span><span class="lang-check">&#10003;</span></div>
+                    <div id="lang-en" class="lang-option" onclick="setLang('en')"><span class="lang-code">EN</span><span class="lang-name">English</span><span class="lang-check">&#10003;</span></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secPrivacy">MƏXFİLİK</div>
+                <div class="settings-box privacy-box" onclick="openPrivacy()">
+                    <div class="settings-row">
+                        <span data-i18n="privacy" style="font-weight:700;">Məxfilik Siyasəti</span>
+                        <span style="color:var(--accent-color); font-size:18px;">›</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secContact">ƏLAQƏ</div>
+                <a href="https://wa.me/994553115544?text=Salam,%20ProTechtor™%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" data-i18n="whatsapp" target="_blank" rel="noopener">WhatsApp ilə əlaqə</a>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" data-i18n="secApp">PROQRAM</div>
+                <div class="info-grid">
+                    <div class="info-card info-wide" style="--c:var(--accent-color)"><span class="info-ico">&#9672;</span><span class="info-txt"><span class="info-lbl" data-i18n="version">VERSİYA</span><span class="info-val" id="appVersion"></span></span></div>
+                    <div class="info-card" style="--c:#5c9dff"><span class="info-ico">&#9636;</span><span class="info-txt"><span class="info-lbl" data-i18n="dbSize">BAZADA QRUP</span><span class="info-val" id="dbCount">0</span></span></div>
+                    <div class="info-card" style="--c:#ab47bc"><span class="info-ico">&#9635;</span><span class="info-txt"><span class="info-lbl" data-i18n="modelCountLbl">BAZADA MODEL</span><span class="info-val" id="modelCount">0</span></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="privacy-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="closePrivacy()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">©By Emin</div>
+                <div class="settings-title" data-i18n="privacy">Məxfilik Siyasəti</div>
+            </div>
+        </header>
+        <div class="settings-content" id="privacyBody" style="color: var(--text); font-size: 14px; line-height: 1.6;"></div>
+    </div>
+
+    <button id="statusDot" class="status-dot gray" onclick="showDotInfo()"></button>
+    <div id="offlineCorner" class="offline-corner">OFFLINE</div>
+    <div id="toast"></div>
+
+    <div id="block-screen">
+        <div class="block-title" data-i18n="blockTitle">Proqram Bloklanıb</div>
+        <div class="block-text" data-i18n-html="blockText">Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.</div>
+        <button class="update-button" data-i18n="updateBase" onclick="forceUpdate()">BAZANI YENİLƏ</button>
+    </div>
+</div>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyB-kuPK97aaUbXNf1vJqUf7aFAKEJVvY8o",
+    authDomain: "protechtor-99407.firebaseapp.com",
+    projectId: "protechtor-99407",
+    storageBucket: "protechtor-99407.firebasestorage.app",
+    messagingSenderId: "703242369784",
+    appId: "1:703242369784:web:03bc54204f753af9cb990d",
+    measurementId: "G-D5E9BP4FLH"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const RAW_URL = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Base.json";
+const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+const ADMIN_EMAIL = "o553115544@gmail.com";
+
+const DB_KEY = "antiudar_db_v3";
+const UPDATE_KEY = "antiudar_last_update_v3";
+const CHANGELOG_KEY = "antiudar_changelog_v2";
+const SEARCH_COUNT_KEY = "antiudar_search_count";
+const ANON_COUNT_KEY = "antiudar_anon_count";
+const FREE_LIMIT = 3;
+const ANON_LIMIT = 5;
+const FS_DB_DOC = "app_data/database";
+const FS_CONFIG_DOC = "app_data/config";
+
+let database = [];
+let selectedModel = "";
+let selectedGroup = null;
+let isAdmin = false;
+let adminEditDb = [];
+let adminOpenGroups = new Set();
+let allUsersCache = [];
+let allRequestsCache = [];
+
+let soundEnabled = localStorage.getItem("antiudar_sound") !== "false";
+let hapticEnabled = localStorage.getItem("antiudar_haptic") !== "false";
+let soundType = localStorage.getItem("antiudar_sound_type") || "bip";
+let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medium";
+
+document.addEventListener("DOMContentLoaded", function () {
+    history.replaceState({page: 'main'}, "");
+
+    auth.onAuthStateChanged((user) => {
+        if (!user) {
+            isAdmin = false;
+            updateAdminButton();
+            checkSearchLimit();
+        } else {
+            // Bloklanma yoxlaması
+            db.collection("users").doc(user.uid).get().then((doc) => {
+                if (doc.exists && doc.data().isBlocked) {
+                    alert("Hesabınız admin tərəfindən bloklanmışdır!");
+                    auth.signOut().then(() => location.reload());
+                    return;
+                }
+            }).catch(()=>{});
+
+            if (user.isAnonymous) { checkSearchLimit(); }
+            isAdmin = isAdminEmail(user.email);
+            updateAdminButton();
+        }
+    });
+
+    initTheme();
+    initFontScale();
+    initLang();
+    initAccentColor();
+    loadDatabaseFromCacheOnly();
+    backgroundCheckUpdate();
+    renderChangelogHistory();
+    checkBroadcastBanner();
+
+    window.addEventListener("online", () => { updateNetworkStatus(); backgroundCheckUpdate(); checkBroadcastBanner(); });
+    window.addEventListener("offline", updateNetworkStatus);
+    updateNetworkStatus();
+    initDynamicPlaceholder();
+});
+
+// Səhifədən çıxış xəbərdarlığı (Unsaved changes warning)
+window.addEventListener("beforeunload", function (e) {
+    if (document.getElementById("admin-view").classList.contains("active")) {
+        e.preventDefault();
+        e.returnValue = "";
+    }
+});
+
+// === ELAN VƏ BİLDİRİŞ PANELİ (BROADCAST) ===
+async function checkBroadcastBanner() {
+    try {
+        const snap = await db.doc(FS_CONFIG_DOC).get();
+        if (snap.exists) {
+            const data = snap.data();
+            const banner = document.getElementById("broadcast-banner");
+            if (data.broadcastMsg) {
+                banner.innerText = "📢 " + data.broadcastMsg;
+                banner.style.display = "block";
+            } else {
+                banner.style.display = "none";
+            }
+        }
+    } catch(e){}
+}
+
+function hideBroadcast() {
+    document.getElementById("broadcast-banner").style.display = "none";
+}
+
+async function publishBroadcast() {
+    if (!isAdmin) return;
+    const msg = document.getElementById("broadcastMsgInput").value.trim();
+    try {
+        await db.doc(FS_CONFIG_DOC).set({ broadcastMsg: msg }, { merge: true });
+        showAppToast("✓ Elan tətbiqdə yayımlandı!");
+        checkBroadcastBanner();
+    } catch(e) { showAppToast("Xəta baş verdi"); }
+}
+
+async function clearBroadcast() {
+    if (!isAdmin) return;
+    document.getElementById("broadcastMsgInput").value = "";
+    try {
+        await db.doc(FS_CONFIG_DOC).set({ broadcastMsg: "" }, { merge: true });
+        showAppToast("Elan dayandırıldı");
+        checkBroadcastBanner();
+    } catch(e){}
+}
+
+// === MƏLUMAT SORĞULARI (MODELİ TAPMADIM / SƏHÖ ÖLÇÜ) ===
+async function submitUserRequest() {
+    const model = document.getElementById("userReqModel").value.trim();
+    const desc = document.getElementById("userReqDesc").value.trim();
+    if (!model) {
+        showAppToast("Zəhmət olmasa model adını yazın!");
+        return;
+    }
+    const user = auth.currentUser;
+    try {
+        await db.collection("user_requests").add({
+            modelName: model,
+            description: desc,
+            userEmail: user ? (user.email || (user.isAnonymous ? "Anonim" : "Qeydiyyatlı")) : "Qonaq",
+            status: "Gözləmədə",
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showAppToast("✓ Sorğunuz adminə göndərildi. Təşəkkürlər!");
+        document.getElementById("userReqModel").value = "";
+        document.getElementById("userReqDesc").value = "";
+    } catch(e) {
+        showAppToast("Göndərilə bilmədi, interneti yoxlayın.");
+    }
+}
+
+// === TƏSDİQLİ SİLMƏ (CONFIRM DIALOG) ===
+function confirmAction(text, callback) {
+    if (confirm("⚠️ " + (text || "Əminsiniz?"))) {
+        callback();
+    }
+}
+
+// === FORMA VƏ INPUT FORMATLARI (Auto-Trim / Smart Formatting) ===
+function formatNameInput(e) {
+    let val = e.target.value;
+    val = val.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+    e.target.value = val;
+    validateName(e.target.id, e.target.id + 'Err', 'regBtn');
+}
+
+function validateName(inputId, errId, btnId) {
+    const el = document.getElementById(inputId);
+    if(!el) return true;
+    const errEl = document.getElementById(errId);
+    const btn = document.getElementById(btnId);
+    const val = el.value.trim();
+    let error = "";
+    if(val.length > 0 && val.length < 3) error = "Ad minimum 3 hərf olmalıdır";
+    if(error) {
+        if(errEl) { errEl.innerText = error; errEl.style.display = "block"; }
+        if(btn) btn.disabled = true;
+        return false;
+    } else {
+        if(errEl) errEl.style.display = "none";
+        if(btn) btn.disabled = false;
+        return true;
+    }
+}
+
+function validatePhoneLive(inputId, errId, btnId) {
+    const el = document.getElementById(inputId);
+    const errEl = document.getElementById(errId);
+    const btn = document.getElementById(btnId);
+    const digits = extractPhoneDigits(el.value);
+    let error = "";
+    if(digits.length > 0 && digits.length !== 9) error = "Nömrə yanlışdır, 9 rəqəm olmalıdır";
+    if(error) {
+        errEl.innerText = error; errEl.style.display = "block";
+        if(btn) btn.disabled = true; return false;
+    } else {
+        errEl.style.display = "none";
+        if(btn) btn.disabled = false; return true;
+    }
+}
+
+function validatePassInput(inputId, msgId, btnId) {
+    const el = document.getElementById(inputId);
+    const msg = document.getElementById(msgId);
+    const btn = document.getElementById(btnId);
+    const val = el.value;
+    if(val.length >= 6) {
+        msg.style.color = "green"; msg.innerText = "✓ Parol uyğundur";
+        if(btn) btn.disabled = false;
+    } else {
+        msg.style.color = "#e74c3c"; msg.innerText = "Parol ən az 6 simvol olmalıdır";
+        if(btn) btn.disabled = true;
+    }
+}
+
+// PROFİL VƏ AUTH
+function openProfile() {
+    let user = auth.currentUser;
+    if (!user || user.isAnonymous) { openAuthModal("profile"); return; }
+    document.getElementById("profUser").value = "";
+    document.getElementById("profStore").value = "";
+    document.getElementById("profAddress").value = "";
+    setPhoneInput("profPhone", "");
+    db.collection("users").doc(user.uid).get().then((doc) => {
+        if (doc.exists) {
+            let data = doc.data();
+            document.getElementById("profUser").value = data.username || "";
+            document.getElementById("profStore").value = data.storeName || "";
+            document.getElementById("profAddress").value = data.storeAddress || "";
+            setPhoneInput("profPhone", data.phoneNumber || "");
+        }
+        history.pushState({modal: 'profile'}, "");
+        document.getElementById("profile-view").classList.add("active");
+        document.body.style.overflow = "hidden";
+    });
+}
+function closeProfile() { history.back(); }
+
+function updateProfile() {
+    let user = auth.currentUser;
+    if (!user) return;
+    let username = document.getElementById("profUser").value.trim();
+    let storeName = document.getElementById("profStore").value.trim();
+    let storeAddress = document.getElementById("profAddress").value.trim();
+    let phoneNumber = getFullPhone("profPhone");
+    let msgDiv = document.getElementById("profMsg");
+
+    msgDiv.style.color = "var(--muted)"; msgDiv.innerText = "Yadda saxlanılır...";
+    db.collection("users").doc(user.uid).set({
+        username: username, storeName: storeName, storeAddress: storeAddress, phoneNumber: phoneNumber,
+        email: user.email || "", updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(() => {
+        msgDiv.style.color = "green"; msgDiv.innerText = "Məlumatlar yeniləndi!";
+        showAppToast("✓ Dəyişikliklər yadda saxlanıldı!");
+    });
+}
+
+function showAppToast(text) {
+    const toast = document.getElementById("toast");
+    if (!toast) return;
+    toast.innerText = text; toast.classList.remove("show"); void toast.offsetWidth;
+    toast.style.display = "block"; toast.classList.add("show");
+    setTimeout(() => { toast.classList.remove("show"); setTimeout(() => { toast.style.display = "none"; }, 350); }, 3200);
+}
+
+function formatPhoneMask(digits) {
+    digits = String(digits || "").replace(/\D/g, "").slice(0, 9);
+    let out = "";
+    if (digits.length > 0) out += digits.slice(0, 2);
+    if (digits.length > 2) out += " " + digits.slice(2, 5);
+    if (digits.length > 5) out += " " + digits.slice(5, 7);
+    if (digits.length > 7) out += " " + digits.slice(7, 9);
+    return out;
+}
+function extractPhoneDigits(value) {
+    let d = String(value || "").replace(/\D/g, "");
+    if (d.startsWith("994")) d = d.slice(3);
+    return d.slice(0, 9);
+}
+function setPhoneInput(inputId, val) { const el = document.getElementById(inputId); if(el) el.value = formatPhoneMask(extractPhoneDigits(val)); }
+function getFullPhone(inputId) { const el = document.getElementById(inputId); const d = extractPhoneDigits(el ? el.value : ""); return d ? ("+994" + d) : "+994"; }
+function onPhoneInput(e) { const el = e.target; el.value = formatPhoneMask(extractPhoneDigits(el.value)); }
+function logoutUser() { auth.signOut().then(() => { localStorage.removeItem(SEARCH_COUNT_KEY); location.reload(); }); }
+
+/* ==================== ADMIN PANEL VƏ TABLAR ==================== */
+function isAdminEmail(email) { return email && email.trim().toLowerCase() === ADMIN_EMAIL; }
+function updateAdminButton() { const btn = document.getElementById("adminBtn"); if (btn) btn.style.display = isAdmin ? "flex" : "none"; }
+
+function openAdmin() {
+    if (!isAdmin) { showAppToast("Yalnız admin daxil ola bilər!"); return; }
+    adminEditDb = JSON.parse(JSON.stringify(database || []));
+    adminOpenGroups = new Set();
+    switchAdminTab('db');
+    history.pushState({modal: 'admin'}, "");
+    document.getElementById("admin-view").classList.add("active");
+    document.body.style.overflow = "hidden";
+    loadAdminStatsAndUsers();
+}
+function closeAdmin() { history.back(); }
+
+function switchAdminTab(tabName) {
+    document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
+    document.getElementById("adminTab-db").style.display = "none";
+    document.getElementById("adminTab-users").style.display = "none";
+    document.getElementById("adminTab-requests").style.display = "none";
+    document.getElementById("adminTab-stats").style.display = "none";
+
+    if (tabName === 'db') {
+        document.querySelectorAll(".admin-tab")[0].classList.add("active");
+        document.getElementById("adminTab-db").style.display = "block";
+        renderAdminList();
+    } else if (tabName === 'users') {
+        document.querySelectorAll(".admin-tab")[1].classList.add("active");
+        document.getElementById("adminTab-users").style.display = "flex";
+        loadAdminUsers();
+    } else if (tabName === 'requests') {
+        document.querySelectorAll(".admin-tab")[2].classList.add("active");
+        document.getElementById("adminTab-requests").style.display = "flex";
+        loadAdminRequests();
+    } else if (tabName === 'stats') {
+        document.querySelectorAll(".admin-tab")[3].classList.add("active");
+        document.getElementById("adminTab-stats").style.display = "block";
+        loadAdminStatsAndUsers();
+    }
+}
+
+// Baza Tabı
+function renderAdminList() {
+    const box = document.getElementById("adminList");
+    if (!box) return;
+    const q = (document.getElementById("adminSearch")?.value || "").trim().toLowerCase();
+    box.innerHTML = "";
+    if (!Array.isArray(adminEditDb) || adminEditDb.length === 0) {
+        box.innerHTML = '<div class="admin-empty">Baza boşdur.</div>'; return;
+    }
+    let shown = 0;
+    adminEditDb.forEach((group, gi) => {
+        if (!Array.isArray(group)) return;
+        const modelsText = group.join(" ").toLowerCase();
+        if (q && !modelsText.includes(q) && !String(gi + 1).includes(q)) return;
+        shown++;
+
+        const isOpen = adminOpenGroups.has(gi);
+        const div = document.createElement("div");
+        div.className = "admin-group" + (isOpen ? " open" : "");
+        div.innerHTML = `
+            <div class="admin-group-head" onclick="toggleAdminGroup(${gi})">
+                <span class="admin-group-num">${String(gi + 1).padStart(2, "0")}</span>
+                <span class="admin-group-info">${escapeHtml(group[0] || "Boş")} (${group.length} model)</span>
+                <button class="admin-icon-btn" title="Qrupu Klonla" onclick="event.stopPropagation(); adminCloneGroup(${gi})">📋</button>
+                <button class="admin-icon-btn del" title="Qrupu sil" onclick="event.stopPropagation(); confirmAction('Bu qrupu silmək istəyirsiniz?', ()=>adminDeleteGroup(${gi}))">🗑</button>
+            </div>
+            <div class="admin-group-body" id="adminBody_${gi}"></div>
+        `;
+        box.appendChild(div);
+        if (isOpen) renderAdminGroupBody(gi);
+    });
+    if (shown === 0) box.innerHTML = '<div class="admin-empty">Uyğun qrup tapılmadı.</div>';
+}
+
+function toggleAdminGroup(gi) {
+    if (adminOpenGroups.has(gi)) adminOpenGroups.delete(gi);
+    else adminOpenGroups.add(gi);
+    renderAdminList();
+}
+
+function renderAdminGroupBody(gi) {
+    const body = document.getElementById("adminBody_" + gi);
+    if (!body) return;
+    body.innerHTML = "";
+    const group = adminEditDb[gi];
+    group.forEach((model, mi) => {
+        const row = document.createElement("div");
+        row.className = "admin-model-row";
+        row.innerHTML = `
+            <input type="text" value="${escapeHtml(model)}" onchange="adminEditDb[${gi}][${mi}]=this.value.trim()">
+            <button class="admin-icon-btn del" onclick="confirmAction('Bu modeli silmək istəyirsiniz?', ()=>adminDeleteModel(${gi}, ${mi}))">×</button>
+        `;
+        body.appendChild(row);
+    });
+    const addRow = document.createElement("div");
+    addRow.className = "admin-model-row";
+    addRow.innerHTML = `
+        <input type="text" placeholder="Yeni model..." id="adminAddInput_${gi}" onkeydown="if(event.key==='Enter') adminAddModel(${gi})">
+        <button class="admin-icon-btn add" onclick="adminAddModel(${gi})">+</button>
+    `;
+    body.appendChild(addRow);
+}
+
+function adminAddGroup() {
+    adminEditDb.push(["Yeni Model"]);
+    adminOpenGroups.add(adminEditDb.length - 1);
+    renderAdminList();
+}
+function adminCloneGroup(gi) {
+    const cloned = JSON.parse(JSON.stringify(adminEditDb[gi]));
+    adminEditDb.push(cloned);
+    adminOpenGroups.add(adminEditDb.length - 1);
+    renderAdminList();
+    showAppToast("✓ Qrup klonlandı");
+}
+function adminDeleteGroup(gi) {
+    adminEditDb.splice(gi, 1);
+    adminOpenGroups = new Set();
+    renderAdminList();
+    showAppToast("Qrup silindi");
+}
+function adminAddModel(gi) {
+    const input = document.getElementById("adminAddInput_" + gi);
+    const val = (input ? input.value : "").trim();
+    if (!val) return;
+    adminEditDb[gi].push(val);
+    renderAdminGroupBody(gi);
+}
+function adminDeleteModel(gi, mi) {
+    adminEditDb[gi].splice(mi, 1);
+    if (adminEditDb[gi].length === 0) { adminEditDb.splice(gi, 1); adminOpenGroups = new Set(); }
+    renderAdminGroupBody(gi);
+    renderAdminList();
+}
+function adminCheckDuplicates() {
+    let all = new Set();
+    let dupes = [];
+    adminEditDb.forEach(g => {
+        g.forEach(m => {
+            let clean = m.toLowerCase();
+            if (all.has(clean)) dupes.push(m);
+            else all.add(clean);
+        });
+    });
+    if (dupes.length > 0) alert("Tapılan dublikat modellər: \n" + dupes.join(", "));
+    else alert("Dublikat model tapılmadı, baza təmizdir!");
+}
+
+function adminSaveDatabase() {
+    database = JSON.parse(JSON.stringify(adminEditDb));
+    localStorage.setItem(DB_KEY, JSON.stringify(database));
+    localStorage.setItem(UPDATE_KEY, Date.now().toString());
+    showAppToast("✓ Lokal yadda saxlanıldı");
+}
+
+async function adminPublishDatabase() {
+    if (!isAdmin) return;
+    try {
+        await db.doc(FS_DB_DOC).set({
+            groups: adminEditDb.map(g => ({ models: g })),
+            dataJson: JSON.stringify(adminEditDb),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        database = JSON.parse(JSON.stringify(adminEditDb));
+        localStorage.setItem(DB_KEY, JSON.stringify(database));
+        localStorage.setItem(UPDATE_KEY, Date.now().toString());
+        showAppToast("☁ Baza uğurla dərc olundu!");
+    } catch(e) { showAppToast("Dərc xətası: " + e.message); }
+}
+
+async function adminImportFromGitHub() {
+    try {
+        const res = await fetch(RAW_URL);
+        const data = await res.json();
+        adminEditDb = normalizeDatabase(data);
+        renderAdminList();
+        showAppToast("GitHub-dan gətirildi, Dərc etməyi unutmayın!");
+    } catch(e) { showAppToast("Xəta baş verdi"); }
+}
+
+// İstifadəçilər Tabı
+async function loadAdminUsers() {
+    try {
+        const snap = await db.collection("users").get();
+        allUsersCache = [];
+        snap.forEach(doc => { allUsersCache.push({ id: doc.id, ...doc.data() }); });
+        renderAdminUsers();
+    } catch(e) { console.log(e); }
+}
+
+function renderAdminUsers() {
+    const box = document.getElementById("adminUserList");
+    if (!box) return;
+    const q = (document.getElementById("userSearch")?.value || "").trim().toLowerCase();
+    const filter = document.getElementById("userFilterType")?.value || "all";
+    box.innerHTML = "";
+
+    let filtered = allUsersCache.filter(u => {
+        const name = (u.username || "").toLowerCase();
+        const email = (u.email || "").toLowerCase();
+        const store = (u.storeName || "").toLowerCase();
+        const matchQ = !q || name.includes(q) || email.includes(q) || store.includes(q);
+        
+        if (!matchQ) return false;
+        if (filter === 'blocked') return u.isBlocked === true;
+        if (filter === 'google') return email.includes("gmail") || (u.email && !u.storeName); // sadə təsnif
+        if (filter === 'email') return !!u.email;
+        if (filter === 'anon') return !u.email;
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        box.innerHTML = '<div class="admin-empty">İstifadəçi tapılmadı.</div>';
+        return;
+    }
+
+    filtered.forEach(u => {
+        const card = document.createElement("div");
+        card.className = "admin-card";
+        card.innerHTML = `
+            <div class="admin-card-title">
+                <span>${escapeHtml(u.username || "Adsız")} ${u.isBlocked ? '<span style="color:#e74c3c">(BLOKLU)</span>' : ''}</span>
+                <span style="font-size:12px; color:var(--accent-color)">${escapeHtml(u.storeName || "Mağaza yoxdur")}</span>
+            </div>
+            <div class="admin-card-sub">E-poçt: ${escapeHtml(u.email || "Anonim")} | Tel: ${escapeHtml(u.phoneNumber || "Qeyd yoxdur")}</div>
+            <div class="admin-card-sub">Ünvan: ${escapeHtml(u.storeAddress || "Qeyd yoxdur")}</div>
+            <div class="admin-card-sub" style="color:var(--gold)">Admin Qeydi: ${escapeHtml(u.adminNote || "Yoxdur")}</div>
+            <div class="admin-card-actions">
+                <button class="admin-btn admin-btn-secondary" onclick="promptAdminNote('${u.id}')">📝 Qeyd yaz</button>
+                <button class="admin-btn ${u.isBlocked ? 'admin-btn-success' : 'admin-btn-danger'}" onclick="toggleBlockUser('${u.id}', ${!u.isBlocked})">${u.isBlocked ? 'Bloku aç' : 'Blokla'}</button>
+                <button class="admin-btn admin-btn-danger" onclick="confirmAction('Bu istifadəçini silmək istəyirsiniz?', ()=>deleteUser('${u.id}'))">🗑 Sil</button>
+            </div>
+        `;
+        box.appendChild(card);
+    });
+}
+
+async function promptAdminNote(uid) {
+    const note = prompt("İstifadəçi üçün admin qeydi daxil edin:");
+    if (note === null) return;
+    await db.collection("users").doc(uid).set({ adminNote: note }, { merge: true });
+    showAppToast("Qeyd yadda saxlandı");
+    loadAdminUsers();
+}
+
+async function toggleBlockUser(uid, blockStatus) {
+    let reason = "";
+    if (blockStatus) {
+        reason = prompt("Bloklanma səbəbini qeyd edin (məs: Saxta məlumat):") || "Səbəb göstərilməyib";
+    }
+    await db.collection("users").doc(uid).set({ isBlocked: blockStatus, blockReason: reason }, { merge: true });
+    showAppToast(blockStatus ? "Hesab bloklandı" : "Blok açıldı");
+    loadAdminUsers();
+}
+
+async function deleteUser(uid) {
+    await db.collection("users").doc(uid).delete();
+    showAppToast("İstifadəçi silindi");
+    loadAdminUsers();
+}
+
+function exportUsersCSV() {
+    let csv = "Ad,Email,Magaza,Telefon,Unvan\n";
+    allUsersCache.forEach(u => {
+        csv += `"${u.username || ""}","${u.email || ""}","${u.storeName || ""}","${u.phoneNumber || ""}","${u.storeAddress || ""}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "istifadeciler.csv";
+    link.click();
+}
+
+// Sorğular Tabı
+async function loadAdminRequests() {
+    try {
+        const snap = await db.collection("user_requests").orderBy("createdAt", "desc").get();
+        allRequestsCache = [];
+        snap.forEach(doc => { allRequestsCache.push({ id: doc.id, ...doc.data() }); });
+        renderAdminRequests();
+    } catch(e){}
+}
+
+function renderAdminRequests() {
+    const box = document.getElementById("adminReqList");
+    if (!box) return;
+    box.innerHTML = "";
+    if (allRequestsCache.length === 0) {
+        box.innerHTML = '<div class="admin-empty">Gələn sorğu yoxdur.</div>';
+        return;
+    }
+    allRequestsCache.forEach(r => {
+        const card = document.createElement("div");
+        card.className = "admin-card";
+        card.innerHTML = `
+            <div class="admin-card-title">
+                <span>Model: ${escapeHtml(r.modelName)}</span>
+                <span style="font-size:11px; padding:2px 8px; border-radius:6px; background:${r.status==='Həll olundu'?'#27ae60':'#f39c12'}; color:#fff">${r.status || 'Gözləmədə'}</span>
+            </div>
+            <div class="admin-card-sub">Qeyd: ${escapeHtml(r.description || "Yoxdur")}</div>
+            <div class="admin-card-sub">Göndərən: ${escapeHtml(r.userEmail)}</div>
+            <div class="admin-card-actions">
+                <button class="admin-btn admin-btn-success" onclick="updateReqStatus('${r.id}', 'Həll olundu')">✓ Həll olundu et</button>
+                <button class="admin-btn admin-btn-danger" onclick="confirmAction('Sorğunu silmək istəyirsiniz?', ()=>deleteReq('${r.id}'))">Sil</button>
+            </div>
+        `;
+        box.appendChild(card);
+    });
+}
+
+async function updateReqStatus(id, status) {
+    await db.collection("user_requests").doc(id).set({ status: status }, { merge: true });
+    loadAdminRequests();
+    showAppToast("Status yeniləndi");
+}
+async function deleteReq(id) {
+    await db.collection("user_requests").doc(id).delete();
+    loadAdminRequests();
+    showAppToast("Sorğu silindi");
+}
+
+// Statistika & Backup Tabı
+async function loadAdminStatsAndUsers() {
+    try {
+        const snap = await db.collection("users").get();
+        let total = snap.size;
+        let todayCount = 0;
+        let now = new Date();
+        snap.forEach(doc => {
+            const data = doc.data();
+            if (data.createdAt) {
+                const dt = data.createdAt.toDate();
+                if (dt.toDateString() === now.toDateString()) todayCount++;
+            }
+        });
+        document.getElementById("statTotalUsers").innerText = total;
+        document.getElementById("statTodayUsers").innerText = todayCount;
+        document.getElementById("statGroupCount").innerText = database.length;
+        let totalModels = 0;
+        database.forEach(g => totalModels += g.length);
+        document.getElementById("statModelCount").innerText = totalModels;
+    } catch(e){}
+}
+
+function exportDatabaseJSON() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(database, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", "protechtor_baza_backup.json");
+    dlAnchor.click();
+}
+
+function escapeHtml(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+// Search & App Logic
+const I18N = {
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secHistory:"YENİLƏMƏ TARİXÇƏSİ",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",fontSmall:"KİÇİK",fontNormal:"NORMAL",fontLarge:"BÖYÜK",whatsapp:"WhatsApp ilə əlaqə",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib",offlineBanner:"İnternet bağlantısı yoxdur",
+ authTitle:"Giriş və Qeydiyyat",authChoose:"Davam etmək üçün üsul seçin.",authEmail:"E-poçt və parol",authEmailDesc:"Giriş və ya qeydiyyat",authGoogle:"Google hesabı",authGoogleDesc:"Bir toxunuşla giriş",authAnon:"Anonim davam et",authAnonDesc:"5 axtarış limiti.",authLoginTitle:"E-poçt ilə Giriş",authEmailPh:"E-poçt",authPassPh:"Parol",authLoginBtn:"Daxil Ol",authForgot:"Parolumu unutmuşam",authNoAcc:"Hesabınız yoxdur? Qeydiyyat",authBack:"‹ Geri",authRegTitle:"Mağaza Qeydiyyatı",authName:"Ad və Soyad *",authEmailReq:"E-poçt *",authPassReq:"Parol *",authStoreName:"Mağaza adı",authStoreAddr:"Mağaza ünvanı",authRegBtn:"Qeydiyyatı Tamamla",authHasAcc:"Giriş et",authForgotTitle:"Parolu Bərpa Et",authForgotPh:"E-poçt",authForgotBtn:"Bərpa Linki Göndər",authForgotBack:"Girişə qayıt",profControl:"İDARƏETMƏ",profTitle:"Mağaza Profili",profInfo:"ŞƏXSİ MƏLUMATLAR",profNameLbl:"Ad və Soyad",profStoreLbl:"Mağaza Adı",profAddrLbl:"Mağaza Ünvanı",profPhoneLbl:"Telefon",profSaveBtn:"Yadda Saxla",profLogoutBtn:"Çıxış Et",reqTitle:"Modeli tapmadınız və ya ölçü səhvdir?",reqDesc:"Bizə məlumat göndərin, dərhal əlavə edək.",reqPh:"Məs: Xiaomi Redmi Note 13",reqDescPh:"Əlavə qeyd yazın",reqSendBtn:"Sorğu Göndər"
+ },
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЛЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secHistory:"ИСТОРИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",fontSmall:"МЕЛКИЙ",fontNormal:"ОБЫЧНЫЙ",fontLarge:"КРУПНЫЙ",whatsapp:"WhatsApp",version:"ВЕРСИЯ",dbSize:"ГРУПП",modelCountLbl:"МОДЕЛЕЙ",blockTitle:"Заблокировано",blockText:"База не обновлялась.",updateBase:"ОБНОВИТЬ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НЕ НАЙДЕНО",noneText:"ничего",noDb:"НЕТ БАЗЫ",alertFail:"Ошибка",recent:"ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить",stFresh:"Актуально",stOld:"Обновите",stStale:"Устарела",offlineBanner:"Офлайн",reqTitle:"Не нашли модель?",reqDesc:"Сообщите нам.",reqPh:"Модель...",reqDescPh:"Примечание",reqSendBtn:"Отправить"
+ },
+ en:{title:"Screen protector compatibility",search:"Search...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secPrivacy:"PRIVACY",secContact:"CONTACT",secHistory:"HISTORY",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",fontSmall:"SMALL",fontNormal:"NORMAL",fontLarge:"LARGE",whatsapp:"WhatsApp",version:"VERSION",dbSize:"GROUPS",modelCountLbl:"MODELS",blockTitle:"Locked",blockText:"Database outdated.",updateBase:"UPDATE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR",none:"NO RESULTS",noneText:"nothing",noDb:"NO DB",alertFail:"Error",recent:"RECENT",clear:"CLEAR",nfBtn:"Report",stFresh:"Up to date",stOld:"Update needed",stStale:"Outdated",offlineBanner:"Offline",reqTitle:"Model not found?",reqDesc:"Let us know.",reqPh:"Model name...",reqDescPh:"Note",reqSendBtn:"Send Request"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secHistory:"GEÇMİŞ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",fontSmall:"KÜÇÜK",fontNormal:"NORMAL",fontLarge:"BÜYÜK",whatsapp:"WhatsApp",version:"SÜRÜM",dbSize:"GRUP",modelCountLbl:"MODEL",blockTitle:"Kilitli",blockText:"Veritabanı güncel değil.",updateBase:"GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER",none:"BULUNAMADI",noneText:"hiç",noDb:"VT YOK",alertFail:"Hata",recent:"ARAMALAR",clear:"TEMİZLE",nfBtn:"Bildir",stFresh:"Güncel",stOld:"Güncelle",stStale:"Eski",offlineBanner:"Çevrimdışı",reqTitle:"Modeli bulamadınız mı?",reqDesc:"Bize bildirin.",reqPh:"Model...",reqDescPh:"Not",reqSendBtn:"Gönder"}
+};
+
+// Məxfilik Siyasəti (İstifadəçi sorğuları və məlumat toplama əlavə olunmuş şəkildə)
+const PRIVACY = {"az": {"intro": "ProTechtor™ · MƏXFİLİK SİYASƏTİ VƏ İSTİFADƏ ŞƏRTLƏRİ\nProqramdan istifadə etməzdən əvvəl diqqətlə oxuyun.", "items": [["ÜMUMİ MÜDDƏALAR", ["Bu Məxfilik Siyasəti ProTechtor™ proqramının istifadəsi zamanı məlumatların mühafizəsini tənzimləyir.", "Baza və proqram ©By Emin-ə məxsusdur."]], ["MƏLUMAT SORĞULARI VƏ GERİ BİLDİRİŞ", ["İstifadəçilər tərəfindən 'Modeli tapmadım' və ya 'Ölçü səhvdir' formu vasitəsilə göndərilən məlumatlar, cihaz modellərinin və uyğunluq bazasının təkmilləşdirilməsi məqsədilə toplanır və admin tərəfindən emal olunur."]], ["TOPLANAN MƏLUMATLAR", ["Proqram ləqəb, e-poçt, telefon, mağaza məlumatları və istifadəçi tərəfindən göndərilən sorğu məlumatlarını emal edir."]]], "foot": "ProTechtor™ · ©By Emin"}, "ru": {"intro": "Политика конфиденциальности ProTechtor™", "items": [["ОБЩИЕ ПОЛОЖЕНИЯ", ["Политика конфиденциальности."]], ["ЗАПРОСЫ ДАННЫХ", ["Данные, отправляемые через форму 'Не нашел модель', используются для улучшения базы данных."]]], "foot": "ProTechtor™"}, "en": {"intro": "Privacy Policy ProTechtor™", "items": [["GENERAL", ["Privacy rules."]], ["USER REQUESTS", ["Data sent via requests is used to improve the database."]]], "foot": "ProTechtor™"}, "tr": {"intro": "Gizlilik Politikası ProTechtor™", "items": [["GENEL", ["Gizlilik kuralları."]], ["KULLANICI TALEPLERİ", ["Model talepleri veritabanını geliştirmek için toplanır."]]], "foot": "ProTechtor™"}};
+
+const APP_VERSION = "3.2.0";
+const LANG_KEY = "antiudar_lang";
+const RECENT_KEY = "antiudar_recent_v1";
+let currentLang = "az";
+let indexFor = null;
+let searchEntries = [];
+
+function t(k) { return (I18N[currentLang] && I18N[currentLang][k]) || (I18N.az && I18N.az[k]) || k; }
+
+function initLang() {
+    let l = localStorage.getItem(LANG_KEY);
+    setLang(I18N[l] ? l : "az", false);
+}
+function setLang(l, save) {
+    if (!I18N[l]) l = "az";
+    currentLang = l;
+    if (save !== false) localStorage.setItem(LANG_KEY, l);
+    applyLang();
+}
+function applyLang() {
+    document.documentElement.lang = currentLang;
+    document.title = t("title");
+    document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.getAttribute("data-i18n")));
+    document.querySelectorAll("[data-i18n-html]").forEach(el => el.innerHTML = t(el.getAttribute("data-i18n-html")));
+    document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = t(el.getAttribute("data-i18n-ph")));
+    document.querySelectorAll(".lang-option").forEach(el => el.classList.toggle("active", el.id === "lang-" + currentLang));
+    const authSel = document.getElementById("authLangSel");
+    if(authSel && authSel.value !== currentLang) authSel.value = currentLang;
+    document.getElementById("appVersion").innerText = "v" + APP_VERSION;
+    renderPrivacy();
+    updateLastUpdate();
+}
+
+function renderPrivacy() {
+    const box = document.getElementById("privacyBody");
+    if (!box) return;
+    const d = PRIVACY[currentLang] || PRIVACY.az;
+    let html = `<div class="pp-intro">${d.intro}</div>`;
+    d.items.forEach((it, i) => {
+        html += `<div class="pp-item" style="--c:#d4af37; --cb:rgba(212,175,55,0.1)">
+            <div class="pp-head"><span class="pp-num">${i+1}</span><span class="pp-title">${it[0]}</span></div>
+            <div class="pp-body">${it[1].map((txt, j) => `<p><b class="pp-sub">${i+1}.${j+1}</b>${txt}</p>`).join('')}</div>
+        </div>`;
+    });
+    html += `<div class="pp-foot">${d.foot}</div>`;
+    box.innerHTML = html;
+}
+
+function updateStatusDot() {
+    const dot = document.getElementById("statusDot");
+    const last = localStorage.getItem(UPDATE_KEY);
+    let cls = "gray", key = "stOld";
+    if (last) {
+        const age = Date.now() - parseInt(last, 10);
+        if (age > THREE_DAYS_MS) { cls = "yellow"; key = "stStale"; }
+        else if (age < 24*60*60*1000) { cls = "green"; key = "stFresh"; }
+    }
+    dot.className = "status-dot " + cls;
+}
+
+function updateDbCount() {
+    document.getElementById("dbCount").innerText = Array.isArray(database) ? database.length : 0;
+    let totalModels = 0;
+    if (Array.isArray(database)) database.forEach(g => { if (Array.isArray(g)) totalModels += g.length; });
+    document.getElementById("modelCount").innerText = totalModels;
+}
+
+function getRecent() {
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch(e) { return []; }
+}
+function saveRecent(q) {
+    q = String(q || "").trim(); if (!q) return;
+    let a = getRecent().filter(x => x.toLowerCase() !== q.toLowerCase());
+    a.unshift(q); localStorage.setItem(RECENT_KEY, JSON.stringify(a.slice(0, 10)));
+}
+function clearRecent() { localStorage.removeItem(RECENT_KEY); renderRecent(); }
+function hideRecent() { document.getElementById("recent").style.display = "none"; }
+
+function renderRecent() {
+    const box = document.getElementById("recent");
+    const list = getRecent();
+    box.innerHTML = "";
+    if (list.length === 0) { box.style.display = "none"; return; }
+    box.style.display = "block";
+    box.innerHTML = `<div class="recent-head"><div class="recent-title">${t("recent")}</div><button class="recent-clear" onclick="clearRecent()">${t("clear")}</button></div>`;
+    list.forEach(q => {
+        box.innerHTML += `<div class="recent-item" onclick="document.getElementById('searchInput').value='${q}'; performSearch('${q}');"><span>${q}</span><span>›</span></div>`;
+    });
+}
+
+function norm(s) {
+    const map = { "ə": "e", "ı": "i", "ö": "o", "ü": "u", "ş": "s", "ç": "c", "ğ": "g" };
+    return String(s).toLowerCase().replace(/[əıöüşçğ]/g, c => map[c]).replace(/[^a-z0-9а-яё]+/g, "");
+}
+function lev(a, b) {
+    const prev = []; for (let j = 0; j <= b.length; j++) prev[j] = j;
+    for (let i = 1; i <= a.length; i++) {
+        let diag = prev[0]; prev[0] = i;
+        for (let j = 1; j <= b.length; j++) {
+            const tmp = prev[j];
+            prev[j] = Math.min(prev[j] + 1, prev[j - 1] + 1, diag + (a[i - 1] === b[j - 1] ? 0 : 1));
+            diag = tmp;
+        }
+    }
+    return prev[b.length];
+}
+
+function buildIndex() {
+    if (indexFor === database) return;
+    searchEntries = [];
+    database.forEach(group => {
+        if (!Array.isArray(group)) return;
+        group.forEach(model => {
+            searchEntries.push({ model: model, group: group, key: norm(model), words: String(model).toLowerCase().split(/\s+/).map(norm).filter(Boolean) });
+        });
+    });
+    indexFor = database;
+}
+
+function showNotFound(query) {
+    const results = document.getElementById("results");
+    document.getElementById("status").innerText = t("none");
+    results.innerHTML = `<div class="no-results">"${query}": ${t("noneText")}</div>`;
+    results.innerHTML += `<a class="whatsapp-button nf-button" target="_blank" rel="noopener" href="https://wa.me/994553115544?text=${encodeURIComponent('Salam, tapılmayan model — ' + query)}">${t("nfBtn")}</a>`;
+}
+
+function highlightMatch(text, query) {
+    if (!query) return text;
+    try {
+        const escaped = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regex = new RegExp("(" + escaped.split(/\s+/).filter(Boolean).join("|") + ")", "gi");
+        return text.replace(regex, "<mark>$1</mark>");
+    } catch(e) { return text; }
+}
+
+const searchInput = document.getElementById("searchInput");
+searchInput.addEventListener("input", function() {
+    document.getElementById("clearButton").classList.toggle("visible", this.value.trim().length > 0);
+    performSearch(this.value);
+});
+
+function clearSearch() {
+    searchInput.value = "";
+    document.getElementById("clearButton").classList.remove("visible");
+    document.getElementById("status").innerText = "";
+    document.getElementById("results").innerHTML = "";
+    renderRecent();
+}
+
+function performSearch(query) {
+    const results = document.getElementById("results");
+    const status = document.getElementById("status");
+    results.innerHTML = ""; query = String(query || "").trim();
+    if (!query) { status.innerText = ""; renderRecent(); return; }
+    hideRecent();
+
+    if (!Array.isArray(database) || database.length === 0) { status.innerText = t("noDb"); return; }
+
+    const whole = norm(query);
+    const tokens = query.split(/\s+/).map(norm).filter(Boolean);
+    if (tokens.length === 0) { showNotFound(query); return; }
+
+    buildIndex();
+    const seen = new Set(); const matches = [];
+    function pass(test) {
+        searchEntries.forEach(e => { if (!seen.has(e.key) && test(e)) { seen.add(e.key); matches.push(e); } });
+    }
+    pass(e => e.key.includes(whole) || tokens.every(tk => e.key.includes(tk)));
+    let fuzzy = false;
+    if (matches.length === 0) {
+        fuzzy = true;
+        pass(e => tokens.every(tk => e.key.includes(tk) || (tk.length >= 4 && e.words.some(w => Math.abs(w.length - tk.length) <= 1 && lev(w, tk) <= 1))));
+    }
+
+    if (matches.length === 0) { showNotFound(query); return; }
+    status.innerText = matches.length + " " + (fuzzy ? t("similar") : t("found"));
+
+    matches.forEach(item => {
+        results.innerHTML += `
+            <div class="result-item" onclick="openDetail('${item.model.replace(/'/g, "\\'")}', this)">
+                <div class="brand-badge">${getBrand(item.model)}</div>
+                <div class="result-model">${highlightMatch(item.model, query)}</div>
+                <div class="result-arrow">›</div>
+            </div>`;
+    });
+}
+
+function getBrand(model) {
+    if (!model) return "";
+    return String(model).trim().split(/\s+/)[0] || "";
+}
+
+function openDetail(modelName) {
+    saveRecent(modelName);
+    let foundGroup = null;
+    database.forEach(g => {
+        if (g.some(m => m.toLowerCase() === modelName.toLowerCase())) foundGroup = g;
+    });
+    if (!foundGroup) return;
+
+    document.getElementById("detail-model").innerText = modelName;
+    const list = document.getElementById("compatibility-list");
+    list.innerHTML = "";
+
+    foundGroup.forEach((m, idx) => {
+        let isSel = m.toLowerCase() === modelName.toLowerCase();
+        list.innerHTML += `
+            <div class="compatibility-item ${isSel ? 'selected' : ''}">
+                <div class="compat-number">${String(idx + 1).padStart(2, '0')}</div>
+                <div class="compat-brand">${getBrand(m)}</div>
+                <div class="compat-model">${m}</div>
+            </div>`;
+    });
+
+    history.pushState({modal: 'detail'}, "");
+    document.getElementById("detail-view").classList.add("active");
+    document.body.style.overflow = "hidden";
+}
+
+function closeDetail() { history.back(); }
+function openSettings() { history.pushState({modal: 'settings'}, ""); document.getElementById("settings-view").classList.add("active"); document.body.style.overflow = "hidden"; }
+function closeSettings() { history.back(); }
+function openPrivacy() { history.pushState({modal: 'privacy'}, ""); document.getElementById("privacy-view").classList.add("active"); document.body.style.overflow = "hidden"; }
+function closePrivacy() { history.back(); }
+
+function normalizeDatabase(data) {
+    if (!Array.isArray(data)) return [];
+    let res = [];
+    data.forEach(g => {
+        if (Array.isArray(g)) res.push(g.map(m => String(m).trim()).filter(Boolean));
+        else if (g && Array.isArray(g.models)) res.push(g.models.map(m => String(m).trim()).filter(Boolean));
+    });
+    return res;
+}
+
+async function loadDatabaseFromCacheOnly() {
+    const cached = localStorage.getItem(DB_KEY);
+    if (cached) {
+        try { database = normalizeDatabase(JSON.parse(cached)); updateDbCount(); } catch(e){}
+    }
+    try {
+        const snap = await db.doc(FS_DB_DOC).get();
+        if (snap.exists) {
+            const parsed = normalizeDatabase(groupsFromFirestore(snap.data()));
+            if (parsed.length > 0) {
+                database = parsed;
+                localStorage.setItem(DB_KEY, JSON.stringify(database));
+                localStorage.setItem(UPDATE_KEY, Date.now().toString());
+                updateDbCount();
+            }
+        }
+    } catch(e){}
+}
+
+function groupsFromFirestore(data) {
+    if (data.dataJson) { try { return JSON.parse(data.dataJson); } catch(e){} }
+    return data.groups || [];
+}
+
+async function forceUpdate() {
+    await loadDatabaseFromFirestore();
+    showAppToast("✓ Baza yeniləndi");
+}
+
+async function loadDatabaseFromFirestore() {
+    try {
+        const snap = await db.doc(FS_DB_DOC).get();
+        if (snap.exists) {
+            const parsed = normalizeDatabase(groupsFromFirestore(snap.data()));
+            if (parsed.length > 0) {
+                database = parsed;
+                localStorage.setItem(DB_KEY, JSON.stringify(database));
+                localStorage.setItem(UPDATE_KEY, Date.now().toString());
+                updateDbCount();
+            }
+        }
+    } catch(e){}
+}
+
+function backgroundCheckUpdate() {}
+function checkBlockStatus() { return false; }
+function updateLastUpdate() { document.getElementById("lastUpdateText").innerText = "Bənd aktivdir"; }
+function renderChangelogHistory() {}
+function initTheme() { document.documentElement.setAttribute("data-theme", "dark"); }
+function initFontScale() {}
+function initAccentColor() { document.documentElement.style.setProperty("--accent-color", "#2ecc71"); }
+function setAccentColor(a, d) { document.documentElement.style.setProperty("--accent-color", a); }
+function initDynamicPlaceholder() {}
+function updateNetworkStatus() {}
+function showDotInfo() {}
+</script>
+
+</body>
+</html>
