@@ -1280,6 +1280,23 @@
         .auth-box input.input-ok,.phone-input.input-ok{border-color:#2ecc71 !important}
         .pass-strength{height:4px;border-radius:2px;background:var(--border);margin:4px 0 8px 0;overflow:hidden}
         .pass-strength-bar{height:100%;width:0;transition:width 0.3s,background 0.3s;border-radius:2px}
+        .pass-req-panel{
+            display:none;text-align:left;background:var(--surface-2);border:1px solid var(--border);
+            border-radius:14px;padding:12px 14px;margin:6px 0 10px 0;font-size:12px;line-height:1.45;
+        }
+        .pass-req-panel.visible{display:block}
+        .pass-req-title{font-weight:800;color:var(--text);margin-bottom:6px;font-size:12px}
+        .pass-req-strength{font-size:11px;color:var(--muted);margin-bottom:8px}
+        .pass-req-list{list-style:none;padding:0;margin:0}
+        .pass-req-list li{display:flex;align-items:center;gap:8px;padding:3px 0;color:var(--muted)}
+        .pass-req-list li .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;
+            display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent}
+        .pass-req-list li.ok{color:#2ecc71}
+        .pass-req-list li.ok .dot{background:#2ecc71;border-color:#2ecc71;color:#111}
+        .pass-req-list li.bad{color:#e74c3c}
+        .pass-req-list li.bad .dot{border-color:#e74c3c}
+        .pass-req-hint{margin-top:8px;font-size:11px;color:var(--muted)}
+
         .reg-lang-row{display:flex;align-items:center;gap:10px;margin:8px 0 4px 0;padding:8px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px}
         .reg-lang-row label{font-size:12px;color:var(--muted);flex-shrink:0}
         .reg-lang-select{flex:1;background:transparent;border:none;color:var(--text);font-size:14px;font-weight:600;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;padding-right:20px}
@@ -1343,9 +1360,21 @@
             <input type="text" id="regUser" placeholder="Ad və Soyad *" required oninput="validateRegName(this)" onblur="validateRegName(this)">
             <div id="regUserErr" class="field-error-msg">Ad və soyad ən az 3 hərf olmalıdır (yalandan doldurulma qadağandır)</div>
             <input type="email" id="regEmail" placeholder="E-poçt (Parol bərpası üçün) *" required oninput="updateRegButtonState()">
-            <input type="password" id="regPass" placeholder="Parol (məs: Bakı1234) *" required oninput="validateRegPass(this)" onblur="validateRegPass(this)">
+            <input type="password" id="regPass" placeholder="Parol (məs: Baku1234) *" required
+                oninput="validateRegPass(this)" onfocus="showPassReqPanel(true)" onblur="onPassBlur()">
             <div class="pass-strength"><div class="pass-strength-bar" id="passBar"></div></div>
-            <div id="regPassErr" class="field-error-msg">Parol ən az 6 simvol olmalı, hərf və rəqəm ehtiva etməlidir</div>
+            <div id="passReqPanel" class="pass-req-panel">
+                <div class="pass-req-title">Parol tələbləri</div>
+                <div class="pass-req-strength" id="passStrengthLabel">Güc: 0%</div>
+                <ul class="pass-req-list">
+                    <li id="reqLen"><span class="dot">✓</span><span>Ən az 8 simvol</span></li>
+                    <li id="reqNum"><span class="dot">✓</span><span>Ən az 1 rəqəm</span></li>
+                    <li id="reqUpper"><span class="dot">✓</span><span>Ən az 1 böyük hərf (A–Z)</span></li>
+                    <li id="reqLower"><span class="dot">✓</span><span>Ən az 1 kiçik hərf (a–z)</span></li>
+                </ul>
+                <div class="pass-req-hint">Başqa saytlarda istifadə etdiyiniz və ya asan təxmin olunan paroldan çəkinin.</div>
+            </div>
+            <div id="regPassErr" class="field-error-msg">Parol tələblərə uyğun deyil</div>
             <div id="regPassOk" class="field-ok-msg">Parol uyğundur ✓</div>
             <input type="text" id="regStore" placeholder="Mağaza adı">
             <input type="text" id="regAddress" placeholder="Mağaza ünvanı">
@@ -2232,6 +2261,25 @@ function validateRegName(el) {
     return true;
 }
 
+function showPassReqPanel(show) {
+    const panel = document.getElementById("passReqPanel");
+    if (!panel) return;
+    if (show) panel.classList.add("visible");
+}
+function onPassBlur() {
+    const el = document.getElementById("regPass");
+    validateRegPass(el);
+    // keep panel open if invalid, hide if valid or empty
+    const panel = document.getElementById("passReqPanel");
+    if (!panel) return;
+    const pass = el ? el.value : "";
+    if (!pass || (el && el.classList.contains("input-ok"))) {
+        setTimeout(function () {
+            if (document.activeElement !== el) panel.classList.remove("visible");
+        }, 180);
+    }
+}
+
 function validateRegPass(el) {
     if (!el) el = document.getElementById("regPass");
     if (!el) return false;
@@ -2239,18 +2287,43 @@ function validateRegPass(el) {
     const err = document.getElementById("regPassErr");
     const ok = document.getElementById("regPassOk");
     const bar = document.getElementById("passBar");
+    const panel = document.getElementById("passReqPanel");
+    if (pass.length > 0 && panel) panel.classList.add("visible");
+
+    // Firebase password policy: min 8, upper, lower, number
+    const hasLen = pass.length >= 8;
+    const hasNum = /\d/.test(pass);
+    const hasUpper = /[A-Z]/.test(pass);
+    const hasLower = /[a-z]/.test(pass);
+
+    function mark(id, good) {
+        const li = document.getElementById(id);
+        if (!li) return;
+        li.classList.remove("ok", "bad");
+        if (!pass.length) return;
+        li.classList.add(good ? "ok" : "bad");
+    }
+    mark("reqLen", hasLen);
+    mark("reqNum", hasNum);
+    mark("reqUpper", hasUpper);
+    mark("reqLower", hasLower);
+
     let strength = 0;
-    if (pass.length >= 6) strength += 1;
-    if (/[a-zA-Zа-яА-ЯəöüğçıƏÖÜĞÇİ]/.test(pass)) strength += 1;
-    if (/\d/.test(pass)) strength += 1;
-    if (pass.length >= 8) strength += 1;
-    if (/[^a-zA-Z0-9а-яА-ЯəöüğçıƏÖÜĞÇİ]/.test(pass)) strength += 1;
-    const colors = ["#e74c3c","#e67e22","#f1c40f","#2ecc71","#27ae60"];
+    if (hasLen) strength += 1;
+    if (hasNum) strength += 1;
+    if (hasUpper) strength += 1;
+    if (hasLower) strength += 1;
+    if (pass.length >= 12) strength += 1;
+    const pct = Math.min(100, strength * 20);
+    const colors = ["#e74c3c", "#e67e22", "#f1c40f", "#2ecc71", "#27ae60"];
     if (bar) {
-        bar.style.width = (strength * 20) + "%";
+        bar.style.width = pct + "%";
         bar.style.background = colors[Math.max(0, strength - 1)] || "#e74c3c";
     }
-    const valid = pass.length >= 6 && /[a-zA-Zа-яА-ЯəöüğçıƏÖÜĞÇİ]/.test(pass) && /\d/.test(pass);
+    const label = document.getElementById("passStrengthLabel");
+    if (label) label.textContent = "Güc: " + pct + "%";
+
+    const valid = hasLen && hasNum && hasUpper && hasLower;
     if (!pass.length) {
         el.classList.remove("input-error", "input-ok");
         if (err) err.classList.remove("visible");
@@ -2764,7 +2837,7 @@ function reportMissingModel(query) {
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }).catch(function () {});
     }
-    showAppToast("Sorğu göndərildi. Təşəkkürlər!");
+    showAppToast("Admin panelə göndərildi. Təşəkkürlər!");
 }
 
 function escapeHtml(s) {
@@ -3974,23 +4047,19 @@ function showNotFound(query) {
     noResult.innerText = '"' + query + '": ' + t("noneText");
     results.appendChild(noResult);
 
-    const a = document.createElement("a");
-    a.className = "whatsapp-button nf-button";
-    a.target = "_blank";
-    a.rel = "noopener";
-    a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTechtor™: bazada tapılmayan model — " + query);
-    a.innerText = t("nfBtn");
-    a.addEventListener("click", function () { reportMissingModel(query); });
-    results.appendChild(a);
-
-    // also auto-save request to admin panel once per query
-    try {
-        var key = "pt_nf_" + String(query).toLowerCase();
-        if (!sessionStorage.getItem(key)) {
-            sessionStorage.setItem(key, "1");
-            reportMissingModel(query);
-        }
-    } catch (e) {}
+    // Yalnız istifadəçi basanda admin panelə sorğu gedir — avtomatik və WhatsApp YOX
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "update-button nf-button";
+    btn.style.maxWidth = "280px";
+    btn.style.margin = "18px auto 0";
+    btn.style.height = "48px";
+    btn.style.fontSize = "13px";
+    btn.innerText = t("nfBtn");
+    btn.addEventListener("click", function () {
+        reportMissingModel(query);
+    });
+    results.appendChild(btn);
 }
 
 function highlightMatch(text, query) {
