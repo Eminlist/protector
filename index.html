@@ -400,20 +400,28 @@
         }
 
         .compatibility-title {
-            min-height: 48px;
-            background: linear-gradient(90deg, #c45a1a 0%, #ff5722 50%, #c45a1a 100%);
-            color: #ffffff;
+            min-height: 54px;
+            background: var(--surface-2);
+            color: #ffe082;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0 16px;
-            font-size: calc(12px * var(--font-scale));
+            padding: 6px 16px;
+            font-size: calc(11px * var(--font-scale));
             font-weight: 700;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
             border-bottom: 1px solid var(--border);
             text-align: center;
-            line-height: 1.3;
+            line-height: 1.35;
+        }
+        .compatibility-title small {
+            font-size: calc(9.5px * var(--font-scale));
+            font-weight: 400;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+            margin-top: 2px;
         }
 
         .compatibility-list {
@@ -1277,6 +1285,10 @@
         .reg-lang-select{flex:1;background:transparent;border:none;color:var(--text);font-size:14px;font-weight:600;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 4px center;padding-right:20px}
         .auth-box button:disabled{opacity:0.5;cursor:not-allowed}
 
+    
+        .admin-user-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:8px}
+        .admin-user-card.blocked{border-color:#e74c3c;opacity:0.85}
+
     </style>
 </head>
 
@@ -1463,16 +1475,77 @@
         <div class="admin-toolbar">
             <input type="text" id="adminSearch" class="admin-search" placeholder="Qrup / model axtar..." oninput="renderAdminList()">
             <button class="admin-btn admin-btn-secondary" onclick="adminAddGroup()">+ Yeni qrup</button>
+            <button class="admin-btn admin-btn-secondary" onclick="adminCheckDuplicates()" title="Oxşar və ya eyni modelləri təmizlə">🔍 Dublikat yoxla</button>
+            <button class="admin-btn admin-btn-secondary" onclick="adminCloneGroupPrompt()" title="Seçilmiş qrupu klonla">📋 Qrupu Klonla</button>
             <button class="admin-btn admin-btn-success" onclick="adminSaveDatabase()">💾 Yadda saxla</button>
             <button class="admin-btn admin-btn-primary" onclick="adminPublishDatabase()">☁ Dərc et</button>
             <button class="admin-btn admin-btn-secondary" onclick="adminImportFromGitHub()" title="Köhnə GitHub bazasını bir dəfə Firebase-ə köçür">⬇ GitHub-dan gətir</button>
+            <button class="admin-btn admin-btn-secondary" onclick="adminExportCSV()">📊 Eksport (CSV)</button>
+            <button class="admin-btn admin-btn-secondary" onclick="adminBackupJSON()">📥 Backup (JSON)</button>
             <label class="admin-btn admin-btn-secondary" style="cursor:pointer;margin:0;" title="JSON fayl yüklə">
                 📂 JSON yüklə
                 <input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)">
             </label>
         </div>
-        <div id="adminList" class="admin-list"></div>
+
+        <div style="padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px;">
+                <span id="adminStatTotalUsers">Ümumi istifadəçi: 0</span>
+                <span id="adminStatTodayUsers">Bugünkü qeydiyyat: 0</span>
+                <span id="adminStatDbSize">Baza ölçüsü: 0 KB</span>
+            </div>
+            <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px;max-height:110px;overflow-y:auto;" id="adminModelRequestsBox">
+                <div style="font-size:11px;font-weight:700;color:var(--accent-color);margin-bottom:4px;">ƏSKİK MODEL SORĞULARI ("Modeli tapmadım"):</div>
+                <div id="adminModelRequestsList" style="font-size:12px;color:var(--text);">Sorğular yüklənir...</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <input type="text" id="adminBroadcastInput" class="admin-search" placeholder="Yuxarı banner elanı yazın..." style="height:36px;font-size:13px;">
+                <button class="admin-btn admin-btn-primary" style="height:36px;font-size:12px;" onclick="adminSaveBroadcast()">Banneri Elan Et</button>
+            </div>
+        </div>
+
+        <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface);">
+            <button id="adminTabDb" onclick="switchAdminTab('db')" style="flex:1;padding:12px;background:var(--accent-color);color:#111;border:none;font-weight:800;font-size:13px;cursor:pointer;">Modellər Bazası</button>
+            <button id="adminTabUsers" onclick="switchAdminTab('users')" style="flex:1;padding:12px;background:transparent;color:var(--text);border:none;font-weight:700;font-size:13px;cursor:pointer;">İstifadəçilər</button>
+        </div>
+
+        <div id="adminDbSection" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div id="adminList" class="admin-list"></div>
+        </div>
+
+        <div id="adminUsersSection" style="flex:1;display:none;flex-direction:column;overflow:hidden;padding:12px;">
+            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+                <input type="text" id="adminUserSearch" class="admin-search" placeholder="İstifadəçi axtar (ad, e-poçt, mağaza)..." oninput="renderAdminUsers()">
+                <select id="adminUserFilter" class="admin-search" style="flex:0 0 140px;height:40px;" onchange="renderAdminUsers()">
+                    <option value="all">Bütün rollar</option>
+                    <option value="email">E-poçt</option>
+                    <option value="google">Google</option>
+                    <option value="anon">Anonim</option>
+                    <option value="blocked">Bloklular</option>
+                </select>
+            </div>
+            <div id="adminUsersList" style="flex:1;overflow-y:auto;"></div>
+        </div>
+
         <div id="adminStatus" class="admin-status">Admin paneli hazırdır</div>
+    </div>
+
+    <!-- TƏSDİQ PƏNCƏRƏSİ -->
+    <div id="confirm-modal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:2500;display:none;align-items:center;justify-content:center;padding:20px;">
+        <div style="width:100%;max-width:340px;background:var(--surface);border:2px solid var(--accent-color);border-radius:20px;padding:24px;text-align:center;">
+            <h3 id="confirmTitle" style="color:var(--accent-color);margin-bottom:10px;font-size:18px;">Təsdiq</h3>
+            <p id="confirmText" style="font-size:14px;color:var(--text);margin-bottom:20px;line-height:1.4;"></p>
+            <div style="display:flex;gap:10px;">
+                <button id="confirmYesBtn" style="flex:1;padding:12px;background:#e74c3c;color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;">Bəli, Sil</button>
+                <button onclick="closeConfirmModal()" style="flex:1;padding:12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:12px;font-weight:700;cursor:pointer;">İmtina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BROADCAST BANNER -->
+    <div id="broadcastBanner" style="position:fixed;top:0;left:0;width:100%;background:linear-gradient(90deg,#ff5722,#e67e22);color:#fff;font-size:12px;font-weight:700;text-align:center;padding:10px;z-index:1500;display:none;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+        <span id="broadcastText"></span>
+        <button onclick="closeBroadcastBanner()" style="background:rgba(0,0,0,0.2);border:none;color:#fff;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;">×</button>
     </div>
 
     <div id="detail-view">
@@ -1484,8 +1557,9 @@
             </div>
         </header>
 
-        <div class="compatibility-title" data-i18n="compat">
-            BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR
+                <div class="compatibility-title">
+            <span data-i18n="compat">BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR</span>
+            <small data-i18n="compatNote">Ölçülər tam dəqiq olmaya bilər</small>
         </div>
 
         <div id="compatibility-list" class="compatibility-list"></div>
@@ -1743,6 +1817,10 @@ let deferredPrompt = null;
 let isAdmin = false;
 let adminEditDb = [];
 let adminOpenGroups = new Set();
+let adminDirty = false;
+let selectedAdminGroupIdx = -1;
+let confirmCallback = null;
+let adminUsersCache = [];
 
 // SƏS VƏ HAPTİK (STANDART OLARAQ AÇIQ)
 let soundEnabled = localStorage.getItem("antiudar_sound") !== "false";
@@ -1750,6 +1828,10 @@ let hapticEnabled = localStorage.getItem("antiudar_haptic") !== "false";
 let soundType = localStorage.getItem("antiudar_sound_type") || "bip";
 let hapticIntensity = localStorage.getItem("antiudar_haptic_intensity") || "medium";
 let lowPowerMode = localStorage.getItem("antiudar_low_power") === "true";
+
+window.addEventListener("beforeunload", function (e) {
+    if (adminDirty) { e.preventDefault(); e.returnValue = ""; }
+});
 
 document.addEventListener("DOMContentLoaded", function () {
     // Tətbiq açılan kimi ana səhifə üçün State əlavə olunur (Back History Gesture üçün)
@@ -1767,6 +1849,18 @@ document.addEventListener("DOMContentLoaded", function () {
             if (isAdmin) {
                 showAppToast("Admin rejimindəsiniz");
             }
+            // Blok yoxlaması
+            if (!user.isAnonymous && db) {
+                db.collection("users").doc(user.uid).get().then(function (doc) {
+                    if (doc.exists) {
+                        var d = doc.data() || {};
+                        if (d.blocked) {
+                            showAppToast("Hesabınız bloklanıb: " + (d.blockReason || ""));
+                            auth.signOut();
+                        }
+                    }
+                }).catch(function () {});
+            }
         }
     });
 
@@ -1779,6 +1873,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initResponsiveTypography();
     initPWA();
     initPhoneMasks();
+    initBroadcastBanner();
 
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", function () {
@@ -2216,7 +2311,12 @@ function openAdmin() {
     }
     adminEditDb = JSON.parse(JSON.stringify(database || []));
     adminOpenGroups = new Set();
+    adminDirty = false;
     renderAdminList();
+    switchAdminTab("db");
+    loadAdminStats();
+    loadModelRequests();
+    loadBroadcastToInput();
     history.pushState({modal: 'admin'}, "");
     document.getElementById("admin-view").classList.add("active");
     document.body.style.overflow = "hidden";
@@ -2225,6 +2325,9 @@ function openAdmin() {
 }
 
 function closeAdmin() {
+    if (adminDirty) {
+        if (!confirm("Yadda saxlanılmamış dəyişikliklər var. Çıxmaq istəyirsiniz?")) return;
+    }
     history.back();
 }
 
@@ -2327,6 +2430,343 @@ function renderAdminList() {
     }
 }
 
+
+/* ===== CONFIRM MODAL ===== */
+function confirmAction(text, cb) {
+    document.getElementById("confirmText").textContent = text;
+    document.getElementById("confirm-modal").style.display = "flex";
+    confirmCallback = cb;
+    document.getElementById("confirmYesBtn").onclick = function () {
+        closeConfirmModal();
+        if (confirmCallback) confirmCallback();
+    };
+}
+function closeConfirmModal() {
+    document.getElementById("confirm-modal").style.display = "none";
+    confirmCallback = null;
+}
+
+/* ===== ADMIN TABS ===== */
+function switchAdminTab(tab) {
+    document.getElementById("adminDbSection").style.display = tab === "db" ? "flex" : "none";
+    document.getElementById("adminUsersSection").style.display = tab === "users" ? "flex" : "none";
+    var dbBtn = document.getElementById("adminTabDb");
+    var usBtn = document.getElementById("adminTabUsers");
+    if (dbBtn) {
+        dbBtn.style.background = tab === "db" ? "var(--accent-color)" : "transparent";
+        dbBtn.style.color = tab === "db" ? "#111" : "var(--text)";
+    }
+    if (usBtn) {
+        usBtn.style.background = tab === "users" ? "var(--accent-color)" : "transparent";
+        usBtn.style.color = tab === "users" ? "#111" : "var(--text)";
+    }
+    if (tab === "users") renderAdminUsers();
+}
+
+function loadAdminStats() {
+    var sizeKb = Math.round(JSON.stringify(database || []).length / 1024);
+    var el = document.getElementById("adminStatDbSize");
+    if (el) el.textContent = "Baza ölçüsü: " + sizeKb + " KB";
+    // users from Firestore
+    if (typeof db !== "undefined" && db) {
+        db.collection("users").get().then(function (snap) {
+            adminUsersCache = [];
+            var today = new Date().toISOString().slice(0, 10);
+            var todayCount = 0;
+            snap.forEach(function (doc) {
+                var d = doc.data() || {};
+                d._id = doc.id;
+                adminUsersCache.push(d);
+                var created = "";
+                if (d.createdAt && d.createdAt.toDate) {
+                    try { created = d.createdAt.toDate().toISOString().slice(0, 10); } catch (e) {}
+                } else if (d.createdAt) {
+                    created = String(d.createdAt).slice(0, 10);
+                }
+                if (created === today) todayCount++;
+            });
+            var t = document.getElementById("adminStatTotalUsers");
+            var td = document.getElementById("adminStatTodayUsers");
+            if (t) t.textContent = "Ümumi istifadəçi: " + adminUsersCache.length;
+            if (td) td.textContent = "Bugünkü qeydiyyat: " + todayCount;
+            if (document.getElementById("adminUsersSection").style.display !== "none") renderAdminUsers();
+        }).catch(function () {
+            var t = document.getElementById("adminStatTotalUsers");
+            if (t) t.textContent = "Ümumi istifadəçi: —";
+        });
+    }
+}
+
+function renderAdminUsers() {
+    var q = ((document.getElementById("adminUserSearch") || {}).value || "").toLowerCase();
+    var filter = ((document.getElementById("adminUserFilter") || {}).value) || "all";
+    var users = adminUsersCache.slice();
+    if (filter === "email") users = users.filter(function (u) { return (u.provider || "email") === "email" || (!u.provider && u.email); });
+    if (filter === "google") users = users.filter(function (u) { return u.provider === "google"; });
+    if (filter === "anon") users = users.filter(function (u) { return u.provider === "anon" || u.isAnonymous; });
+    if (filter === "blocked") users = users.filter(function (u) { return !!u.blocked; });
+    if (q) {
+        users = users.filter(function (u) {
+            return ((u.username || u.displayName || "") + " " + (u.email || "") + " " + (u.storeName || "")).toLowerCase().indexOf(q) >= 0;
+        });
+    }
+    var box = document.getElementById("adminUsersList");
+    if (!box) return;
+    if (!users.length) {
+        box.innerHTML = '<div style="padding:20px;color:var(--muted);text-align:center;">İstifadəçi yoxdur</div>';
+        return;
+    }
+    box.innerHTML = users.map(function (u) {
+        var id = u._id || u.email || "";
+        var name = escapeHtml(u.username || u.displayName || "—");
+        var email = escapeHtml(u.email || "");
+        var store = escapeHtml(u.storeName || "");
+        var phone = escapeHtml(u.phoneNumber || "");
+        var provider = escapeHtml(u.provider || "email");
+        var blocked = !!u.blocked;
+        var reason = escapeHtml(u.blockReason || "");
+        return '<div class="admin-user-card' + (blocked ? ' blocked' : '') + '">' +
+            '<div style="font-weight:700;font-size:14px;">' + name + '</div>' +
+            '<div style="font-size:12px;color:var(--muted);">' + email + ' · ' + provider + (store ? ' · ' + store : '') + '</div>' +
+            '<div style="font-size:11px;color:var(--muted);margin-top:4px;">' + phone + (blocked ? ' · BLOK: ' + reason : '') + '</div>' +
+            '<div style="display:flex;gap:6px;margin-top:8px;">' +
+            (blocked
+                ? '<button class="admin-btn admin-btn-success" style="height:30px;font-size:11px;" onclick="adminUnblockUser(\'' + id.replace(/'/g, "\\'") + '\')">Blokdan çıxar</button>'
+                : '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminBlockUser(\'' + id.replace(/'/g, "\\'") + '\')">Blokla</button>') +
+            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminDeleteUser(\'' + id.replace(/'/g, "\\'") + '\')">Sil</button>' +
+            '</div></div>';
+    }).join("");
+}
+
+function adminBlockUser(id) {
+    var reason = prompt("Blok səbəbi:");
+    if (reason == null) return;
+    if (!db) { showAppToast("Firebase yoxdur"); return; }
+    db.collection("users").doc(id).update({
+        blocked: true,
+        blockReason: reason,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+        showAppToast("Bloklandı");
+        loadAdminStats();
+    }).catch(function (e) { showAppToast("Xəta: " + e.message); });
+}
+
+function adminUnblockUser(id) {
+    if (!db) return;
+    db.collection("users").doc(id).update({
+        blocked: false,
+        blockReason: "",
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+        showAppToast("Blokdan çıxarıldı");
+        loadAdminStats();
+    }).catch(function (e) { showAppToast("Xəta: " + e.message); });
+}
+
+function adminDeleteUser(id) {
+    confirmAction("İstifadəçi silinsin?", function () {
+        if (!db) return;
+        db.collection("users").doc(id).delete().then(function () {
+            showAppToast("Silindi");
+            loadAdminStats();
+        }).catch(function (e) { showAppToast("Xəta: " + e.message); });
+    });
+}
+
+/* ===== DUPLICATE & CLONE ===== */
+function adminCheckDuplicates() {
+    var all = {};
+    var dups = [];
+    (adminEditDb || []).forEach(function (g, gi) {
+        if (!Array.isArray(g)) return;
+        g.forEach(function (m) {
+            var key = norm(String(m));
+            if (all[key] !== undefined) dups.push({ model: m, groups: [all[key], gi] });
+            else all[key] = gi;
+        });
+    });
+    if (!dups.length) {
+        showAppToast("Dublikat yoxdur");
+        return;
+    }
+    alert("Tapılan dublikatlar (" + dups.length + "):\n" + dups.slice(0, 40).map(function (d) {
+        return d.model + " (qrup " + d.groups.map(function (x) { return x + 1; }).join(", ") + ")";
+    }).join("\n"));
+}
+
+function adminCloneGroupPrompt() {
+    if (selectedAdminGroupIdx < 0 || selectedAdminGroupIdx >= adminEditDb.length) {
+        // use first open group or prompt index
+        var open = Array.from(adminOpenGroups);
+        if (open.length === 1) selectedAdminGroupIdx = open[0];
+        else {
+            var idx = prompt("Klonlanacaq qrup nömrəsi (1-" + adminEditDb.length + "):");
+            if (!idx) return;
+            selectedAdminGroupIdx = parseInt(idx, 10) - 1;
+        }
+    }
+    if (selectedAdminGroupIdx < 0 || selectedAdminGroupIdx >= adminEditDb.length) {
+        showAppToast("Qrup seçilməyib");
+        return;
+    }
+    var src = adminEditDb[selectedAdminGroupIdx];
+    var clone = Array.isArray(src) ? src.slice() : [];
+    adminEditDb.splice(selectedAdminGroupIdx + 1, 0, clone);
+    adminDirty = true;
+    adminOpenGroups.add(selectedAdminGroupIdx + 1);
+    renderAdminList();
+    showAppToast("Qrup klonlandı");
+}
+
+/* ===== CSV / BACKUP ===== */
+function adminExportCSV() {
+    var users = adminUsersCache || [];
+    var csv = "Ad,Email,Mağaza,Telefon,Provider,Blok,Səbəb\n";
+    users.forEach(function (u) {
+        csv += '"' + (u.username || u.displayName || "").replace(/"/g, '""') + '",';
+        csv += '"' + (u.email || "").replace(/"/g, '""') + '",';
+        csv += '"' + (u.storeName || "").replace(/"/g, '""') + '",';
+        csv += '"' + (u.phoneNumber || "").replace(/"/g, '""') + '",';
+        csv += '"' + (u.provider || "email") + '",';
+        csv += '"' + (u.blocked ? "Bəli" : "Xeyr") + '",';
+        csv += '"' + (u.blockReason || "").replace(/"/g, '""') + '"\n';
+    });
+    var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "protechtor_users.csv";
+    a.click();
+}
+
+function adminBackupJSON() {
+    var blob = new Blob([JSON.stringify(adminEditDb.length ? adminEditDb : database, null, 2)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Base_backup_" + new Date().toISOString().slice(0, 10) + ".json";
+    a.click();
+}
+
+/* ===== BROADCAST ===== */
+function adminSaveBroadcast() {
+    var text = ((document.getElementById("adminBroadcastInput") || {}).value || "").trim();
+    localStorage.setItem("pt_broadcast", text);
+    if (typeof db !== "undefined" && db && isAdmin) {
+        db.doc("app_data/broadcast").set({ text: text, updatedAt: Date.now() }).catch(function () {});
+    }
+    if (text) {
+        document.getElementById("broadcastText").textContent = text;
+        document.getElementById("broadcastBanner").style.display = "flex";
+        localStorage.removeItem("pt_broadcast_closed");
+    } else {
+        document.getElementById("broadcastBanner").style.display = "none";
+    }
+    showAppToast("Banner yeniləndi");
+}
+function closeBroadcastBanner() {
+    var t = document.getElementById("broadcastText").textContent;
+    document.getElementById("broadcastBanner").style.display = "none";
+    localStorage.setItem("pt_broadcast_closed", t);
+}
+function loadBroadcastToInput() {
+    var el = document.getElementById("adminBroadcastInput");
+    if (el) el.value = localStorage.getItem("pt_broadcast") || "";
+}
+function initBroadcastBanner() {
+    var bc = localStorage.getItem("pt_broadcast") || "";
+    var closed = localStorage.getItem("pt_broadcast_closed") || "";
+    if (bc && bc !== closed) {
+        document.getElementById("broadcastText").textContent = bc;
+        document.getElementById("broadcastBanner").style.display = "flex";
+    }
+    // try firestore
+    if (typeof db !== "undefined" && db) {
+        db.doc("app_data/broadcast").get().then(function (snap) {
+            if (snap.exists) {
+                var t = (snap.data() || {}).text || "";
+                if (t) {
+                    localStorage.setItem("pt_broadcast", t);
+                    if (t !== (localStorage.getItem("pt_broadcast_closed") || "")) {
+                        document.getElementById("broadcastText").textContent = t;
+                        document.getElementById("broadcastBanner").style.display = "flex";
+                    }
+                }
+            }
+        }).catch(function () {});
+    }
+}
+
+/* ===== MODEL REQUESTS ===== */
+function loadModelRequests() {
+    var box = document.getElementById("adminModelRequestsList");
+    if (!box) return;
+    var reqs = [];
+    try { reqs = JSON.parse(localStorage.getItem("pt_model_requests") || "[]"); } catch (e) {}
+    if (typeof db !== "undefined" && db) {
+        db.collection("model_requests").orderBy("createdAt", "desc").limit(30).get().then(function (snap) {
+            var list = [];
+            snap.forEach(function (doc) {
+                var d = doc.data() || {};
+                list.push({ id: doc.id, text: d.text || d.query || "", date: d.date || "", resolved: !!d.resolved });
+            });
+            if (list.length) renderModelRequestsList(list);
+            else renderModelRequestsList(reqs);
+        }).catch(function () { renderModelRequestsList(reqs); });
+    } else {
+        renderModelRequestsList(reqs);
+    }
+}
+function renderModelRequestsList(reqs) {
+    var box = document.getElementById("adminModelRequestsList");
+    if (!box) return;
+    reqs = (reqs || []).filter(function (r) { return !r.resolved; });
+    if (!reqs.length) {
+        box.textContent = "Sorğu yoxdur";
+        return;
+    }
+    box.innerHTML = reqs.map(function (r, i) {
+        var id = r.id || String(i);
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);">' +
+            '<span>' + escapeHtml(r.text) + ' <small style="color:var(--muted)">(' + escapeHtml(r.date || "") + ')</small></span>' +
+            '<button style="background:none;border:none;color:var(--accent-color);cursor:pointer;font-size:11px;" onclick="resolveModelRequest(\'' + String(id).replace(/'/g, "\\'") + '\',' + i + ')">Həll olundu</button></div>';
+    }).join("");
+}
+function resolveModelRequest(id, localIdx) {
+    var reqs = [];
+    try { reqs = JSON.parse(localStorage.getItem("pt_model_requests") || "[]"); } catch (e) {}
+    if (typeof localIdx === "number" && reqs[localIdx]) {
+        reqs.splice(localIdx, 1);
+        localStorage.setItem("pt_model_requests", JSON.stringify(reqs));
+    }
+    if (typeof db !== "undefined" && db && id && isNaN(Number(id)) === false ? false : true) {
+        // if id looks like firestore id
+        if (id && id.length > 8) {
+            db.collection("model_requests").doc(id).update({ resolved: true }).catch(function () {});
+        }
+    }
+    loadModelRequests();
+    showAppToast("Həll olundu");
+}
+function reportMissingModel(query) {
+    var q = query || ((document.getElementById("searchInput") || {}).value || "").trim();
+    if (!q) q = prompt("Model adı:");
+    if (!q) return;
+    var entry = { text: q, date: new Date().toISOString().slice(0, 10) };
+    var reqs = [];
+    try { reqs = JSON.parse(localStorage.getItem("pt_model_requests") || "[]"); } catch (e) {}
+    reqs.unshift(entry);
+    localStorage.setItem("pt_model_requests", JSON.stringify(reqs.slice(0, 50)));
+    if (typeof db !== "undefined" && db) {
+        db.collection("model_requests").add({
+            text: q,
+            date: entry.date,
+            resolved: false,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(function () {});
+    }
+    showAppToast("Sorğu göndərildi. Təşəkkürlər!");
+}
+
 function escapeHtml(s) {
     return String(s || "")
         .replace(/&/g, "&amp;")
@@ -2338,18 +2778,21 @@ function escapeHtml(s) {
 function adminAddGroup() {
     adminEditDb.push(["Yeni Model"]);
     adminOpenGroups.add(adminEditDb.length - 1);
+    adminDirty = true;
     renderAdminList();
     setAdminStatus("Yeni qrup əlavə edildi (#" + adminEditDb.length + ")");
     showAppToast("Yeni qrup əlavə olundu");
 }
 
 function adminDeleteGroup(gi) {
-    if (!confirm("Bu qrupu silmək istəyirsiniz?")) return;
-    adminEditDb.splice(gi, 1);
-    adminOpenGroups = new Set();
-    renderAdminList();
-    setAdminStatus("Qrup silindi. Qalan: " + adminEditDb.length);
-    showAppToast("Qrup silindi");
+    confirmAction("Bu qrupu silmək istəyirsiniz?", function () {
+        adminEditDb.splice(gi, 1);
+        adminOpenGroups = new Set();
+        adminDirty = true;
+        renderAdminList();
+        setAdminStatus("Qrup silindi. Qalan: " + adminEditDb.length);
+        showAppToast("Qrup silindi");
+    });
 }
 
 function adminAddModel(gi) {
@@ -2362,19 +2805,23 @@ function adminAddModel(gi) {
     if (!Array.isArray(adminEditDb[gi])) adminEditDb[gi] = [];
     adminEditDb[gi].push(val);
     adminOpenGroups.add(gi);
+    adminDirty = true;
     renderAdminList();
     setAdminStatus("Model əlavə edildi");
 }
 
 function adminDeleteModel(gi, mi) {
     if (!adminEditDb[gi]) return;
-    adminEditDb[gi].splice(mi, 1);
-    if (adminEditDb[gi].length === 0) {
-        adminEditDb.splice(gi, 1);
-        adminOpenGroups = new Set();
-    }
-    renderAdminList();
-    setAdminStatus("Model silindi");
+    confirmAction("Bu modeli silmək istəyirsiniz?", function () {
+        adminEditDb[gi].splice(mi, 1);
+        if (adminEditDb[gi].length === 0) {
+            adminEditDb.splice(gi, 1);
+            adminOpenGroups = new Set();
+        }
+        adminDirty = true;
+        renderAdminList();
+        setAdminStatus("Model silindi");
+    });
 }
 
 function adminNormalizeEditDb() {
@@ -2396,6 +2843,7 @@ function adminSaveDatabase() {
     updateLastUpdate();
     checkBlockStatus();
     indexFor = null;
+    adminDirty = false;
     setAdminStatus("Lokal yadda saxlanıldı · " + database.length + " qrup");
     showAppToast("✓ Baza lokal yadda saxlanıldı");
     triggerHaptic(40);
@@ -3300,10 +3748,10 @@ function renderChangelogHistory() {
 }
 
 const I18N = {
- az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur",fontSmall:"KİÇİK",fontNormal:"NORMAL",fontLarge:"BÖYÜK",secChangelog:"YENİLƏMƏ TARİXÇƏSİ"},
- ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета",fontSmall:"МАЛЕНЬКИЙ",fontNormal:"ОБЫЧНЫЙ",fontLarge:"БОЛЬШОЙ",secChangelog:"ИСТОРИЯ ОБНОВЛЕНИЙ"},
- en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet",fontSmall:"SMALL",fontNormal:"NORMAL",fontLarge:"LARGE",secChangelog:"UPDATE HISTORY"},
- tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok",fontSmall:"KÜÇÜK",fontNormal:"NORMAL",fontLarge:"BÜYÜK",secChangelog:"GÜNCELLEME GEÇMİŞİ"}
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung,Mi,iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",whatsapp:"WhatsApp ilə əlaqə",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Ağır animasiyaları məhdudlaşdırır",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur",fontSmall:"KİÇİK",fontNormal:"NORMAL",fontLarge:"BÖYÜK",secChangelog:"YENİLƏMƏ TARİXÇƏSİ",compatNote:"Ölçülər tam dəqiq olmaya bilər"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",whatsapp:"Связаться в WhatsApp",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Ограничивает тяжёлые анимации",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета",fontSmall:"МАЛЕНЬКИЙ",fontNormal:"ОБЫЧНЫЙ",fontLarge:"БОЛЬШОЙ",secChangelog:"ИСТОРИЯ ОБНОВЛЕНИЙ",compatNote:"Размеры могут быть не полностью точными"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",whatsapp:"Contact on WhatsApp",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Pitch",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Limits heavy animations",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet",fontSmall:"SMALL",fontNormal:"NORMAL",fontLarge:"LARGE",secChangelog:"UPDATE HISTORY",compatNote:"Dimensions may not be exact"},
+ tr:{title:"Cam koruyucu uyumluluğu",search:"Ara: Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN CAM KORUYUCULARI BİRBİRİYLE UYUMLUDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",whatsapp:"WhatsApp ile iletişim",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Ağır animasyonları sınırlar",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok",fontSmall:"KÜÇÜK",fontNormal:"NORMAL",fontLarge:"BÜYÜK",secChangelog:"GÜNCELLEME GEÇMİŞİ",compatNote:"Ölçüler tam olarak doğru olmayabilir"}
 };
 const PRIVACY = {"az": {"intro": "ProTechtor™ · MƏXFİLİK SİYASƏTİ VƏ İSTİFADƏ ŞƏRTLƏRİ\nProqramdan istifadə etməzdən əvvəl bütün 10 bəndi diqqətlə oxuyun.", "items": [["ÜMUMİ MÜDDƏALAR", ["Bu Məxfilik Siyasəti ProTechtor™ proqramının (bundan sonra – «Proqram») istifadəsi zamanı məlumatların toplanması, istifadəsi və mühafizəsi qaydalarını, habelə istifadəçilərin hüquq və öhdəliklərini müəyyən edir.", "Proqramın və bazanın mülkiyyət və müəllif hüquqları ©By Emin-ə məxsusdur.", "Proqramdan istifadə bu Siyasətin bütün şərtlərinin tam və qeyd-şərtsiz qəbul edilməsi deməkdir. Şərtlərlə razı olmayan şəxs Proqramdan istifadəni dayandırmalıdır."]], ["UYĞUNLUQ ÖLÇÜLƏRİNİN DƏQİQLİYİ (ƏSAS XƏBƏRDARLIQ)", ["Proqramda təqdim edilən qoruyucu şüşə uyğunluğu və ölçülər məlumat xarakteri daşıyır və TAM DƏQİQ OLMAYA BİLƏR. Cihaz modifikasiyaları, bölgə versiyaları, istehsal partiyaları və istehsalçı fərqləri real ölçülərə təsir edə bilər.", "İstifadəçi məhsulu satmazdan, kəsməzdən, yapışdırmazdan və ya tətbiq etməzdən əvvəl cihazın və məhsulun ölçülərini MÜSTƏQİL ŞƏKİLDƏ ÖLÇMƏLİ və uyğunluğu özü yoxlamalıdır.", "Proqramdakı məlumatlara əsaslanan qərarlara, alınmış və ya satılmış məhsullara, yarana biləcək maddi zərərə və cihazın zədələnməsinə görə məsuliyyət istifadəçiyə aiddir. Operator bu hallara görə qanunvericiliklə icazə verilən maksimal həddə məsuliyyət daşımır."]], ["TOPLANAN MƏLUMATLAR", ["Proqram yalnız qeydiyyat və ya giriş zamanı istifadəçi tərəfindən təqdim edilən və ya seçilmiş giriş üsulu ilə əldə olunan məlumatları emal edir: ləqəb, e-poçt ünvanı, telefon nömrəsi, mağaza adı və ünvanı, Google hesabının e-poçt ünvanı, anonim girişdə sistemin yaratdığı texniki identifikator.", "Giriş etmədən məhdud istifadə zamanı şəxsi məlumat tələb olunmur. Proqram məkan məlumatlarını, reklam və davranış izləmə alətlərini istifadə etmir."]], ["İSTİFADƏ MƏQSƏDİ VƏ ÖTÜRÜLMƏ", ["Məlumatlar yalnız hesabın identifikasiyası, girişin təmin olunması, axtarış limitlərinin tətbiqi, profilin idarə edilməsi, əlaqə və təhlükəsizlik məqsədilə istifadə olunur.", "Məlumatlar satılmır, reklam məqsədilə istifadə edilmir və qanuni əsas olmadan üçüncü şəxslərə ötürülmür. Qanunvericiliyin tələbi ilə səlahiyyətli dövlət orqanlarına təqdim edilə bilər."]], ["YERLİ YADDAŞ", ["Proqram cihazın yerli yaddaşından (Local Storage) istifadə edir: mövzu, şrift, dil, səs və vibrasiya parametrləri, baza surəti, axtarış limiti sayğacları və son axtarışlar.", "Bu məlumatlar cihazda qalır və brauzer yaddaşı təmizləndikdə silinir."]], ["ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ", ["Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.", "Operator üçüncü tərəf xidmətlərinin fəaliyyətinə və qaydalarına görə məsuliyyət daşımır."]], ["MƏLUMATLARIN MÜHAFİZƏSİ VƏ İSTİFADƏÇİ HÜQUQLARI", ["Operator məlumatların qorunması üçün məqbul texniki və təşkilati tədbirlər görür. İnternet üzərindən ötürmənin mütləq təhlükəsizliyi təmin edilə bilməz.", "Məlumatlar hesab aktiv olduğu müddətdə saxlanılır. İstifadəçi öz məlumatlarına baxmaq, onları düzəltmək (Profil bölməsi) və silinməsini tələb etmək hüququna malikdir. Müraciət «Əlaqə» bölməsindəki WhatsApp vasitəsilə həyata keçirilir."]], ["UŞAQLARIN HÜQUQLARI", ["Qeydiyyat yalnız 18 yaşı tamam olmuş şəxslər üçün nəzərdə tutulub. 18 yaşınadək şəxslərin məlumatları qanuni nümayəndənin (valideyn, himayəçi) razılığı olmadan toplanmır.", "Operator uşaqlardan məlumatı bilərəkdən toplamır. Belə məlumatın aşkar edilməsi halında o, dərhal silinir. Valideyn və ya qanuni nümayəndə uşağa aid məlumatın silinməsini istənilən vaxt tələb edə bilər."]], ["MAĞAZA İSTİFADƏÇİLƏRİNİN HÜQUQ VƏ ÖHDƏLİKLƏRİ", ["Mağaza adı, ünvanı və telefon nömrəsi dəqiq və aktual olmalıdır. Saxta məlumatla və ya üçüncü şəxsin adından qeydiyyat qadağandır.", "Mağaza öz müştəriləri qarşısında satış, zəmanət və geri qaytarma üzrə məsuliyyəti özü daşıyır. Proqram mağaza ilə müştəri arasındakı münasibətlərin tərəfi deyil.", "Mağaza öz profil məlumatlarını idarə etmək, düzəltmək və silinməsini tələb etmək hüququna malikdir. Qaydalar pozulduqda, sui-istifadə və ya bazanın icazəsiz surətinin çıxarılması halında Operator hesabı məhdudlaşdırmaq və ya silmək hüququnu saxlayır."]], ["MƏSULİYYƏT, DƏYİŞİKLİKLƏR VƏ HÜQUQİ TƏNZİMLƏMƏ", ["Baza ardıcıl 3 (üç) gün yenilənmədikdə Proqramın fəaliyyəti avtomatik məhdudlaşdırılır; bərpa üçün internetə qoşulub bazanı yeniləmək lazımdır.", "ProTechtor™ adı, Proqram, baza və dizayn ©By Emin-in mülkiyyətidir. İcazəsiz surətçıxarma, yayma və kommersiya məqsədilə istifadə qadağandır.", "Operator Siyasətə birtərəfli qaydada dəyişiklik etmək hüququnu saxlayır; yeni redaksiya Proqramda dərc edildiyi andan qüvvəyə minir. Münasibətlər Azərbaycan Respublikasının qüvvədə olan qanunvericiliyi ilə tənzimlənir."]]], "foot": "ProTechtor™ · ©By Emin · Bütün hüquqlar qorunur."}, "ru": {"intro": "ProTechtor™ · ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ И УСЛОВИЯ ИСПОЛЬЗОВАНИЯ\nПеред использованием приложения внимательно прочитайте все 10 пунктов.", "foot": "ProTechtor™ · ©By Emin · Все права защищены.", "items": [["ОБЩИЕ ПОЛОЖЕНИЯ", ["Настоящая Политика конфиденциальности определяет правила сбора, использования и защиты данных при использовании приложения ProTechtor™ (далее — «Приложение»), а также права и обязанности пользователей.", "Права собственности и авторские права на Приложение и его базу данных принадлежат ©By Emin.", "Использование Приложения означает полное и безоговорочное принятие всех условий настоящей Политики. Лицо, не согласное с условиями, должно прекратить использование Приложения."]], ["ТОЧНОСТЬ ДАННЫХ О СОВМЕСТИМОСТИ И РАЗМЕРАХ (ГЛАВНОЕ ПРЕДУПРЕЖДЕНИЕ)", ["Информация о совместимости и размерах защитных стёкол, представленная в Приложении, носит справочный характер и МОЖЕТ БЫТЬ НЕ ПОЛНОСТЬЮ ТОЧНОЙ. Модификации устройств, региональные версии, производственные партии и различия между производителями могут влиять на фактические размеры.", "Перед продажей, нарезкой, наклеиванием или применением продукта пользователь ОБЯЗАН САМОСТОЯТЕЛЬНО ИЗМЕРИТЬ устройство и продукт и лично проверить совместимость.", "Ответственность за решения, принятые на основании информации в Приложении, за приобретённые или проданные товары, а также за возможный материальный ущерб и повреждение устройства лежит на пользователе. В максимально допустимой законом степени Оператор не несёт ответственности в таких случаях."]], ["СОБИРАЕМЫЕ ДАННЫЕ", ["Приложение обрабатывает только данные, предоставленные пользователем при регистрации или входе либо полученные через выбранный способ входа: псевдоним, адрес электронной почты, номер телефона, название и адрес магазина, адрес электронной почты аккаунта Google, а при анонимном входе — технический идентификатор, созданный системой.", "При ограниченном использовании без входа персональные данные не запрашиваются. Приложение не использует данные о местоположении, рекламные инструменты и инструменты отслеживания поведения."]], ["ЦЕЛИ ИСПОЛЬЗОВАНИЯ И ПЕРЕДАЧА ДАННЫХ", ["Данные используются исключительно для идентификации аккаунта, обеспечения входа, применения лимитов поиска, управления профилем, связи и обеспечения безопасности.", "Данные не продаются, не используются в рекламных целях и не передаются третьим лицам без законных оснований. Они могут быть предоставлены уполномоченным государственным органам в случаях, предусмотренных законодательством."]], ["ЛОКАЛЬНОЕ ХРАНИЛИЩЕ", ["Приложение использует локальное хранилище устройства (Local Storage): тему, размер шрифта, язык, настройки звука и вибрации, копию базы данных, счётчики лимита поиска и последние запросы.", "Эти данные остаются на устройстве и удаляются при очистке памяти браузера."]], ["СТОРОННИЕ СЕРВИСЫ", ["Приложение использует сервисы Google Firebase (Authentication и Firestore) и вход через аккаунт Google. При переходе в WhatsApp дальнейший процесс регулируется правилами этой платформы.", "Оператор не несёт ответственности за работу и правила сторонних сервисов."]], ["ЗАЩИТА ДАННЫХ И ПРАВА ПОЛЬЗОВАТЕЛЕЙ", ["Оператор принимает разумные технические и организационные меры для защиты данных. Абсолютная безопасность передачи данных через интернет не может быть гарантирована.", "Данные хранятся, пока аккаунт активен. Пользователь вправе просматривать свои данные, исправлять их (в разделе «Профиль») и требовать их удаления. Обращение осуществляется через WhatsApp в разделе «Связь»."]], ["ПРАВА ДЕТЕЙ", ["Регистрация предназначена только для лиц, достигших 18 лет. Данные лиц младше 18 лет не собираются без согласия законного представителя (родителя, опекуна).", "Оператор не собирает данные детей сознательно. В случае обнаружения таких данных они немедленно удаляются. Родитель или законный представитель может в любое время потребовать удаления данных ребёнка."]], ["ПРАВА И ОБЯЗАННОСТИ МАГАЗИНОВ", ["Название, адрес и номер телефона магазина должны быть точными и актуальными. Регистрация с ложными данными или от имени третьего лица запрещена.", "Магазин самостоятельно несёт ответственность перед своими клиентами за продажу, гарантию и возврат. Приложение не является стороной отношений между магазином и клиентами.", "Магазин вправе управлять данными своего профиля, исправлять их и требовать их удаления. В случае нарушения правил, злоупотреблений или несанкционированного копирования базы данных Оператор оставляет за собой право ограничить или удалить аккаунт."]], ["ОТВЕТСТВЕННОСТЬ, ИЗМЕНЕНИЯ И ПРИМЕНИМОЕ ПРАВО", ["Если база данных не обновляется 3 (три) дня подряд, работа Приложения автоматически ограничивается; для восстановления необходимо подключиться к интернету и обновить базу.", "Название ProTechtor™, Приложение, база данных и дизайн являются собственностью ©By Emin. Несанкционированное копирование, распространение и коммерческое использование запрещены.", "Оператор оставляет за собой право в одностороннем порядке вносить изменения в Политику; новая редакция вступает в силу с момента публикации в Приложении. Отношения регулируются действующим законодательством Азербайджанской Республики."]]]}, "tr": {"intro": "ProTechtor™ · GİZLİLİK POLİTİKASI VE KULLANIM KOŞULLARI\nUygulamayı kullanmadan önce 10 maddenin tamamını dikkatle okuyunuz.", "foot": "ProTechtor™ · ©By Emin · Tüm hakları saklıdır.", "items": [["GENEL HÜKÜMLER", ["Bu Gizlilik Politikası, ProTechtor™ uygulamasının (bundan sonra “Uygulama”) kullanımı sırasında verilerin toplanması, kullanılması ve korunmasına ilişkin kuralları ile kullanıcıların hak ve yükümlülüklerini belirler.", "Uygulamanın ve veri tabanının mülkiyet ve telif hakları ©By Emin'e aittir.", "Uygulamanın kullanılması, bu Politikanın tüm koşullarının tam ve kayıtsız şartsız kabul edildiği anlamına gelir. Koşulları kabul etmeyen kişi Uygulamayı kullanmayı bırakmalıdır."]], ["UYUMLULUK VE ÖLÇÜ BİLGİLERİNİN DOĞRULUĞU (ÖNEMLİ UYARI)", ["Uygulamada sunulan cam koruyucu uyumluluğu ve ölçü bilgileri bilgilendirme niteliğindedir ve TAM DOĞRU OLMAYABİLİR. Cihaz modifikasyonları, bölgesel sürümler, üretim partileri ve üretici farklılıkları gerçek ölçüleri etkileyebilir.", "Kullanıcı, ürünü satmadan, kesmeden, yapıştırmadan veya uygulamadan önce cihazın ve ürünün ölçülerini KENDİSİ ÖLÇMELİ ve uyumluluğu bizzat kontrol etmelidir.", "Uygulamadaki bilgilere dayanarak verilen kararlardan, satın alınan veya satılan ürünlerden, ortaya çıkabilecek maddi zarardan ve cihazın hasar görmesinden kullanıcı sorumludur. İşletmeci, bu durumlardan dolayı yasaların izin verdiği azami ölçüde sorumluluk kabul etmez."]], ["TOPLANAN VERİLER", ["Uygulama yalnızca kayıt veya giriş sırasında kullanıcı tarafından sağlanan ya da seçilen giriş yöntemiyle elde edilen verileri işler: takma ad, e-posta adresi, telefon numarası, mağaza adı ve adresi, Google hesabının e-posta adresi, anonim girişte ise sistem tarafından oluşturulan teknik tanımlayıcı.", "Giriş yapmadan sınırlı kullanımda kişisel veri istenmez. Uygulama konum verilerini, reklam ve davranış izleme araçlarını kullanmaz."]], ["KULLANIM AMACI VE AKTARIM", ["Veriler yalnızca hesabın tanımlanması, girişin sağlanması, arama sınırlarının uygulanması, profilin yönetilmesi, iletişim ve güvenlik amacıyla kullanılır.", "Veriler satılmaz, reklam amacıyla kullanılmaz ve hukuki dayanak olmaksızın üçüncü kişilere aktarılmaz. Mevzuatın gerektirdiği hâllerde yetkili devlet kurumlarına sunulabilir."]], ["YEREL DEPOLAMA", ["Uygulama, cihazın yerel depolama alanını (Local Storage) kullanır: tema, yazı boyutu, dil, ses ve titreşim ayarları, veri tabanı kopyası, arama sınırı sayaçları ve son aramalar.", "Bu veriler cihazda kalır ve tarayıcı belleği temizlendiğinde silinir."]], ["ÜÇÜNCÜ TARAF HİZMETLERİ", ["Uygulama, Google Firebase (Authentication ve Firestore) hizmetlerini ve Google hesabıyla girişi kullanır. WhatsApp'a geçiş yapıldığında süreç söz konusu platformun kurallarına tabi olur.", "İşletmeci, üçüncü taraf hizmetlerinin işleyişinden ve kurallarından sorumlu değildir."]], ["VERİLERİN KORUNMASI VE KULLANICI HAKLARI", ["İşletmeci, verilerin korunması için makul teknik ve idari tedbirler alır. İnternet üzerinden iletimin mutlak güvenliği garanti edilemez.", "Veriler hesap etkin olduğu sürece saklanır. Kullanıcı, verilerini görme, düzeltme (Profil bölümünde) ve silinmesini talep etme hakkına sahiptir. Başvuru, “İletişim” bölümündeki WhatsApp üzerinden yapılır."]], ["ÇOCUKLARIN HAKLARI", ["Kayıt yalnızca 18 yaşını doldurmuş kişiler için öngörülmüştür. 18 yaşın altındaki kişilerin verileri yasal temsilcinin (ebeveyn, vasi) onayı olmaksızın toplanmaz.", "İşletmeci çocuklardan bilerek veri toplamaz. Bu tür bir verinin tespit edilmesi hâlinde veri derhal silinir. Ebeveyn veya yasal temsilci, çocuğa ait verinin silinmesini her zaman talep edebilir."]], ["MAĞAZA KULLANICILARININ HAK VE YÜKÜMLÜLÜKLERİ", ["Mağaza adı, adresi ve telefon numarası doğru ve güncel olmalıdır. Sahte bilgilerle veya üçüncü bir kişi adına kayıt yaptırmak yasaktır.", "Mağaza, müşterilerine karşı satış, garanti ve iade konularındaki sorumluluğu kendisi taşır. Uygulama, mağaza ile müşteri arasındaki ilişkilerin tarafı değildir.", "Mağaza, profil verilerini yönetme, düzeltme ve silinmesini talep etme hakkına sahiptir. Kuralların ihlali, kötüye kullanım veya veri tabanının izinsiz kopyalanması hâlinde İşletmeci hesabı kısıtlama veya silme hakkını saklı tutar."]], ["SORUMLULUK, DEĞİŞİKLİKLER VE UYGULANACAK HUKUK", ["Veri tabanı art arda 3 (üç) gün güncellenmezse Uygulamanın çalışması otomatik olarak kısıtlanır; yeniden çalıştırmak için internete bağlanıp veri tabanını güncellemek gerekir.", "ProTechtor™ adı, Uygulama, veri tabanı ve tasarım ©By Emin'in mülkiyetindedir. İzinsiz kopyalama, dağıtma ve ticari amaçla kullanma yasaktır.", "İşletmeci, Politikada tek taraflı değişiklik yapma hakkını saklı tutar; yeni sürüm Uygulamada yayımlandığı andan itibaren yürürlüğe girer. İlişkiler, Azerbaycan Cumhuriyeti'nin yürürlükteki mevzuatıyla düzenlenir."]]]}, "en": {"intro": "ProTechtor™ · PRIVACY POLICY AND TERMS OF USE\nPlease read all 10 clauses carefully before using the application.", "foot": "ProTechtor™ · ©By Emin · All rights reserved.", "items": [["GENERAL PROVISIONS", ["This Privacy Policy sets out the rules for the collection, use and protection of data when using the ProTechtor™ application (hereinafter, the “Application”), as well as the rights and obligations of users.", "The ownership and copyright of the Application and its database belong to ©By Emin.", "Use of the Application constitutes full and unconditional acceptance of all terms of this Policy. A person who does not agree with these terms must stop using the Application."]], ["ACCURACY OF COMPATIBILITY AND SIZE DATA (MAIN WARNING)", ["The screen protector compatibility and size information provided in the Application is for reference only and MAY NOT BE FULLY ACCURATE. Device modifications, regional versions, production batches and manufacturer differences may affect actual dimensions.", "Before selling, cutting, attaching or applying a product, the user MUST MEASURE the device and the product INDEPENDENTLY and verify compatibility personally.", "Responsibility for decisions based on the information in the Application, for products purchased or sold, and for any financial loss or damage to a device that may result lies with the user. To the maximum extent permitted by law, the Operator bears no liability for such cases."]], ["DATA COLLECTED", ["The Application processes only the data provided by the user during registration or login, or obtained through the chosen login method: nickname, email address, phone number, store name and address, the email address of the Google account and, for anonymous login, a technical identifier created by the system.", "Limited use without logging in does not require personal data. The Application does not use location data, advertising or behavioural tracking tools."]], ["PURPOSE OF USE AND DISCLOSURE", ["Data is used solely for account identification, providing access, applying search limits, managing the profile, communication and security.", "Data is not sold, is not used for advertising, and is not disclosed to third parties without a lawful basis. It may be provided to authorised state bodies where required by law."]], ["LOCAL STORAGE", ["The Application uses the device's local storage (Local Storage): theme, font, language, sound and vibration settings, a copy of the database, search limit counters and recent searches.", "This data remains on the device and is deleted when the browser storage is cleared."]], ["THIRD-PARTY SERVICES", ["The Application uses Google Firebase services (Authentication and Firestore) and Google account sign-in. When you switch to WhatsApp, the process is governed by the rules of that platform.", "The Operator is not responsible for the operation or rules of third-party services."]], ["DATA PROTECTION AND USER RIGHTS", ["The Operator takes reasonable technical and organisational measures to protect data. The absolute security of transmission over the internet cannot be guaranteed.", "Data is kept while the account is active. The user has the right to view their data, correct it (in the Profile section) and request its deletion. Requests are made via WhatsApp in the “Contact” section."]], ["RIGHTS OF CHILDREN", ["Registration is intended only for persons who have reached 18 years of age. Data of persons under 18 is not collected without the consent of a legal representative (parent or guardian).", "The Operator does not knowingly collect data from children. If such data is discovered, it is deleted immediately. A parent or legal representative may request deletion of a child's data at any time."]], ["RIGHTS AND OBLIGATIONS OF STORE USERS", ["The store name, address and phone number must be accurate and up to date. Registration with false information or in the name of a third party is prohibited.", "The store is itself responsible to its customers for sales, warranty and returns. The Application is not a party to relations between a store and its customers.", "A store has the right to manage and correct its profile data and to request its deletion. In case of violations, abuse or unauthorised copying of the database, the Operator reserves the right to restrict or delete the account."]], ["LIABILITY, CHANGES AND GOVERNING LAW", ["If the database is not updated for 3 (three) consecutive days, the operation of the Application is automatically restricted; to restore it, connect to the internet and update the database.", "The ProTechtor™ name, the Application, the database and the design are the property of ©By Emin. Unauthorised copying, distribution and commercial use are prohibited.", "The Operator reserves the right to amend the Policy unilaterally; the new version takes effect upon publication in the Application. Relations are governed by the applicable legislation of the Republic of Azerbaijan."]]]}};
 const PP_COLORS = ["#d4af37","#ef5350","#26c6da","#66bb6a","#ab47bc","#5c9dff","#ffa726","#ec407a","#26a69a","#ff7043"];
@@ -3532,7 +3980,17 @@ function showNotFound(query) {
     a.rel = "noopener";
     a.href = "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent("Salam, ProTechtor™: bazada tapılmayan model — " + query);
     a.innerText = t("nfBtn");
+    a.addEventListener("click", function () { reportMissingModel(query); });
     results.appendChild(a);
+
+    // also auto-save request to admin panel once per query
+    try {
+        var key = "pt_nf_" + String(query).toLowerCase();
+        if (!sessionStorage.getItem(key)) {
+            sessionStorage.setItem(key, "1");
+            reportMissingModel(query);
+        }
+    } catch (e) {}
 }
 
 function highlightMatch(text, query) {
