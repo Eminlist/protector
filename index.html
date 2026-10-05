@@ -1217,6 +1217,10 @@
         .auth-box{position:relative;max-height:92vh;overflow-y:auto}
         .auth-box button.auth-close{position:absolute;top:10px;right:10px;width:36px;height:36px;padding:0;margin:0;background:var(--surface-2);color:var(--accent-color);font-size:20px;border-radius:10px;line-height:1}
         .auth-box button.alt{background:transparent;color:var(--text);border:1px solid var(--border);font-weight:700}
+        .auth-box button.m-card{display:flex;align-items:center;gap:12px;text-align:left;background:var(--surface-2);color:var(--text);border:1px solid var(--border);font-weight:700;padding:11px 12px;margin-top:8px}
+        .m-ico{min-width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#111}
+        .m-txt{display:flex;flex-direction:column;line-height:1.25}
+        .m-txt small{font-weight:500;font-size:11px;color:var(--muted)}
         .auth-sep{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin-top:14px}
         .auth-sep:before,.auth-sep:after{content:"";flex:1;height:1px;background:var(--border)}
         .auth-note{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
@@ -1245,19 +1249,31 @@
     <div class="auth-box">
         <button class="auth-close" onclick="closeAuthModal()" aria-label="Bağla">&times;</button>
         <!-- İLK EKRAN: GİRİŞ (LOGIN) -->
-        <div id="loginFormContainer">
-            <h3>Sistemə Giriş</h3>
-            <p id="authInfo" style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Axtarış limitiniz bitdi. Davam etmək üçün daxil olun.</p>
+        <div id="methodChooser">
+            <h3>Giriş və Qeydiyyat</h3>
+            <p id="authInfo" style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Davam etmək üçün üsul seçin.</p>
+            <button class="m-card" onclick="switchAuthMode('login')">
+                <span class="m-ico" style="background:#d4af37">&#9993;</span>
+                <span class="m-txt">E-poçt və parol<small>Giriş və ya yeni qeydiyyat (mağaza profili ilə)</small></span>
+            </button>
+            <button class="m-card" onclick="signInGoogle()">
+                <span class="m-ico" style="background:#fff;color:#4285F4">G</span>
+                <span class="m-txt">Google hesabı<small>Bir toxunuşla giriş və qeydiyyat</small></span>
+            </button>
+            <button class="m-card" id="anonBtn" onclick="signInAnon()">
+                <span class="m-ico" style="background:#9e9e9e">&#128100;</span>
+                <span class="m-txt">Anonim davam et<small id="anonNote">Cəmi 5 əlavə axtarış. Bitdikdən sonra qeydiyyat tələb olunur.</small></span>
+            </button>
+        </div>
+
+        <div id="loginFormContainer" style="display: none;">
+            <h3>E-poçt ilə Giriş</h3>
             <input type="email" id="logEmail" placeholder="E-poçt ünvanınız">
             <input type="password" id="logPass" placeholder="Parol">
             <button onclick="loginUser()">Daxil Ol</button>
             <span class="auth-toggle" onclick="switchAuthMode('forgot')">Parolumu unutmuşam</span>
             <span class="auth-toggle" onclick="switchAuthMode('register')">Hesabınız yoxdur? Qeydiyyat</span>
-            <div class="auth-sep"><span>və ya</span></div>
-            <button class="alt" onclick="signInGoogle()">Google ilə davam et</button>
-            <button class="alt" onclick="switchAuthMode('phone')">Telefon nömrəsi ilə davam et</button>
-            <button class="alt" id="anonBtn" onclick="signInAnon()">Anonim davam et (5 axtarış)</button>
-            <div class="auth-note" id="anonNote">Anonim istifadədə cəmi 5 əlavə axtarış hüququ verilir. Limit bitdikdən sonra qeydiyyat tələb olunur.</div>
+            <span class="auth-toggle" onclick="switchAuthMode('choose')">‹ Üsulları göstər</span>
         </div>
 
         <!-- QEYDİYYAT — yalnız istəyəndə açılır -->
@@ -1282,26 +1298,6 @@
             <button onclick="registerUser()">Qeydiyyatı Tamamla</button>
             <span class="auth-toggle" onclick="switchAuthMode('login')">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
         </div>
-
-        <div id="phoneFormContainer" style="display: none;">
-            <h3>Telefonla Giriş / Qeydiyyat</h3>
-            <div class="phone-field">
-                <div class="phone-code-box">
-                    <div class="phone-flag-circle" title="Azərbaycan"><img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt="AZ" width="28" height="28" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
-                    <span class="phone-prefix">+994</span>
-                </div>
-                <div class="phone-input-box">
-                    <input type="tel" id="authPhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="__ ___ __ __" maxlength="12">
-                </div>
-            </div>
-            <button id="sendCodeBtn" onclick="sendPhoneCode()">SMS kod göndər</button>
-            <div id="codeBox" style="display:none;">
-                <input type="text" id="smsCode" inputmode="numeric" maxlength="6" placeholder="SMS kod (6 rəqəm)">
-                <button onclick="confirmPhoneCode()">Təsdiqlə</button>
-            </div>
-            <span class="auth-toggle" onclick="switchAuthMode('login')">Geri</span>
-        </div>
-        <div id="recaptcha-container"></div>
 
         <div id="forgotFormContainer" style="display: none;">
             <h3>Parolu Bərpa Et</h3>
@@ -1657,7 +1653,7 @@
             <section class="pp-item" style="--c:#5c9dff;--cb:rgba(92,157,255,0.16)">
                 <div class="pp-head"><span class="pp-num">06</span><span class="pp-title">ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ</span></div>
                 <div class="pp-body">
-                    <p><b class="pp-sub">6.1</b>Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən, SMS vasitəsilə telefon doğrulamasından və Google reCAPTCHA-dan istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.</p>
+                    <p><b class="pp-sub">6.1</b>Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.</p>
                     <p><b class="pp-sub">6.2</b>Operator üçüncü tərəf xidmətlərinin fəaliyyətinə və qaydalarına görə məsuliyyət daşımır.</p>
                 </div>
             </section>
@@ -2013,7 +2009,7 @@ function onPhoneInput(e) {
 }
 
 function initPhoneMasks() {
-    ["regPhone", "profPhone", "authPhone"].forEach(function (id) {
+    ["regPhone", "profPhone"].forEach(function (id) {
         const el = document.getElementById(id);
         if (!el) return;
         el.addEventListener("input", onPhoneInput);
@@ -2431,7 +2427,7 @@ function openAuthModal(reason) {
     const ab = document.getElementById("anonBtn"), an = document.getElementById("anonNote");
     if (ab) ab.style.display = hideAnon ? "none" : "block";
     if (an) an.style.display = hideAnon ? "none" : "block";
-    switchAuthMode("login");
+    switchAuthMode("choose");
     document.getElementById("auth-modal").style.display = "flex";
 }
 
@@ -2441,10 +2437,10 @@ function closeAuthModal() {
 }
 
 function switchAuthMode(mode) {
+    document.getElementById("methodChooser").style.display = mode === "choose" ? "block" : "none";
     document.getElementById("registerFormContainer").style.display = mode === "register" ? "block" : "none";
     document.getElementById("loginFormContainer").style.display = mode === "login" ? "block" : "none";
     document.getElementById("forgotFormContainer").style.display = mode === "forgot" ? "block" : "none";
-    document.getElementById("phoneFormContainer").style.display = mode === "phone" ? "block" : "none";
     document.getElementById("authMsg").innerText = "";
 }
 
@@ -2460,14 +2456,11 @@ function authErrText(err) {
     if (c === "auth/popup-blocked") return "Brauzer pəncərəni blokladı. İcazə verib yenidən cəhd edin.";
     if (c === "auth/unauthorized-domain") return "Bu domen Firebase-də icazəli deyil (Authorized domains).";
     if (c === "auth/operation-not-allowed") return "Bu giriş üsulu Firebase-də aktiv deyil və ya region bloklanıb.";
-    if (c === "auth/invalid-phone-number") return "Telefon nömrəsi yanlışdır.";
     if (c === "auth/too-many-requests") return "Çox cəhd edildi. Bir az sonra yenidən yoxlayın.";
-    if (c === "auth/invalid-verification-code") return "SMS kod yanlışdır.";
-    if (c === "auth/code-expired") return "SMS kodun vaxtı bitib. Yenisini göndərin.";
     return "Xəta: " + ((err && err.message) || "naməlum");
 }
 
-// Google / Telefon ilə girişdən sonra: profil tamamlanmayıbsa Şəxsi səhifəyə yönləndir
+// Google ilə girişdən sonra: profil tamamlanmayıbsa Şəxsi səhifəyə yönləndir
 function afterSocialLogin(cred) {
     const user = cred.user;
     const ref = db.collection("users").doc(user.uid);
@@ -2475,7 +2468,6 @@ function afterSocialLogin(cred) {
         const needsProfile = !doc.exists || !(doc.data() && doc.data().username);
         const base = {
             email: user.email || "",
-            phoneNumber: user.phoneNumber || "",
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         if (!doc.exists) base.createdAt = firebase.firestore.FieldValue.serverTimestamp();
@@ -2507,36 +2499,6 @@ function signInAnon() {
         document.getElementById("auth-modal").style.display = "none";
         showAppToast("Anonim rejim: " + (ANON_LIMIT - used) + " axtarış hüququnuz var. Sonra qeydiyyat tələb olunacaq.");
     }).catch((err) => authMsgSet(authErrText(err)));
-}
-
-let phoneConfirmation = null, phoneRecaptcha = null;
-
-function sendPhoneCode() {
-    const digits = extractPhoneDigits(document.getElementById("authPhone").value);
-    if (digits.length !== 9) { authMsgSet("Telefon nömrəsini tam daxil edin!"); return; }
-    const btn = document.getElementById("sendCodeBtn");
-    btn.disabled = true;
-    authMsgSet("SMS kod göndərilir...", "var(--muted)");
-    try {
-        if (!phoneRecaptcha) phoneRecaptcha = new firebase.auth.RecaptchaVerifier("recaptcha-container", { size: "invisible" });
-    } catch (e) { btn.disabled = false; authMsgSet(authErrText(e)); return; }
-    auth.signInWithPhoneNumber("+994" + digits, phoneRecaptcha).then((c) => {
-        phoneConfirmation = c;
-        document.getElementById("codeBox").style.display = "block";
-        btn.disabled = false;
-        authMsgSet("SMS kod göndərildi.", "green");
-    }).catch((err) => {
-        try { phoneRecaptcha.clear(); } catch (e) {}
-        phoneRecaptcha = null;
-        btn.disabled = false;
-        authMsgSet(authErrText(err));
-    });
-}
-
-function confirmPhoneCode() {
-    const code = document.getElementById("smsCode").value.trim();
-    if (!phoneConfirmation || code.length < 6) { authMsgSet("6 rəqəmli SMS kodu daxil edin!"); return; }
-    phoneConfirmation.confirm(code).then(afterSocialLogin).catch((err) => authMsgSet(authErrText(err)));
 }
 
 function registerUser() {
