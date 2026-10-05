@@ -1,4 +1,4 @@
-const CACHE_NAME = 'protector-v2';
+const CACHE_NAME = 'protector-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -19,14 +19,15 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Şəbəkə birinci: yeni versiya dərhal görünür, offline olduqda keşdən açılır
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET' || new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
-    fetch(e.request).then((res) => {
-      const copy = res.clone();
-      caches.open(CACHE_NAME).then((c) => c.put(e.request, copy));
+    fetch(e.request, { cache: 'no-store' }).then((res) => {
+      if (res && res.ok) {
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then((c) => c.put(e.request, copy));
+      }
       return res;
-    }).catch(() => caches.match(e.request))
+    }).catch(() => caches.match(e.request, { ignoreSearch: true }))
   );
 });
