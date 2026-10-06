@@ -6214,10 +6214,35 @@ function afterSocialLogin(cred) {
     });
 }
 
+function hasNativeGoogle() {
+    try { return !!(window.PTAndroid && typeof window.PTAndroid.googleSignIn === "function"); } catch (e) { return false; }
+}
+
+function nativeGoogleToken() {
+    return new Promise(function (resolve, reject) {
+        const mine = { res: resolve, rej: reject };
+        window.__ptG = mine;
+        if (typeof window.__ptGoogleDone !== "function") {
+            window.__ptGoogleDone = function (tok, err) {
+                const g = window.__ptG;
+                window.__ptG = null;
+                if (!g) return;
+                if (tok) g.res(tok); else g.rej({ code: err || "auth/popup-closed-by-user", message: err || "" });
+            };
+        }
+        try { window.PTAndroid.googleSignIn(); } catch (e) { window.__ptG = null; reject({ code: "auth/internal-error" }); return; }
+        setTimeout(function () {
+            if (window.__ptG === mine) { window.__ptG = null; reject({ code: "auth/timeout" }); }
+        }, 120000);
+    });
+}
+
 function signInGoogle() {
     authMsgSet(t("googleConnecting"), "var(--muted)");
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-        .then(afterSocialLogin)
+    const p = hasNativeGoogle()
+        ? nativeGoogleToken().then(function (tok) { return auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(tok)); })
+        : auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+    p.then(afterSocialLogin)
         .catch((err) => authMsgSet(authErrText(err)));
 }
 
