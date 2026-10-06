@@ -3552,6 +3552,7 @@ function adminSaveWelcome(reshow) {
 
 const AI_DEFAULT = { enabled: true, dailyLimit: 20, model: "gemini-3.5-flash-lite", instructions: "Sən «ProTechtor™ Köməkçi»sən — telefon aksesuarı satan mağazalar üçün antiudar (qoruyucu ekran şüşəsi) uyğunluğu proqramının köməkçisi.\n\nQAYDALAR:\n1. Yalnız bu mövzularda kömək et: antiudar və qoruyucu şüşə uyğunluğu, telefon modelləri, ProTechtor™ proqramının istifadəsi, Premium abunəlik, mağaza satışına aid məsləhətlər. Başqa mövzularda nəzakətlə bildir ki, yalnız bu mövzularda kömək edə bilirsən.\n2. Model uyğunluğu soruşulanda MÜTLƏQ findCompatible alətindən istifadə et və YALNIZ onun qaytardığı siyahıya əsaslan. Özündən model uydurma. Alət heç nə tapmasa, de ki, bazada tapılmadı və proqramda «Model sorğusu göndər» ilə bildirsinlər.\n3. Ölçülərin tam dəqiq olmaya biləcəyini lazım olanda xatırlat.\n4. Qısa, aydın və səmimi yaz. İstifadəçi hansı dildə yazırsa, o dildə cavab ver (azərbaycan, rus, türk, ingilis).\n5. Qiymət, ödəniş və ya hesab problemləri üçün Ayarlar bölməsindəki WhatsApp düyməsi ilə operatora yazmağı tövsiyə et.\n6. Şəxsi məlumat (şifrə, kart nömrəsi və s.) istəmə.\n\nPROQRAM HAQQINDA:\n- Axtarış: telefon modelini yaz, eyni şüşənin uyğun gəldiyi modellər siyahısı çıxır.\n- Qeydiyyatsız 3 axtarış, qeydiyyatlı istifadəçiyə ayda 30 pulsuz axtarış, Premium-da limitsiz.\n- Premium: 1 ay — 3 AZN, 3 ay — 6 AZN, 6 ay — 10 AZN, 1 il — 18 AZN. WhatsApp ilə alınır, ödənişdən sonra admin aktivləşdirir.\n- Proqram internetsiz də işləyir, amma baza 3 gündən çox yenilənməsə məhdudlaşır — hər 3 gündən bir internetə qoşulmaq lazımdır.\n- Şüşə uyğun gəlmədisə, modelin səhifəsindəki «Uyğun gəlmədi? Bildirin» düyməsi ilə xəbər vermək olar." };
 const FB_CDN = "https://www.gstatic.com/firebasejs/12.19.0/";
+const RECAPTCHA_SITE_KEY = "6Le-_-EtAAAAABzopqfpR0pI3_tNPLd4tHD0qChF";
 let aiCfg = null;
 let aiChat = null;
 let aiChatKey = "";
@@ -3687,10 +3688,13 @@ function aiFindCompatible(query) {
 
 function aiLoadLib() {
     if (aiLib) return Promise.resolve(aiLib);
-    return Promise.all([import(FB_CDN + "firebase-app.js"), import(FB_CDN + "firebase-ai.js")]).then(function (mods) {
-        const appMod = mods[0], aiMod = mods[1];
+    return Promise.all([import(FB_CDN + "firebase-app.js"), import(FB_CDN + "firebase-ai.js"), import(FB_CDN + "firebase-app-check.js")]).then(function (mods) {
+        const appMod = mods[0], aiMod = mods[1], acMod = mods[2];
         let app;
-        try { app = appMod.getApp("pt-ai"); } catch (e) { app = appMod.initializeApp(firebaseConfig, "pt-ai"); }
+        try { app = appMod.getApp("pt-ai"); } catch (e) {
+            app = appMod.initializeApp(firebaseConfig, "pt-ai");
+            acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled: true });
+        }
         aiLib = { mod: aiMod, ai: aiMod.getAI(app, { backend: new aiMod.GoogleAIBackend() }) };
         return aiLib;
     });
@@ -3721,6 +3725,7 @@ function aiGetChat() {
 function aiErrText(e) {
     const s = String((e && (e.code || e.message)) || e || "").toLowerCase();
     if (s.indexOf("429") >= 0 || s.indexOf("quota") >= 0 || s.indexOf("resource") >= 0 || s.indexOf("exhausted") >= 0) return t("aiBusy");
+    if (s.indexOf("app-check") >= 0 || s.indexOf("appcheck") >= 0 || s.indexOf("recaptcha") >= 0) return t("aiError");
     if (s.indexOf("403") >= 0 || s.indexOf("permission") >= 0 || s.indexOf("not enabled") >= 0 || s.indexOf("api-not-enabled") >= 0 || s.indexOf("has not been used") >= 0) return t("aiOff");
     if (!navigator.onLine || s.indexOf("fetch") >= 0 || s.indexOf("network") >= 0 || s.indexOf("import") >= 0) return t("aiNet");
     return t("aiError");
@@ -3764,7 +3769,7 @@ function sendAi() {
         renderAiLeft();
     }).catch(function (e) {
         typing.remove();
-        aiAddMsg(aiErrText(e), "err");
+        aiAddMsg(aiErrText(e) + (isAdmin ? "\n[" + String((e && (e.message || e.code)) || e).slice(0, 400) + "]" : ""), "err");
         aiChat = null;
     }).then(function () {
         aiBusy = false;
