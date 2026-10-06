@@ -2054,7 +2054,7 @@
         <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#5FE0CF;--b:#12968A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></svg></span><span>Model ölçüləri və kamera kəsiyi</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
-                <div class="fm"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div>Tək model üçün modeli açın və yanındakı <b>✏️</b> düyməsini basın. Toplu dəyişiklik üçün şablonu yükləyin, Excel-də doldurun və sətirləri aşağıya yapışdırın.</div></div><div><span class="fm-lbl">Sətir formatı</span><div class="fm-code">Model ; Düym ; Hündürlük ; En ; Kəsik</div></div><div><span class="fm-lbl">Kəsik növləri</span><div class="fm-chips"><span class="fm-chip"><code>bezel</code>çərçivə</span><span class="fm-chip"><code>notch</code>çəngəl</span><span class="fm-chip"><code>drop</code>damla</span><span class="fm-chip"><code>hole</code>mərkəzi dəlik</span><span class="fm-chip"><code>holel</code>sol dəlik</span><span class="fm-chip"><code>holer</code>sağ dəlik</span><span class="fm-chip"><code>pill</code>həb</span></div></div><div><span class="fm-lbl">Məlumat</span><textarea id="adminSpecsCsv" class="fm-ta mono" placeholder="Samsung Galaxy A55;6.6;161.1;77.4;hole"></textarea></div><div class="fm-acts"><button type="button" class="fm-btn pri wide" onclick="adminSpecsImport()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12" /><path d="m17 8-5-5-5 5" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg>İdxal et</button><button type="button" class="fm-btn" onclick="adminSpecsTemplate()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg>Şablon (CSV)</button></div></div>
+                <div class="fm"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div>Tək model üçün modeli açın və yanındakı <b>✏️</b> düyməsini basın. Toplu dəyişiklik üçün şablonu yükləyin, Excel-də doldurun və sətirləri aşağıya yapışdırın.</div></div><div><span class="fm-lbl">Sətir formatı · şüşənin ölçüsü, mm</span><div class="fm-code">Model ; Hündürlük ; En ; Kəsik</div></div><div><span class="fm-lbl">Kəsik növləri</span><div class="fm-chips"><span class="fm-chip"><code>bezel</code>çərçivə</span><span class="fm-chip"><code>notch</code>çəngəl</span><span class="fm-chip"><code>drop</code>damla</span><span class="fm-chip"><code>hole</code>mərkəzi dəlik</span><span class="fm-chip"><code>holel</code>sol dəlik</span><span class="fm-chip"><code>holer</code>sağ dəlik</span><span class="fm-chip"><code>pill</code>həb</span></div></div><div><span class="fm-lbl">Məlumat</span><textarea id="adminSpecsCsv" class="fm-ta mono" placeholder="Samsung Galaxy A55;6.6;161.1;77.4;hole"></textarea></div><div class="fm-acts"><button type="button" class="fm-btn pri wide" onclick="adminSpecsImport()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12" /><path d="m17 8-5-5-5 5" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg>İdxal et</button><button type="button" class="fm-btn" onclick="adminSpecsTemplate()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg>Şablon (CSV)</button></div></div>
             </div>
         </details>
         <details class="adm-acc">
@@ -3621,7 +3621,16 @@ function adminExportCSV() {
 }
 
 function adminBackupJSON() {
-    var blob = new Blob([JSON.stringify(adminEditDb.length ? adminEditDb : database, null, 2)], { type: "application/json" });
+    var groups = adminEditDb.length ? adminEditDb : database;
+    var sizes = {};
+    (groups || []).forEach(function (g) {
+        (Array.isArray(g) ? g : []).forEach(function (m) {
+            var a = String(sizesMap[norm(m)] || "").split("|");
+            if (a[1] && a[2]) sizes[m] = a[1] + "x" + a[2] + (a[3] ? " " + a[3] : "");
+            else if (a[3]) sizes[m] = a[3];
+        });
+    });
+    var blob = new Blob([JSON.stringify({ groups: groups, sizes: sizes }, null, 2)], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "Base_backup_" + new Date().toISOString().slice(0, 10) + ".json";
@@ -4400,11 +4409,17 @@ async function adminPublishDatabase() {
         database = JSON.parse(JSON.stringify(cleaned));
         localStorage.setItem(DB_KEY, JSON.stringify(database));
         localStorage.setItem(UPDATE_KEY, Date.now().toString());
+        let sizeN = 0;
+        if (adminPendingSizes && Object.keys(adminPendingSizes).length) {
+            sizeN = Object.keys(adminPendingSizes).length;
+            await saveSpecs(adminPendingSizes);
+            adminPendingSizes = null;
+        }
         updateLastUpdate();
         checkBlockStatus();
         indexFor = null;
         renderChangelogHistory();
-        setAdminStatus("☁ Dərc olundu · " + cleaned.length + " qrup · " + new Date().toLocaleTimeString());
+        setAdminStatus("☁ Dərc olundu · " + cleaned.length + " qrup" + (sizeN ? " · " + sizeN + " ölçü" : "") + " · " + new Date().toLocaleTimeString());
         showAppToast(changelogMsg ? formatChangelogEntry(changelogMsg) : "✓ Baza dərc olundu!");
         showChangelogToast(changelogMsg);
         triggerHaptic(50);
@@ -4426,12 +4441,13 @@ async function adminImportFromGitHub() {
         const data = await response.json();
         const parsed = normalizeDatabase(data);
         if (!parsed.length) throw new Error("Baza boşdur");
+        adminPendingSizes = extractSizes(data);
         adminEditDb = parsed;
         adminOpenGroups = new Set();
         adminSelected.clear();
     adminSelected.clear();
         renderAdminList();
-        setAdminStatus("GitHub-dan gətirildi · " + parsed.length + " qrup. İndi «☁ Dərc et» basın!");
+        setAdminStatus("GitHub-dan gətirildi · " + parsed.length + " qrup · " + Object.keys(adminPendingSizes || {}).length + " ölçü. İndi «Dərc et» basın!");
         showAppToast(parsed.length + " qrup gətirildi — Dərc et!");
     } catch (err) {
         console.error(err);
@@ -4450,13 +4466,14 @@ function adminImportJsonFile(input) {
             const data = JSON.parse(e.target.result);
             const parsed = normalizeDatabase(data);
             if (!parsed.length) throw new Error("Faylda qrup yoxdur");
+            adminPendingSizes = extractSizes(data);
             adminEditDb = parsed;
             adminOpenGroups = new Set();
             adminSelected.clear();
         adminSelected.clear();
     adminSelected.clear();
             renderAdminList();
-            setAdminStatus("JSON yükləndi · " + parsed.length + " qrup. «☁ Dərc et» basın!");
+            setAdminStatus("JSON yükləndi · " + parsed.length + " qrup · " + Object.keys(adminPendingSizes || {}).length + " ölçü. «Dərc et» basın!");
             showAppToast(parsed.length + " qrup yükləndi — Dərc et!");
         } catch (err) {
             setAdminStatus("JSON xətası: " + (err.message || ""));
@@ -4876,9 +4893,15 @@ function adminToggleMaintenance() {
 
 function initSizes() {
     try { sizesMap = JSON.parse(localStorage.getItem("pt_sizes") || "{}") || {}; } catch (e) { sizesMap = {}; }
-    db.doc("app_data/sizes").get().then(function (snap) {
-        sizesMap = (snap.exists && (snap.data() || {}).m) || {};
+    return refreshSizes();
+}
+
+function refreshSizes() {
+    return db.doc("app_data/sizes").get().then(function (snap) {
+        if (!snap.exists) return;
+        sizesMap = (snap.data() || {}).m || {};
         try { localStorage.setItem("pt_sizes", JSON.stringify(sizesMap)); } catch (e) {}
+        if (selectedGroup && document.getElementById("detail-view").classList.contains("active")) { renderCompatibilityList(selectedGroup, selectedModel); renderDetailSize(selectedGroup, selectedModel); }
     }).catch(function () {});
 }
 
@@ -5016,6 +5039,34 @@ function closeSpecEdit() {
     document.getElementById("spec-modal").style.display = "none";
 }
 
+let adminPendingSizes = null;
+
+function extractSizes(data) {
+    const out = {};
+    const src = data && !Array.isArray(data) && typeof data === "object" ? (data.sizes || data.olculer || null) : null;
+    if (!src || typeof src !== "object") return out;
+    Object.keys(src).forEach(function (model) {
+        const k = norm(model);
+        if (!k) return;
+        const v = src[model];
+        let hh = "", ww = "", cut = "";
+        if (Array.isArray(v)) { hh = v[0]; ww = v[1]; cut = v[2] || ""; }
+        else if (v && typeof v === "object") { hh = v.h || v.hundurluk || ""; ww = v.w || v.en || ""; cut = v.cut || v.kesik || ""; }
+        else {
+            const s = String(v || "");
+            const nums = s.match(/\d+(?:[.,]\d+)?/g) || [];
+            hh = nums[0] || ""; ww = nums[1] || "";
+            const tk = s.toLowerCase().split(/[^a-zçəğıöşü]+/).filter(function (x) { return CUT_ALIAS[norm(x)]; });
+            cut = tk[0] || "";
+        }
+        const ck = norm(cut);
+        const old = String(sizesMap[k] || "").split("|");
+        const str = specStr("", hh || old[1], ww || old[2], CUT_ALIAS[ck] || (CUT_TYPES.indexOf(ck) >= 0 ? ck : (old[3] || "")));
+        if (str) out[k] = str;
+    });
+    return out;
+}
+
 function saveSpecs(upd) {
     Object.keys(upd).forEach(function (k) { if (upd[k]) sizesMap[k] = upd[k]; else delete sizesMap[k]; });
     try { localStorage.setItem("pt_sizes", JSON.stringify(sizesMap)); } catch (e) {}
@@ -5042,11 +5093,11 @@ function saveSpecEdit(del) {
 }
 
 function adminSpecsTemplate() {
-    const rows = ["Model;Duym;Hundurluk_mm;En_mm;Kesik"];
+    const rows = ["Model;Suse_hundurluk_mm;Suse_en_mm;Kesik"];
     (Array.isArray(adminEditDb) && adminEditDb.length ? adminEditDb : database).forEach(function (g) {
         (Array.isArray(g) ? g : []).forEach(function (m) {
             const s = modelSpec(m) || {};
-            rows.push([String(m).replace(/;/g, ","), s.inch || "", s.h || "", s.w || "", s.cut || ""].join(";"));
+            rows.push([String(m).replace(/;/g, ","), s.h || "", s.w || "", s.cut || ""].join(";"));
         });
     });
     const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
@@ -5071,14 +5122,16 @@ function adminSpecsImport() {
         const k = norm(c[0] || "");
         if (!k) { bad++; return; }
         if (!known[k]) { miss++; return; }
-        const cutKey = norm(c[4] || "");
+        const five = c.length >= 5;
+        const cH = five ? c[2] : c[1], cW = five ? c[3] : c[2], cC = five ? c[4] : c[3];
+        const cutKey = norm(cC || "");
         const old = String(sizesMap[k] || "").split("|");
         const pick = function (v, i) { return String(v || "").trim() ? v : (old[i] || ""); };
         const cut = CUT_ALIAS[cutKey] || (CUT_TYPES.indexOf(cutKey) >= 0 ? cutKey : (old[3] || ""));
-        upd[k] = specStr(pick(c[1], 0), pick(c[2], 1), pick(c[3], 2), cut);
+        upd[k] = specStr(five ? pick(c[1], 0) : (old[0] || ""), pick(cH, 1), pick(cW, 2), cut);
         ok++;
     });
-    if (!ok) { appAlert("Uyğun sətir tapılmadı. Format: Model;Düym;Hündürlük;En;Kəsik" + (miss ? "\nBazada olmayan model: " + miss : ""), "Ölçülər", "📏"); return; }
+    if (!ok) { appAlert("Uyğun sətir tapılmadı. Format: Model;Hündürlük;En;Kəsik" + (miss ? "\nBazada olmayan model: " + miss : ""), "Ölçülər", "📏"); return; }
     saveSpecs(upd).then(function () {
         appAlert("Yeniləndi: " + ok + " model" + (miss ? "\nBazada tapılmadı: " + miss : "") + (bad ? "\nSəhv sətir: " + bad : ""), "Ölçülər", "📏");
         if (ta) ta.value = "";
@@ -7196,6 +7249,7 @@ function clearSearch() {
 }
 
 function normalizeDatabase(data) {
+    if (data && !Array.isArray(data) && typeof data === "object" && Array.isArray(data.groups)) data = data.groups;
     if (!Array.isArray(data)) return [];
     const result = [];
     data.forEach(function (group) {
@@ -8039,6 +8093,7 @@ async function fetchDatabase(retries = 3) {
         let parsed = null;
 
         const snap = await db.doc(FS_DB_DOC).get();
+        refreshSizes();
         let fsData = null;
         if (snap.exists) {
             fsData = snap.data();
