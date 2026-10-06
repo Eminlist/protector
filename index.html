@@ -1213,6 +1213,24 @@
         #swipeBack{position:fixed;left:0;top:0;width:42px;height:42px;margin:-21px 0 0 -48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;line-height:1;padding-bottom:3px;box-sizing:border-box;color:var(--accent-color);background:var(--surface);border:1px solid color-mix(in srgb,var(--accent-color) 50%,var(--border));box-shadow:0 8px 20px rgba(0,0,0,.35);z-index:2147483001;pointer-events:none;opacity:0;transition:background .15s,color .15s}
         #swipeBack.go{background:var(--accent-color);color:#111}
         .fm{display:flex;flex-direction:column;gap:12px}
+        .gf-days{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+        .gf-d{height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
+        .gf-d.on{background:var(--accent-color);color:#111;border-color:transparent}
+        .fm-in.gf-dn{width:86px;height:36px;flex:0 0 86px;padding:0 12px}
+        .gf-prev{font-size:13px;line-height:1.6;padding:12px 14px;border-radius:16px;border:1px dashed color-mix(in srgb,#d4af37 55%,var(--border));background:color-mix(in srgb,#d4af37 8%,var(--surface));color:var(--text)}
+        .gf-ulist{display:flex;flex-direction:column;gap:6px;margin-top:6px;max-height:230px;overflow-y:auto}
+        .gf-u{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:var(--surface);cursor:pointer;font-size:13px;color:var(--text);text-align:left;width:100%;font-family:inherit}
+        .gf-u small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+        .gf-u.sel{margin-top:6px;border-color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 12%,var(--surface));cursor:default}
+        .gf-u .gp{flex-shrink:0;color:#d4af37;font-weight:800;font-size:10.5px;text-align:right}
+        .gf-u .gx{flex-shrink:0;width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface-2);color:var(--muted);font-size:16px;cursor:pointer}
+        .gf-log{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto}
+        .gf-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:var(--surface);font-size:12.5px;color:var(--text)}
+        .gf-row small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+        .gf-row.off{opacity:.55}
+        .gf-row .ga{display:flex;gap:6px;flex-shrink:0;align-items:center}
+        .gf-row .ga b{color:#d4af37;white-space:nowrap}
+        .gf-row button{height:30px;padding:0 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
         .fm-lbl{display:block;font-size:10.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin:0 0 6px 4px}
         .fm-in,.fm-ta{width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--border);border-radius:14px;color:var(--text);font-size:13.5px;padding:11px 14px;outline:none;transition:border-color .2s,box-shadow .2s;font-family:inherit;margin:0}
         .fm-in{height:44px}
@@ -1227,6 +1245,7 @@
         .fm-btn:hover{border-color:color-mix(in srgb,var(--accent-color) 60%,var(--border))}
         .fm-btn:active{transform:scale(.96)}
         .fm-btn.wide{flex:1}
+        .fm>.fm-btn.wide,.fm-pane>.fm-btn.wide{flex:none;width:100%}
         .fm-btn.ghost{background:transparent;color:var(--muted);font-weight:700}
         .fm-btn.pri{border:none;color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 88%,#fff),color-mix(in srgb,var(--accent-color) 72%,#000));box-shadow:0 8px 18px -8px color-mix(in srgb,var(--accent-color) 85%,transparent),inset 0 1px 0 rgba(255,255,255,.35);text-shadow:0 1px 1px rgba(0,0,0,.25)}
         .fm-btn.maint{height:50px;border-radius:16px;font-size:13.5px;letter-spacing:.3px}
@@ -2045,6 +2064,12 @@
             </div>
         </details>
         <details class="adm-acc">
+            <summary><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg></span><span>Hədiyyələr</span><span class="chev">›</span></summary>
+            <div class="adm-acc-body">
+                <div class="fm"><div class="fm-seg"><button type="button" class="on" onclick="gfTab(this,'one')">Fərdi</button><button type="button" onclick="gfTab(this,'bulk')">Toplu</button><button type="button" onclick="gfTab(this,'new')">Yenilər</button><button type="button" onclick="gfTab(this,'log')">Tarixçə</button></div><div class="fm-pane on" data-pane="gf-one"><div><span class="fm-lbl">İstifadəçi</span><input type="text" id="gfUserQ" class="fm-in" placeholder="Ad, e-poçt, mağaza və ya telefon" oninput="gfSearchUsers()"><div id="gfUserSel"></div><div id="gfUserList" class="gf-ulist"></div></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'one',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'one',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',30)">30 gün</button><input type="number" id="gfDays_one" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('one')"></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_one" class="fm-in" onchange="gfReasonCh('one')"><option value="reg">İlk qeydiyyat</option><option value="holiday">Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal" selected>Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_one" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('one')"></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_one"></div></div><button type="button" class="fm-btn pri wide" onclick="gfGiveOne()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg>Hədiyyə et</button></div><div class="fm-pane" data-pane="gf-bulk"><div><span class="fm-lbl">Kimlərə</span><select id="gfTarget" class="fm-in" onchange="gfCount()"><option value="nopro">Premiumu olmayanlar</option><option value="all">Bütün istifadəçilər</option><option value="pro">Aktiv premiumlar</option><option value="new7">Son 7 gündə qeydiyyat</option><option value="new30">Son 30 gündə qeydiyyat</option><option value="active7">Son 7 gündə aktiv olanlar</option></select><div id="gfCount" class="fm-status" style="margin-top:6px"></div></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'bulk',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'bulk',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',30)">30 gün</button><input type="number" id="gfDays_bulk" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('bulk')"></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_bulk" class="fm-in" onchange="gfReasonCh('bulk')"><option value="reg">İlk qeydiyyat</option><option value="holiday" selected>Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal">Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_bulk" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('bulk')"></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_bulk"></div></div><button type="button" class="fm-btn pri wide" onclick="gfGiveBulk()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg>Toplu hədiyyə et</button><div id="gfProg" class="fm-status"></div></div><div class="fm-pane" data-pane="gf-new"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div>Kampaniya aktiv olanda bu müddətdə qeydiyyatdan keçən hər kəs seçilən gün qədər Premium alır və hədiyyə bildirişi görür. Kampaniya olmayanda standart sınaq müddəti tətbiq olunur.</div></div><div class="fm-sw-row"><span>Kampaniya aktivdir</span><label class="switch"><input type="checkbox" id="gfNewOn" onchange="gfPrev('new')"><span class="slider"></span></label></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'new',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'new',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',30)">30 gün</button><input type="number" id="gfDays_new" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('new')"></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_new" class="fm-in" onchange="gfReasonCh('new')"><option value="reg" selected>İlk qeydiyyat</option><option value="holiday">Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal">Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_new" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('new')"></div><div class="fm-grid2"><div><span class="fm-lbl">Bitmə tarixi</span><input type="date" id="gfNewUntil" class="fm-in"></div><div><span class="fm-lbl">Standart sınaq, gün</span><input type="number" id="gfStd" class="fm-in" min="0" max="365"></div></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_new"></div></div><button type="button" class="fm-btn pri wide" onclick="gfSaveNew()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Yadda saxla</button><div id="gfNewStatus" class="fm-status"></div></div><div class="fm-pane" data-pane="gf-log"><div id="gfLog" class="gf-log"></div></div></div>
+            </div>
+        </details>
+        <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#FFB866;--b:#F06A1D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" /><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14" /><path d="M8 6v8" /></svg></span><span>Banner elanı</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
                 <div class="fm"><div class="fm-seg"><button type="button" class="on" onclick="fmSeg(this,'bc','az')">AZ</button><button type="button" onclick="fmSeg(this,'bc','ru')">RU</button><button type="button" onclick="fmSeg(this,'bc','tr')">TR</button><button type="button" onclick="fmSeg(this,'bc','en')">EN</button></div><div class="fm-pane on" data-pane="bc-az"><textarea id="adminBroadcastInput" class="fm-ta sm" placeholder="Elan mətni (AZ)"></textarea></div><div class="fm-pane" data-pane="bc-ru"><textarea id="adminBcRu" class="fm-ta sm" placeholder="Elan mətni (RU)"></textarea></div><div class="fm-pane" data-pane="bc-tr"><textarea id="adminBcTr" class="fm-ta sm" placeholder="Elan mətni (TR)"></textarea></div><div class="fm-pane" data-pane="bc-en"><textarea id="adminBcEn" class="fm-ta sm" placeholder="Elan mətni (EN)"></textarea></div><div><span class="fm-lbl">Bitmə tarixi</span><input type="date" id="adminBcUntil" class="fm-in"></div><div class="fm-acts"><button type="button" class="fm-btn pri wide" onclick="adminSaveBroadcast()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" /><path d="M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14" /><path d="M8 6v8" /></svg>Elan et</button><button type="button" class="fm-btn" onclick="adminClearBroadcast()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>Sil</button></div></div>
@@ -2653,6 +2678,7 @@ document.addEventListener("DOMContentLoaded", function () {
     initCopyProtection();
     initMaintenance();
     initSizes();
+    loadGiftCfg();
 
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", function () {
@@ -3144,6 +3170,7 @@ function updateAdminButton() {
 
 function openAdmin() {
     admAccInit();
+    ["one", "bulk", "new"].forEach(gfPrev);
     if (!isAdmin) {
         showAppToast("Yalnız admin daxil ola bilər!");
         return;
@@ -3473,6 +3500,7 @@ function renderAdminUsers() {
             proLine +
             '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">' +
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#d4af37;" onclick="adminGrantPremium(\'' + sid + '\')">' + (proActive ? 'PRO uzat' : 'Premium ver') + '</button>' +
+            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#d4af37;" onclick="gfPickUser(\'' + sid + '\')">🎁 Hədiyyə</button>' +
             (pu ? '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminRevokePremium(\'' + sid + '\')">PRO ləğv et</button>' : '') +
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminResetDevices(\'' + sid + '\')">Cihazları sıfırla</button>' +
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminSendMessage(\'' + sid + '\')">✉ Mesaj</button>' +
@@ -5622,14 +5650,41 @@ function isPaidPremium() {
     return st === "active" || st === "expiring" || st === "grace";
 }
 
-function trialEnd() {
+function accCreatedMs() {
     const c = accountData.createdAt;
     let ms = 0;
     if (c && typeof c.toMillis === "function") ms = c.toMillis();
     else if (c && typeof c.seconds === "number") ms = c.seconds * 1000;
     else if (typeof c === "number") ms = c;
+    return ms;
+}
+
+let giftCfg = null;
+try { giftCfg = JSON.parse(localStorage.getItem("pt_gift_cfg") || "null"); } catch (e) { giftCfg = null; }
+
+function loadGiftCfg() {
+    return db.doc("app_data/gifts").get().then(function (s) {
+        giftCfg = s.exists ? (s.data() || null) : null;
+        try { localStorage.setItem("pt_gift_cfg", JSON.stringify(giftCfg)); } catch (e) {}
+        if (typeof updateNotifBadge === "function") updateNotifBadge();
+    }).catch(function () {});
+}
+
+function giftCampaignFor(ms) {
+    const g = giftCfg || {};
+    return !!(ms && g.on && (!g.from || ms >= g.from) && (!g.until || ms <= g.until));
+}
+
+function trialDaysFor(ms) {
+    const g = giftCfg || {};
+    if (giftCampaignFor(ms)) return Math.max(0, +g.days || 0);
+    return (g.std === 0 || +g.std > 0) ? +g.std : TRIAL_DAYS;
+}
+
+function trialEnd() {
+    const ms = accCreatedMs();
     if (!ms || ms < TRIAL_FROM) return 0;
-    return ms + TRIAL_DAYS * DAY_MS;
+    return ms + trialDaysFor(ms) * DAY_MS;
 }
 
 let dbLoadedForUser = false;
@@ -5730,7 +5785,7 @@ function renderSubscription() {
         html = crownHtml("gold") + "<b>" + escapeHtml(t("planAdmin")) + "</b>";
     } else if (st.state === "trial") {
         html = crownHtml("gold") + "<b>" + escapeHtml(t("trialTitle")) + "</b><br>" + escapeHtml(t("trialLeft").replace("{n}", st.days).replace("{d}", fmtDate(st.until))) +
-            '<div class="sub-bar"><div style="width:' + Math.round(st.days / TRIAL_DAYS * 100) + '%"></div></div>';
+            '<div class="sub-bar"><div style="width:' + Math.round(st.days / Math.max(1, trialDaysFor(accCreatedMs())) * 100) + '%"></div></div>';
     } else if (st.state === "free" || st.state === "expired") {
         const used = getMonthlyUsage(u.uid);
         const left = Math.max(0, MONTH_LIMIT - used);
@@ -5761,10 +5816,10 @@ function renderPayments() {
         list.sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
         if (!list.length) { box.innerHTML = '<div class="changelog-empty">' + escapeHtml(t("noPayments")) + "</div>"; return; }
         box.innerHTML = list.map(function (p) {
-            const rf = !!p.refunded;
+            const rf = !!p.refunded || !!p.revoked;
             return '<div class="dev-row' + (rf ? ' refunded' : '') + '"><span>' + fmtDate(p.createdAt) + "<small>" + escapeHtml(t("payPeriod").replace("{a}", fmtDate(p.from || p.createdAt)).replace("{b}", fmtDate(p.until))) + "</small>" +
-                (rf ? '<span class="rf-tag">↩ ' + escapeHtml(t("payRefunded").replace("{d}", fmtDate(p.refundedAt))) + "</span>" : "") +
-                "</span><b>" + (p.amount || PRO_PRICE) + " AZN</b></div>";
+                (p.refunded ? '<span class="rf-tag">↩ ' + escapeHtml(t("payRefunded").replace("{d}", fmtDate(p.refundedAt))) + "</span>" : "") +
+                "</span><b>" + (p.gift ? "🎁 " + escapeHtml(t("payGift")) : (p.amount || PRO_PRICE) + " AZN") + "</b></div>";
         }).join("");
     }).catch(function () {
         box.innerHTML = '<div class="changelog-empty">' + escapeHtml(t("noPayments")) + "</div>";
@@ -6081,6 +6136,8 @@ function localNotifs() {
     if (st.state === "expiring") out.push({ local: "exp_" + st.until, type: "expiring", n: st.days, createdAt: Date.now() });
     if (st.state === "grace") out.push({ local: "grace_" + st.until, type: "grace", n: st.days, createdAt: Date.now() });
     if (st.state === "trial" && st.days <= 3) out.push({ local: "trial_" + st.until, type: "trial", n: st.days, createdAt: Date.now() });
+    const cm = accCreatedMs();
+    if (cm >= TRIAL_FROM && giftCampaignFor(cm) && +(giftCfg || {}).days > 0) out.push({ local: "gift_new_" + cm, type: "premium_gift", days: +giftCfg.days, reason: giftCfg.reason || "", reasonText: giftCfg.reasonText || "", createdAt: cm });
     const seen = getSeenLocal();
     const hidden = getHiddenLocal();
     out.forEach(function (x) { x.read = seen.indexOf(x.local) >= 0; });
@@ -6098,6 +6155,7 @@ function loadNotifications() {
         notifItems = [];
         snap.forEach(function (d) { notifItems.push(Object.assign({ id: d.id }, d.data() || {})); });
         updateNotifBadge();
+        giftPopupCheck();
         if (document.getElementById("notif-view").classList.contains("active")) renderNotifications();
     }).catch(function () {});
 }
@@ -6114,9 +6172,33 @@ function updateNotifBadge() {
     b.classList.toggle("show", n > 0);
 }
 
+function giftReasonText(x, lang) {
+    const r = x.reason || "";
+    if (r && r !== "custom" && r !== "none") return lang ? ((I18N[lang] || {})["gR_" + r] || "") : t("gR_" + r);
+    return r === "custom" ? String(x.reasonText || "").trim() : "";
+}
+
+function giftMsg(x, lang) {
+    const tr = function (k) { return lang ? ((I18N[lang] || {})[k] || "") : t(k); };
+    const r = giftReasonText(x, lang);
+    return tr(r ? "giftMsgR" : "giftMsg").replace("{r}", r).replace("{d}", x.days || 0);
+}
+
+function giftPopupCheck() {
+    if (!isRegisteredUser()) return;
+    let shown = [];
+    try { shown = JSON.parse(localStorage.getItem("pt_gift_shown") || "[]") || []; } catch (e) { shown = []; }
+    const x = allNotifs().filter(function (n) { return n.type === "premium_gift" && !n.read && shown.indexOf(notifKey(n)) < 0; })[0];
+    if (!x) return;
+    shown.push(notifKey(x));
+    try { localStorage.setItem("pt_gift_shown", JSON.stringify(shown.slice(-50))); } catch (e) {}
+    appAlert(giftMsg(x), t("giftTitle"), "🎁");
+}
+
 function notifText(x) {
     if (x.type === "premium_on") return t("nPremiumOn").replace("{d}", fmtDate(x.until));
     if (x.type === "premium_off") return t("nPremiumOff");
+    if (x.type === "premium_gift") return giftMsg(x);
     if (x.type === "premium_refund") return x.until ? t("nRefundUntil").replace("{a}", x.amount || 0).replace("{d}", fmtDate(x.until)) : t("nRefundOff").replace("{a}", x.amount || 0);
     if (x.type === "expiring") return t("proExpiring").replace("{n}", x.n);
     if (x.type === "grace") return t("proGrace").replace("{n}", x.n);
@@ -6317,6 +6399,315 @@ function closeNotifications() {
     history.back();
 }
 
+let gfSelUser = "";
+let gfGiftsCache = [];
+
+function gfUserCreatedMs(u) {
+    const c = u && u.createdAt;
+    if (c && typeof c.toMillis === "function") return c.toMillis();
+    if (c && typeof c.seconds === "number") return c.seconds * 1000;
+    if (typeof c === "number") return c;
+    const n = Date.parse(c || "");
+    return isFinite(n) ? n : 0;
+}
+
+function gfName(u) {
+    return (u && (u.username || u.displayName || u.storeName || u.email)) || "—";
+}
+
+function gfTab(btn, l) {
+    fmSeg(btn, "gf", l);
+    if (l === "bulk") gfCount();
+    if (l === "new") gfLoadNew();
+    if (l === "log") gfLoadLog();
+    ["one", "bulk", "new"].forEach(gfPrev);
+}
+
+function gfGetDays(k) {
+    const n = parseInt((document.getElementById("gfDays_" + k) || {}).value, 10);
+    return isFinite(n) && n > 0 ? Math.min(n, 3650) : 0;
+}
+
+function gfDay(btn, k, d) {
+    btn.parentNode.querySelectorAll(".gf-d").forEach(function (b) { b.classList.toggle("on", b === btn); });
+    const inp = document.getElementById("gfDays_" + k);
+    if (inp) inp.value = d;
+    gfPrev(k);
+}
+
+function gfDayInput(k) {
+    const d = gfGetDays(k);
+    const inp = document.getElementById("gfDays_" + k);
+    if (inp) inp.parentNode.querySelectorAll(".gf-d").forEach(function (b) { b.classList.toggle("on", parseInt(b.textContent, 10) === d); });
+    gfPrev(k);
+}
+
+function gfReason(k) {
+    const r = (document.getElementById("gfR_" + k) || {}).value || "none";
+    const txt = ((document.getElementById("gfRT_" + k) || {}).value || "").trim();
+    return { reason: r, reasonText: r === "custom" ? txt.slice(0, 120) : "" };
+}
+
+function gfReasonCh(k) {
+    const r = (document.getElementById("gfR_" + k) || {}).value;
+    const tx = document.getElementById("gfRT_" + k);
+    if (tx) { tx.style.display = r === "custom" ? "" : "none"; if (r === "custom") tx.focus(); }
+    gfPrev(k);
+}
+
+function gfPrev(k) {
+    const el = document.getElementById("gfPrev_" + k);
+    if (!el) return;
+    const d = gfGetDays(k);
+    const r = gfReason(k);
+    el.textContent = d ? giftMsg({ days: d, reason: r.reason, reasonText: r.reasonText }, "az") : "Gün sayını seçin";
+}
+
+function gfSearchUsers() {
+    const box = document.getElementById("gfUserList");
+    if (!box) return;
+    const q = ((document.getElementById("gfUserQ") || {}).value || "").trim().toLowerCase();
+    if (!q) { box.innerHTML = ""; return; }
+    if (!adminUsersCache.length) { box.innerHTML = '<div class="fm-status">İstifadəçilər yüklənir…</div>'; loadAdminStats(); return; }
+    const now = Date.now();
+    const list = adminUsersCache.filter(function (u) {
+        return ((u.username || "") + " " + (u.displayName || "") + " " + (u.email || "") + " " + (u.storeName || "") + " " + (u.phoneNumber || "")).toLowerCase().indexOf(q) >= 0;
+    }).slice(0, 8);
+    box.innerHTML = list.length ? list.map(function (u) {
+        const pu = +u.premiumUntil || 0;
+        return '<button type="button" class="gf-u" onclick="gfSelect(\'' + jsArg(u._id) + '\')"><span>' + escapeHtml(gfName(u)) +
+            '<small>' + escapeHtml([u.email, u.storeName, u.phoneNumber].filter(Boolean).join(" · ")) + '</small></span>' +
+            (pu > now ? '<span class="gp">PRO<br>' + fmtDate(pu) + '</span>' : '') + '</button>';
+    }).join("") : '<div class="fm-status">Tapılmadı</div>';
+}
+
+function gfSelect(id) {
+    gfSelUser = id;
+    const u = adminFindUser(id);
+    const sel = document.getElementById("gfUserSel");
+    const pu = u ? (+u.premiumUntil || 0) : 0;
+    if (sel) sel.innerHTML = u ? '<div class="gf-u sel"><span>' + escapeHtml(gfName(u)) + '<small>' + escapeHtml([u.email, u.phoneNumber].filter(Boolean).join(" · ")) +
+        (pu > Date.now() ? " · PRO " + fmtDate(pu) + "-dək" : "") + '</small></span><button type="button" class="gf-x gx" onclick="gfSelect(\'\')" aria-label="Sil">×</button></div>' : "";
+    const q = document.getElementById("gfUserQ");
+    if (q) q.value = "";
+    const box = document.getElementById("gfUserList");
+    if (box) box.innerHTML = "";
+}
+
+function gfPickUser(id) {
+    const acc = [].filter.call(document.querySelectorAll("details.adm-acc"), function (d) { return !!d.querySelector('[data-pane="gf-one"]'); })[0];
+    if (!acc) return;
+    if (!acc.open) acc.open = true;
+    const b = acc.querySelector(".fm-seg button");
+    if (b) gfTab(b, "one");
+    gfSelect(id);
+    gfPrev("one");
+    setTimeout(function () { acc.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
+}
+
+function giftGrantOne(u, days, r, batch) {
+    const now = Date.now();
+    const base = Math.max(now, +u.premiumUntil || 0);
+    const until = base + days * DAY_MS;
+    const ref = db.collection("users").doc(u._id);
+    return ref.set({ premiumUntil: until, premiumSince: u.premiumSince || now }, { merge: true }).then(function () {
+        return db.collection("payments").add({
+            uid: u._id, email: u.email || "", storeName: u.storeName || "", username: u.username || "",
+            amount: 0, gift: true, days: days, reason: r.reason, reasonText: r.reasonText || "",
+            from: base, until: until, createdAt: now, batch: batch || "",
+            by: (auth.currentUser && auth.currentUser.email) || ""
+        });
+    }).then(function () {
+        return ref.collection("notifications").add({ type: "premium_gift", days: days, reason: r.reason, reasonText: r.reasonText || "", until: until, createdAt: now, read: false });
+    }).then(function () {
+        u.premiumUntil = until;
+        if (!u.premiumSince) u.premiumSince = now;
+        return until;
+    });
+}
+
+function gfGiveOne() {
+    const u = adminFindUser(gfSelUser);
+    const days = gfGetDays("one");
+    const r = gfReason("one");
+    if (!u) { appAlert("Əvvəlcə istifadəçini seçin.", "Hədiyyə", "🎁"); return; }
+    if (!days) { appAlert("Gün sayını seçin.", "Hədiyyə", "🎁"); return; }
+    if (r.reason === "custom" && !r.reasonText) { appAlert("Səbəbi yazın.", "Hədiyyə", "🎁"); return; }
+    const until = Math.max(Date.now(), +u.premiumUntil || 0) + days * DAY_MS;
+    appConfirm(gfName(u) + " üçün " + days + " gün Premium hədiyyə edilsin?\nYeni bitmə tarixi: " + fmtDate(until) + "\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText }, "az"), "Bəli, hədiyyə et").then(function (ok) {
+        if (!ok) return;
+        giftGrantOne(u, days, r, "").then(function (nu) {
+            showAppToast("🎁 " + gfName(u) + ": " + days + " gün · " + fmtDate(nu) + "-dək");
+            gfSelect("");
+            renderAdminUsers();
+            triggerHaptic(40);
+        }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+    });
+}
+
+function gfTargetUsers() {
+    const tg = (document.getElementById("gfTarget") || {}).value || "nopro";
+    const now = Date.now();
+    return adminUsersCache.filter(function (u) {
+        if (u.deleted || u.blocked) return false;
+        const pro = (+u.premiumUntil || 0) > now;
+        const cm = gfUserCreatedMs(u);
+        if (tg === "nopro") return !pro;
+        if (tg === "pro") return pro;
+        if (tg === "new7") return cm > now - 7 * DAY_MS;
+        if (tg === "new30") return cm > now - 30 * DAY_MS;
+        if (tg === "active7") return (+u.lastSeen || 0) > now - 7 * DAY_MS;
+        return true;
+    });
+}
+
+function gfCount() {
+    const el = document.getElementById("gfCount");
+    if (!el) return;
+    if (!adminUsersCache.length) { el.textContent = "İstifadəçilər yüklənir…"; loadAdminStats(); setTimeout(gfCount, 1500); return; }
+    el.textContent = "Seçilən qrupda " + gfTargetUsers().length + " istifadəçi var (bloklananlar daxil deyil)";
+}
+
+function gfGiveBulk() {
+    const list = gfTargetUsers();
+    const days = gfGetDays("bulk");
+    const r = gfReason("bulk");
+    const sel = document.getElementById("gfTarget");
+    const label = sel ? sel.options[sel.selectedIndex].text : "";
+    if (!list.length) { appAlert("Bu qrupda istifadəçi yoxdur.", "Toplu hədiyyə", "🎁"); return; }
+    if (!days) { appAlert("Gün sayını seçin.", "Toplu hədiyyə", "🎁"); return; }
+    if (r.reason === "custom" && !r.reasonText) { appAlert("Səbəbi yazın.", "Toplu hədiyyə", "🎁"); return; }
+    appConfirm(label + ": " + list.length + " istifadəçiyə " + days + " gün Premium hədiyyə edilsin?\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText }, "az"), "Bəli, hamısına ver").then(function (ok) {
+        if (!ok) return;
+        const batch = "b" + Date.now();
+        const prog = document.getElementById("gfProg");
+        let done = 0, fail = 0, i = 0;
+        const step = function () {
+            if (prog) prog.textContent = "Göndərilir: " + (done + fail) + " / " + list.length;
+            if (i >= list.length) return Promise.resolve();
+            const chunk = list.slice(i, i + 5);
+            i += 5;
+            return Promise.all(chunk.map(function (u) {
+                return giftGrantOne(u, days, r, batch).then(function () { done++; }).catch(function () { fail++; });
+            })).then(step);
+        };
+        step().then(function () {
+            if (prog) prog.textContent = "✓ " + done + " istifadəçiyə hədiyyə edildi" + (fail ? " · xəta: " + fail : "");
+            showAppToast("🎁 " + done + " istifadəçiyə " + days + " gün Premium hədiyyə edildi");
+            renderAdminUsers();
+            gfCount();
+            triggerHaptic(50);
+        });
+    });
+}
+
+function gfLoadNew() {
+    const fill = function () {
+        const g = giftCfg || {};
+        const on = document.getElementById("gfNewOn");
+        if (on) on.checked = !!g.on;
+        const d = +g.days > 0 ? +g.days : 3;
+        const di = document.getElementById("gfDays_new");
+        if (di) { di.value = d; gfDayInput("new"); }
+        const rs = document.getElementById("gfR_new");
+        if (rs) rs.value = g.reason || "reg";
+        const rt = document.getElementById("gfRT_new");
+        if (rt) rt.value = g.reasonText || "";
+        gfReasonCh("new");
+        const un = document.getElementById("gfNewUntil");
+        if (un) un.value = g.until ? new Date(g.until).toISOString().slice(0, 10) : "";
+        const sd = document.getElementById("gfStd");
+        if (sd) sd.value = (g.std === 0 || +g.std > 0) ? +g.std : TRIAL_DAYS;
+        const st = document.getElementById("gfNewStatus");
+        if (st) st.textContent = g.on ? ("Aktivdir" + (g.from ? " · " + fmtDate(g.from) + "-dən" : "") + (g.until ? " · " + fmtDate(g.until) + "-dək" : " · müddətsiz")) : "Kampaniya söndürülüb · standart sınaq: " + ((g.std === 0 || +g.std > 0) ? +g.std : TRIAL_DAYS) + " gün";
+        gfPrev("new");
+    };
+    fill();
+    loadGiftCfg().then(fill);
+}
+
+function gfSaveNew() {
+    const on = !!(document.getElementById("gfNewOn") || {}).checked;
+    const days = gfGetDays("new");
+    const r = gfReason("new");
+    if (on && !days) { appAlert("Gün sayını seçin.", "Kampaniya", "🎁"); return; }
+    if (on && r.reason === "custom" && !r.reasonText) { appAlert("Səbəbi yazın.", "Kampaniya", "🎁"); return; }
+    const uv = (document.getElementById("gfNewUntil") || {}).value || "";
+    const until = uv ? new Date(uv + "T23:59:59").getTime() : 0;
+    const sdv = (document.getElementById("gfStd") || {}).value;
+    const std = sdv === "" ? TRIAL_DAYS : Math.max(0, Math.min(365, parseInt(sdv, 10) || 0));
+    const prev = giftCfg || {};
+    const cfg = { on: on, days: days, reason: r.reason, reasonText: r.reasonText, until: until, std: std, from: on ? (prev.on && prev.from ? prev.from : Date.now()) : 0, updatedAt: Date.now() };
+    db.doc("app_data/gifts").set(cfg).then(function () {
+        giftCfg = cfg;
+        try { localStorage.setItem("pt_gift_cfg", JSON.stringify(cfg)); } catch (e) {}
+        showAppToast(on ? "🎁 Kampaniya aktivdir: yeni istifadəçilərə " + days + " gün" : "Kampaniya söndürüldü · standart sınaq: " + std + " gün");
+        gfLoadNew();
+    }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+}
+
+function gfReasonLabel(g) {
+    if (g.reason === "custom") return g.reasonText || "";
+    return g.reason && g.reason !== "none" ? ((I18N.az || {})["gR_" + g.reason] || "") : "Səbəbsiz";
+}
+
+function gfLoadLog() {
+    const box = document.getElementById("gfLog");
+    if (!box) return;
+    box.innerHTML = '<div class="fm-status">Yüklənir…</div>';
+    db.collection("payments").orderBy("createdAt", "desc").limit(500).get().then(function (snap) {
+        const list = [];
+        snap.forEach(function (d) { const o = d.data() || {}; if (o.gift) { o._id = d.id; list.push(o); } });
+        gfGiftsCache = list;
+        if (!list.length) { box.innerHTML = '<div class="fm-status">Hələ hədiyyə verilməyib</div>'; return; }
+        box.innerHTML = list.slice(0, 200).map(function (g) {
+            const who = g.username || g.storeName || g.email || g.uid || "—";
+            return '<div class="gf-row' + (g.revoked ? " off" : "") + '"><span>' + escapeHtml(who) +
+                '<small>' + fmtDate(g.createdAt) + " · " + escapeHtml(gfReasonLabel(g)) + (g.batch ? " · toplu" : "") + (g.revoked ? " · geri alınıb" : "") + '</small></span>' +
+                '<span class="ga"><b>' + (g.days || 0) + ' gün</b>' +
+                (g.revoked ? "" : '<button type="button" onclick="gfRevoke(\'' + jsArg(g._id) + '\')">Geri al</button>') +
+                '<button type="button" onclick="gfDeleteLog(\'' + jsArg(g._id) + '\')" aria-label="Sil">🗑</button></span></div>';
+        }).join("");
+    }).catch(function (e) {
+        box.innerHTML = '<div class="fm-status" style="color:#e74c3c">Oxunmadı (' + escapeHtml((e && (e.code || e.message)) || "") + ')</div>';
+    });
+}
+
+function gfRevoke(pid) {
+    const g = gfGiftsCache.filter(function (x) { return x._id === pid; })[0];
+    if (!g || g.revoked) return;
+    appConfirm((g.username || g.storeName || g.email || "—") + " üçün verilmiş " + (g.days || 0) + " günlük hədiyyə geri alınsın? Premium müddəti bu qədər azalacaq.", "Bəli, geri al", true).then(function (ok) {
+        if (!ok) return;
+        const now = Date.now();
+        const ref = db.collection("users").doc(g.uid);
+        ref.get().then(function (snap) {
+            const cur = snap.exists ? (+(snap.data() || {}).premiumUntil || 0) : 0;
+            const dur = Math.max(0, (+g.until || 0) - (+g.from || +g.createdAt || 0));
+            let nu = cur - dur;
+            if (nu <= now) nu = 0;
+            return ref.set({ premiumUntil: nu }, { merge: true }).then(function () {
+                return db.collection("payments").doc(pid).update({ revoked: true, revokedAt: now });
+            }).then(function () {
+                const u = adminFindUser(g.uid);
+                if (u) u.premiumUntil = nu;
+                showAppToast("Hədiyyə geri alındı" + (nu ? " · yeni bitmə: " + fmtDate(nu) : " · Premium dayandı"));
+                gfLoadLog();
+                renderAdminUsers();
+            });
+        }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+    });
+}
+
+function gfDeleteLog(pid) {
+    appConfirm("Bu hədiyyə qeydi tarixçədən silinsin? Premium müddətinə toxunulmur.", "Bəli, sil", true).then(function (ok) {
+        if (!ok) return;
+        db.collection("payments").doc(pid).delete().then(function () {
+            showAppToast("Qeyd silindi");
+            gfLoadLog();
+        }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+    });
+}
+
 function adminFindUser(id) {
     return adminUsersCache.filter(function (u) { return u._id === id; })[0];
 }
@@ -6445,7 +6836,7 @@ function loadRevenue() {
     box.innerHTML = '<div class="admin-empty">Yüklənir...</div>';
     db.collection("payments").orderBy("createdAt", "desc").limit(500).get().then(function (snap) {
         const pays = [];
-        snap.forEach(function (d) { const o = d.data() || {}; o._id = d.id; pays.push(o); });
+        snap.forEach(function (d) { const o = d.data() || {}; o._id = d.id; if (!o.gift) pays.push(o); });
         adminPaysCache = pays;
         const now = Date.now();
         const mk = monthKey();
@@ -6919,6 +7310,26 @@ const PLACEHOLDER_PALETTE = [
 ];
 
 let placeholderColorIndex = 0;
+let phPools = null, phPoolsFor = null, phLast = "";
+const PH_EXOTIC = /fold|flip|mate\s*x|pura\s*x|razr|find\s*n|magic\s*v|tri\s*fold|design|porsche|lamborghini|\bv\s*fold|\bxt\b/i;
+const PH_FLAG = /ultra|pro\s*max|pro\s*\+|pro\s*plus|\bair\b|iphone\s*1[6-9]|\bs2[4-9]|1[4-9]t\b|pura|mate\s*\d|pixel\s*(9|1\d)|magic\s*\d|find\s*x|nothing|rog|edge|\b1[5-9]\s*pro/i;
+
+function phPick() {
+    if (!Array.isArray(database) || !database.length) return "";
+    if (phPoolsFor !== database) {
+        const all = [];
+        database.forEach(function (g) { (Array.isArray(g) ? g : []).forEach(function (m) { if (m) all.push(String(m)); }); });
+        phPools = { all: all, ex: all.filter(function (m) { return PH_EXOTIC.test(m); }), fl: all.filter(function (m) { return PH_FLAG.test(m) && !PH_EXOTIC.test(m); }) };
+        phPoolsFor = database;
+    }
+    const r = Math.random();
+    const pool = (r < 0.45 && phPools.ex.length) ? phPools.ex : ((r < 0.8 && phPools.fl.length) ? phPools.fl : phPools.all);
+    if (!pool.length) return "";
+    let m = pool[Math.floor(Math.random() * pool.length)];
+    if (m === phLast && pool.length > 1) m = pool[(pool.indexOf(m) + 1) % pool.length];
+    phLast = m;
+    return m;
+}
 let placeholderInterval = null;
 
 function initDynamicPlaceholder() {
@@ -6928,13 +7339,7 @@ function initDynamicPlaceholder() {
 
     placeholderInterval = setInterval(() => {
         if (document.activeElement !== input && !input.value) {
-            let sampleModel = "Samsung Galaxy S23";
-            if (Array.isArray(database) && database.length > 0) {
-                const randomGroup = database[Math.floor(Math.random() * database.length)];
-                if (Array.isArray(randomGroup) && randomGroup.length > 0) {
-                    sampleModel = randomGroup[Math.floor(Math.random() * randomGroup.length)];
-                }
-            }
+            const sampleModel = phPick() || "Samsung Galaxy S23";
             placeholderColorIndex = (placeholderColorIndex + 1) % PLACEHOLDER_PALETTE.length;
             const next = PLACEHOLDER_PALETTE[placeholderColorIndex];
             document.documentElement.style.setProperty("--placeholder-color", next.color);
@@ -6945,7 +7350,7 @@ function initDynamicPlaceholder() {
                 input.style.opacity = 1;
             }, 280);
         }
-    }, 2000);
+    }, 2400);
 }
 
 function initAccentColor() {
@@ -7544,6 +7949,8 @@ const I18N_VF = {"az": {"authMsgLogin": "Axtarış üçün daxil olun və ya pul
 Object.keys(I18N_VF).forEach(function (l) { Object.assign(I18N[l], I18N_VF[l]); });
 const I18N_UI2 = {"az": {"themeReading": "OXUMA", "eyeComfort": "Göz rahatlığı", "eyeComfortDesc": "Ekranı isti, yumşaq dumanlı tonla rahatladır", "fontReset": "Sıfırla", "fontSample": "Samsung Galaxy A55 — nümunə mətn", "secAbout": "HAQQINDA", "aboutOpen": "Proqram haqqında"}, "ru": {"themeReading": "ЧТЕНИЕ", "eyeComfort": "Комфорт для глаз", "eyeComfortDesc": "Смягчает экран тёплым дымчатым оттенком", "fontReset": "Сбросить", "fontSample": "Samsung Galaxy A55 — пример текста", "secAbout": "О ПРОГРАММЕ", "aboutOpen": "О программе"}, "tr": {"themeReading": "OKUMA", "eyeComfort": "Göz konforu", "eyeComfortDesc": "Ekranı sıcak, yumuşak sisli bir tonla rahatlatır", "fontReset": "Sıfırla", "fontSample": "Samsung Galaxy A55 — örnek metin", "secAbout": "HAKKINDA", "aboutOpen": "Uygulama hakkında"}, "en": {"themeReading": "READING", "eyeComfort": "Eye comfort", "eyeComfortDesc": "Softens the screen with a warm, misty tint", "fontReset": "Reset", "fontSample": "Samsung Galaxy A55 — sample text", "secAbout": "ABOUT", "aboutOpen": "About the app"}};
 Object.keys(I18N_UI2).forEach(function (l) { Object.assign(I18N[l], I18N_UI2[l]); });
+const I18N_GIFT = {"az": {"giftTitle": "Hədiyyə", "giftMsgR": "🎁 {r} ProTechtor™ tərəfindən sizə {d} gün Premium hədiyyə edildi!", "giftMsg": "🎁 ProTechtor™ tərəfindən sizə {d} gün Premium hədiyyə edildi!", "payGift": "Hədiyyə", "gR_reg": "İlk qeydiyyatınız münasibətilə", "gR_holiday": "Bayram münasibətilə", "gR_novruz": "Novruz bayramı münasibətilə", "gR_newyear": "Yeni il münasibətilə", "gR_loyal": "Sadiq istifadəçimiz olduğunuz üçün", "gR_apology": "Yaranmış narahatlığa görə üzrxahlıq olaraq", "gR_promo": "Kampaniya çərçivəsində"}, "ru": {"giftTitle": "Подарок", "giftMsgR": "🎁 {r} — ProTechtor™ дарит вам Premium на {d} дн.!", "giftMsg": "🎁 ProTechtor™ дарит вам Premium на {d} дн.!", "payGift": "Подарок", "gR_reg": "В честь вашей регистрации", "gR_holiday": "В честь праздника", "gR_novruz": "В честь праздника Новруз", "gR_newyear": "В честь Нового года", "gR_loyal": "Как нашему постоянному пользователю", "gR_apology": "В качестве извинения за неудобства", "gR_promo": "В рамках акции"}, "tr": {"giftTitle": "Hediye", "giftMsgR": "🎁 {r} ProTechtor™ tarafından size {d} gün Premium hediye edildi!", "giftMsg": "🎁 ProTechtor™ tarafından size {d} gün Premium hediye edildi!", "payGift": "Hediye", "gR_reg": "İlk kaydınız vesilesiyle", "gR_holiday": "Bayram münasebetiyle", "gR_novruz": "Nevruz Bayramı münasebetiyle", "gR_newyear": "Yeni yıl münasebetiyle", "gR_loyal": "Sadık kullanıcımız olduğunuz için", "gR_apology": "Yaşanan aksaklık için özür olarak", "gR_promo": "Kampanya kapsamında"}, "en": {"giftTitle": "Gift", "giftMsgR": "🎁 {r} — ProTechtor™ has gifted you {d} days of Premium!", "giftMsg": "🎁 ProTechtor™ has gifted you {d} days of Premium!", "payGift": "Gift", "gR_reg": "To celebrate your registration", "gR_holiday": "To celebrate the holiday", "gR_novruz": "To celebrate Novruz", "gR_newyear": "To celebrate the New Year", "gR_loyal": "For being a loyal user", "gR_apology": "As an apology for the inconvenience", "gR_promo": "As part of our promotion"}};
+Object.keys(I18N_GIFT).forEach(function (l) { Object.assign(I18N[l], I18N_GIFT[l]); });
 const I18N_WL = {"az": {"welcomeStart": "Başla"}, "ru": {"welcomeStart": "Начать"}, "tr": {"welcomeStart": "Başla"}, "en": {"welcomeStart": "Get started"}};
 Object.keys(I18N_WL).forEach(function (l) { Object.assign(I18N[l], I18N_WL[l]); });
 const I18N_AV = {"az": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı dəyiş", "avatarPro": "Premium avatarlar", "avatarUpload": "Öz şəklini yüklə", "avatarRemove": "Standart", "avatarSaved": "Avatar yadda saxlanıldı", "avatarProOnly": "Bu seçim Premium istifadəçilər üçündür", "avatarFail": "Şəkil yüklənmədi. Başqa şəkil seçin."}, "ru": {"avatarTitle": "Выберите аватар", "avatarChange": "Сменить аватар", "avatarPro": "Премиум-аватары", "avatarUpload": "Загрузить своё фото", "avatarRemove": "Стандартный", "avatarSaved": "Аватар сохранён", "avatarProOnly": "Эта опция доступна в Премиум", "avatarFail": "Не удалось загрузить фото. Выберите другое."}, "tr": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı değiştir", "avatarPro": "Premium avatarlar", "avatarUpload": "Kendi fotoğrafını yükle", "avatarRemove": "Standart", "avatarSaved": "Avatar kaydedildi", "avatarProOnly": "Bu seçenek Premium kullanıcılar içindir", "avatarFail": "Fotoğraf yüklenemedi. Başka bir fotoğraf seçin."}, "en": {"avatarTitle": "Choose an avatar", "avatarChange": "Change avatar", "avatarPro": "Premium avatars", "avatarUpload": "Upload your own photo", "avatarRemove": "Default", "avatarSaved": "Avatar saved", "avatarProOnly": "This option is for Premium users", "avatarFail": "Couldn't load the photo. Try another one."}};
