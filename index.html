@@ -1374,6 +1374,21 @@
         .misfit-btn{width:100%;height:46px;border-radius:14px;border:1px solid #f39c12;background:transparent;color:#f39c12;font-weight:800;font-size:calc(14px * var(--font-scale));cursor:pointer}
         .detail-size{display:none;text-align:center;padding:8px 16px;font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--accent-color);border-bottom:1px solid var(--border);background:var(--surface)}
         .detail-size.show{display:block}
+        .detail-warn{display:none;margin:0;padding:9px 16px;font-size:calc(12.5px * var(--font-scale));font-weight:700;line-height:1.4;color:#1a1300;background:#f1c40f;text-align:center}
+        .detail-warn.show{display:block}
+        .m-spec{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:calc(11.5px * var(--font-scale));font-weight:500;color:var(--muted);line-height:1.2;letter-spacing:0}
+        .m-spec.diff{color:#e6a700}
+        .cut-ic{display:inline-flex;flex-shrink:0;color:var(--text);opacity:.8}
+        .m-spec.diff .cut-ic{color:#e6a700}
+        .cut-ic svg{width:28px;height:16px;display:block}
+        .spec-edit{margin-left:auto;flex-shrink:0;width:32px;height:32px;border-radius:9px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:14px;cursor:pointer}
+        .cut-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 4px}
+        .cut-pick button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:10px;cursor:pointer}
+        .cut-pick button.sel{border-color:var(--accent-color);color:var(--accent-color)}
+        .cut-pick svg{width:34px;height:20px}
+        .spec-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px}
+        .spec-grid label{font-size:10.5px;color:var(--muted);text-align:left}
+        .spec-grid input{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:0 8px;font-size:15px;margin-top:3px}
         #maint-screen{position:fixed;inset:0;background:var(--bg);z-index:3000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
         #maint-screen.show{display:flex}
         .maint-ico{font-size:56px;margin-bottom:14px}
@@ -1848,6 +1863,19 @@
                 </div>
             </div>
             <div class="admin-box wl-admin" style="max-height:none;">
+                <div class="admin-box-title">MODEL ÖLÇÜLƏRİ VƏ KAMERA KƏSİYİ (toplu)</div>
+                <div style="font-size:11px;color:var(--muted);line-height:1.5;">
+                    Tək model üçün: modeli açın və yanındakı ✏️ düyməsini basın.<br>
+                    Toplu: «Şablonu yüklə» ilə bütün modellərin cədvəlini Excel-də açın, doldurun və sətirləri bura yapışdırın.<br>
+                    Format: <b>Model;Düym;Hündürlük;En;Kəsik</b> — Kəsik: <b>bezel</b> (çərçivə), <b>notch</b> (çəngəl), <b>drop</b> (damla), <b>hole</b> (mərkəzi dəlik), <b>holel</b> (sol dəlik), <b>pill</b> (həb)
+                </div>
+                <textarea id="adminSpecsCsv" placeholder="Samsung Galaxy A55;6.6;161.1;77.4;hole"></textarea>
+                <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+                    <button class="admin-btn admin-btn-primary" style="height:34px;font-size:12px;" onclick="adminSpecsImport()">İdxal et</button>
+                    <button class="admin-btn admin-btn-secondary" style="height:34px;font-size:12px;" onclick="adminSpecsTemplate()">⬇ Şablonu yüklə (CSV)</button>
+                </div>
+            </div>
+            <div class="admin-box wl-admin" style="max-height:none;">
                 <div class="admin-box-title">AI KÖMƏKÇİ (yalnız Premium istifadəçilər)</div>
                 <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text);margin:4px 0;">
                     <input type="checkbox" id="adminAiOn" checked> Aktivdir
@@ -2026,6 +2054,24 @@
         </div>
     </div>
 
+    <div id="spec-modal" class="ov-modal">
+        <div class="ov-box" style="max-width:380px;text-align:left;">
+            <h3 id="specTitle" style="text-align:center;font-size:17px;"></h3>
+            <div class="spec-grid">
+                <label>Ekran (düym)<input type="number" step="0.01" id="specIn" placeholder="məs: 6.6"></label>
+                <label>Hündürlük (mm)<input type="number" step="0.1" id="specH" placeholder="məs: 161.1"></label>
+                <label>En (mm)<input type="number" step="0.1" id="specW" placeholder="məs: 77.4"></label>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:10px;">Kamera kəsiyi (ekranın üst hissəsi):</div>
+            <div class="cut-pick" id="specCuts"></div>
+            <div class="dlg-btns" style="margin-top:12px;">
+                <button type="button" class="dlg-btn ghost" onclick="closeSpecEdit()">Bağla</button>
+                <button type="button" class="dlg-btn ghost" style="color:#e74c3c" onclick="saveSpecEdit(true)">Sil</button>
+                <button type="button" class="dlg-btn ok" onclick="saveSpecEdit(false)">Saxla</button>
+            </div>
+        </div>
+    </div>
+
     <div id="welcome-modal" class="ov-modal" style="z-index:3500;">
         <div class="ov-box wl-box">
             <div class="wl-head"><div class="wl-logo">🛡️</div></div>
@@ -2081,6 +2127,7 @@
         </div>
 
         <div id="detail-size" class="detail-size"></div>
+        <div id="detail-warn" class="detail-warn"></div>
         <div id="compatibility-list" class="compatibility-list"></div>
         <div class="misfit-bar">
             <button class="misfit-btn" onclick="reportMisfit()" data-i18n="misfitBtn">⚠ Uyğun gəlmədi? Bildirin</button>
@@ -3686,7 +3733,15 @@ function aiFindCompatible(query) {
             const n = aiNorm(m);
             return toks.every(function (tk) { return n.indexOf(tk) >= 0; }) || n.replace(/ /g, "").indexOf(compact) >= 0;
         });
-        if (hit.length) out.push({ matched: hit.slice(0, 10), compatibleModels: g.slice(0, 60) });
+        if (hit.length) out.push({ matched: hit.slice(0, 10), compatibleModels: g.slice(0, 60).map(function (m) {
+            const s = typeof modelSpec === "function" ? modelSpec(m) : null;
+            if (!s) return m;
+            const bits = [];
+            const st = specText(s);
+            if (st) bits.push(st);
+            if (s.cut) bits.push("kəsik: " + cutLabel(s.cut));
+            return bits.length ? m + " (" + bits.join(", ") + ")" : m;
+        }) });
     });
     return { found: out.length > 0, groups: out };
 }
@@ -4643,10 +4698,12 @@ function groupSizeRaw(group) {
     return [];
 }
 
-function renderDetailSize(group) {
+function renderDetailSize(group, selected) {
+    renderSizeWarn(group);
     const el = document.getElementById("detail-size");
     if (!el) return;
-    const s = groupSizeRaw(group);
+    const own = selected ? modelSpec(selected) : null;
+    const s = own && (own.inch || (own.h && own.w)) ? [own.inch, own.h, own.w] : groupSizeRaw(group);
     const parts = [];
     if (s[0]) parts.push(s[0] + "″");
     if (s[1] && s[2]) parts.push(s[1] + " × " + s[2] + " mm");
@@ -4654,14 +4711,194 @@ function renderDetailSize(group) {
     el.classList.toggle("show", parts.length > 0);
 }
 
+const CUT_TYPES = ["bezel", "notch", "drop", "hole", "holel", "pill"];
+const CUT_SVG = {"bezel": "<rect x=\"1.2\" y=\"1.2\" width=\"21.6\" height=\"16\" rx=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><rect x=\"3.4\" y=\"6\" width=\"17.2\" height=\"12\" rx=\"1\" fill=\"currentColor\" opacity=\".18\"/><rect x=\"9\" y=\"3\" width=\"6\" height=\"1.3\" rx=\".65\" fill=\"currentColor\"/>", "notch": "<rect x=\"1.2\" y=\"1.2\" width=\"21.6\" height=\"16\" rx=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><rect x=\"2.6\" y=\"2.6\" width=\"18.8\" height=\"15\" rx=\"2.6\" fill=\"currentColor\" opacity=\".18\"/><path d=\"M7 1.2h10v2.2a1.6 1.6 0 0 1-1.6 1.6H8.6A1.6 1.6 0 0 1 7 3.4z\" fill=\"currentColor\"/>", "drop": "<rect x=\"1.2\" y=\"1.2\" width=\"21.6\" height=\"16\" rx=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><rect x=\"2.6\" y=\"2.6\" width=\"18.8\" height=\"15\" rx=\"2.6\" fill=\"currentColor\" opacity=\".18\"/><path d=\"M9.8 1.2h4.4c-.5 0-.6 3.6-2.2 3.6S10.3 1.2 9.8 1.2z\" fill=\"currentColor\"/>", "hole": "<rect x=\"1.2\" y=\"1.2\" width=\"21.6\" height=\"16\" rx=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><rect x=\"2.6\" y=\"2.6\" width=\"18.8\" height=\"15\" rx=\"2.6\" fill=\"currentColor\" opacity=\".18\"/><circle cx=\"12\" cy=\"4.6\" r=\"1.4\" fill=\"currentColor\"/>", "holel": "<rect x=\"1.2\" y=\"1.2\" width=\"21.6\" height=\"16\" rx=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><rect x=\"2.6\" y=\"2.6\" width=\"18.8\" height=\"15\" rx=\"2.6\" fill=\"currentColor\" opacity=\".18\"/><circle cx=\"5.4\" cy=\"4.8\" r=\"1.4\" fill=\"currentColor\"/>", "pill": "<rect x=\"1.2\" y=\"1.2\" width=\"21.6\" height=\"16\" rx=\"4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\"/><rect x=\"2.6\" y=\"2.6\" width=\"18.8\" height=\"15\" rx=\"2.6\" fill=\"currentColor\" opacity=\".18\"/><rect x=\"8.6\" y=\"3.4\" width=\"6.8\" height=\"2.6\" rx=\"1.3\" fill=\"currentColor\"/>"};
+const CUT_ALIAS = { "cerceve": "bezel", "bezel": "bezel", "yox": "bezel", "notch": "notch", "cengel": "notch", "drop": "drop", "damla": "drop", "waterdrop": "drop", "hole": "hole", "delik": "hole", "punch": "hole", "merkez": "hole", "holel": "holel", "soldelik": "holel", "sol": "holel", "pill": "pill", "heb": "pill", "island": "pill", "dynamicisland": "pill" };
+let specEditModel = "";
+let specEditCut = "";
+
+function cutIconHtml(c, big) {
+    if (!CUT_SVG[c]) return "";
+    return '<svg viewBox="0 0 24 ' + (big ? "18" : "14") + '" aria-hidden="true">' + CUT_SVG[c] + "</svg>";
+}
+
+function cutLabel(c) {
+    return t("cut_" + c);
+}
+
+function modelSpec(model) {
+    const raw = sizesMap[norm(model)];
+    if (!raw) return null;
+    const a = String(raw).split("|");
+    const num = function (x) { const n = parseFloat(String(x || "").replace(",", ".")); return isFinite(n) && n > 0 ? n : 0; };
+    return { inch: num(a[0]), h: num(a[1]), w: num(a[2]), cut: CUT_TYPES.indexOf(a[3]) >= 0 ? a[3] : "" };
+}
+
+function specText(s) {
+    const parts = [];
+    if (s.inch) parts.push(s.inch + "″");
+    if (s.h && s.w) parts.push(s.h + " × " + s.w + " mm");
+    return parts.join(" · ");
+}
+
+function specLineEl(model, selected) {
+    const s = modelSpec(model);
+    if (!s) return null;
+    const txt = specText(s);
+    if (!txt && !s.cut) return null;
+    const el = document.createElement("div");
+    el.className = "m-spec";
+    if (selected && norm(selected) !== norm(model)) {
+        const ss = modelSpec(selected);
+        if (ss && ss.h && ss.w && s.h && s.w && (Math.abs(ss.h - s.h) > 1 || Math.abs(ss.w - s.w) > 1)) el.classList.add("diff");
+    }
+    if (s.cut) {
+        const ic = document.createElement("span");
+        ic.className = "cut-ic";
+        ic.title = cutLabel(s.cut);
+        ic.innerHTML = cutIconHtml(s.cut);
+        el.appendChild(ic);
+    }
+    if (txt) {
+        const sp = document.createElement("span");
+        sp.textContent = txt;
+        el.appendChild(sp);
+    }
+    return el;
+}
+
+function renderSizeWarn(group) {
+    const el = document.getElementById("detail-warn");
+    if (!el) return;
+    let minH = Infinity, maxH = 0, minW = Infinity, maxW = 0, n = 0;
+    (Array.isArray(group) ? group : []).forEach(function (m) {
+        const s = modelSpec(m);
+        if (!s || !s.h || !s.w) return;
+        n++;
+        minH = Math.min(minH, s.h); maxH = Math.max(maxH, s.h);
+        minW = Math.min(minW, s.w); maxW = Math.max(maxW, s.w);
+    });
+    const d = n >= 2 ? Math.max(maxH - minH, maxW - minW) : 0;
+    if (d > 1) {
+        el.textContent = t("specDiff").replace("{d}", (Math.round(d * 10) / 10).toString());
+        el.classList.add("show");
+    } else {
+        el.textContent = "";
+        el.classList.remove("show");
+    }
+}
+
+function openSpecEdit(model) {
+    if (!isAdmin) return;
+    specEditModel = model;
+    const s = modelSpec(model) || { inch: "", h: "", w: "", cut: "" };
+    document.getElementById("specTitle").textContent = model;
+    document.getElementById("specIn").value = s.inch || "";
+    document.getElementById("specH").value = s.h || "";
+    document.getElementById("specW").value = s.w || "";
+    specEditCut = s.cut || "";
+    renderSpecCuts();
+    document.getElementById("spec-modal").style.display = "flex";
+}
+
+function renderSpecCuts() {
+    const box = document.getElementById("specCuts");
+    box.innerHTML = CUT_TYPES.map(function (c) {
+        return '<button type="button" class="' + (c === specEditCut ? "sel" : "") + '" onclick="pickSpecCut(\'' + c + '\')">' + cutIconHtml(c, true) + "<span>" + escapeHtml(cutLabel(c)) + "</span></button>";
+    }).join("") + '<button type="button" class="' + (specEditCut ? "" : "sel") + '" onclick="pickSpecCut(\'\')"><span style="font-size:18px;line-height:20px">—</span><span>Bilinmir</span></button>';
+}
+
+function pickSpecCut(c) {
+    specEditCut = c;
+    renderSpecCuts();
+}
+
+function closeSpecEdit() {
+    document.getElementById("spec-modal").style.display = "none";
+}
+
+function saveSpecs(upd) {
+    Object.keys(upd).forEach(function (k) { if (upd[k]) sizesMap[k] = upd[k]; else delete sizesMap[k]; });
+    try { localStorage.setItem("pt_sizes", JSON.stringify(sizesMap)); } catch (e) {}
+    return db.doc("app_data/sizes").set({ m: upd, updatedAt: Date.now() }, { merge: true });
+}
+
+function specStr(inch, hh, ww, cut) {
+    const c = function (x) { const n = parseFloat(String(x || "").replace(",", ".")); return isFinite(n) && n > 0 ? String(Math.round(n * 100) / 100) : ""; };
+    const a = [c(inch), c(hh), c(ww), CUT_TYPES.indexOf(cut) >= 0 ? cut : ""];
+    return a.some(Boolean) ? a.join("|").replace(/\|+$/, "") : "";
+}
+
+function saveSpecEdit(del) {
+    const k = norm(specEditModel);
+    if (!k) return;
+    const str = del ? "" : specStr(document.getElementById("specIn").value, document.getElementById("specH").value, document.getElementById("specW").value, specEditCut);
+    const upd = {};
+    upd[k] = str;
+    saveSpecs(upd).then(function () {
+        showAppToast(str ? "Ölçü saxlanıldı" : "Ölçü silindi");
+    }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+    closeSpecEdit();
+    if (selectedGroup) { renderCompatibilityList(selectedGroup, selectedModel); renderDetailSize(selectedGroup, selectedModel); }
+}
+
+function adminSpecsTemplate() {
+    const rows = ["Model;Duym;Hundurluk_mm;En_mm;Kesik"];
+    (Array.isArray(adminEditDb) && adminEditDb.length ? adminEditDb : database).forEach(function (g) {
+        (Array.isArray(g) ? g : []).forEach(function (m) {
+            const s = modelSpec(m) || {};
+            rows.push([String(m).replace(/;/g, ","), s.inch || "", s.h || "", s.w || "", s.cut || ""].join(";"));
+        });
+    });
+    const blob = new Blob(["\ufeff" + rows.join("\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "olculer_" + new Date().toISOString().slice(0, 10) + ".csv";
+    a.click();
+}
+
+function adminSpecsImport() {
+    const ta = document.getElementById("adminSpecsCsv");
+    const txt = (ta && ta.value) || "";
+    const known = {};
+    (Array.isArray(database) ? database : []).forEach(function (g) { (Array.isArray(g) ? g : []).forEach(function (m) { known[norm(m)] = 1; }); });
+    const upd = {};
+    let ok = 0, miss = 0, bad = 0;
+    txt.split(/\r?\n/).forEach(function (line, i) {
+        line = line.trim();
+        if (!line) return;
+        const c = line.split(/[;\t]/);
+        if (i === 0 && /model/i.test(c[0] || "")) return;
+        const k = norm(c[0] || "");
+        if (!k) { bad++; return; }
+        if (!known[k]) { miss++; return; }
+        const cutKey = norm(c[4] || "");
+        const cut = CUT_ALIAS[cutKey] || (CUT_TYPES.indexOf(cutKey) >= 0 ? cutKey : "");
+        upd[k] = specStr(c[1], c[2], c[3], cut);
+        ok++;
+    });
+    if (!ok) { appAlert("Uyğun sətir tapılmadı. Format: Model;Düym;Hündürlük;En;Kəsik" + (miss ? "\nBazada olmayan model: " + miss : ""), "Ölçülər", "📏"); return; }
+    saveSpecs(upd).then(function () {
+        appAlert("Yeniləndi: " + ok + " model" + (miss ? "\nBazada tapılmadı: " + miss : "") + (bad ? "\nSəhv sətir: " + bad : ""), "Ölçülər", "📏");
+        if (ta) ta.value = "";
+    }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+}
+
 function adminSaveSize(gi) {
     const g = adminEditDb[gi];
     if (!Array.isArray(g) || !g.length) return;
     const v = function (id) { return ((document.getElementById(id) || {}).value || "").trim().replace(",", "."); };
     const val = [v("szIn_" + gi), v("szH_" + gi), v("szW_" + gi)];
-    const str = val.some(Boolean) ? val.join("|") : "";
     const upd = {};
-    g.forEach(function (m) { const k = norm(m); if (k) { upd[k] = str; if (str) sizesMap[k] = str; else delete sizesMap[k]; } });
+    g.forEach(function (m) {
+        const k = norm(m);
+        if (!k) return;
+        const cut = (String(sizesMap[k] || "").split("|")[3]) || "";
+        const str = (val.some(Boolean) || cut) ? val.concat([cut]).join("|").replace(/\|+$/, "") : "";
+        upd[k] = str;
+        if (str) sizesMap[k] = str; else delete sizesMap[k];
+    });
+    const str = val.some(Boolean);
     db.doc("app_data/sizes").set({ m: upd, updatedAt: Date.now() }, { merge: true }).then(function () {
         try { localStorage.setItem("pt_sizes", JSON.stringify(sizesMap)); } catch (e) {}
         showAppToast(str ? "Ölçü saxlanıldı" : "Ölçü silindi");
@@ -6692,6 +6929,8 @@ const I18N_AI = {"az": {"aiTitle": "ProTechtor™ Köməkçi", "aiSub": "Premium
 Object.keys(I18N_AI).forEach(function (l) { Object.assign(I18N[l], I18N_AI[l]); });
 const I18N_RF = {"az": {"payRefunded": "Geri qaytarıldı · {d}", "nRefundUntil": "{a} AZN ödənişiniz geri qaytarıldı. Premium bitmə tarixi: {d}", "nRefundOff": "{a} AZN ödənişiniz geri qaytarıldı. Premium abunəliyiniz dayandırıldı."}, "ru": {"payRefunded": "Возврат · {d}", "nRefundUntil": "Ваш платёж {a} AZN возвращён. Премиум действует до: {d}", "nRefundOff": "Ваш платёж {a} AZN возвращён. Премиум-подписка остановлена."}, "tr": {"payRefunded": "İade edildi · {d}", "nRefundUntil": "{a} AZN ödemeniz iade edildi. Premium bitiş tarihi: {d}", "nRefundOff": "{a} AZN ödemeniz iade edildi. Premium aboneliğiniz durduruldu."}, "en": {"payRefunded": "Refunded · {d}", "nRefundUntil": "Your {a} AZN payment was refunded. Premium valid until: {d}", "nRefundOff": "Your {a} AZN payment was refunded. Your Premium has been stopped."}};
 Object.keys(I18N_RF).forEach(function (l) { Object.assign(I18N[l], I18N_RF[l]); });
+const I18N_SP = {"az": {"specDiff": "⚠️ Bu siyahıdakı modellər arasında {d} mm-ə qədər ölçü fərqi var. Şüşəni taxmazdan əvvəl yoxlayın.", "cut_bezel": "Çərçivə (kəsiksiz)", "cut_notch": "Çəngəl (notch)", "cut_drop": "Damla", "cut_hole": "Mərkəzi dəlik", "cut_holel": "Sol dəlik", "cut_pill": "Həb (Dynamic Island)"}, "ru": {"specDiff": "⚠️ Размеры моделей в этом списке отличаются до {d} мм. Проверьте стекло перед установкой.", "cut_bezel": "Рамка (без выреза)", "cut_notch": "Чёлка (notch)", "cut_drop": "Каплевидный вырез", "cut_hole": "Отверстие по центру", "cut_holel": "Отверстие слева", "cut_pill": "Пилюля (Dynamic Island)"}, "tr": {"specDiff": "⚠️ Bu listedeki modeller arasında {d} mm'ye kadar ölçü farkı var. Camı takmadan önce kontrol edin.", "cut_bezel": "Çerçeve (çentiksiz)", "cut_notch": "Çentik (notch)", "cut_drop": "Damla", "cut_hole": "Ortada delik", "cut_holel": "Solda delik", "cut_pill": "Hap (Dynamic Island)"}, "en": {"specDiff": "⚠️ Models in this list differ in size by up to {d} mm. Check the glass before applying.", "cut_bezel": "Bezel (no cutout)", "cut_notch": "Notch", "cut_drop": "Waterdrop", "cut_hole": "Center punch-hole", "cut_holel": "Left punch-hole", "cut_pill": "Pill (Dynamic Island)"}};
+Object.keys(I18N_SP).forEach(function (l) { Object.assign(I18N[l], I18N_SP[l]); });
 const I18N_WL = {"az": {"welcomeStart": "Başla"}, "ru": {"welcomeStart": "Начать"}, "tr": {"welcomeStart": "Başla"}, "en": {"welcomeStart": "Get started"}};
 Object.keys(I18N_WL).forEach(function (l) { Object.assign(I18N[l], I18N_WL[l]); });
 const I18N_AV = {"az": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı dəyiş", "avatarPro": "Premium avatarlar", "avatarUpload": "Öz şəklini yüklə", "avatarRemove": "Standart", "avatarSaved": "Avatar yadda saxlanıldı", "avatarProOnly": "Bu seçim Premium istifadəçilər üçündür", "avatarFail": "Şəkil yüklənmədi. Başqa şəkil seçin."}, "ru": {"avatarTitle": "Выберите аватар", "avatarChange": "Сменить аватар", "avatarPro": "Премиум-аватары", "avatarUpload": "Загрузить своё фото", "avatarRemove": "Стандартный", "avatarSaved": "Аватар сохранён", "avatarProOnly": "Эта опция доступна в Премиум", "avatarFail": "Не удалось загрузить фото. Выберите другое."}, "tr": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı değiştir", "avatarPro": "Premium avatarlar", "avatarUpload": "Kendi fotoğrafını yükle", "avatarRemove": "Standart", "avatarSaved": "Avatar kaydedildi", "avatarProOnly": "Bu seçenek Premium kullanıcılar içindir", "avatarFail": "Fotoğraf yüklenemedi. Başka bir fotoğraf seçin."}, "en": {"avatarTitle": "Choose an avatar", "avatarChange": "Change avatar", "avatarPro": "Premium avatars", "avatarUpload": "Upload your own photo", "avatarRemove": "Default", "avatarSaved": "Avatar saved", "avatarProOnly": "This option is for Premium users", "avatarFail": "Couldn't load the photo. Try another one."}};
@@ -7026,6 +7265,8 @@ function performSearch(query) {
         const modelEl = document.createElement("div");
         modelEl.className = "result-model";
         modelEl.innerHTML = highlightMatch(item.model, query);
+        const rSpec = specLineEl(item.model, null);
+        if (rSpec) modelEl.appendChild(rSpec);
 
         const arrow = document.createElement("div");
         arrow.className = "result-arrow";
@@ -7053,7 +7294,7 @@ function openDetail(model, group) {
 
     document.getElementById("detail-model").innerText = model;
     renderCompatibilityList(group, model);
-    renderDetailSize(group);
+    renderDetailSize(group, model);
 
     history.pushState({modal: 'detail'}, "");
     document.getElementById("detail-view").classList.add("active");
@@ -7090,10 +7331,21 @@ function renderCompatibilityList(group, selected) {
         const modelName = document.createElement("div");
         modelName.className = "compat-model";
         modelName.innerText = model;
+        const cSpec = specLineEl(model, selected);
+        if (cSpec) modelName.appendChild(cSpec);
 
         item.appendChild(number);
         item.appendChild(brand);
         item.appendChild(modelName);
+        if (isAdmin) {
+            const ed = document.createElement("button");
+            ed.type = "button";
+            ed.className = "spec-edit";
+            ed.textContent = "✏️";
+            ed.title = "Ölçü / kəsik";
+            ed.onclick = function (e) { e.stopPropagation(); openSpecEdit(model); };
+            item.appendChild(ed);
+        }
         list.appendChild(item);
     });
 }
