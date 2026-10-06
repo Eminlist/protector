@@ -1176,13 +1176,13 @@
         @keyframes accSheen{0%{left:-60%;opacity:1}100%{left:130%;opacity:0}}
         .adm-acc>summary::-webkit-details-marker{display:none}
         .adm-acc>summary .e3d{width:34px;height:34px;transition:transform .5s cubic-bezier(.2,.9,.25,1.4)}
-        .adm-acc[open]>summary .e3d{transform:rotate(-8deg) scale(1.1)}
+        .adm-acc[open]>summary .e3d{transform:scale(1.04)}
         .adm-acc>summary .chev{margin-left:auto;width:30px;height:30px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--muted);background:var(--surface);border:1px solid var(--border);transition:transform .5s cubic-bezier(.2,.9,.25,1.2),background .3s,color .3s;line-height:1;padding-bottom:2px;box-sizing:border-box}
         .adm-acc[open]>summary .chev{transform:rotate(90deg);background:var(--accent-color);color:#111;border-color:transparent}
         .adm-acc-body{box-sizing:border-box;padding:4px 14px 16px}
         .adm-acc[open] .adm-acc-body>*,.adm-acc[open] .fm>*{animation:accItem .55s cubic-bezier(.2,.8,.2,1) both}
         .adm-acc[open] .adm-acc-body>*:nth-child(2),.adm-acc[open] .fm>*:nth-child(2){animation-delay:0.05s}.adm-acc[open] .adm-acc-body>*:nth-child(3),.adm-acc[open] .fm>*:nth-child(3){animation-delay:0.10s}.adm-acc[open] .adm-acc-body>*:nth-child(4),.adm-acc[open] .fm>*:nth-child(4){animation-delay:0.15s}.adm-acc[open] .adm-acc-body>*:nth-child(5),.adm-acc[open] .fm>*:nth-child(5){animation-delay:0.20s}.adm-acc[open] .adm-acc-body>*:nth-child(6),.adm-acc[open] .fm>*:nth-child(6){animation-delay:0.25s}.adm-acc[open] .adm-acc-body>*:nth-child(7),.adm-acc[open] .fm>*:nth-child(7){animation-delay:0.30s}.adm-acc[open] .adm-acc-body>*:nth-child(8),.adm-acc[open] .fm>*:nth-child(8){animation-delay:0.35s}.adm-acc[open] .adm-acc-body>*:nth-child(9),.adm-acc[open] .fm>*:nth-child(9){animation-delay:0.40s}.adm-acc[open] .adm-acc-body>*:nth-child(10),.adm-acc[open] .fm>*:nth-child(10){animation-delay:0.45s}
-        @keyframes accItem{from{opacity:0;transform:translateX(-20px) scale(.98)}to{opacity:1;transform:none}}
+        @keyframes accItem{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
         .adm-acc-body .admin-box{max-height:220px}
         .e3d{width:24px;height:24px;object-fit:contain;flex-shrink:0;vertical-align:middle;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
         .adm-search{width:100%;margin-bottom:6px}
@@ -1224,14 +1224,20 @@
         .fm-status{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.5}
         .admin-tabs-sticky{margin:12px 12px 4px;padding:4px;gap:4px;border:1px solid var(--border) !important;border-radius:999px;background:color-mix(in srgb,var(--surface) 88%,transparent) !important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);top:8px !important;box-shadow:0 8px 20px -12px rgba(0,0,0,.5)}
         .admin-tabs-sticky button{border-radius:999px !important;padding:10px 6px !important;transition:background .3s,color .3s;font-family:inherit}
-        .ic3d{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:30%;background:linear-gradient(150deg,var(--a) 0%,var(--b) 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 3px rgba(0,0,0,.25),0 4px 10px -3px color-mix(in srgb,var(--b) 75%,transparent),0 1px 2px rgba(0,0,0,.25);filter:none !important;overflow:hidden;isolation:isolate}
-        .ic3d::before{content:"";position:absolute;left:5%;right:5%;top:3%;height:50%;border-radius:45% 45% 50% 50%/65% 65% 35% 35%;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.05));z-index:0;pointer-events:none}
-        .ic3d svg{position:relative;z-index:1;width:58%;height:58%;fill:none;stroke:#fff;stroke-width:2.15;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+        .ic3d{position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;border-radius:30%;background:linear-gradient(160deg,color-mix(in srgb,var(--accent-color) 18%,var(--surface)) 0%,var(--surface) 62%,color-mix(in srgb,var(--surface) 85%,#000) 100%);border:1px solid color-mix(in srgb,var(--accent-color) 42%,var(--border));box-shadow:inset 0 1px 0 rgba(255,255,255,.10),inset 0 -1px 0 rgba(0,0,0,.25),0 6px 14px -8px color-mix(in srgb,var(--accent-color) 55%,transparent);filter:none !important;overflow:hidden;isolation:isolate}
+        .ic3d::before{content:"";position:absolute;inset:0 0 52% 0;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,0));pointer-events:none}
+        .ic3d svg{position:relative;z-index:1;width:56%;height:56%;fill:none;stroke:var(--accent-color);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        :root[data-theme="light"] .ic3d,:root[data-theme="reading"] .ic3d{box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 10px -6px color-mix(in srgb,var(--accent-color) 50%,transparent)}
+        .adm-tile.danger .ic3d{border-color:color-mix(in srgb,#e74c3c 45%,var(--border));background:linear-gradient(160deg,color-mix(in srgb,#e74c3c 16%,var(--surface)),var(--surface) 62%)}
+        .adm-tile.danger .ic3d svg{stroke:#e74c3c}
+        .theme-grid .theme-option .ic3d svg{stroke-width:1.7}
         .update-button{position:relative;overflow:hidden;isolation:isolate}
         .update-button.updating{background-size:200% 100%;animation:updShift 3s linear infinite}
         .update-button.updating::before{content:"";position:absolute;inset:-50% -40%;z-index:-1;background:radial-gradient(38% 55% at 25% 50%,rgba(46,204,113,.42),transparent 70%),radial-gradient(34% 50% at 72% 55%,rgba(39,174,96,.34),transparent 70%);filter:blur(5px);animation:updWave 2.2s ease-in-out infinite alternate}
         @keyframes updWave{0%{transform:translate(-16%,4%) scale(1)}50%{transform:translate(4%,-6%) scale(1.1)}100%{transform:translate(16%,3%) scale(.95)}}
         @keyframes updShift{to{background-position:200% 0}}
+        :root[data-theme="reading"]::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;background:rgba(255,150,40,.20);mix-blend-mode:multiply}
+        :root[data-theme="reading"] img,:root[data-theme="reading"] video{filter:sepia(.12) saturate(.92)}
         html.low-power *,html.low-power *::before,html.low-power *::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
         html.low-power .ripple-ring{display:none !important}
         .adm-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
@@ -2031,13 +2037,13 @@
         <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" /><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></svg></span><span>Xoş gəldin mesajı</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
-                <div class="fm"><div class="fm-sw-row"><span>Aktivdir</span><label class="switch"><input type="checkbox" id="adminWlOn" checked><span class="slider"></span></label></div><div class="fm-seg"><button type="button" class="on" onclick="fmSeg(this,'wl','az')">AZ</button><button type="button" onclick="fmSeg(this,'wl','ru')">RU</button><button type="button" onclick="fmSeg(this,'wl','tr')">TR</button><button type="button" onclick="fmSeg(this,'wl','en')">EN</button></div><div class="fm-pane on" data-pane="wl-az"><input type="text" id="adminWlTaz" class="fm-in" placeholder="Başlıq (AZ)"><textarea id="adminWlXaz" class="fm-ta" placeholder="Mətn (AZ)"></textarea></div><div class="fm-pane" data-pane="wl-ru"><input type="text" id="adminWlTru" class="fm-in" placeholder="Başlıq (RU)"><textarea id="adminWlXru" class="fm-ta" placeholder="Mətn (RU)"></textarea></div><div class="fm-pane" data-pane="wl-tr"><input type="text" id="adminWlTtr" class="fm-in" placeholder="Başlıq (TR)"><textarea id="adminWlXtr" class="fm-ta" placeholder="Mətn (TR)"></textarea></div><div class="fm-pane" data-pane="wl-en"><input type="text" id="adminWlTen" class="fm-in" placeholder="Başlıq (EN)"><textarea id="adminWlXen" class="fm-ta" placeholder="Mətn (EN)"></textarea></div><div class="fm-acts"><button type="button" class="fm-btn pri wide" onclick="adminSaveWelcome(false)"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Yadda saxla</button><button type="button" class="fm-btn" onclick="adminPreviewWelcome()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>Önizlə</button></div><div class="fm-acts col"><button type="button" class="fm-btn ghost wide" onclick="adminSaveWelcome(true)"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>Hamıya yenidən göstər</button><button type="button" class="fm-btn ghost wide" onclick="adminFillWelcomeDefault()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>Standart mətn</button></div></div>
+                <div class="fm"><div class="fm-sw-row"><span>Aktivdir</span><label class="switch"><input type="checkbox" id="adminWlOn" checked><span class="slider"></span></label></div><div class="fm-seg"><button type="button" class="on" onclick="fmSeg(this,'wl','az')">AZ</button><button type="button" onclick="fmSeg(this,'wl','ru')">RU</button><button type="button" onclick="fmSeg(this,'wl','tr')">TR</button><button type="button" onclick="fmSeg(this,'wl','en')">EN</button></div><div class="fm-pane on" data-pane="wl-az"><input type="text" id="adminWlTaz" class="fm-in" placeholder="Başlıq (AZ)"><textarea id="adminWlXaz" class="fm-ta" placeholder="Mətn (AZ)"></textarea></div><div class="fm-pane" data-pane="wl-ru"><input type="text" id="adminWlTru" class="fm-in" placeholder="Başlıq (RU)"><textarea id="adminWlXru" class="fm-ta" placeholder="Mətn (RU)"></textarea></div><div class="fm-pane" data-pane="wl-tr"><input type="text" id="adminWlTtr" class="fm-in" placeholder="Başlıq (TR)"><textarea id="adminWlXtr" class="fm-ta" placeholder="Mətn (TR)"></textarea></div><div class="fm-pane" data-pane="wl-en"><input type="text" id="adminWlTen" class="fm-in" placeholder="Başlıq (EN)"><textarea id="adminWlXen" class="fm-ta" placeholder="Mətn (EN)"></textarea></div><div class="fm-acts"><button type="button" class="fm-btn pri wide" onclick="adminSaveWelcome(false)"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Yadda saxla</button><button type="button" class="fm-btn" onclick="adminPreviewWelcome()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>Önizlə</button></div><div class="fm-acts col"><button type="button" class="fm-btn wide" onclick="adminSaveWelcome(true)"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>Hamıya yenidən göstər</button><button type="button" class="fm-btn ghost wide" onclick="adminFillWelcomeDefault()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>Standart mətn</button></div></div>
             </div>
         </details>
         <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#B4BECB;--b:#5D6B7D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.106-3.105c.32-.322.863-.22.983.218a6 6 0 0 1-8.259 7.057l-7.91 7.91a1 1 0 0 1-2.999-3l7.91-7.91a6 6 0 0 1 7.057-8.259c.438.12.54.662.219.984z" /></svg></span><span>Texniki iş rejimi</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
-                <div class="fm"><button type="button" class="fm-btn maint wide" id="adminMaintBtn" onclick="adminToggleMaintenance()">Texniki iş rejimi: ...</button><span class="fm-lbl" style="margin:4px 0 -4px">Avtomatik · Bakı vaxtı</span><div class="fm-sw-row"><span>Hər gün avtomatik</span><label class="switch"><input type="checkbox" id="autoMaintOn"><span class="slider"></span></label></div><div class="fm-grid2"><div><span class="fm-lbl">Başlama</span><input type="time" id="autoMaintFrom" class="fm-in" value="22:00"></div><div><span class="fm-lbl">Bitmə</span><input type="time" id="autoMaintTo" class="fm-in" value="08:00"></div></div><div class="fm-sw-row"><span>Premium istifadəçilər azaddır</span><label class="switch"><input type="checkbox" id="autoMaintPro"><span class="slider"></span></label></div><button type="button" class="fm-btn pri wide" onclick="adminSaveAutoMaint()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Saxla</button><div id="autoMaintStatus" class="fm-status"></div></div>
+                <div class="fm"><button type="button" class="fm-btn maint wide" id="adminMaintBtn" onclick="adminToggleMaintenance()">Texniki iş rejimi: ...</button><span class="fm-lbl" style="margin:4px 0 -4px">Avtomatik · Bakı vaxtı</span><div class="fm-sw-row"><span>Hər gün avtomatik</span><label class="switch"><input type="checkbox" id="autoMaintOn"><span class="slider"></span></label></div><div class="fm-grid2"><div><span class="fm-lbl">Başlama</span><input type="time" id="autoMaintFrom" class="fm-in" value="22:00"></div><div><span class="fm-lbl">Bitmə</span><input type="time" id="autoMaintTo" class="fm-in" value="08:00"></div></div><div class="fm-sw-row"><span>Premium istifadəçilər azaddır</span><label class="switch"><input type="checkbox" id="autoMaintPro"><span class="slider"></span></label></div><button type="button" class="fm-btn pri wide" onclick="adminSaveAutoMaint()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Yadda saxla</button><div id="autoMaintStatus" class="fm-status"></div></div>
             </div>
         </details>
         </div>
@@ -5210,35 +5216,46 @@ function proAvatarSvg(a) {
     const s = a.skin, h = a.hc;
     const sL = avMix(s, "#ffffff", .2), sD = avMix(s, "#3a1f10", .24), sDD = avMix(s, "#2a140a", .45);
     const hL = avMix(h, "#ffffff", .25), hD = avMix(h, "#000000", .38);
-    const lip = avMix(s, "#a8443c", .5), lipL = avMix(lip, "#ffffff", .22);
+    const lip = avMix(s, "#9c4a42", .38), lipL = avMix(lip, "#ffffff", .2);
     const brow = a.old ? "#8f8f8f" : ((a.hair === "hijab" || a.hair === "cap") ? "#3a2416" : avMix(h, "#000000", .15));
     const g = function (id) { return "url(#" + u + id + ")"; };
     const st = function (d, c, w, o) { return '<path d="' + d + '" fill="none" stroke="' + c + '" stroke-width="' + w + '" stroke-linecap="round"' + (o ? ' opacity="' + o + '"' : "") + "/>"; };
     const pf = function (d, f, o) { return '<path d="' + d + '" fill="' + f + '"' + (o ? ' opacity="' + o + '"' : "") + "/>"; };
     let defs = "<defs>" +
-        '<radialGradient id="' + u + 'bg" cx="50%" cy="36%" r="78%"><stop offset="0" stop-color="' + avMix(a.bg, "#ffffff", .5) + '"/><stop offset=".6" stop-color="' + a.bg + '"/><stop offset="1" stop-color="' + avMix(a.bg, "#000000", .22) + '"/></radialGradient>' +
+        '<radialGradient id="' + u + 'bg" cx="50%" cy="34%" r="80%"><stop offset="0" stop-color="' + avMix(avMix(a.bg, "#8a8a8a", .35), "#ffffff", .25) + '"/><stop offset=".55" stop-color="' + avMix(a.bg, "#5a5a5a", .45) + '"/><stop offset="1" stop-color="' + avMix(a.bg, "#141414", .78) + '"/></radialGradient>' +
+        '<linearGradient id="' + u + 'jk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + avMix(a.shirt, "#2b2b2b", .55) + '"/><stop offset=".55" stop-color="' + avMix(a.shirt, "#111111", .7) + '"/><stop offset="1" stop-color="' + avMix(a.shirt, "#000000", .85) + '"/></linearGradient>' +
         '<radialGradient id="' + u + 'sk" cx="44%" cy="38%" r="68%"><stop offset="0" stop-color="' + sL + '"/><stop offset=".6" stop-color="' + s + '"/><stop offset="1" stop-color="' + sD + '"/></radialGradient>' +
         '<linearGradient id="' + u + 'fs" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="' + sDD + '" stop-opacity=".45"/><stop offset=".22" stop-color="' + sDD + '" stop-opacity="0"/><stop offset=".78" stop-color="' + sDD + '" stop-opacity="0"/><stop offset="1" stop-color="' + sDD + '" stop-opacity=".45"/></linearGradient>' +
         '<linearGradient id="' + u + 'nk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + sDD + '"/><stop offset=".5" stop-color="' + sD + '"/><stop offset="1" stop-color="' + s + '"/></linearGradient>' +
         '<linearGradient id="' + u + 'hr" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="' + hL + '"/><stop offset=".5" stop-color="' + h + '"/><stop offset="1" stop-color="' + hD + '"/></linearGradient>' +
         '<linearGradient id="' + u + 'sh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + avMix(a.shirt, "#ffffff", .22) + '"/><stop offset=".55" stop-color="' + a.shirt + '"/><stop offset="1" stop-color="' + avMix(a.shirt, "#000000", .38) + '"/></linearGradient>' +
-        '<radialGradient id="' + u + 'ck"><stop offset="0" stop-color="#e0645a" stop-opacity=".3"/><stop offset="1" stop-color="#e0645a" stop-opacity="0"/></radialGradient>' +
+        '<radialGradient id="' + u + 'ck"><stop offset="0" stop-color="#d9705f" stop-opacity=".14"/><stop offset="1" stop-color="#e0645a" stop-opacity="0"/></radialGradient>' +
         '<filter id="' + u + 'ds" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="1.2" stdDeviation="1.3" flood-color="#000" flood-opacity=".3"/></filter>';
     if (a.beard) defs += '<linearGradient id="' + u + 'bd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + avMix(a.beard, "#ffffff", .12) + '"/><stop offset="1" stop-color="' + avMix(a.beard, "#000000", .3) + '"/></linearGradient>';
     defs += "</defs>";
     const face = "M21 25C21 17.5 26 14.5 32 14.5S43 17.5 43 25C43 31 42 35 39.5 38C37 40.5 34.5 41.8 32 41.8S27 40.5 24.5 38C22 35 21 31 21 25Z";
     let back = "", front = "", over = "";
-    const body = pf("M5 64C6 53.5 14 48 25.5 46.2Q32 50.5 38.5 46.2C50 48 58 53.5 59 64Z", g("sh")) +
-        st("M25.5 46.2Q32 51.2 38.5 46.2", avMix(a.shirt, "#000000", .4), 1.1, .55) +
-        st("M14 59Q16.5 54.5 21 52.5", avMix(a.shirt, "#000000", .4), .8, .3) + st("M50 59Q47.5 54.5 43 52.5", avMix(a.shirt, "#000000", .4), .8, .3);
+    const jl = avMix(a.shirt, "#ffffff", .08), wt = "#f3f1ec";
+    const lap = function (sx) {
+        const X = function (x) { return sx < 0 ? 64 - x : x; };
+        return pf("M" + X(25.4) + " 46.3L" + X(31.6) + " 60.5L" + X(28.2) + " 55.6L" + X(24.4) + " 56.4L" + X(26.6) + " 51.8Z", avMix(a.shirt, "#000000", .78)) +
+            st("M" + X(25.4) + " 46.3L" + X(31.6) + " 60.5", avMix(jl, "#ffffff", .25), .35, .35);
+    };
+    const body = pf("M5 64C6 53.5 14 48 25.5 46.2Q32 50.5 38.5 46.2C50 48 58 53.5 59 64Z", g("jk")) +
+        pf("M26.2 46.2L32 59L37.8 46.2Q32 50 26.2 46.2Z", wt) +
+        pf("M26.2 46.2L29.4 51.6L31.4 48.6Z", "#ffffff") + pf("M37.8 46.2L34.6 51.6L32.6 48.6Z", "#ffffff") +
+        st("M26.2 46.2L29.4 51.6L31.4 48.6M37.8 46.2L34.6 51.6L32.6 48.6", "#bdb8ae", .3, .9) +
+        lap(1) + lap(-1) +
+        st("M14 59Q16.5 54.5 21 52.5M50 59Q47.5 54.5 43 52.5", "#000000", .7, .25) ;
     const neck = pf("M27 35L27 45.6Q32 49.2 37 45.6L37 35Z", g("nk"));
     let ears = "";
     if (a.hair !== "hijab") ears = '<ellipse cx="21.2" cy="28.6" rx="2.3" ry="3.6" fill="' + sD + '"/><ellipse cx="21.6" cy="28.7" rx="1.1" ry="2" fill="' + sDD + '" opacity=".45"/><ellipse cx="42.8" cy="28.6" rx="2.3" ry="3.6" fill="' + sD + '"/><ellipse cx="42.4" cy="28.7" rx="1.1" ry="2" fill="' + sDD + '" opacity=".45"/>';
     let feat = "";
     [27, 37].forEach(function (ex) {
-        feat += pf("M" + (ex - 2.7) + " 27.3Q" + ex + " 25.2 " + (ex + 2.7) + " 27.3Q" + ex + " 28.9 " + (ex - 2.7) + " 27.3Z", "#fbf7f2");
-        feat += '<circle cx="' + ex + '" cy="27.15" r="1.3" fill="' + (a.eye || "#4a2c17") + '"/><circle cx="' + ex + '" cy="27.15" r=".62" fill="#111"/><circle cx="' + (ex + .45) + '" cy="26.7" r=".38" fill="#fff"/>';
-        feat += st("M" + (ex - 2.9) + " 27.3Q" + ex + " 24.9 " + (ex + 2.9) + " 27.2", sDD, .75);
+        feat += pf("M" + (ex - 2.5) + " 27.35Q" + ex + " 25.5 " + (ex + 2.5) + " 27.35Q" + ex + " 28.7 " + (ex - 2.5) + " 27.35Z", "#f6f2ec");
+        feat += '<circle cx="' + ex + '" cy="27.2" r="1.15" fill="' + (a.eye || "#4a2c17") + '"/><circle cx="' + ex + '" cy="27.2" r="1.15" fill="none" stroke="#1a0f08" stroke-width=".25" opacity=".6"/><circle cx="' + ex + '" cy="27.2" r=".55" fill="#0d0d0d"/><circle cx="' + (ex + .42) + '" cy="26.8" r=".32" fill="#fff"/><circle cx="' + (ex - .35) + '" cy="27.6" r=".16" fill="#fff" opacity=".6"/>';
+        feat += st("M" + (ex - 2.75) + " 27.4Q" + ex + " 25.05 " + (ex + 2.75) + " 27.25", "#2a1a10", .85);
+        feat += st("M" + (ex - 2) + " 28.35Q" + ex + " 29.1 " + (ex + 2) + " 28.3", sD, .35, .5);
         feat += st("M" + (ex - 2.4) + " 25.85Q" + ex + " 24.3 " + (ex + 2.4) + " 25.8", sD, .45, .6);
     });
     feat += pf("M23.6 23.6Q26.6 21.9 29.8 23.1L29.6 23.9Q26.6 22.9 23.9 24.3Z", brow) + pf("M40.4 23.6Q37.4 21.9 34.2 23.1L34.4 23.9Q37.4 22.9 40.1 24.3Z", brow);
@@ -5258,7 +5275,8 @@ function proAvatarSvg(a) {
     if (a.hair === "short") {
         front = pf("M20.7 27C20 17.2 25 12.4 32 12.4S44 17.2 43.3 27C42.7 23.2 41.7 20.6 39.6 19.3C36.4 20.8 27.6 20.8 24.4 19.3C22.3 20.6 21.3 23.2 20.7 27Z", g("hr")) +
             pf("M20.8 26.6L21.5 30.8L22.4 26.4Z", h) + pf("M43.2 26.6L42.5 30.8L41.6 26.4Z", h) +
-            st("M25 15.6Q29 14.6 33 16.4M30 14.1Q35 13.8 39 16.6M23 20Q25 17 28 15.8", hL, .5, .4);
+            st("M25 15.6Q29 14.6 33 16.4M30 14.1Q35 13.8 39 16.6M23 20Q25 17 28 15.8", hL, .5, .4) +
+            pf("M25 15.2Q31 12.8 38 15.4Q31 14.4 25.6 16.4Z", "#ffffff", .12);
     } else if (a.hair === "bald") {
         front = pf("M20.9 30.5C20.5 26.5 21 23.5 22.3 21.6C22.5 24.6 22.8 27.4 23.3 30.5Z", g("hr")) + pf("M43.1 30.5C43.5 26.5 43 23.5 41.7 21.6C41.5 24.6 41.2 27.4 40.7 30.5Z", g("hr")) +
             '<ellipse cx="29" cy="17.6" rx="4.6" ry="1.7" fill="#fff" opacity=".2" transform="rotate(-14 29 17.6)"/>';
