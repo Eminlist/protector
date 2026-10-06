@@ -3725,7 +3725,7 @@ function aiGetChat() {
 function aiErrText(e) {
     const s = String((e && (e.code || e.message)) || e || "").toLowerCase();
     if (s.indexOf("429") >= 0 || s.indexOf("quota") >= 0 || s.indexOf("resource") >= 0 || s.indexOf("exhausted") >= 0) return t("aiBusy");
-    if (s.indexOf("app-check") >= 0 || s.indexOf("appcheck") >= 0 || s.indexOf("recaptcha") >= 0) return t("aiError");
+    if (s.indexOf("app check") >= 0 || s.indexOf("app-check") >= 0 || s.indexOf("appcheck") >= 0 || s.indexOf("recaptcha") >= 0 || s.indexOf("401") >= 0) return t("aiError");
     if (s.indexOf("403") >= 0 || s.indexOf("permission") >= 0 || s.indexOf("not enabled") >= 0 || s.indexOf("api-not-enabled") >= 0 || s.indexOf("has not been used") >= 0) return t("aiOff");
     if (!navigator.onLine || s.indexOf("fetch") >= 0 || s.indexOf("network") >= 0 || s.indexOf("import") >= 0) return t("aiNet");
     return t("aiError");
