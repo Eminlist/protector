@@ -1233,8 +1233,11 @@
         .theme-grid .theme-option .ic3d svg{stroke-width:1.7}
         .update-button{position:relative;overflow:hidden;isolation:isolate}
         .update-button.updating{background-size:200% 100%;animation:updShift 3s linear infinite}
-        .update-button.updating::before{content:"";position:absolute;inset:-50% -40%;z-index:-1;background:radial-gradient(38% 55% at 25% 50%,rgba(46,204,113,.42),transparent 70%),radial-gradient(34% 50% at 72% 55%,rgba(39,174,96,.34),transparent 70%);filter:blur(5px);animation:updWave 2.2s ease-in-out infinite alternate}
-        @keyframes updWave{0%{transform:translate(-16%,4%) scale(1)}50%{transform:translate(4%,-6%) scale(1.1)}100%{transform:translate(16%,3%) scale(.95)}}
+        .update-button.updating::before,.update-button.updating::after{content:"";position:absolute;left:-25%;right:-25%;bottom:-22%;z-index:-1;background-repeat:repeat-x;pointer-events:none}
+        .update-button.updating::before{height:80%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40' preserveAspectRatio='none'%3E%3Cpath d='M0 12Q15 2 30 12T60 12T90 12T120 12V40H0Z' fill='rgba(46,204,113,.42)'/%3E%3C/svg%3E");background-size:110px 100%;animation:waveSlosh 1.7s ease-in-out infinite alternate,waveFlow 2.2s linear infinite}
+        .update-button.updating::after{height:70%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 40' preserveAspectRatio='none'%3E%3Cpath d='M0 12Q15 2 30 12T60 12T90 12T120 12V40H0Z' fill='rgba(120,230,160,.28)'/%3E%3C/svg%3E");background-size:150px 100%;animation:waveSlosh 1.7s ease-in-out -.85s infinite alternate,waveFlow 3s linear infinite reverse}
+        @keyframes waveSlosh{0%{transform:translateX(-14%) rotate(-2deg)}100%{transform:translateX(14%) rotate(2deg)}}
+        @keyframes waveFlow{to{background-position-x:220px}}
         @keyframes updShift{to{background-position:200% 0}}
         :root[data-theme="reading"]::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:2147483000;background:rgba(255,150,40,.20);mix-blend-mode:multiply}
         :root[data-theme="reading"] img,:root[data-theme="reading"] video{filter:sepia(.12) saturate(.92)}
