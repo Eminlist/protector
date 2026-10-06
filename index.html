@@ -5043,6 +5043,25 @@ let adminPendingSizes = null;
 
 function extractSizes(data) {
     const out = {};
+    const parseCut = function (s) {
+        const tk = String(s || "").toLowerCase().split(/[^a-zçəğıöşü]+/).filter(function (x) { return CUT_ALIAS[norm(x)]; });
+        return tk.length ? CUT_ALIAS[norm(tk[0])] : "";
+    };
+    const groups = Array.isArray(data) ? data : (data && Array.isArray(data.groups) ? data.groups : []);
+    groups.forEach(function (g) {
+        if (typeof g !== "string" || g.indexOf("|") < 0) return;
+        const sz = g.slice(g.indexOf("|") + 1);
+        const nums = sz.match(/\d+(?:[.,]\d+)?/g) || [];
+        if (nums.length < 2) return;
+        const gc = parseCut(sz);
+        g.split("|")[0].split(",").forEach(function (m) {
+            const k = norm(m);
+            if (!k) return;
+            const old = String(sizesMap[k] || "").split("|");
+            const str = specStr("", nums[0], nums[1], gc || old[3] || "");
+            if (str) out[k] = str;
+        });
+    });
     const src = data && !Array.isArray(data) && typeof data === "object" ? (data.sizes || data.olculer || null) : null;
     if (!src || typeof src !== "object") return out;
     Object.keys(src).forEach(function (model) {
@@ -7254,7 +7273,7 @@ function normalizeDatabase(data) {
     const result = [];
     data.forEach(function (group) {
         if (typeof group === "string") {
-            const models = group.split(",").map(m => m.trim()).filter(m => m.length > 0);
+            const models = group.split("|")[0].split(",").map(m => m.trim()).filter(m => m.length > 0);
             if (models.length > 0) result.push(models);
             return;
         }
