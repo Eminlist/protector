@@ -106,12 +106,11 @@
         }
 
         :root[data-theme="dark"] body {
-            background:
-                radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.09) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(139, 105, 20, 0.04) 0%, transparent 70%),
-                radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
-                linear-gradient(160deg, #0a0a0a 0%, #111111 40%, #0d0d0d 100%);
+            background-color: var(--bg);
+            background-image: var(--bg-lines);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
         }
 
