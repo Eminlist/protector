@@ -457,6 +457,9 @@
             opacity: 0.85;
         }
 
+        .brand-badge.has-logo, .compat-brand.has-logo { letter-spacing: 0; opacity: 1; }
+        .brand-badge.has-logo svg, .compat-brand.has-logo svg { display: block; fill: currentColor; flex-shrink: 0; }
+
         .compat-brand {
             min-width: 105px;
             height: 34px;
@@ -3114,7 +3117,7 @@ function renderAdminUsers() {
         var blockInfo = blocked ? (' · BLOK' + (bu ? (bu > Date.now() ? ' (' + fmtDate(bu) + '-dək)' : ' (müddəti bitib)') : '') + ': ' + reason) : '';
         var seenLine = '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Son aktivlik: ' + (u.lastSeen ? fmtDate(u.lastSeen) : '—') + '</div>';
         var proLine = pu ? ('<div style="font-size:11px;margin-top:4px;color:' + (proActive ? '#d4af37' : 'var(--muted)') + ';">' + (proActive ? 'PRO · bitmə: ' : 'PRO bitib: ') + fmtDate(pu) + '</div>') : '';
-        var sid = id.replace(/'/g, "\\'");
+        var sid = jsArg(id);
         return '<div class="admin-user-card' + (blocked ? ' blocked' : '') + '">' +
             '<div style="font-weight:700;font-size:14px;">' + name + '</div>' +
             '<div style="font-size:12px;color:var(--muted);">' + email + ' · ' + provider + (store ? ' · ' + store : '') + '</div>' +
@@ -3127,9 +3130,9 @@ function renderAdminUsers() {
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminResetDevices(\'' + sid + '\')">Cihazları sıfırla</button>' +
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminSendMessage(\'' + sid + '\')">✉ Mesaj</button>' +
             (blocked
-                ? '<button class="admin-btn admin-btn-success" style="height:30px;font-size:11px;" onclick="adminUnblockUser(\'' + id.replace(/'/g, "\\'") + '\')">Blokdan çıxar</button>'
-                : '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminBlockUser(\'' + id.replace(/'/g, "\\'") + '\')">Blokla</button>') +
-            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminDeleteUser(\'' + id.replace(/'/g, "\\'") + '\')">Sil</button>' +
+                ? '<button class="admin-btn admin-btn-success" style="height:30px;font-size:11px;" onclick="adminUnblockUser(\'' + jsArg(id) + '\')">Blokdan çıxar</button>'
+                : '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminBlockUser(\'' + jsArg(id) + '\')">Blokla</button>') +
+            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminDeleteUser(\'' + jsArg(id) + '\')">Sil</button>' +
             '</div></div>';
     }).join("");
 }
@@ -3756,8 +3759,72 @@ const BRAND_COLORS = {
     honor: ["#0A6CFF", "#fff"], oppo: ["#1BA784", "#fff"], vivo: ["#415FFF", "#fff"], realme: ["#FFC915", "#111"],
     oneplus: ["#EB0028", "#fff"], nokia: ["#124191", "#fff"], motorola: ["#5C92FA", "#fff"], google: ["#4285F4", "#fff"],
     pixel: ["#4285F4", "#fff"], tecno: ["#0072CE", "#fff"], infinix: ["#2BB24C", "#fff"], lg: ["#A50034", "#fff"],
-    sony: ["#111111", "#fff"], zte: ["#0070C0", "#fff"], meizu: ["#00A0E9", "#fff"], asus: ["#00539B", "#fff"], nothing: ["#111111", "#fff"]
+    sony: ["#111111", "#fff"], zte: ["#0070C0", "#fff"], meizu: ["#00A0E9", "#fff"], asus: ["#00539B", "#fff"], nothing: ["#111111", "#fff"],
+    htc: ["#69BE28", "#fff"], blackberry: ["#111111", "#fff"], lenovo: ["#E2231A", "#fff"], moto: ["#5C92FA", "#fff"], mi: ["#FF6900", "#fff"]
 };
+
+const BRAND_LOGO = {
+    samsung: "samsung", apple: "apple", iphone: "apple", ipad: "apple", xiaomi: "xiaomi", redmi: "xiaomi", poco: "xiaomi", mi: "xiaomi",
+    huawei: "huawei", honor: "honor", oppo: "oppo", vivo: "vivo", oneplus: "oneplus", nokia: "nokia", motorola: "motorola", moto: "motorola",
+    google: "google", pixel: "google", lg: "lg", sony: "sony", meizu: "meizu", asus: "asus", htc: "htc", blackberry: "blackberry", lenovo: "lenovo"
+};
+const brandLogoMem = {};
+
+function brandLogoSvg(slug) {
+    if (brandLogoMem[slug]) return brandLogoMem[slug];
+    brandLogoMem[slug] = new Promise(function (resolve) {
+        let cached = null;
+        try { cached = localStorage.getItem("pt_logo_" + slug); } catch (e) {}
+        if (cached) { resolve(cached === "-" ? null : cached); return; }
+        fetch("https://cdn.jsdelivr.net/npm/simple-icons@16/icons/" + slug + ".svg").then(function (r) {
+            if (!r.ok) throw new Error("x");
+            return r.text();
+        }).then(function (txt) {
+            const m = txt.match(/<path[^>]*\sd="([^"]+)"/);
+            if (!m) throw new Error("x");
+            const ns = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(ns, "svg");
+            svg.setAttribute("viewBox", "0 0 24 24");
+            svg.style.cssText = "position:absolute;left:-9999px;top:0;width:240px;height:240px;visibility:hidden";
+            const path = document.createElementNS(ns, "path");
+            path.setAttribute("d", m[1]);
+            svg.appendChild(path);
+            document.body.appendChild(svg);
+            const b = path.getBBox();
+            svg.remove();
+            if (!b.width || !b.height) throw new Error("x");
+            const out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + [b.x, b.y, b.width, b.height].map(function (v) { return Math.round(v * 1000) / 1000; }).join(" ") + '" data-r="' + (b.width / b.height).toFixed(3) + '"><path d="' + m[1] + '"/></svg>';
+            try { localStorage.setItem("pt_logo_" + slug, out); } catch (e) {}
+            resolve(out);
+        }).catch(function () {
+            delete brandLogoMem[slug];
+            resolve(null);
+        });
+    });
+    return brandLogoMem[slug];
+}
+
+function fillBrandBadge(el, model, maxH, maxW) {
+    const brand = getBrand(model);
+    el.innerText = brand;
+    applyBrandColor(el, model);
+    const slug = BRAND_LOGO[String(brand).toLowerCase()];
+    if (!slug) return;
+    brandLogoSvg(slug).then(function (svg) {
+        if (!svg) return;
+        el.innerHTML = svg;
+        const s = el.firstChild;
+        const r = parseFloat(s.getAttribute("data-r")) || 1;
+        let hh = r > 2.2 ? Math.round(maxH * 0.62) : (r < 1.3 ? maxH : Math.round(maxH * 0.8));
+        let ww = hh * r;
+        if (ww > maxW) { ww = maxW; hh = ww / r; }
+        s.style.width = Math.round(ww) + "px";
+        s.style.height = Math.round(hh) + "px";
+        el.classList.add("has-logo");
+        el.setAttribute("title", brand);
+        el.setAttribute("aria-label", brand);
+    });
+}
 
 function applyBrandColor(el, model) {
     const c = BRAND_COLORS[String(getBrand(model)).toLowerCase()];
@@ -4580,11 +4647,21 @@ function deviceName() {
     return os + " · " + br;
 }
 
+function secureRandomId(len) {
+    const a = new Uint8Array(len);
+    (window.crypto || window.msCrypto).getRandomValues(a);
+    return Array.prototype.map.call(a, function (b) { return (b % 36).toString(36); }).join("");
+}
+
+function jsArg(s) {
+    return String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'").replace(/"/g, "&quot;").replace(/</g, "\\x3c").replace(/>/g, "\\x3e").replace(/&(?!quot;)/g, "&amp;").replace(/\r?\n/g, " ");
+}
+
 function getSessionId(uid) {
     let m = {};
     try { m = JSON.parse(localStorage.getItem(SESSION_KEY) || "{}") || {}; } catch (e) {}
     if (!m[uid]) {
-        m[uid] = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+        m[uid] = Date.now().toString(36) + secureRandomId(8);
         try { localStorage.setItem(SESSION_KEY, JSON.stringify(m)); } catch (e) {}
     }
     return m[uid];
@@ -5079,7 +5156,7 @@ function adminGrantPremium(id) {
     document.getElementById("planAdminTitle").textContent = name + (pu > Date.now() ? " · indiki bitmə: " + fmtDate(pu) : "");
     box.innerHTML = PRO_PLANS.map(function (pl, i) {
         const base = Math.max(Date.now(), pu);
-        return '<button class="plan-admin-btn" onclick="adminGrantPlan(\'' + String(id).replace(/'/g, "\\'") + '\',' + i + ')">' +
+        return '<button class="plan-admin-btn" onclick="adminGrantPlan(\'' + jsArg(id) + '\',' + i + ')">' +
             pl.m + ' ay — ' + pl.a + ' AZN<br><small style="font-weight:500;color:var(--muted)">yeni bitmə: ' + fmtDate(addMonths(base, pl.m)) + '</small></button>';
     }).join("");
     document.getElementById("plan-admin-modal").style.display = "flex";
@@ -6097,7 +6174,11 @@ function applyLang() {
     document.documentElement.lang = currentLang;
     document.title = "•ProTechtor™";
     document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.getAttribute("data-i18n")); });
-    document.querySelectorAll("[data-i18n-html]").forEach(function (el) { el.innerHTML = t(el.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+        const k = el.getAttribute("data-i18n-html");
+        const dict = I18N[currentLang] && Object.prototype.hasOwnProperty.call(I18N[currentLang], k) ? I18N[currentLang] : I18N.az;
+        if (Object.prototype.hasOwnProperty.call(dict, k) && typeof dict[k] === "string") el.innerHTML = dict[k];
+    });
     document.querySelectorAll("[data-i18n-ph]").forEach(function (el) { el.placeholder = t(el.getAttribute("data-i18n-ph")); });
     document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria"))); });
     document.querySelectorAll(".lang-option").forEach(function (el) { el.classList.toggle("active", el.id === "lang-" + currentLang); });
@@ -6361,8 +6442,7 @@ function performSearch(query) {
 
         const brand = document.createElement("div");
         brand.className = "brand-badge";
-        brand.innerText = getBrand(item.model);
-        applyBrandColor(brand, item.model);
+        fillBrandBadge(brand, item.model, 26, 86);
 
         const modelEl = document.createElement("div");
         modelEl.className = "result-model";
@@ -6426,8 +6506,7 @@ function renderCompatibilityList(group, selected) {
 
         const brand = document.createElement("div");
         brand.className = "compat-brand";
-        brand.innerText = getBrand(model);
-        applyBrandColor(brand, model);
+        fillBrandBadge(brand, model, 24, 82);
 
         const modelName = document.createElement("div");
         modelName.className = "compat-model";
