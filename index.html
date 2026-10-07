@@ -8948,6 +8948,8 @@ function sameSizeList(group, idx) {
     if (!Array.isArray(group) || !idx) return [];
     const own = {};
     group.forEach(function (m) { own[norm(m)] = 1; });
+    const isIp = function (m) { return /^iphone/.test(norm(m)); };
+    const ip = group.some(isIp);
     const sizes = [];
     group.forEach(function (m) { const sp = modelSpec(m); if (sp && sp.h && sp.w) sizes.push(sp); });
     const out = [], seen = {};
@@ -8955,7 +8957,7 @@ function sameSizeList(group, idx) {
         for (let dh = -1; dh <= 1; dh++) for (let dw = -1; dw <= 1; dw++) {
             (idx[(Math.round(sp.h) + dh) + "|" + (Math.round(sp.w) + dw)] || []).forEach(function (e) {
                 const k = norm(e.m);
-                if (own[k] || seen[k]) return;
+                if (own[k] || seen[k] || isIp(e.m) !== ip) return;
                 if (Math.abs(e.h - sp.h) <= 0.3 && Math.abs(e.w - sp.w) <= 0.3) { seen[k] = 1; out.push(e.m); }
             });
         }
