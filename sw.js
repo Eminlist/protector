@@ -1,4 +1,5 @@
-const CACHE_NAME = 'protector-v3';
+const CACHE_NAME = 'protector-v4';
+const LIB_CACHE = 'protector-libs-v1';
 const ASSETS = [
   './',
   './index.html',
@@ -14,20 +15,38 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME && k !== LIB_CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
 
+function isVersionedLib(url) {
+  return url.hostname === 'www.gstatic.com' && url.pathname.indexOf('/firebasejs/') === 0;
+}
+
 self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== self.location.origin) return;
+  if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+  if (isVersionedLib(url)) {
+    e.respondWith(
+      caches.open(LIB_CACHE).then((c) => c.match(e.request).then((hit) => {
+        if (hit) return hit;
+        return fetch(e.request).then((res) => {
+          if (res && (res.ok || res.type === 'opaque')) e.waitUntil(c.put(e.request, res.clone()));
+          return res;
+        });
+      }))
+    );
+    return;
+  }
+  if (url.origin !== self.location.origin) return;
   e.respondWith(
     fetch(e.request, { cache: 'no-store' }).then((res) => {
       if (res && res.ok) {
         const copy = res.clone();
-        caches.open(CACHE_NAME).then((c) => c.put(e.request, copy));
+        e.waitUntil(caches.open(CACHE_NAME).then((c) => c.put(e.request, copy)));
       }
       return res;
-    }).catch(() => caches.match(e.request, { ignoreSearch: true }))
+    }).catch(() => caches.match(e.request, { ignoreSearch: true }).then((r) => r || (e.request.mode === 'navigate' ? caches.match('./index.html') : Response.error())))
   );
 });
