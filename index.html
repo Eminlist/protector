@@ -19,8 +19,9 @@
     <meta name="application-name" content="ProTechtor™">
     <meta name="apple-mobile-web-app-title" content="ProTechtor™">
 
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/Eminlist/protector/main/11.png">
+    <link rel="icon" href="./ProTechtor%E2%84%A2.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-180.png">
 
     <style>
         :root[data-theme="dark"] {
@@ -2532,7 +2533,7 @@
     <div id="eyeFog" aria-hidden="true"></div>
 
     <div id="install-banner" role="dialog" aria-label="ProTechtor™">
-        <div class="install-icon"><img src="https://raw.githubusercontent.com/Eminlist/protector/main/11.png" alt=""></div>
+        <div class="install-icon"><img src="./icon-192.png" alt=""></div>
         <div class="install-text">
             <strong>ProTechtor™</strong>
             <span id="installSub" data-i18n="installSub">Ana ekrana əlavə et</span>
@@ -2585,8 +2586,17 @@ const ANON_COUNT_KEY = "antiudar_anon_count";
 const FREE_LIMIT = 3;
 const ANON_LIMIT = 5;
 const FS_DB_DOC = "app_data/database";
+const FS_CATALOG_DOC = "app_data/catalog";
+const FS_PUBIDX_DOC = "app_data/pubindex";
+const MODELS_COL = "models";
+const CATALOG_KEY = "pt_catalog_v1";
+const GCACHE_KEY = "pt_gcache_v1";
+const GCACHE_MAX = 300;
+let dbMode = "catalog";
+let catalogMeta = null;
 const INSTALL_KEY = "antiudar_install_v1";
-const WAS_NEW_USER = !localStorage.getItem(DB_KEY) && !localStorage.getItem(INSTALL_KEY);
+const WAS_NEW_USER = !localStorage.getItem(DB_KEY) && !localStorage.getItem(CATALOG_KEY) && !localStorage.getItem(INSTALL_KEY);
+try { localStorage.removeItem(DB_KEY); localStorage.removeItem("pt_sizes"); } catch (e) {}
 
 function getInstallInfo() {
     try { return JSON.parse(localStorage.getItem(INSTALL_KEY) || "{}") || {}; } catch (e) { return {}; }
@@ -2639,6 +2649,8 @@ document.addEventListener("DOMContentLoaded", function () {
             checkSearchLimit();
         } else {
             isAdmin = isAdminEmail(user.email);
+            purgeIfDeleted(user);
+            if (isAdmin) refreshSizes();
             startAccountWatch(user);
             if (!user.isAnonymous) setTimeout(flushPendingReports, 1500);
             updateAdminButton();
@@ -3173,6 +3185,14 @@ function openAdmin() {
         showAppToast("Yalnız admin daxil ola bilər!");
         return;
     }
+    if (dbMode !== "full") {
+        showAppToast("Tam baza yüklənir...");
+        loadDatabaseFromFirestore().then(function () {
+            if (dbMode === "full") openAdmin();
+            else showAppToast("Tam baza yüklənmədi");
+        });
+        return;
+    }
     adminEditDb = JSON.parse(JSON.stringify(database || []));
     adminOpenGroups = new Set();
     adminSelected.clear();
@@ -3558,12 +3578,17 @@ function adminDeleteUser(id) {
     confirmAction("İstifadəçi silinsin?", function () {
         if (!db) { showAppToast("Firebase yoxdur"); return; }
         var ref = db.collection("users").doc(id);
-        ref.set({
+        db.collection("deleted_users").doc(id).set({
+            at: firebase.firestore.FieldValue.serverTimestamp(),
+            by: (auth.currentUser && auth.currentUser.email) || ADMIN_EMAIL
+        }).then(function () {
+            return ref.set({
             deleted: true,
             blocked: true,
             blockReason: "Admin tərəfindən silinib",
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).then(function () {
+        }, { merge: true });
+        }).then(function () {
             return ref.delete().catch(function () {});
         }).then(function () {
             logBlockAction(id, "delete", "Admin tərəfindən silinib", 0);
@@ -4358,7 +4383,7 @@ function adminSaveDatabase() {
     const cleaned = adminNormalizeEditDb();
     adminEditDb = cleaned;
     database = JSON.parse(JSON.stringify(cleaned));
-    localStorage.setItem(DB_KEY, JSON.stringify(database));
+    cacheCatalog(database);
     localStorage.setItem(UPDATE_KEY, Date.now().toString());
     updateLastUpdate();
     checkBlockStatus();
@@ -4396,6 +4421,10 @@ function groupsFromFirestore(data) {
 
 async function adminPublishDatabase() {
     if (!isAdmin) return;
+    if (dbMode !== "full") {
+        await loadDatabaseFromFirestore();
+        if (dbMode !== "full") { showAppToast("Tam baza yüklənmədi — dərc dayandırıldı"); return; }
+    }
     const cleaned = adminNormalizeEditDb();
     adminEditDb = cleaned;
     setAdminStatus("Dərc edilir...");
@@ -4432,14 +4461,16 @@ async function adminPublishDatabase() {
             groupCount: cleaned.length
         });
         database = JSON.parse(JSON.stringify(cleaned));
-        localStorage.setItem(DB_KEY, JSON.stringify(database));
+        cacheCatalog(database);
         localStorage.setItem(UPDATE_KEY, Date.now().toString());
         let sizeN = 0;
         if (adminPendingSizes && Object.keys(adminPendingSizes).length) {
             sizeN = Object.keys(adminPendingSizes).length;
-            await saveSpecs(adminPendingSizes);
+            await saveSpecs(adminPendingSizes, true);
             adminPendingSizes = null;
         }
+        setAdminStatus("İstifadəçi bazası yenilənir...");
+        await publishPublicModels(cleaned);
         updateLastUpdate();
         checkBlockStatus();
         indexFor = null;
@@ -4461,9 +4492,7 @@ async function adminImportFromGitHub() {
     if (!isAdmin) return;
     setAdminStatus("GitHub-dan yüklənir...");
     try {
-        const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        const data = await response.json();
+        const data = await fetchBaseJsonFromGitHub();
         const parsed = normalizeDatabase(data);
         if (!parsed.length) throw new Error("Baza boşdur");
         adminPendingSizes = extractSizes(data);
@@ -4532,16 +4561,243 @@ function applyChangelogFromFirestore(data) {
     } catch (e) {}
 }
 
+async function fetchBaseJsonFromGitHub() {
+    let token = "";
+    try {
+        const s = await db.doc("admin/github").get();
+        if (s.exists) token = String((s.data() || {}).token || "").trim();
+    } catch (e) {}
+    if (token) {
+        const r = await fetch("https://api.github.com/repos/Eminlist/Emin/contents/Base.json?ref=main&t=" + Date.now(), {
+            headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github.raw+json", "X-GitHub-Api-Version": "2022-11-28" },
+            cache: "no-store"
+        });
+        if (!r.ok) throw new Error("GitHub API " + r.status + (r.status === 401 ? " (token etibarsızdır və ya vaxtı bitib)" : ""));
+        return r.json();
+    }
+    const response = await fetch(RAW_URL + "?t=" + Date.now(), { cache: "no-store" });
+    if (!response.ok) throw new Error("HTTP " + response.status + " (admin/github token tapılmadı)");
+    return response.json();
+}
+
+const PT_MSG = {
+    quota: { az: "Bu gün üçün axtarış limiti doldu. Sabah yenidən cəhd edin.", en: "Daily search limit reached. Please try again tomorrow.", ru: "Дневной лимит поиска исчерпан. Попробуйте завтра.", tr: "Günlük arama limitine ulaşıldı. Yarın tekrar deneyin." },
+    offline: { az: "İnternet bağlantısı yoxdur.", en: "No internet connection.", ru: "Нет подключения к интернету.", tr: "İnternet bağlantısı yok." },
+    error: { az: "Məlumat alınmadı. Bir az sonra yenidən cəhd edin.", en: "Could not load. Please try again shortly.", ru: "Не удалось загрузить. Попробуйте чуть позже.", tr: "Yüklenemedi. Biraz sonra tekrar deneyin." },
+    gone: { az: "Bu model artıq bazada yoxdur.", en: "This model is no longer in the database.", ru: "Этой модели больше нет в базе.", tr: "Bu model artık veritabanında yok." },
+    deleted: { az: "Hesabınız admin tərəfindən silinib.", en: "Your account has been deleted by the administrator.", ru: "Ваш аккаунт удалён администратором.", tr: "Hesabınız yönetici tarafından silindi." }
+};
+function ptMsg(k) { const o = PT_MSG[k] || PT_MSG.error; return o[currentLang] || o.en || o.az; }
+
+function purgeIfDeleted(user) {
+    if (!user || user.isAnonymous || !db) return Promise.resolve(false);
+    return db.collection("deleted_users").doc(user.uid).get().then(function (s) {
+        if (!s.exists) return false;
+        try { appAlert(ptMsg("deleted"), "", "⛔"); } catch (e) {}
+        return user.delete().catch(function () { return auth.signOut(); }).then(function () { return true; });
+    }).catch(function () { return false; });
+}
+
+function namesFromGroups(groups) {
+    const out = [], seen = {};
+    (groups || []).forEach(function (g) {
+        (Array.isArray(g) ? g : []).forEach(function (m) {
+            const k = norm(m);
+            if (k && !seen[k]) { seen[k] = 1; out.push(String(m)); }
+        });
+    });
+    return out;
+}
+
+function cacheCatalog(groups) {
+    try { localStorage.setItem(CATALOG_KEY, JSON.stringify({ names: namesFromGroups(groups), meta: catalogMeta || null })); } catch (e) {}
+}
+
+function readCachedCatalog() {
+    try {
+        const o = JSON.parse(localStorage.getItem(CATALOG_KEY) || "null");
+        if (o && Array.isArray(o.names) && o.names.length) return o;
+    } catch (e) {}
+    return null;
+}
+
+let groupCache = { v: 0, e: {} };
+try {
+    const gc = JSON.parse(localStorage.getItem(GCACHE_KEY) || "null");
+    if (gc && gc.e && typeof gc.e === "object") groupCache = gc;
+} catch (e) {}
+
+function saveGroupCache() {
+    try {
+        const keys = Object.keys(groupCache.e);
+        if (keys.length > GCACHE_MAX) {
+            keys.sort(function (a, b) { return (groupCache.e[a].t || 0) - (groupCache.e[b].t || 0); });
+            keys.slice(0, keys.length - GCACHE_MAX).forEach(function (k) { delete groupCache.e[k]; });
+        }
+        localStorage.setItem(GCACHE_KEY, JSON.stringify(groupCache));
+    } catch (e) {}
+}
+
+function checkGroupCacheVer(v) {
+    if (v && groupCache.v !== v) { groupCache = { v: v, e: {} }; saveGroupCache(); }
+}
+
+function mergeSizes(s) {
+    if (!s || typeof s !== "object") return;
+    Object.keys(s).forEach(function (k) { if (s[k]) sizesMap[k] = s[k]; });
+}
+
+function ymdUTC(ms) {
+    const d = new Date(ms);
+    return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate();
+}
+
+let lastModelReq = 0;
+async function fetchModelGroup(model) {
+    const key = norm(model);
+    if (!key) return null;
+    const hit = groupCache.e[key];
+    if (hit && Array.isArray(hit.g)) { mergeSizes(hit.s); hit.t = Date.now(); saveGroupCache(); return hit.g; }
+    const u = auth.currentUser;
+    if (!u || u.isAnonymous) { const e = new Error("auth"); e.code = "unauthenticated"; throw e; }
+    const wait = 1100 - (Date.now() - lastModelReq);
+    if (wait > 0) await new Promise(function (r) { setTimeout(r, wait); });
+    lastModelReq = Date.now();
+    const ref = db.collection("users").doc(u.uid);
+    const now = Date.now();
+    const days = [ymdUTC(now), ymdUTC(now + 864e5), ymdUTC(now - 864e5)];
+    let lastErr = null, ok = false;
+    for (let i = 0; i < days.length && !ok; i++) {
+        try {
+            await db.runTransaction(async function (tx) {
+                const sn = await tx.get(ref);
+                const o = sn.exists ? (sn.data() || {}) : {};
+                if (o.q === key) return;
+                const c = (+o.dK === days[i] ? (+o.dC || 0) : 0) + 1;
+                tx.update(ref, { q: key, qAt: firebase.firestore.FieldValue.serverTimestamp(), dK: days[i], dC: c });
+            });
+            ok = true;
+        } catch (e) { lastErr = e; if (!e || e.code !== "permission-denied") break; }
+    }
+    if (!ok) throw lastErr || new Error("q");
+    const snap = await db.collection(MODELS_COL).doc(key).get();
+    if (!snap.exists) return null;
+    const d = snap.data() || {};
+    const g = Array.isArray(d.g) ? d.g.map(String) : null;
+    if (!g || !g.length) return null;
+    mergeSizes(d.s);
+    const ts = Date.now();
+    g.forEach(function (m) { const k = norm(m); if (k) groupCache.e[k] = { g: g, s: d.s || {}, t: ts }; });
+    groupCache.e[key] = { g: g, s: d.s || {}, t: ts };
+    saveGroupCache();
+    return g;
+}
+
+async function readDbFromFirestore() {
+    if (isAdmin) {
+        const snap = await db.doc(FS_DB_DOC).get();
+        const data = snap.exists ? (snap.data() || {}) : null;
+        const groups = data ? groupsFromFirestore(data) : [];
+        catalogMeta = { groupCount: groups.length, modelCount: namesFromGroups(groups).length, ver: 0 };
+        return { groups: groups, data: data, mode: "full" };
+    }
+    let snap = null;
+    try { snap = await db.doc(FS_CATALOG_DOC).get(); } catch (e) { snap = null; }
+    if (snap && snap.exists) {
+        const data = snap.data() || {};
+        catalogMeta = { groupCount: +data.groupCount || 0, modelCount: +data.modelCount || 0, ver: +data.ver || 0 };
+        checkGroupCacheVer(catalogMeta.ver);
+        return { groups: (Array.isArray(data.names) ? data.names : []).map(function (n) { return [String(n)]; }), data: data, mode: "catalog" };
+    }
+    // Keçid dövrü: catalog hələ dərc olunmayıbsa köhnə sənəd (yeni Rules-dan sonra bağlanır)
+    const old = await db.doc(FS_DB_DOC).get();
+    const data = old.exists ? (old.data() || {}) : null;
+    return { groups: data ? groupsFromFirestore(data) : [], data: data, mode: "full-legacy" };
+}
+
+function applyDb(res) {
+    if (isAdmin && dbMode === "full" && res.mode !== "full") return;
+    database = res.groups;
+    dbMode = res.mode === "full" ? "full" : (res.mode === "full-legacy" ? "legacy" : "catalog");
+    cacheCatalog(database);
+    indexFor = null;
+}
+
+function hashStr(str) {
+    let h = 5381;
+    for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+    return (h >>> 0).toString(36) + str.length.toString(36);
+}
+
+function changelogForFs() {
+    return getChangelogList().map(function (x) {
+        const o = { text: x.text || "", dateKey: x.dateKey || "", ts: x.ts || 0 };
+        if (typeof x.a === "number") {
+            o.a = x.a || 0; o.r = x.r || 0; o.e = x.e || 0; o.g = x.g || 0; o.n = x.n || 0; o.first = !!x.first; o.note = x.note || "";
+        }
+        return o;
+    });
+}
+
+// İstifadəçilər üçün baza: hər model ayrıca sənəd + yalnız adlar siyahısı
+async function publishPublicModels(groups) {
+    if (!isAdmin) return 0;
+    const docs = {};
+    const names = [];
+    (groups || []).forEach(function (g) {
+        if (!Array.isArray(g) || !g.length) return;
+        const s = {};
+        g.forEach(function (m) { const k = norm(m); if (k && sizesMap[k]) s[k] = sizesMap[k]; });
+        g.forEach(function (m) {
+            const k = norm(m);
+            if (!k || docs[k]) return;
+            docs[k] = { g: g.map(String), s: s };
+            names.push(String(m));
+        });
+    });
+    let old = {}, oldVer = 0;
+    try {
+        const ps = await db.doc(FS_PUBIDX_DOC).get();
+        if (ps.exists) { const pd = ps.data() || {}; old = pd.h || {}; oldVer = +pd.ver || 0; }
+    } catch (e) {}
+    const hashes = {};
+    const ops = [];
+    Object.keys(docs).forEach(function (k) {
+        const h = hashStr(JSON.stringify(docs[k]));
+        hashes[k] = h;
+        if (old[k] !== h) ops.push({ k: k, d: docs[k] });
+    });
+    Object.keys(old).forEach(function (k) { if (!docs[k]) ops.push({ k: k, del: true }); });
+    for (let i = 0; i < ops.length; i += 400) {
+        const b = db.batch();
+        ops.slice(i, i + 400).forEach(function (o) {
+            const ref = db.collection(MODELS_COL).doc(o.k);
+            if (o.del) b.delete(ref); else b.set(ref, o.d);
+        });
+        await b.commit();
+    }
+    const ver = ops.length || !oldVer ? Date.now() : oldVer;
+    await db.doc(FS_PUBIDX_DOC).set({ h: hashes, ver: ver, updatedAt: Date.now() });
+    await db.doc(FS_CATALOG_DOC).set({
+        names: names,
+        groupCount: groups.length,
+        modelCount: names.length,
+        ver: ver,
+        changelog: changelogForFs(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    return ops.length;
+}
+
 async function loadDatabaseFromFirestore() {
     try {
-        const snap = await db.doc(FS_DB_DOC).get();
-        if (snap.exists) {
-            const data = snap.data();
+        const res = await readDbFromFirestore();
+        if (res.data) {
+            const data = res.data;
             applyChangelogFromFirestore(data);
-            const parsed = groupsFromFirestore(data);
+            const parsed = res.groups;
             if (parsed.length > 0) {
-                database = parsed;
-                localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+                applyDb(res);
                 localStorage.setItem(UPDATE_KEY, Date.now().toString());
                 updateLastUpdate();
                 checkBlockStatus();
@@ -4962,15 +5218,16 @@ function adminToggleMaintenance() {
 }
 
 function initSizes() {
-    try { sizesMap = JSON.parse(localStorage.getItem("pt_sizes") || "{}") || {}; } catch (e) { sizesMap = {}; }
-    return refreshSizes();
+    sizesMap = {};
+    Object.keys(groupCache.e || {}).forEach(function (k) { mergeSizes((groupCache.e[k] || {}).s); });
+    return Promise.resolve();
 }
 
 function refreshSizes() {
+    if (!isAdmin) return Promise.resolve();
     return db.doc("app_data/sizes").get().then(function (snap) {
         if (!snap.exists) return;
         sizesMap = (snap.data() || {}).m || {};
-        try { localStorage.setItem("pt_sizes", JSON.stringify(sizesMap)); } catch (e) {}
         if (selectedGroup && document.getElementById("detail-view").classList.contains("active")) { renderCompatibilityList(selectedGroup, selectedModel); renderDetailSize(selectedGroup, selectedModel); }
     }).catch(function () {});
 }
@@ -5156,10 +5413,11 @@ function extractSizes(data) {
     return out;
 }
 
-function saveSpecs(upd) {
+function saveSpecs(upd, skipPublish) {
     Object.keys(upd).forEach(function (k) { if (upd[k]) sizesMap[k] = upd[k]; else delete sizesMap[k]; });
-    try { localStorage.setItem("pt_sizes", JSON.stringify(sizesMap)); } catch (e) {}
-    return db.doc("app_data/sizes").set({ m: upd, updatedAt: Date.now() }, { merge: true });
+    return db.doc("app_data/sizes").set({ m: upd, updatedAt: Date.now() }, { merge: true }).then(function () {
+        if (!skipPublish && isAdmin && dbMode === "full") return publishPublicModels(database);
+    });
 }
 
 function specStr(inch, hh, ww, cut) {
@@ -5243,7 +5501,7 @@ function adminSaveSize(gi) {
     });
     const str = val.some(Boolean);
     db.doc("app_data/sizes").set({ m: upd, updatedAt: Date.now() }, { merge: true }).then(function () {
-        try { localStorage.setItem("pt_sizes", JSON.stringify(sizesMap)); } catch (e) {}
+        if (isAdmin && dbMode === "full") publishPublicModels(database).catch(function () {});
         showAppToast(str ? "Ölçü saxlanıldı" : "Ölçü silindi");
     }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
 }
@@ -8217,6 +8475,11 @@ function showDotInfo() {
 }
 
 function updateDbCount() {
+    if (dbMode === "catalog" && catalogMeta && catalogMeta.groupCount) {
+        document.getElementById("dbCount").innerText = catalogMeta.groupCount;
+        document.getElementById("modelCount").innerText = catalogMeta.modelCount || (Array.isArray(database) ? database.length : 0);
+        return;
+    }
     document.getElementById("dbCount").innerText = Array.isArray(database) ? database.length : 0;
     let totalModels = 0;
     if (Array.isArray(database)) {
@@ -8444,7 +8707,39 @@ function performSearch(query) {
     });
 }
 
+let detailLoading = false;
 function openDetail(model, group) {
+    if (dbMode === "catalog" && !isAdmin) {
+        const hit = groupCache.e[norm(model)];
+        if (hit && Array.isArray(hit.g)) {
+            mergeSizes(hit.s);
+            hit.t = Date.now();
+            saveGroupCache();
+            return openDetailWith(model, hit.g);
+        }
+        if (detailLoading) return;
+        if (!navigator.onLine) { showAppToast(ptMsg("offline")); return; }
+        detailLoading = true;
+        document.body.style.cursor = "progress";
+        fetchModelGroup(model).then(function (g) {
+            if (!g) { showAppToast(ptMsg("gone")); return; }
+            openDetailWith(model, g);
+        }).catch(function (e) {
+            const code = e && e.code;
+            if (code === "unauthenticated") { handleSearchBlocked("login"); return; }
+            const today = ymdUTC(Date.now());
+            const quota = code === "permission-denied" && accountData && +accountData.dK === today && (+accountData.dC || 0) >= 150;
+            showAppToast(ptMsg(quota ? "quota" : "error"), 4000);
+        }).then(function () {
+            detailLoading = false;
+            document.body.style.cursor = "";
+        });
+        return;
+    }
+    openDetailWith(model, group);
+}
+
+function openDetailWith(model, group) {
     countSearchUse();
     selectedModel = model;
     selectedGroup = group;
@@ -8595,12 +8890,12 @@ async function fetchDatabase(retries = 3) {
         const oldDatabase = JSON.parse(JSON.stringify(database));
         let parsed = null;
 
-        const snap = await db.doc(FS_DB_DOC).get();
+        const res = await readDbFromFirestore();
         refreshSizes();
         let fsData = null;
-        if (snap.exists) {
-            fsData = snap.data();
-            parsed = groupsFromFirestore(fsData);
+        if (res.data) {
+            fsData = res.data;
+            parsed = res.groups;
             applyChangelogFromFirestore(fsData);
         }
 
@@ -8617,10 +8912,10 @@ async function fetchDatabase(retries = 3) {
                     showChangelogToast(changelogMsg);
                 }
             }
-            localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+            applyDb(res);
             localStorage.setItem(UPDATE_KEY, Date.now().toString());
-            database = parsed;
         } else {
+            applyDb(res);
             localStorage.setItem(UPDATE_KEY, Date.now().toString());
         }
         renderChangelogHistory();
@@ -8657,17 +8952,15 @@ async function fetchDatabase(retries = 3) {
 async function backgroundCheckUpdate() {
     if (!navigator.onLine) return;
     try {
-        const snap = await db.doc(FS_DB_DOC).get();
-        if (!snap.exists) return;
-        const fsData = snap.data();
+        const res = await readDbFromFirestore();
+        if (!res.data) return;
+        const fsData = res.data;
         applyChangelogFromFirestore(fsData);
-        const parsed = groupsFromFirestore(fsData);
-        if (parsed.length > 0 && JSON.stringify(parsed) !== localStorage.getItem(DB_KEY)) {
+        const parsed = res.groups;
+        if (parsed.length > 0 && JSON.stringify(parsed) !== JSON.stringify(database)) {
             const oldDatabase = JSON.parse(JSON.stringify(database));
-            localStorage.setItem(DB_KEY, JSON.stringify(parsed));
+            applyDb(res);
             localStorage.setItem(UPDATE_KEY, Date.now().toString());
-            database = parsed;
-            indexFor = null;
             updateLastUpdate();
 
             if (!fsData || !Array.isArray(fsData.changelog) || fsData.changelog.length === 0) {
@@ -8684,13 +8977,14 @@ async function backgroundCheckUpdate() {
 }
 
 function loadDatabaseFromCacheOnly() {
-    const cached = localStorage.getItem(DB_KEY);
+    const cachedCat = readCachedCatalog();
     const lastUpdate = localStorage.getItem(UPDATE_KEY);
 
-    if (cached && lastUpdate) {
+    if (cachedCat && lastUpdate) {
         try {
-            const parsed = JSON.parse(cached);
-            database = normalizeDatabase(parsed);
+            if (cachedCat.meta) catalogMeta = cachedCat.meta;
+            dbMode = "catalog";
+            database = cachedCat.names.map(function (n) { return [String(n)]; });
             if (database.length > 0) {
                 updateLastUpdate();
                 checkBlockStatus();
