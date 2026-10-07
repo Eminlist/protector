@@ -4717,7 +4717,21 @@ async function readDbFromFirestore() {
     return { groups: data ? groupsFromFirestore(data) : [], data: data, mode: "full-legacy" };
 }
 
+let catalogChecked = false;
+async function ensureCatalog(groups) {
+    if (catalogChecked || !isAdmin || !groups || !groups.length) return;
+    catalogChecked = true;
+    try {
+        const c = await db.doc(FS_CATALOG_DOC).get();
+        if (c.exists && (c.data() || {}).names) return;
+        await refreshSizes();
+        const n = await publishPublicModels(groups);
+        showAppToast("İstifadəçi bazası avtomatik yaradıldı · " + n + " model");
+    } catch (e) { catalogChecked = false; console.log("catalog:", e && e.code); }
+}
+
 function applyDb(res) {
+    if (res.mode === "full" && isAdmin) setTimeout(function () { ensureCatalog(res.groups); }, 500);
     if (isAdmin && dbMode === "full" && res.mode !== "full") return;
     database = res.groups;
     dbMode = res.mode === "full" ? "full" : (res.mode === "full-legacy" ? "legacy" : "catalog");
