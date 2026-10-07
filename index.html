@@ -7223,6 +7223,7 @@ function tsMs(v) {
 }
 
 function needsEmailVerify() {
+    return false; // E-poçt təsdiqi ləğv edilib
     const u = auth.currentUser;
     if (!u || u.isAnonymous || isAdmin || u.emailVerified) return false;
     const pw = (u.providerData || []).some(function (p) { return p && p.providerId === "password"; });
@@ -7481,7 +7482,7 @@ function registerUser() {
     auth.createUserWithEmailAndPassword(email, pass)
         .then((userCredential) => {
             let uid = userCredential.user.uid;
-            try { userCredential.user.sendEmailVerification().catch(function () {}); } catch (e) {}
+
             return db.collection("users").doc(uid).set({
                 username: user,
                 displayName: user,

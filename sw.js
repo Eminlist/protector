@@ -1,4 +1,4 @@
-const CACHE_NAME = 'protector-v6';
+const CACHE_NAME = 'protector-v7';
 const LIB_CACHE = 'protector-libs-v1';
 const ASSETS = [
   './',
