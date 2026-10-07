@@ -1219,6 +1219,7 @@
         #toTop.show{opacity:1;transform:none;pointer-events:auto}
         #toTop:active{transform:scale(.92)}
         #toTop svg{width:24px;height:24px;stroke:#111;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+        html.is-admin .no-admin{display:none !important}
         .fm{display:flex;flex-direction:column;gap:12px}
         .gf-days{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
         .gf-d{height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
@@ -1989,7 +1990,7 @@
                 </div>
             </div>
 
-            <div class="settings-section">
+            <div class="settings-section no-admin">
                 <div class="settings-section-title" data-i18n="subTitle">ABUNƏLİK</div>
                 <div class="settings-box">
                     <div class="sub-status" id="subStatus"></div>
@@ -1997,7 +1998,7 @@
                 <button class="pro-btn" id="proBuyBtn" onclick="openPremiumModal('profile')"></button>
             </div>
 
-            <div class="settings-section">
+            <div class="settings-section no-admin">
                 <div class="settings-section-title" data-i18n="payHistory">ÖDƏNİŞ TARİXÇƏSİ</div>
                 <div class="settings-box" id="payHistoryBox"></div>
             </div>
@@ -2659,11 +2660,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         if (!user) {
             isAdmin = false;
+            document.documentElement.classList.remove("is-admin");
             stopAccountWatch();
             updateAdminButton();
             checkSearchLimit();
         } else {
             isAdmin = isAdminEmail(user.email);
+            document.documentElement.classList.toggle("is-admin", isAdmin);
             purgeIfDeleted(user);
             if (isAdmin) refreshSizes();
             startAccountWatch(user);
@@ -3179,6 +3182,7 @@ function logoutUser() {
     pre.then(done).then(() => {
         localStorage.removeItem(SEARCH_COUNT_KEY);
         isAdmin = false;
+        document.documentElement.classList.remove("is-admin");
         updateAdminButton();
         location.reload();
     });
@@ -3500,7 +3504,8 @@ function loadAdminStats() {
 function renderAdminUsers() {
     var q = ((document.getElementById("adminUserSearch") || {}).value || "").toLowerCase();
     var filter = ((document.getElementById("adminUserFilter") || {}).value) || "all";
-    var users = adminUsersCache.slice();
+    var me = auth.currentUser && auth.currentUser.uid;
+    var users = adminUsersCache.filter(function (u) { return u._id !== me && String(u.email || "").toLowerCase() !== ADMIN_EMAIL; });
     if (filter === "email") users = users.filter(function (u) { return (u.provider || "email") === "email" || (!u.provider && u.email); });
     if (filter === "google") users = users.filter(function (u) { return u.provider === "google"; });
     if (filter === "premium") users = users.filter(function (u) { return (+u.premiumUntil || 0) > Date.now(); });
@@ -3544,6 +3549,7 @@ function renderAdminUsers() {
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#d4af37;" onclick="adminGrantPremium(\'' + sid + '\')">' + (proActive ? 'PRO uzat' : 'Premium ver') + '</button>' +
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#d4af37;" onclick="gfPickUser(\'' + sid + '\')">🎁 Hədiyyə</button>' +
             (pu ? '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminRevokePremium(\'' + sid + '\')">PRO ləğv et</button>' : '') +
+            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminRenameUser(\'' + sid + '\')">✏️ Adı dəyiş</button>' +
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminResetDevices(\'' + sid + '\')">Cihazları sıfırla</button>' +
             '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminSendMessage(\'' + sid + '\')">✉ Mesaj</button>' +
             (blocked
@@ -7039,6 +7045,28 @@ function gfDeleteLog(pid) {
             gfLoadLog();
         }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
     });
+}
+
+function adminRenameUser(id) {
+    const u = adminFindUser(id);
+    if (!u) return;
+    let name = "", store = "";
+    appPrompt("İstifadəçi adı", (u.email || "") + "\nYeni ad və soyad:", u.username || u.displayName || "", false, "Ad Soyad").then(function (v) {
+        if (v === null) return null;
+        name = String(v || "").replace(/\s+/g, " ").trim();
+        if (name.length < 3) { appAlert("Ad ən az 3 hərf olmalıdır.", "İstifadəçi adı", "✏️"); return null; }
+        return appPrompt("Mağaza adı", "Mağaza adı (boş qala bilər):", u.storeName || "", false, "Mağaza");
+    }).then(function (s) {
+        if (s === null || s === undefined || !name) return;
+        store = String(s || "").replace(/\s+/g, " ").trim();
+        return db.collection("users").doc(id).set({ username: name, displayName: name, storeName: store, updatedAt: Date.now() }, { merge: true }).then(function () {
+            u.username = name;
+            u.displayName = name;
+            u.storeName = store;
+            renderAdminUsers();
+            showAppToast("Yadda saxlanıldı: " + name);
+        });
+    }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
 }
 
 function adminFindUser(id) {
