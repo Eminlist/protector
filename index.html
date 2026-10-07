@@ -1197,7 +1197,7 @@
         .m-spec .sz small{font-size:.82em;font-weight:500;opacity:.7;margin-left:3px}
         :root[data-theme="light"] .compatibility-title span,:root[data-theme="reading"] .compatibility-title span{color:#a86b00}
         #results{display:flex;flex-direction:column;gap:9px}
-        .result-item{min-height:0;margin:0;padding:12px 12px 12px 14px;gap:14px;border:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:0 8px 18px -14px rgba(0,0,0,.7);transition:transform .15s,border-color .2s}
+        .result-item{flex-shrink:0;min-height:0;margin:0;padding:12px 12px 12px 14px;gap:14px;border:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:0 8px 18px -14px rgba(0,0,0,.7);transition:transform .15s,border-color .2s}
         .result-item:active{transform:scale(.985);background:var(--surface);border-color:color-mix(in srgb,var(--accent-color) 50%,var(--border))}
         .brand-badge{min-width:0;width:50px;height:50px;padding:0 4px;box-sizing:border-box;border-radius:15px;background:linear-gradient(160deg,var(--surface-2),color-mix(in srgb,var(--surface-2) 80%,#000)) !important;color:var(--text) !important;border:1px solid var(--border);font-size:8.5px;letter-spacing:.4px;overflow:hidden;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 4px 10px -6px rgba(0,0,0,.5)}
         .result-model{margin-left:0;min-width:0;font-size:calc(16.5px * var(--font-scale));font-weight:600;line-height:1.25}
@@ -1844,9 +1844,6 @@
             <input type="text" id="regUser" data-i18n-ph="regNamePh" placeholder="Ad və Soyad *" required oninput="validateRegName(this)" onblur="validateRegName(this)">
             <div id="regUserErr" class="field-error-msg" data-i18n="regNameErr">Ad və soyad ən az 3 hərf olmalıdır (yalandan doldurulma qadağandır)</div>
             <input type="email" id="regEmail" data-i18n-ph="regEmailPh" placeholder="E-poçt (Parol bərpası üçün) *" required oninput="updateRegButtonState()">
-            <input type="password" id="regPass" data-i18n-ph="regPassPh" placeholder="Parol (məs: Baku1234) *" required
-                oninput="validateRegPass(this)" onfocus="showPassReqPanel(true)" onblur="onPassBlur()">
-            <div class="pass-strength"><div class="pass-strength-bar" id="passBar"></div></div>
             <div id="passReqPanel" class="pass-req-panel">
                 <div class="pass-req-title" data-i18n="passReqTitle">Parol tələbləri</div>
                 <div class="pass-req-strength" id="passStrengthLabel">Güc: 0%</div>
@@ -1858,6 +1855,9 @@
                 </ul>
                 <div class="pass-req-hint" data-i18n="passReqHint">Başqa saytlarda istifadə etdiyiniz və ya asan təxmin olunan paroldan çəkinin.</div>
             </div>
+            <input type="password" id="regPass" data-i18n-ph="regPassPh" placeholder="Parol (məs: Baku1234) *" required
+                oninput="validateRegPass(this)" onfocus="showPassReqPanel(true)" onblur="onPassBlur()">
+            <div class="pass-strength"><div class="pass-strength-bar" id="passBar"></div></div>
             <div id="regPassErr" class="field-error-msg" data-i18n="regPassErr">Parol tələblərə uyğun deyil</div>
             <div id="regPassOk" class="field-ok-msg" data-i18n="regPassOk">Parol uyğundur ✓</div>
             <input type="text" id="regStore" data-i18n-ph="regStorePh" placeholder="Mağaza adı">
@@ -5735,6 +5735,9 @@ function startAccountWatch(user) {
     dbLoadedForUser = false;
     accountUnsub = db.collection("users").doc(user.uid).onSnapshot(function (doc) {
         accountData = doc.exists ? (doc.data() || {}) : {};
+        const fromCache = !!(doc.metadata && doc.metadata.fromCache);
+        if (!doc.exists && !fromCache) ensureUserDoc(user);
+        if (doc.exists && !regPending) touchLastSeen(user.uid);
         const r = accountData.usage;
         if (r && r.m === monthKey() && (+r.c || 0) > getMonthlyUsage(user.uid)) setMonthlyUsage(user.uid, +r.c || 0);
         const nd = new Date();
@@ -5757,7 +5760,6 @@ function startAccountWatch(user) {
     }, function () {});
     registerSession(user);
     loadNotifications();
-    touchLastSeen(user.uid);
 }
 
 function stopAccountWatch() {
@@ -7139,6 +7141,24 @@ function signInGoogle() {
         .catch((err) => authMsgSet(authErrText(err)));
 }
 
+let regPending = false;
+let userDocCreating = false;
+
+function ensureUserDoc(user) {
+    if (userDocCreating || regPending || !user || user.isAnonymous) return;
+    userDocCreating = true;
+    const google = (user.providerData || []).some(function (p) { return p && p.providerId === "google.com"; });
+    const name = String(user.displayName || "").trim();
+    db.collection("users").doc(user.uid).set({
+        username: name,
+        displayName: name,
+        email: user.email || "",
+        provider: google ? "google" : "email",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function () {}).then(function () { userDocCreating = false; });
+}
+
 function registerUser() {
     let user = document.getElementById("regUser").value.trim();
     let email = document.getElementById("regEmail").value.trim();
@@ -7170,6 +7190,7 @@ function registerUser() {
     msgDiv.style.color = "var(--muted)";
     msgDiv.innerText = t("regInProgress");
 
+    regPending = true;
     auth.createUserWithEmailAndPassword(email, pass)
         .then((userCredential) => {
             let uid = userCredential.user.uid;
@@ -7181,15 +7202,19 @@ function registerUser() {
                 storeName: store || "",
                 storeAddress: address || "",
                 phoneNumber: phone,
+                provider: "email",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
+                regPending = false;
+                touchLastSeen(uid);
                 localStorage.setItem(SEARCH_COUNT_KEY, "0");
                 document.getElementById("auth-modal").style.display = "none";
                 showAppToast(t("regOk"));
             });
         })
         .catch((error) => {
+            regPending = false;
             msgDiv.style.color = "red";
             msgDiv.innerText = t("errPrefix") + " " + error.message;
         });
