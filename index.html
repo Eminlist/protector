@@ -1212,6 +1212,9 @@
         .result-arrow{width:32px;height:32px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;padding-bottom:3px;box-sizing:border-box;background:var(--surface-2);border:1px solid var(--border);margin-left:0}
         #swipeBack{position:fixed;left:0;top:0;width:42px;height:42px;margin:-21px 0 0 -48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;line-height:1;padding-bottom:3px;box-sizing:border-box;color:var(--accent-color);background:var(--surface);border:1px solid color-mix(in srgb,var(--accent-color) 50%,var(--border));box-shadow:0 8px 20px rgba(0,0,0,.35);z-index:2147483001;pointer-events:none;opacity:0;transition:background .15s,color .15s}
         #swipeBack.go{background:var(--accent-color);color:#111}
+        :root[data-theme="light"] .top-header,:root[data-theme="light"] .settings-header,:root[data-theme="light"] .detail-header,:root[data-theme="light"] .profile-header,:root[data-theme="light"] #profile-view .profile-header,:root[data-theme="light"] .admin-header{background:linear-gradient(112deg,rgba(255,255,255,0) 28%,rgba(255,255,255,.85) 44%,rgba(255,255,255,0) 58%),linear-gradient(180deg,#ffffff 0%,#f1f3f6 16%,#dfe3e8 46%,#cfd4db 54%,#e3e6eb 80%,#f6f7f9 100%) !important;box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(0,0,0,.06),0 6px 18px -8px rgba(40,50,70,.35);-webkit-backdrop-filter:none;backdrop-filter:none}
+        :root[data-theme="light"] .header-title,:root[data-theme="light"] .settings-title,:root[data-theme="light"] .detail-model{text-shadow:0 1px 0 rgba(255,255,255,.9)}
+        :root[data-theme="light"] .settings-back,:root[data-theme="light"] .detail-back,:root[data-theme="light"] .profile-back,:root[data-theme="light"] .menu-button,:root[data-theme="light"] .profile-btn{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(232,235,240,.9))}
         .fm{display:flex;flex-direction:column;gap:12px}
         .gf-days{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
         .gf-d{height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
@@ -7540,6 +7543,13 @@ function setTheme(theme) {
     applyThemeLogic(theme);
 }
 
+function syncThemeColor() {
+    const m = document.querySelector('meta[name="theme-color"]');
+    if (!m) return;
+    const th = document.documentElement.getAttribute("data-theme");
+    m.setAttribute("content", th === "light" ? "#eef0f3" : (th === "reading" ? "#f3ead6" : "#0a0a0a"));
+}
+
 function applyThemeLogic(theme) {
     if (theme === "system") {
         const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
@@ -7551,6 +7561,7 @@ function applyThemeLogic(theme) {
     } else {
         document.documentElement.setAttribute("data-theme", theme);
     }
+    syncThemeColor();
 }
 
 setInterval(() => {
