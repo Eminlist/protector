@@ -1220,6 +1220,8 @@
         #toTop:active{transform:scale(.92)}
         #toTop svg{width:24px;height:24px;stroke:#111;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
         html.is-admin .no-admin{display:none !important}
+        .admin-only-stat{display:none !important}
+        html.is-admin .admin-only-stat{display:inline !important}
         .fm{display:flex;flex-direction:column;gap:12px}
         .gf-days{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
         .gf-d{height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
@@ -2460,7 +2462,7 @@
 
             <div class="app-info-line">
                 <span><i data-i18n="version">VERSİYA</i> <b id="appVersion"></b></span>
-                <span><i data-i18n="dbSize">BAZADA QRUP</i> <b id="dbCount">0</b></span>
+                <span class="admin-only-stat"><i data-i18n="dbSize">BAZADA QRUP</i> <b id="dbCount">0</b></span>
                 <span><i data-i18n="modelCountLbl">BAZADA MODEL</i> <b id="modelCount">0</b></span>
             </div>
 
