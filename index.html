@@ -2053,7 +2053,7 @@
                     <button type="button" class="adm-publish" onclick="adminPublishDatabase()"><span class="e3d ic3d" style="--a:#FFB866;--b:#F06A1D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 13v8" /><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="m8 17 4-4 4 4" /></svg></span><span>Dərc et</span></button>
                 </div>
                 <div class="adm-grp">FAYLLAR</div>
-                <div class="adm-tiles four"><button type="button" class="adm-tile " onclick="adminImportFromGitHub()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>GitHub-dan gətir</span></button><button type="button" class="adm-tile " onclick="adminExportCSV()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></svg></span><span>Eksport (CSV)</span></button><button type="button" class="adm-tile " onclick="adminBackupJSON()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>JSON yüklə</span><input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)"></label></div>
+                <div class="adm-tiles four"><button type="button" class="adm-tile " onclick="adminImportFromGitHub()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>GitHub-dan gətir</span></button><button type="button" class="adm-tile " onclick="adminExportCSV()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></svg></span><span>İstifadəçilər (CSV)</span></button><button type="button" class="adm-tile " onclick="adminBackupJSON()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>JSON yüklə</span><input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)"></label></div>
             </div>
         </details>
         <details class="adm-acc">
@@ -4662,8 +4662,33 @@ function smartCase(name) {
 
 function adminFixCase() {
     let changed = 0;
+    const votes = {};
+    adminEditDb.forEach(function (g) {
+        (Array.isArray(g) ? g : []).forEach(function (m) {
+            const w = String(m || "").trim().split(/\s+/)[0];
+            if (!w) return;
+            const k = w.toLowerCase();
+            votes[k] = votes[k] || {};
+            votes[k][w] = (votes[k][w] || 0) + 1;
+        });
+    });
+    const brandForm = {};
+    Object.keys(votes).forEach(function (k) {
+        const forms = votes[k];
+        const isTitle = function (f) { return f.charAt(0) !== f.charAt(0).toLowerCase() && f.slice(1) !== f.slice(1).toUpperCase(); };
+        const cand = Object.keys(forms).filter(function (f) { return f !== f.toLowerCase(); });
+        if (!cand.length) return;
+        brandForm[k] = cand.sort(function (a, b) { return (forms[b] - forms[a]) || ((isTitle(b) ? 1 : 0) - (isTitle(a) ? 1 : 0)); })[0];
+    });
     adminEditDb = adminEditDb.map(function (g) {
-        return Array.isArray(g) ? g.map(function (m) { const v = smartCase(m); if (v !== m) changed++; return v; }) : g;
+        return Array.isArray(g) ? g.map(function (m) {
+            let v = smartCase(m);
+            const parts = v.split(" ");
+            const bf = brandForm[(parts[0] || "").toLowerCase()];
+            if (bf && !CASE_SPECIAL[(parts[0] || "").toLowerCase()]) { parts[0] = bf; v = parts.join(" "); }
+            if (v !== m) changed++;
+            return v;
+        }) : g;
     });
     if (changed) { adminDirty = true; renderAdminList(); }
     showAppToast(changed ? (changed + " model adı düzəldildi. «☁ Dərc et» basın") : "Düzəliş lazım deyil");
@@ -4820,8 +4845,24 @@ function maintLogin() {
     openAuthModal("required");
 }
 
+let serverTimeOffset = 0;
+try { serverTimeOffset = +localStorage.getItem("pt_time_off") || 0; } catch (e) { serverTimeOffset = 0; }
+
+function syncServerTime() {
+    if (!navigator.onLine || !window.fetch) return;
+    const t0 = Date.now();
+    fetch("manifest.json?t=" + t0, { method: "HEAD", cache: "no-store" }).then(function (r) {
+        const d = Date.parse(r.headers.get("date") || "");
+        if (!isFinite(d)) return;
+        const off = d - Math.round((t0 + Date.now()) / 2);
+        serverTimeOffset = Math.abs(off) > 90000 ? off : 0;
+        try { localStorage.setItem("pt_time_off", String(serverTimeOffset)); } catch (e) {}
+        if (typeof applyMaintenance === "function") applyMaintenance();
+    }).catch(function () {});
+}
+
 function bakuMinutes() {
-    const d = new Date(Date.now() + 4 * 3600000);
+    const d = new Date(Date.now() + serverTimeOffset + 4 * 3600000);
     return d.getUTCHours() * 60 + d.getUTCMinutes();
 }
 
@@ -4897,11 +4938,14 @@ function initMaintenance() {
         const d = (snap && snap.exists && snap.data()) || {};
         maintenanceOn = !!d.on;
         maintAuto = d.auto || {};
-        try { localStorage.setItem("pt_maint_auto", JSON.stringify(maintAuto)); } catch (e) {}
+        try { localStorage.setItem("pt_maint_auto", JSON.stringify(maintAuto)); localStorage.setItem("pt_maint_on", maintenanceOn ? "1" : "0"); } catch (e) {}
         applyMaintenance();
     };
     try { maintAuto = JSON.parse(localStorage.getItem("pt_maint_auto") || "{}") || {}; } catch (e) { maintAuto = {}; }
+    try { maintenanceOn = localStorage.getItem("pt_maint_on") === "1"; } catch (e) {}
     applyMaintenance();
+    syncServerTime();
+    window.addEventListener("online", syncServerTime);
     if (typeof ref.onSnapshot === "function") ref.onSnapshot(handle, function () {});
     else ref.get().then(handle).catch(function () {});
     setInterval(applyMaintenance, 30000);
@@ -4912,6 +4956,7 @@ function adminToggleMaintenance() {
     confirmAction(next ? "Texniki iş rejimi AÇILSIN? İstifadəçilər proqramdan istifadə edə bilməyəcək." : "Texniki iş rejimi BAĞLANSIN?", function () {
         db.doc("app_data/maintenance").set({ on: next, updatedAt: Date.now() }, { merge: true }).then(function () {
             maintenanceOn = next;
+            try { localStorage.setItem("pt_maint_on", next ? "1" : "0"); } catch (e) {}
             applyMaintenance();
             showAppToast(next ? "Texniki iş rejimi açıldı" : "Texniki iş rejimi bağlandı");
         }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
@@ -6764,6 +6809,8 @@ function adminRevokePremium(id) {
         ref.set({ premiumUntil: 0 }, { merge: true }).then(function () {
             return ref.collection("notifications").add({ type: "premium_off", createdAt: Date.now(), read: false });
         }).then(function () {
+            u.premiumUntil = 0;
+            renderAdminUsers();
             showAppToast("Premium ləğv edildi");
             loadAdminStats();
         }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
