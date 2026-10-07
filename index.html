@@ -1314,6 +1314,23 @@
         body, #settings-view, #detail-view, #profile-view, #privacy-view, #about-view, #notif-view { background-image: var(--bg-lines, none); background-size: cover; background-position: center; background-repeat: no-repeat; }
         #about-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg); z-index: 610; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; transform: translateX(100%); opacity: 0; transition: transform .3s cubic-bezier(0.16,1,0.3,1), opacity .3s ease; pointer-events: none; }
         #about-view.active { transform: translateX(0); opacity: 1; pointer-events: auto; }
+        .sub-view { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--bg); background-image: var(--bg-lines, none); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 605; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; transform: translateX(100%); opacity: 0; transition: transform .3s cubic-bezier(0.16,1,0.3,1), opacity .3s ease; pointer-events: none; }
+        .sub-view.active { transform: translateX(0); opacity: 1; pointer-events: auto; }
+        #lang-view .lang-selector{grid-template-columns:1fr !important}
+        #lang-view .settings-section-title{display:none}
+        #lang-view .lang-option{padding:16px 18px}
+        .set-menu{padding:4px 0;overflow:hidden}
+        .set-mrow{width:100%;display:flex;align-items:center;gap:14px;padding:14px 16px;background:none;border:none;border-bottom:1px solid var(--border);color:var(--text);text-align:left;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent;transition:background .15s}
+        .set-mrow:last-child{border-bottom:none}
+        .set-mrow:active{background:var(--result-hover)}
+        .set-mrow .e3d{width:34px;height:34px}
+        .set-mtxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+        .set-mtxt b{font-size:calc(15.5px * var(--font-scale));font-weight:700}
+        .set-mtxt small{font-size:calc(12.5px * var(--font-scale));color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .set-mchev{font-size:24px;color:var(--muted);line-height:1;padding-bottom:2px}
+        .app-info-line{display:flex;justify-content:space-around;flex-wrap:wrap;gap:6px 14px;margin:6px 0 20px;padding:12px 6px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);font-size:calc(12.5px * var(--font-scale));color:var(--muted)}
+        .app-info-line i{font-style:normal}
+        .app-info-line b{color:var(--text);font-weight:700}
         .ab-hero{text-align:center;padding:10px 0 18px}
         .ab-logo{width:84px;height:84px;margin:0 auto 12px;border-radius:24px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 30%,transparent),transparent);border:1px solid color-mix(in srgb,var(--accent-color) 50%,var(--border))}
         .ab-logo .e3d{width:56px;height:56px}
@@ -2353,6 +2370,60 @@
             </div>
 
             <div class="settings-section">
+                <div class="settings-box set-menu">
+                    <button type="button" class="set-mrow" onclick="openSubView('appearance-view')"><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg></span><span class="set-mtxt"><b data-i18n="menuTheme">Tema</b><small id="themeMenuSub"></small></span><span class="set-mchev">›</span></button>
+                    <button type="button" class="set-mrow" onclick="openSubView('lang-view')"><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg></span><span class="set-mtxt"><b data-i18n="menuLang">Dil</b><small id="langMenuSub"></small></span><span class="set-mchev">›</span></button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#B4BECB;--b:#5D6B7D" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span><span data-i18n="secPrivacy">MƏXFİLİK</span></div>
+                <div class="settings-box privacy-box" onclick="openPrivacy()" style="cursor: pointer;">
+                    <div class="settings-row">
+                        <span data-i18n="privacy">Məxfilik Siyasəti</span>
+                        <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg></span><span data-i18n="secAbout">HAQQINDA</span></div>
+                <div class="settings-box privacy-box" onclick="openAbout()" style="cursor: pointer;">
+                    <div class="settings-row">
+                        <span data-i18n="aboutOpen">Proqram haqqında</span>
+                        <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></svg></span><span data-i18n="secContact">ƏLAQƏ</span></div>
+                <a href="https://wa.me/994553115544?text=Salam,%20ProTechtor™%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" target="_blank" rel="noopener">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    <span data-i18n="whatsapp">WhatsApp ilə əlaqə</span>
+                </a>
+            </div>
+
+            <div class="app-info-line">
+                <span><i data-i18n="version">VERSİYA</i> <b id="appVersion"></b></span>
+                <span><i data-i18n="dbSize">BAZADA QRUP</i> <b id="dbCount">0</b></span>
+                <span><i data-i18n="modelCountLbl">BAZADA MODEL</i> <b id="modelCount">0</b></span>
+            </div>
+
+        </div>
+    </div>
+    
+        <div id="appearance-view" class="sub-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="history.back()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">©By Emin</div>
+                <div class="settings-title" data-i18n="menuTheme">Tema</div>
+            </div>
+        </header>
+        <div class="settings-content">
+
+            <div class="settings-section">
                 <div class="settings-section-title"><span class="e3d ic3d" style="--a:#FF8AC2;--b:#D63384" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg></span><span data-i18n="secAccent">AKSENT RƏNGİ</span></div>
                 <div class="settings-box" style="padding: 16px;">
                     <div class="color-picker-grid">
@@ -2395,32 +2466,6 @@
                 <div class="font-sample" data-i18n="fontSample">Samsung Galaxy A55 — nümunə mətn</div>
             </div>
             
-            <div class="settings-section">
-                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#72D8FF;--b:#1C8FD8" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg></span><span data-i18n="secLang">DİL</span></div>
-                <div class="lang-selector">
-                    <div id="lang-az" class="lang-option active" onclick="setLang('az'); langRipple(event)">
-                        <div class="lang-flag"><img src="https://flagcdn.com/w80/az.png" alt="AZ"></div>
-                        <span class="lang-name">Azərbaycan</span>
-                        <div class="lang-check">&#10003;</div>
-                    </div>
-                    <div id="lang-ru" class="lang-option" onclick="setLang('ru'); langRipple(event)">
-                        <div class="lang-flag"><img src="https://flagcdn.com/w80/ru.png" alt="RU"></div>
-                        <span class="lang-name">Русский язык</span>
-                        <div class="lang-check">&#10003;</div>
-                    </div>
-                    <div id="lang-tr" class="lang-option" onclick="setLang('tr'); langRipple(event)">
-                        <div class="lang-flag"><img src="https://flagcdn.com/w80/tr.png" alt="TR"></div>
-                        <span class="lang-name">Türk dili</span>
-                        <div class="lang-check">&#10003;</div>
-                    </div>
-                    <div id="lang-en" class="lang-option" onclick="setLang('en'); langRipple(event)">
-                        <div class="lang-flag"><img src="https://flagcdn.com/w80/gb.png" alt="EN"></div>
-                        <span class="lang-name">English</span>
-                        <div class="lang-check">&#10003;</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="settings-section">
                 <div class="settings-section-title"><span class="e3d ic3d" style="--a:#FF7A7A;--b:#D7263D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z" /><path d="M16 9a5 5 0 0 1 0 6" /><path d="M19.364 18.364a9 9 0 0 0 0-12.728" /></svg></span><span data-i18n="secSoundHaptic">SƏS VƏ HAPTİK</span></div>
                 <div class="settings-box">
@@ -2473,56 +2518,51 @@
                 </div>
             </div>
 
-            <div class="settings-section">
-                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#B4BECB;--b:#5D6B7D" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg></span><span data-i18n="secPrivacy">MƏXFİLİK</span></div>
-                <div class="settings-box privacy-box" onclick="openPrivacy()" style="cursor: pointer;">
-                    <div class="settings-row">
-                        <span data-i18n="privacy">Məxfilik Siyasəti</span>
-                        <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg></span><span data-i18n="secAbout">HAQQINDA</span></div>
-                <div class="settings-box privacy-box" onclick="openAbout()" style="cursor: pointer;">
-                    <div class="settings-row">
-                        <span data-i18n="aboutOpen">Proqram haqqında</span>
-                        <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></svg></span><span data-i18n="secContact">ƏLAQƏ</span></div>
-                <a href="https://wa.me/994553115544?text=Salam,%20ProTechtor™%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" target="_blank" rel="noopener">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    <span data-i18n="whatsapp">WhatsApp ilə əlaqə</span>
-                </a>
-            </div>
-
-            <div class="settings-section">
-                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" /></svg></span><span data-i18n="secApp">PROQRAM</span></div>
-                <div class="settings-box">
-                    <div class="settings-row">
-                        <span class="info-label" data-i18n="version">VERSİYA</span>
-                        <span class="info-value" id="appVersion"></span>
-                    </div>
-                    <div class="settings-row">
-                        <span class="info-label" data-i18n="dbSize">BAZADA QRUP</span>
-                        <span class="info-value" id="dbCount">0</span>
-                    </div>
-                    <div class="settings-row">
-                        <span class="info-label" data-i18n="modelCountLbl">BAZADA MODEL</span>
-                        <span class="info-value" id="modelCount">0</span>
-                    </div>
-                </div>
-            </div>
 
         </div>
     </div>
-    
-    <div id="about-view">
+
+    <div id="lang-view" class="sub-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="history.back()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">©By Emin</div>
+                <div class="settings-title" data-i18n="menuLang">Dil</div>
+            </div>
+        </header>
+        <div class="settings-content">
+
+            <div class="settings-section">
+                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#72D8FF;--b:#1C8FD8" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg></span><span data-i18n="secLang">DİL</span></div>
+                <div class="lang-selector">
+                    <div id="lang-az" class="lang-option active" onclick="setLang('az'); langRipple(event)">
+                        <div class="lang-flag"><img src="https://flagcdn.com/w80/az.png" alt="AZ"></div>
+                        <span class="lang-name">Azərbaycan</span>
+                        <div class="lang-check">&#10003;</div>
+                    </div>
+                    <div id="lang-ru" class="lang-option" onclick="setLang('ru'); langRipple(event)">
+                        <div class="lang-flag"><img src="https://flagcdn.com/w80/ru.png" alt="RU"></div>
+                        <span class="lang-name">Русский язык</span>
+                        <div class="lang-check">&#10003;</div>
+                    </div>
+                    <div id="lang-tr" class="lang-option" onclick="setLang('tr'); langRipple(event)">
+                        <div class="lang-flag"><img src="https://flagcdn.com/w80/tr.png" alt="TR"></div>
+                        <span class="lang-name">Türk dili</span>
+                        <div class="lang-check">&#10003;</div>
+                    </div>
+                    <div id="lang-en" class="lang-option" onclick="setLang('en'); langRipple(event)">
+                        <div class="lang-flag"><img src="https://flagcdn.com/w80/gb.png" alt="EN"></div>
+                        <span class="lang-name">English</span>
+                        <div class="lang-check">&#10003;</div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+<div id="about-view">
         <header class="settings-header">
             <button class="settings-back" onclick="closeAbout()">‹</button>
             <div class="settings-heading">
@@ -2741,7 +2781,14 @@ window.addEventListener("popstate", (e) => {
     let modalClosed = false;
 
     const aboutView = document.getElementById("about-view");
-    if (aboutView && aboutView.classList.contains("active")) {
+    const subOpen = [].filter.call(document.querySelectorAll(".sub-view.active"), function () { return true; });
+    if (subOpen.length) {
+        subOpen[subOpen.length - 1].classList.remove("active");
+        triggerHaptic(20);
+        modalClosed = true;
+        updateSetMenuSubs();
+    }
+    else if (aboutView && aboutView.classList.contains("active")) {
         aboutView.classList.remove("active");
         triggerHaptic(20);
         modalClosed = true;
@@ -7968,6 +8015,7 @@ function setTheme(theme) {
     const selected = document.getElementById("theme-" + theme);
     if (selected) selected.classList.add("active");
     applyThemeLogic(theme);
+    if (typeof updateSetMenuSubs === "function") updateSetMenuSubs();
 }
 
 function syncThemeColor() {
@@ -8022,6 +8070,7 @@ function setFontScale(scale, save = true) {
     document.documentElement.classList.toggle("big-font", scale >= 1.5);
     const pct = document.getElementById("fontPct");
     if (pct) pct.textContent = Math.round(scale * 100) + "%";
+    if (typeof updateSetMenuSubs === "function") updateSetMenuSubs();
 }
 
 function stepFontScale(dir) {
@@ -8442,6 +8491,8 @@ const I18N_UI2 = {"az": {"themeReading": "OXUMA", "eyeComfort": "Göz rahatlığ
 Object.keys(I18N_UI2).forEach(function (l) { Object.assign(I18N[l], I18N_UI2[l]); });
 const I18N_GIFT = {"az": {"giftTitle": "Hədiyyə", "giftMsgR": "🎁 {r} ProTechtor™ tərəfindən sizə {d} gün Premium hədiyyə edildi!", "giftMsg": "🎁 ProTechtor™ tərəfindən sizə {d} gün Premium hədiyyə edildi!", "payGift": "Hədiyyə", "gR_reg": "İlk qeydiyyatınız münasibətilə", "gR_holiday": "Bayram münasibətilə", "gR_novruz": "Novruz bayramı münasibətilə", "gR_newyear": "Yeni il münasibətilə", "gR_loyal": "Sadiq istifadəçimiz olduğunuz üçün", "gR_apology": "Yaranmış narahatlığa görə üzrxahlıq olaraq", "gR_promo": "Kampaniya çərçivəsində"}, "ru": {"giftTitle": "Подарок", "giftMsgR": "🎁 {r} — ProTechtor™ дарит вам Premium на {d} дн.!", "giftMsg": "🎁 ProTechtor™ дарит вам Premium на {d} дн.!", "payGift": "Подарок", "gR_reg": "В честь вашей регистрации", "gR_holiday": "В честь праздника", "gR_novruz": "В честь праздника Новруз", "gR_newyear": "В честь Нового года", "gR_loyal": "Как нашему постоянному пользователю", "gR_apology": "В качестве извинения за неудобства", "gR_promo": "В рамках акции"}, "tr": {"giftTitle": "Hediye", "giftMsgR": "🎁 {r} ProTechtor™ tarafından size {d} gün Premium hediye edildi!", "giftMsg": "🎁 ProTechtor™ tarafından size {d} gün Premium hediye edildi!", "payGift": "Hediye", "gR_reg": "İlk kaydınız vesilesiyle", "gR_holiday": "Bayram münasebetiyle", "gR_novruz": "Nevruz Bayramı münasebetiyle", "gR_newyear": "Yeni yıl münasebetiyle", "gR_loyal": "Sadık kullanıcımız olduğunuz için", "gR_apology": "Yaşanan aksaklık için özür olarak", "gR_promo": "Kampanya kapsamında"}, "en": {"giftTitle": "Gift", "giftMsgR": "🎁 {r} — ProTechtor™ has gifted you {d} days of Premium!", "giftMsg": "🎁 ProTechtor™ has gifted you {d} days of Premium!", "payGift": "Gift", "gR_reg": "To celebrate your registration", "gR_holiday": "To celebrate the holiday", "gR_novruz": "To celebrate Novruz", "gR_newyear": "To celebrate the New Year", "gR_loyal": "For being a loyal user", "gR_apology": "As an apology for the inconvenience", "gR_promo": "As part of our promotion"}};
 Object.keys(I18N_GIFT).forEach(function (l) { Object.assign(I18N[l], I18N_GIFT[l]); });
+const I18N_MENU = {"az": {"menuTheme": "Tema", "menuLang": "Dil"}, "ru": {"menuTheme": "Оформление", "menuLang": "Язык"}, "tr": {"menuTheme": "Tema", "menuLang": "Dil"}, "en": {"menuTheme": "Appearance", "menuLang": "Language"}};
+Object.keys(I18N_MENU).forEach(function (l) { Object.assign(I18N[l], I18N_MENU[l]); });
 const I18N_WL = {"az": {"welcomeStart": "Başla"}, "ru": {"welcomeStart": "Начать"}, "tr": {"welcomeStart": "Başla"}, "en": {"welcomeStart": "Get started"}};
 Object.keys(I18N_WL).forEach(function (l) { Object.assign(I18N[l], I18N_WL[l]); });
 const I18N_AV = {"az": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı dəyiş", "avatarPro": "Premium avatarlar", "avatarUpload": "Öz şəklini yüklə", "avatarRemove": "Standart", "avatarSaved": "Avatar yadda saxlanıldı", "avatarProOnly": "Bu seçim Premium istifadəçilər üçündür", "avatarFail": "Şəkil yüklənmədi. Başqa şəkil seçin."}, "ru": {"avatarTitle": "Выберите аватар", "avatarChange": "Сменить аватар", "avatarPro": "Премиум-аватары", "avatarUpload": "Загрузить своё фото", "avatarRemove": "Стандартный", "avatarSaved": "Аватар сохранён", "avatarProOnly": "Эта опция доступна в Премиум", "avatarFail": "Не удалось загрузить фото. Выберите другое."}, "tr": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı değiştir", "avatarPro": "Premium avatarlar", "avatarUpload": "Kendi fotoğrafını yükle", "avatarRemove": "Standart", "avatarSaved": "Avatar kaydedildi", "avatarProOnly": "Bu seçenek Premium kullanıcılar içindir", "avatarFail": "Fotoğraf yüklenemedi. Başka bir fotoğraf seçin."}, "en": {"avatarTitle": "Choose an avatar", "avatarChange": "Change avatar", "avatarPro": "Premium avatars", "avatarUpload": "Upload your own photo", "avatarRemove": "Default", "avatarSaved": "Avatar saved", "avatarProOnly": "This option is for Premium users", "avatarFail": "Couldn't load the photo. Try another one."}};
@@ -8568,6 +8619,7 @@ function setLang(l, save) {
 
 function applyLang() {
     document.documentElement.lang = currentLang;
+    setTimeout(function () { if (typeof updateSetMenuSubs === "function") updateSetMenuSubs(); }, 0);
     document.title = "•ProTechtor™";
     document.querySelectorAll("[data-i18n]").forEach(function (el) { el.textContent = t(el.getAttribute("data-i18n")); });
     document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
@@ -8919,6 +8971,37 @@ function openDetailWith(model, group) {
     document.body.style.overflow = "hidden";
 }
 
+function openSubView(id) {
+    const v = document.getElementById(id);
+    if (!v) return;
+    updateSetMenuSubs();
+    history.pushState({ modal: id }, "");
+    v.scrollTop = 0;
+    v.classList.add("active");
+    if (typeof triggerHaptic === "function") triggerHaptic(20);
+}
+
+function updateSetMenuSubs() {
+    try { renderSetMenuSubs(); } catch (e) {}
+}
+
+function renderSetMenuSubs() {
+    const ts = document.getElementById("themeMenuSub");
+    if (ts) {
+        const th = localStorage.getItem("antiudar_theme") || "system";
+        const key = th === "reading" ? "themeReading" : th;
+        const lbl = String(t(key) || "");
+        const nice = lbl.charAt(0) + lbl.slice(1).toLocaleLowerCase(currentLang === "tr" || currentLang === "az" ? "tr" : currentLang);
+        const fs = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--font-scale")) || 1;
+        ts.textContent = nice + " · " + Math.round(fs * 100) + "%";
+    }
+    const ls = document.getElementById("langMenuSub");
+    if (ls) {
+        const a = document.querySelector("#lang-" + currentLang + " .lang-name");
+        ls.textContent = a ? a.textContent : currentLang;
+    }
+}
+
 function closeDetail() {
     history.back();
 }
@@ -8958,7 +9041,7 @@ function closeDetail() {
 })();
 
 (function () {
-    const VIEWS = ["about-view", "privacy-view", "admin-view", "settings-view", "notif-view", "profile-view", "detail-view"];
+    const VIEWS = ["lang-view", "appearance-view", "about-view", "privacy-view", "admin-view", "settings-view", "notif-view", "profile-view", "detail-view"];
     let sx = 0, sy = 0, on = false, ind = null;
     const anyOpen = function () {
         for (let i = 0; i < VIEWS.length; i++) {
