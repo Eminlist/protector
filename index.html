@@ -1949,6 +1949,11 @@
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="profSection">ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI</div>
                 <div class="settings-box" style="padding: 16px;">
+                    <div id="profEmailRow" style="display:none; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+                        <span id="profEmail" style="flex:1; min-width:0; font-size:14px; font-weight:600; color:var(--text); word-break:break-all;"></span>
+                        <button type="button" id="profVerifyBtn" onclick="profVerifyClick()" style="display:none; padding:8px 14px; border-radius:10px; border:1px solid var(--accent-color); background:transparent; color:var(--accent-color); font-weight:700; font-size:13px; cursor:pointer;"></button>
+                        <span id="profVerified" style="display:none; color:#2ecc71; font-size:13px; font-weight:700;"></span>
+                    </div>
                     <label style="font-size:12px; color:var(--muted)" data-i18n="profNick">Ləqəb</label>
                     <input type="text" id="profUser" style="width:100%; padding:10px; margin:6px 0 14px 0; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; color:var(--text);" oninput="formatNameInput(this)">
                     
@@ -2787,6 +2792,8 @@ function openProfile() {
     setPhoneInput("profPhone", "");
     document.getElementById("profMsg").innerText = "";
     document.getElementById("profile-view").scrollTop = 0;
+    renderEmailVerify(user);
+    user.reload().then(function () { renderEmailVerify(auth.currentUser); }).catch(function () {});
 
     db.collection("users").doc(user.uid).get().then((doc) => {
         if (doc.exists) {
@@ -7247,6 +7254,68 @@ function needsEmailVerify() {
     const c = tsMs(accountData && accountData.createdAt);
     if (c && c < VERIFY_CUTOFF) return false;
     return true;
+}
+
+const PV_MSG = {
+    btn: { az: "Təsdiq et", en: "Verify", ru: "Подтвердить", tr: "Doğrula" },
+    check: { az: "Təsdiqlədim", en: "I verified", ru: "Я подтвердил", tr: "Doğruladım" },
+    ok: { az: "✓ Təsdiqlənib", en: "✓ Verified", ru: "✓ Подтверждено", tr: "✓ Doğrulandı" },
+    sent: { az: "Link göndərildi. Gələnlər və «Spam» qovluğuna baxın.", en: "Link sent. Check your inbox and Spam folder.", ru: "Ссылка отправлена. Проверьте входящие и «Спам».", tr: "Bağlantı gönderildi. Gelen kutusu ve Spam klasörüne bakın." },
+    many: { az: "Çox tez-tez göndərildi. Bir neçə dəqiqə sonra yenidən cəhd edin.", en: "Too many requests. Try again in a few minutes.", ru: "Слишком часто. Попробуйте через несколько минут.", tr: "Çok sık istek. Birkaç dakika sonra tekrar deneyin." },
+    fail: { az: "Link göndərilmədi", en: "Could not send the link", ru: "Не удалось отправить ссылку", tr: "Bağlantı gönderilemedi" },
+    not: { az: "Hələ təsdiqlənməyib", en: "Not verified yet", ru: "Ещё не подтверждено", tr: "Henüz doğrulanmadı" }
+};
+function pvMsg(k) { const o = PV_MSG[k]; return o[currentLang] || o.en || o.az; }
+let pvSent = false;
+
+function renderEmailVerify(u) {
+    const row = document.getElementById("profEmailRow");
+    if (!row) return;
+    const pw = u && (u.providerData || []).some(function (p) { return p && p.providerId === "password"; });
+    if (!u || !u.email) { row.style.display = "none"; return; }
+    row.style.display = "flex";
+    document.getElementById("profEmail").textContent = u.email;
+    const btn = document.getElementById("profVerifyBtn");
+    const ok = document.getElementById("profVerified");
+    if (u.emailVerified || !pw) {
+        btn.style.display = "none";
+        ok.style.display = u.emailVerified ? "inline" : "none";
+        ok.textContent = pvMsg("ok");
+    } else {
+        ok.style.display = "none";
+        btn.style.display = "inline-block";
+        btn.textContent = pvSent ? pvMsg("check") : pvMsg("btn");
+    }
+}
+
+function profVerifyClick() {
+    const u = auth.currentUser;
+    if (!u) return;
+    const btn = document.getElementById("profVerifyBtn");
+    if (pvSent) {
+        u.reload().then(function () { return auth.currentUser.getIdToken(true); }).then(function () {
+            const cu = auth.currentUser;
+            if (cu && cu.emailVerified) { pvSent = false; showAppToast(pvMsg("ok")); }
+            else showAppToast(pvMsg("not"), 3500);
+            renderEmailVerify(cu);
+        }).catch(function (e) { showAppToast(pvMsg("not") + " [" + ((e && e.code) || "?") + "]", 3500); });
+        return;
+    }
+    btn.disabled = true;
+    const settings = { url: location.origin + location.pathname, handleCodeInApp: false };
+    u.sendEmailVerification(settings).catch(function (e) {
+        if (e && (e.code === "auth/invalid-continue-uri" || e.code === "auth/unauthorized-continue-uri")) return u.sendEmailVerification();
+        throw e;
+    }).then(function () {
+        pvSent = true;
+        showAppToast(pvMsg("sent"), 5000);
+    }).catch(function (e) {
+        const code = (e && e.code) || "?";
+        showAppToast(code === "auth/too-many-requests" ? pvMsg("many") : pvMsg("fail") + " [" + code + "]", 5000);
+    }).then(function () {
+        btn.disabled = false;
+        renderEmailVerify(auth.currentUser);
+    });
 }
 
 function openVerifyEmail() {
