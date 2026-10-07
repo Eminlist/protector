@@ -4674,7 +4674,9 @@ async function fetchModelGroup(model) {
                 const o = sn.exists ? (sn.data() || {}) : {};
                 if (o.q === key) return;
                 const c = (+o.dK === days[i] ? (+o.dC || 0) : 0) + 1;
-                tx.update(ref, { q: key, qAt: firebase.firestore.FieldValue.serverTimestamp(), dK: days[i], dC: c });
+                const upd = { q: key, qAt: firebase.firestore.FieldValue.serverTimestamp(), dK: days[i], dC: c };
+                if (sn.exists) tx.update(ref, upd);
+                else tx.set(ref, Object.assign({ email: u.email || "", createdAt: firebase.firestore.FieldValue.serverTimestamp() }, upd));
             });
             ok = true;
         } catch (e) { lastErr = e; if (!e || e.code !== "permission-denied") break; }
@@ -8758,7 +8760,7 @@ function openDetail(model, group) {
             if (code === "unauthenticated") { handleSearchBlocked("login"); return; }
             const today = ymdUTC(Date.now());
             const quota = code === "permission-denied" && accountData && +accountData.dK === today && (+accountData.dC || 0) >= 150;
-            showAppToast(ptMsg(quota ? "quota" : "error"), 4000);
+            showAppToast(ptMsg(quota ? "quota" : "error") + (quota ? "" : " [" + (code || (e && e.message) || "?") + "]"), 5000);
         }).then(function () {
             detailLoading = false;
             document.body.style.cursor = "";
