@@ -1288,7 +1288,7 @@
         .update-button.updating{
             background:linear-gradient(110deg,#ff6b2c 0%,#ff5722 40%,#e0481b 70%,#ff7043 100%);
             background-size:220% 100%;
-            animation:updGlowShift 2.4s ease-in-out infinite;
+            animation:updGlowShift 3.2s ease-in-out infinite;
             box-shadow:0 0 0 0 rgba(255,87,34,0.45),0 6px 22px rgba(255,87,34,0.4);
         }
         .update-button.updating::before{
@@ -1305,7 +1305,7 @@
                 transparent 62%,
                 transparent 100%);
             background-size:220% 100%;
-            animation:updShine 1.8s cubic-bezier(0.4,0,0.2,1) infinite;
+            animation:updShine 2.6s cubic-bezier(0.4,0,0.2,1) infinite;
             pointer-events:none;
         }
         .update-button.updating::after{
@@ -1316,7 +1316,7 @@
             border-radius:20px;
             background:transparent;
             box-shadow:0 0 18px 4px rgba(255,120,50,0.35);
-            animation:updPulse 1.6s ease-in-out infinite;
+            animation:updPulse 2s ease-in-out infinite;
             pointer-events:none;
         }
         @keyframes updShine{
@@ -9335,6 +9335,8 @@ function closePrivacy() {
 async function fetchDatabase(retries = 3) {
     const updateButton = document.getElementById("updateButton");
     const spinner = document.getElementById("updateSpinner");
+    const animStart = Date.now();
+    const MIN_ANIM_MS = 6500;
 
     try {
         updateButton.querySelector("span").innerText = t("updating");
@@ -9381,6 +9383,9 @@ async function fetchDatabase(retries = 3) {
 
         checkBlockStatus();
 
+        const left = MIN_ANIM_MS - (Date.now() - animStart);
+        if (left > 0) await new Promise(function (r) { setTimeout(r, left); });
+
         updateButton.querySelector("span").innerText = t("updateNow");
         spinner.style.display = "none";
         updateButton.disabled = false;
@@ -9393,6 +9398,8 @@ async function fetchDatabase(retries = 3) {
             setTimeout(() => fetchDatabase(retries - 1), 2000);
             return;
         }
+        const left = MIN_ANIM_MS - (Date.now() - animStart);
+        if (left > 0) await new Promise(function (r) { setTimeout(r, left); });
         updateButton.querySelector("span").innerText = t("updateNow");
         spinner.style.display = "none";
         updateButton.disabled = false;
