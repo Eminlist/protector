@@ -2046,7 +2046,7 @@
             <div class="adm-acc-body">
                 <input type="text" id="adminSearch" class="admin-search adm-search" placeholder="🔎 Qrup / model axtar..." oninput="renderAdminList()">
                 <div class="adm-grp">REDAKTƏ</div>
-                <div class="adm-tiles"><button type="button" class="adm-tile " onclick="adminAddGroup()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></svg></span><span>Yeni qrup</span></button><button type="button" class="adm-tile " onclick="adminSelectAll()"><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="m16 9-5.5 5.5L8 12" /></svg></span><span>Hamısını seç</span></button><button type="button" id="adminDelSelBtn" class="adm-tile danger" onclick="adminDeleteSelected()" disabled style="opacity:.5"><span class="e3d ic3d" style="--a:#FF7A7A;--b:#D7263D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></span><span>Seçilənləri sil (<b id="adminDelSelN">0</b>)</span></button><button type="button" class="adm-tile " onclick="adminCheckDuplicates()"><span class="e3d ic3d" style="--a:#8C9BFF;--b:#3F4BD1" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></svg></span><span>Dublikat yoxla</span></button><button type="button" class="adm-tile " onclick="adminFixCase()"><span class="e3d ic3d" style="--a:#5FE0CF;--b:#12968A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" /><path d="M22 9v7" /><path d="M3.304 13h6.392" /><circle cx="18.5" cy="12.5" r="3.5" /></svg></span><span>Hərfləri düzəlt</span></button><button type="button" class="adm-tile " onclick="adminCloneGroupPrompt()"><span class="e3d ic3d" style="--a:#C29BFF;--b:#7B3FE4" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg></span><span>Qrupu klonla</span></button><button type="button" class="adm-tile ok" onclick="adminSaveDatabase()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg></span><span>Yadda saxla</span></button></div>
+                <div class="adm-tiles"><button type="button" class="adm-tile " onclick="adminAddGroup()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></svg></span><span>Yeni qrup</span></button><button type="button" class="adm-tile " onclick="adminSelectAll()"><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="m16 9-5.5 5.5L8 12" /></svg></span><span>Hamısını seç</span></button><button type="button" id="adminDelSelBtn" class="adm-tile danger" onclick="adminDeleteSelected()" disabled style="opacity:.5"><span class="e3d ic3d" style="--a:#FF7A7A;--b:#D7263D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></span><span>Seçilənləri sil (<b id="adminDelSelN">0</b>)</span></button><button type="button" class="adm-tile " onclick="adminCheckDuplicates()"><span class="e3d ic3d" style="--a:#8C9BFF;--b:#3F4BD1" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></svg></span><span>Dublikat yoxla</span></button><button type="button" class="adm-tile " onclick="adminFixCase()"><span class="e3d ic3d" style="--a:#5FE0CF;--b:#12968A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" /><path d="M22 9v7" /><path d="M3.304 13h6.392" /><circle cx="18.5" cy="12.5" r="3.5" /></svg></span><span>Hərfləri düzəlt</span></button><button type="button" class="adm-tile " onclick="adminCollapseAll()"><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22v-6" /><path d="M12 8V2" /><path d="M4 12H2" /><path d="M10 12H8" /><path d="M16 12h-2" /><path d="M22 12h-2" /><path d="m15 19-3-3-3 3" /><path d="m15 5-3 3-3-3" /></svg></span><span>Hamısını yığ</span></button><button type="button" class="adm-tile ok" onclick="adminSaveDatabase()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg></span><span>Yadda saxla</span></button></div>
                 <div class="adm-grp">DƏRC</div>
                 <div class="adm-pub">
                     <select id="adminNoteSelect" class="admin-search" title="Dərc zamanı tarixçəyə əlavə olunacaq qeyd">
@@ -2625,7 +2625,6 @@ let adminEditDb = [];
 let adminOpenGroups = new Set();
 let adminSelected = new Set();
 let adminDirty = false;
-let selectedAdminGroupIdx = -1;
 let confirmCallback = null;
 let adminUsersCache = [];
 
@@ -3630,33 +3629,13 @@ function adminCheckDuplicates() {
     }).join("\n"), "Dublikatlar: " + dups.length, "🔍");
 }
 
-function adminCloneGroupPrompt() {
-    if (selectedAdminGroupIdx < 0 || selectedAdminGroupIdx >= adminEditDb.length) {
-        var open = Array.from(adminOpenGroups);
-        if (open.length === 1) selectedAdminGroupIdx = open[0];
-        else {
-            appPrompt("Qrupu klonla", "Qrup nömrəsi (1-" + adminEditDb.length + "):", "").then(function (idx) {
-                if (!idx) return;
-                const n = parseInt(idx, 10) - 1;
-                if (!(n >= 0 && n < adminEditDb.length)) { showAppToast("Qrup seçilməyib"); return; }
-                selectedAdminGroupIdx = n;
-                adminCloneGroupPrompt();
-            });
-            return;
-        }
-    }
-    if (selectedAdminGroupIdx < 0 || selectedAdminGroupIdx >= adminEditDb.length) {
-        showAppToast("Qrup seçilməyib");
-        return;
-    }
-    var src = adminEditDb[selectedAdminGroupIdx];
-    var clone = Array.isArray(src) ? src.slice() : [];
-    adminEditDb.splice(selectedAdminGroupIdx + 1, 0, clone);
-    adminSelected.clear();
-    adminDirty = true;
-    adminOpenGroups.add(selectedAdminGroupIdx + 1);
+function adminCollapseAll() {
+    const n = adminOpenGroups.size;
+    adminOpenGroups = new Set();
     renderAdminList();
-    showAppToast("Qrup klonlandı");
+    const list = document.getElementById("adminList");
+    if (list) list.scrollTop = 0;
+    showAppToast(n ? (n + " qrup yığıldı") : "Bütün qruplar artıq yığılıb");
 }
 
 function adminExportCSV() {
