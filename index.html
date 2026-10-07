@@ -7392,12 +7392,39 @@ function nativeGoogleToken() {
     });
 }
 
+// İkinci addım (SMS) tələb olunan hesablar üçün girişi tamamlayır
+function handleMfa(error) {
+    if (!error || error.code !== "auth/multi-factor-auth-required" || !error.resolver) return Promise.reject(error);
+    const resolver = error.resolver;
+    const hint = (resolver.hints || []).find(function (h) { return h && h.factorId === "phone"; });
+    if (!hint) {
+        appAlert("Bu hesabda SMS-dən başqa ikinci addım qoşulub. Firebase Console-da bu istifadəçidən ikinci addımı silin.", "", "⚠️");
+        return Promise.reject(error);
+    }
+    let box = document.getElementById("pt-recaptcha");
+    if (!box) { box = document.createElement("div"); box.id = "pt-recaptcha"; document.body.appendChild(box); }
+    box.innerHTML = "";
+    const verifier = new firebase.auth.RecaptchaVerifier(box, { size: "invisible" });
+    const provider = new firebase.auth.PhoneAuthProvider();
+    const done = function () { try { verifier.clear(); } catch (e) {} };
+    return provider.verifyPhoneNumber({ multiFactorHint: hint, session: resolver.session }, verifier)
+        .then(function (vid) {
+            return appPrompt("SMS kodu", (hint.phoneNumber || "Telefonunuza") + " — göndərilən 6 rəqəmli kodu yazın", "", false, "123456").then(function (code) {
+                code = String(code || "").replace(/\D/g, "");
+                if (!code) throw error;
+                const cred = firebase.auth.PhoneAuthProvider.credential(vid, code);
+                return resolver.resolveSignIn(firebase.auth.PhoneMultiFactorGenerator.assertion(cred));
+            });
+        })
+        .then(function (r) { done(); return r; }, function (e) { done(); throw e; });
+}
+
 function signInGoogle() {
     authMsgSet(t("googleConnecting"), "var(--muted)");
     const p = hasNativeGoogle()
         ? nativeGoogleToken().then(function (tok) { return auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(tok)); })
         : auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-    p.then(afterSocialLogin)
+    p.catch(handleMfa).then(afterSocialLogin)
         .catch((err) => authMsgSet(authErrText(err)));
 }
 
@@ -7491,6 +7518,7 @@ function loginUser() {
     }
 
     auth.signInWithEmailAndPassword(email, pass)
+        .catch(handleMfa)
         .then(function (cred) {
             var uid = cred.user && cred.user.uid;
             if (!uid || !db) {
@@ -7514,7 +7542,7 @@ function loginUser() {
         })
         .catch((error) => {
             msgDiv.style.color = "red";
-            msgDiv.innerText = t("loginFail");
+            msgDiv.innerText = t("loginFail") + (error && error.code && error.code !== "auth/invalid-credential" ? " (" + error.code + ")" : "");
         });
 }
 
