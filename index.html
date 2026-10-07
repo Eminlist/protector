@@ -1212,6 +1212,13 @@
         :root[data-theme="light"] .top-header,:root[data-theme="light"] .settings-header,:root[data-theme="light"] .detail-header,:root[data-theme="light"] .profile-header,:root[data-theme="light"] #profile-view .profile-header,:root[data-theme="light"] .admin-header{background:linear-gradient(112deg,rgba(255,255,255,0) 28%,rgba(255,255,255,.85) 44%,rgba(255,255,255,0) 58%),linear-gradient(180deg,#ffffff 0%,#f1f3f6 16%,#dfe3e8 46%,#cfd4db 54%,#e3e6eb 80%,#f6f7f9 100%) !important;box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(0,0,0,.06),0 6px 18px -8px rgba(40,50,70,.35);-webkit-backdrop-filter:none;backdrop-filter:none}
         :root[data-theme="light"] .header-title,:root[data-theme="light"] .settings-title,:root[data-theme="light"] .detail-model{text-shadow:0 1px 0 rgba(255,255,255,.9)}
         :root[data-theme="light"] .settings-back,:root[data-theme="light"] .detail-back,:root[data-theme="light"] .profile-back,:root[data-theme="light"] .menu-button,:root[data-theme="light"] .profile-btn{background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(232,235,240,.9))}
+        .adm-db-acc{margin:10px 12px 0}
+        .adm-db-acc .adm-acc-body{padding:4px 0 10px}
+        .adm-db-count{font-weight:600;color:var(--muted);font-size:12px;margin-left:4px}
+        #toTop{position:fixed;right:18px;bottom:calc(96px + env(safe-area-inset-bottom, 0px));width:48px;height:48px;border-radius:50%;border:none;background:linear-gradient(145deg,color-mix(in srgb,var(--accent-color) 85%,#fff),var(--accent-color) 55%,color-mix(in srgb,var(--accent-color) 75%,#000));color:#111;box-shadow:0 10px 22px -8px color-mix(in srgb,var(--accent-color) 80%,transparent),0 2px 6px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;z-index:2050;opacity:0;transform:translateY(18px) scale(.8);pointer-events:none;transition:opacity .25s,transform .3s cubic-bezier(.2,.9,.25,1.2);cursor:pointer;-webkit-tap-highlight-color:transparent}
+        #toTop.show{opacity:1;transform:none;pointer-events:auto}
+        #toTop:active{transform:scale(.92)}
+        #toTop svg{width:24px;height:24px;stroke:#111;stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
         .fm{display:flex;flex-direction:column;gap:12px}
         .gf-days{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
         .gf-d{height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
@@ -2113,7 +2120,10 @@
         </div>
 
         <div id="adminDbSection" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-            <div id="adminList" class="admin-list"></div>
+            <details class="adm-acc adm-db-acc" id="admDbAcc">
+                <summary><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="8" height="18" x="3" y="3" rx="1" /><path d="M7 3v18" /><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z" /></svg></span><span>Modellər bazası <small id="admDbCount" class="adm-db-count"></small></span><span class="chev">›</span></summary>
+                <div class="adm-acc-body"><div id="adminList" class="admin-list"></div></div>
+            </details>
         </div>
 
         <div id="adminUsersSection" style="flex:1;display:none;flex-direction:column;overflow:hidden;padding:12px;">
@@ -3239,6 +3249,13 @@ function renderAdminList() {
     const q = (document.getElementById("adminSearch")?.value || "").trim().toLowerCase();
     box.innerHTML = "";
     updateAdminSelBtn();
+    const dbc = document.getElementById("admDbCount");
+    if (dbc) {
+        let mc = 0;
+        (Array.isArray(adminEditDb) ? adminEditDb : []).forEach(function (g) { mc += Array.isArray(g) ? g.length : 0; });
+        dbc.textContent = "· " + (Array.isArray(adminEditDb) ? adminEditDb.length : 0) + " qrup · " + mc + " model";
+    }
+    if (q) admDbOpen();
 
     if (!Array.isArray(adminEditDb) || adminEditDb.length === 0) {
         box.innerHTML = '<div class="admin-empty">Baza boşdur. «+ Yeni qrup» ilə əlavə edin.</div>';
@@ -4301,7 +4318,13 @@ function escapeHtml(s) {
         .replace(/"/g, "&quot;");
 }
 
+function admDbOpen() {
+    const d = document.getElementById("admDbAcc");
+    if (d && !d.open) d.open = true;
+}
+
 function adminAddGroup() {
+    admDbOpen();
     adminEditDb.push(["Yeni Model"]);
     adminOpenGroups.add(adminEditDb.length - 1);
     adminDirty = true;
@@ -7904,7 +7927,7 @@ function updateNetworkStatus() {
 }
 
 function initTheme() {
-    const savedTheme = localStorage.getItem("antiudar_theme") || "dark";
+    const savedTheme = localStorage.getItem("antiudar_theme") || "system";
     if (["system", "auto", "light", "dark", "reading"].indexOf(savedTheme) < 0) { setTheme("dark"); return; }
     setTheme(savedTheme);
 }
@@ -7939,6 +7962,12 @@ function applyThemeLogic(theme) {
     }
     syncThemeColor();
 }
+
+try {
+    window.matchMedia("(prefers-color-scheme: light)").addEventListener("change", function () {
+        if ((localStorage.getItem("antiudar_theme") || "system") === "system") applyThemeLogic("system");
+    });
+} catch (e) {}
 
 setInterval(() => {
     if ((localStorage.getItem("antiudar_theme") || "system") === "auto") {
@@ -8487,10 +8516,19 @@ let searchEntries = [];
 
 function t(k) { return (I18N[currentLang] && I18N[currentLang][k]) || I18N.az[k] || k; }
 
+function deviceLang() {
+    const list = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ""]);
+    for (let i = 0; i < list.length; i++) {
+        const c = String(list[i] || "").toLowerCase().slice(0, 2);
+        if (c && I18N[c]) return c;
+    }
+    return "az";
+}
+
 function initLang() {
     let l = null;
     try { l = localStorage.getItem(LANG_KEY); } catch (e) {}
-    setLang(I18N[l] ? l : "az", false);
+    setLang(I18N[l] ? l : deviceLang(), false);
 }
 
 function setLang(l, save) {
@@ -8856,6 +8894,40 @@ function openDetailWith(model, group) {
 function closeDetail() {
     history.back();
 }
+
+(function () {
+    let target = null;
+    let btn = null;
+    const make = function () {
+        if (btn) return btn;
+        btn = document.createElement("button");
+        btn.id = "toTop";
+        btn.type = "button";
+        btn.setAttribute("aria-label", "Top");
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>';
+        btn.addEventListener("click", function () {
+            if (target) target.scrollTo({ top: 0, behavior: lowPowerMode ? "auto" : "smooth" });
+            btn.classList.remove("show");
+            if (typeof triggerHaptic === "function") triggerHaptic(15);
+        });
+        document.body.appendChild(btn);
+        return btn;
+    };
+    const hide = function () { if (btn) btn.classList.remove("show"); target = null; };
+    document.addEventListener("scroll", function (e) {
+        let el = e.target;
+        if (el === document || el === document.documentElement || el === document.body) el = document.scrollingElement || document.documentElement;
+        if (!el || el.nodeType !== 1) return;
+        if (el.closest && el.closest(".ai-msgs, .admin-box, .gf-ulist, .gf-log, .rev-list, textarea, select, .ov-modal, #auth-modal")) return;
+        if (el.scrollTop > 500) {
+            target = el;
+            make().classList.add("show");
+        } else if (target === el) {
+            hide();
+        }
+    }, true);
+    window.addEventListener("popstate", hide);
+})();
 
 (function () {
     const VIEWS = ["about-view", "privacy-view", "admin-view", "settings-view", "notif-view", "profile-view", "detail-view"];
