@@ -1834,6 +1834,15 @@
         .pw-eye .eye-slash{display:none}
         .pw-eye.on{color:var(--accent-color)}
         .pw-eye.on .eye-slash{display:inline}
+        /* parol gözü: giriş, qeydiyyat, parol dəyişmə */
+        .auth-box .pw-field,.pw-field{position:relative}
+        .auth-box .pw-field input{padding-right:46px}
+        .pw-field button.pw-eye,.auth-box button.pw-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;padding:0;margin:0;background:transparent;color:var(--muted);border:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0;box-shadow:none}
+        .pw-field button.pw-eye svg,.auth-box button.pw-eye svg{width:20px;height:20px;display:block}
+        .pw-field button.pw-eye .eye-slash{display:none}
+        .pw-field button.pw-eye.on .eye-slash{display:inline}
+        .pw-field button.pw-eye.on{color:var(--accent-color)}
+
         .pw-input.input-ok{border-color:#2ecc71 !important}
         .pw-input.input-error{border-color:#e74c3c !important}
         .pw-match{font-size:11px;margin:-2px 0 4px;min-height:0}
@@ -1909,6 +1918,7 @@
         .dlg-btn.ok{border:none;background:var(--accent-color);color:#111}
         .dlg-btn.ghost{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
         .dlg-btn:empty{display:none}
+        .dlg-btns:not(:has(.dlg-btn:not(:empty))){display:none}
         .hdr-av{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;overflow:hidden;font-size:22px;line-height:1}
         .hdr-av svg,.hdr-av img,.prof-av svg,.prof-av img,.av-item svg,.av-item img{width:100%;height:100%;display:block;object-fit:cover}
         .prof-av-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;margin:4px 0 22px}
@@ -2039,7 +2049,7 @@
         <div id="loginFormContainer" style="display: none;">
             <h3 data-i18n="loginTitle">E-poçt ilə Giriş</h3>
             <input type="email" id="logEmail" data-i18n-ph="loginEmailPh" placeholder="E-poçt ünvanınız">
-            <input type="password" id="logPass" data-i18n-ph="loginPassPh" placeholder="Parol">
+            <div class="pw-field"><input type="password" id="logPass" data-i18n-ph="loginPassPh" placeholder="Parol" autocomplete="current-password"><button type="button" class="pw-eye" onclick="togglePwVis('logPass', this)" data-i18n-aria="pwShow" aria-label="Göstər"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div>
             <button onclick="loginUser()" data-i18n="loginBtn">Daxil Ol</button>
             <span class="auth-toggle" onclick="switchAuthMode('forgot')" data-i18n="forgotLink">Parolumu unutmuşam</span>
             <span class="auth-toggle" onclick="switchAuthMode('register')" data-i18n="noAccount">Hesabınız yoxdur? Qeydiyyat</span>
@@ -2071,8 +2081,8 @@
                 </ul>
                 <div class="pass-req-hint" data-i18n="passReqHint">Başqa saytlarda istifadə etdiyiniz və ya asan təxmin olunan paroldan çəkinin.</div>
             </div>
-            <input type="password" id="regPass" data-i18n-ph="regPassPh" placeholder="Parol (məs: Baku1234) *" required
-                oninput="validateRegPass(this)" onfocus="showPassReqPanel(true)" onblur="onPassBlur()">
+            <div class="pw-field"><input type="password" id="regPass" data-i18n-ph="regPassPh" placeholder="Parol (məs: Baku1234) *" required autocomplete="new-password"
+                oninput="validateRegPass(this)" onfocus="showPassReqPanel(true)" onblur="onPassBlur()"><button type="button" class="pw-eye" onclick="togglePwVis('regPass', this)" data-i18n-aria="pwShow" aria-label="Göstər"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div>
             <div class="pass-strength"><div class="pass-strength-bar" id="passBar"></div></div>
             <div id="regPassErr" class="field-error-msg" data-i18n="regPassErr">Parol tələblərə uyğun deyil</div>
             <div id="regPassOk" class="field-ok-msg" data-i18n="regPassOk">Parol uyğundur ✓</div>
@@ -3471,6 +3481,7 @@ function logoutUser() {
             icon: "🚪",
             title: t("logoutTitle") || t("confirmTitle") || "Hesabdan çıxış",
             text: confirmMsg,
+            noCancel: true,
             choices: [{ label: confirmYes, value: "yes" }, { label: confirmNo, value: "no" }]
         }).then(function (v) {
             if (v !== "yes") return;
@@ -6279,7 +6290,7 @@ function appDialog(o) {
             ch.appendChild(b);
         });
         g("dlgOk").textContent = o.choices ? "" : (o.ok || t("okBtn"));
-        g("dlgCancel").textContent = (dlgMode === "alert") ? "" : (o.cancel || t("confirmNo"));
+        g("dlgCancel").textContent = (dlgMode === "alert" || o.noCancel) ? "" : (o.cancel || t("confirmNo"));
         g("dlgOk").style.background = o.danger ? "#e74c3c" : "";
         g("dlgOk").style.color = o.danger ? "#fff" : "";
         dlgResolve = resolve;
@@ -8230,6 +8241,7 @@ function switchAuthMode(mode) {
     document.getElementById("loginFormContainer").style.display = mode === "login" ? "block" : "none";
     document.getElementById("forgotFormContainer").style.display = mode === "forgot" ? "block" : "none";
     document.getElementById("authMsg").innerText = "";
+    ["logPass", "regPass"].forEach(function (id) { const e = document.getElementById(id); if (e) { e.type = "password"; const b = e.parentNode && e.parentNode.querySelector(".pw-eye"); if (b) b.classList.remove("on"); } });
 
     if (mode === "register") {
         const sel = document.getElementById("regLangSelect");
@@ -9452,7 +9464,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.2.0";
+const APP_VERSION = "3.3.0";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10462,9 +10474,34 @@ setInterval(checkBlockStatus, 60 * 1000);
 #pt-upd button{border:0;border-radius:10px;padding:8px 12px;font-weight:800;font-family:inherit;cursor:pointer;background:#111;color:#fff}
 #pt-upd .x{background:transparent;color:#111;font-size:20px;padding:0 6px}
 /* tək əl rejimi */
-body.pt-oh .search-wrapper{position:fixed;left:0;right:0;bottom:0;margin:0;z-index:60;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--header-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--border);box-sizing:border-box}
-body.pt-oh #main-view .main-content{padding-bottom:96px}
-body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:59;max-height:38vh;overflow:auto;background:var(--surface)}
+body.pt-oh .search-wrapper{position:fixed;left:0;right:0;bottom:0;margin:0;z-index:60;padding:10px 14px calc(10px + 1cm + env(safe-area-inset-bottom,0px));background:var(--header-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--border);box-sizing:border-box}
+body.pt-oh #main-view .main-content{padding-bottom:calc(96px + 1cm)}
+body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + 1cm + env(safe-area-inset-bottom,0px));z-index:59;max-height:38vh;overflow:auto;background:var(--surface)}
+
+/* istifadəçi səhifəsi (Gəlir səhifəsi kimi daxil olur) */
+#pt-user-page{z-index:690}
+.pt-up-card{margin:0 0 12px;border:1px solid var(--border);background:var(--card-bg);border-radius:18px;overflow:hidden}
+.pt-up-card .pt-sh-i{padding:12px 16px 8px}
+.pt-up-card .pt-mi{border-top:1px solid var(--border);padding:0 18px}
+.pt-up-card .pt-note{margin:4px 14px 10px}
+/* hədiyyə: təşəkkür düyməsi (tema rəngi) */
+.pt-thx{display:block;margin-top:10px;height:38px;padding:0 20px;border:none;border-radius:12px;background:var(--accent-color);color:#111;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer}
+.pt-thx:active{transform:scale(.97)}
+.pt-thx.done{opacity:.55;pointer-events:none}
+/* admin: hədiyyə bölməsinin əlavə tabları */
+.fm-seg.pt-seg6{overflow-x:auto;scrollbar-width:none}
+.fm-seg.pt-seg6::-webkit-scrollbar{display:none}
+.fm-seg.pt-seg6 button{flex:1 0 auto;padding:0 10px;font-size:11.5px;letter-spacing:0;white-space:nowrap}
+.pt-hrow{border:1px solid var(--border);background:var(--surface);border-radius:16px;padding:10px 12px;margin-bottom:8px}
+.pt-hh{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pt-hh b{display:block;font-size:13.5px;color:var(--text)}
+.pt-hh small{color:var(--muted);font-size:11.5px}
+.pt-hb{margin-top:8px}
+.pt-hb .fm-in{margin:4px 0}
+.pt-prev{font-size:11.5px;color:var(--muted);line-height:1.5;margin-top:4px}
+.pt-thr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text)}
+.pt-thr small{display:block;color:var(--muted);font-size:11px}
+.pt-thr button{background:none;border:0;font-size:15px;cursor:pointer;color:var(--muted)}
 </style>
 
 <script id="pt-ext">
@@ -10526,6 +10563,14 @@ en: { pxDear: "Dear user", pxBlkTitle: "Your account is temporarily restricted",
   pxNote: "📝 Private note", pxNoteH: "Private note (admin only)", pxNoteSaved: "Note saved", pxNoteTag: "📝 Admin note", pxErr: "Error" }
 };
 Object.keys(X).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], X[l]); });
+var X2 = {
+az: { pxThx: "Təşəkkür", pxThxDone: "Təşəkkür göndərildi ✓", pxThxSent: "Təşəkkürünüz adminə çatdırıldı 🙏" },
+ru: { pxThx: "Спасибо", pxThxDone: "Спасибо отправлено ✓", pxThxSent: "Ваша благодарность передана администратору 🙏" },
+tr: { pxThx: "Teşekkürler", pxThxDone: "Teşekkür gönderildi ✓", pxThxSent: "Teşekkürünüz yöneticiye iletildi 🙏" },
+en: { pxThx: "Thank you", pxThxDone: "Thanks sent ✓", pxThxSent: "Your thanks were delivered to the admin 🙏" }
+};
+Object.keys(X2).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], X2[l]); });
+
 
 /* ---------- {ad} dəyişəni + bildiriş mətnləri ---------- */
 function userName() { var a = (typeof accountData !== "undefined" && accountData) || {}; var n = String(a.username || a.displayName || "").trim(); return n.length >= 2 ? n : ""; }
@@ -10664,49 +10709,117 @@ function detectNew() {
 var _applyDb = applyDb;
 applyDb = function () { var r = _applyDb.apply(this, arguments); setTimeout(detectNew, 400); return r; };
 
-/* ---------- 5) bayram təbrikləri + hədiyyə ---------- */
-function H(id, md, az, ru, tr, en) { return { id: id, md: md, gift: 0, name: id, texts: { az: az, ru: ru, tr: tr, en: en } }; }
+/* ---------- 5) beynəlxalq bayramlar: avto təbrik (4 dildə) + avto hədiyyə ---------- */
+function HD(id, md, em, az, ru, tr, en, date) { return { id: id, md: md, em: em, on: false, gift: 0, date: date || "", names: { az: az, ru: ru, tr: tr, en: en } }; }
 var DEF_HOL = [
-  H("newyear", "01-01", "🎉 Yeni iliniz mübarək, {ad}! Sizə sağlamlıq və uğurlar arzulayırıq.", "🎉 С Новым годом, {ad}! Желаем здоровья и успехов.", "🎉 Yeni yılınız kutlu olsun, {ad}! Sağlık ve başarılar dileriz.", "🎉 Happy New Year, {ad}! Wishing you health and success."),
-  H("women", "03-08", "🌸 8 Mart Beynəlxalq Qadınlar Günü mübarək, {ad}!", "🌸 С 8 Марта, {ad}! Счастья и тепла вам.", "🌸 8 Mart Dünya Kadınlar Günü kutlu olsun, {ad}!", "🌸 Happy International Women's Day, {ad}!"),
-  H("novruz", "03-20", "🌷 Novruz bayramınız mübarək, {ad}! Evinizə bərəkət, ailənizə xoşbəxtlik.", "🌷 С праздником Новруз, {ad}! Благополучия вашему дому.", "🌷 Nevruz Bayramınız kutlu olsun, {ad}! Evinize bereket, ailenize mutluluk.", "🌷 Happy Novruz, {ad}! Wishing you and your family happiness."),
-  H("may28", "05-28", "🇦🇿 28 May — Müstəqillik Günü mübarək, {ad}!", "🇦🇿 С Днём независимости (28 мая), {ad}!", "🇦🇿 28 Mayıs Bağımsızlık Günü kutlu olsun, {ad}!", "🇦🇿 Happy Independence Day (28 May), {ad}!"),
-  H("jun15", "06-15", "🇦🇿 15 İyun — Milli Qurtuluş Günü mübarək, {ad}!", "🇦🇿 С Днём национального спасения (15 июня), {ad}!", "🇦🇿 15 Haziran Ulusal Kurtuluş Günü kutlu olsun, {ad}!", "🇦🇿 Happy National Salvation Day (15 June), {ad}!"),
-  H("oct18", "10-18", "🇦🇿 18 Oktyabr — Müstəqilliyin Bərpası Günü mübarək, {ad}!", "🇦🇿 С Днём восстановления независимости (18 октября), {ad}!", "🇦🇿 18 Ekim Bağımsızlığın Yeniden Tesisi Günü kutlu olsun, {ad}!", "🇦🇿 Happy Independence Restoration Day (18 Oct), {ad}!"),
-  H("nov8", "11-08", "🇦🇿 8 Noyabr — Zəfər Günü mübarək, {ad}!", "🇦🇿 С Днём Победы (8 ноября), {ad}!", "🇦🇿 8 Kasım Zafer Günü kutlu olsun, {ad}!", "🇦🇿 Happy Victory Day (8 Nov), {ad}!")
+  HD("newyear", "01-01", "🎆", "Yeni il bayramı", "Новый год", "Yeni Yıl", "New Year"),
+  HD("orthxmas", "01-07", "🎄", "Pravoslav Milad bayramı", "Православное Рождество", "Ortodoks Noel Bayramı", "Orthodox Christmas"),
+  HD("valentine", "02-14", "💝", "Valentin günü", "День святого Валентина", "Sevgililer Günü", "Valentine's Day"),
+  HD("women", "03-08", "🌸", "8 Mart — Beynəlxalq Qadınlar Günü", "8 Марта — Международный женский день", "8 Mart Dünya Kadınlar Günü", "International Women's Day"),
+  HD("novruz", "03-20", "🌷", "Novruz bayramı", "Новруз", "Nevruz Bayramı", "Novruz"),
+  HD("labour", "05-01", "🛠️", "1 May — Beynəlxalq Əmək Günü", "1 Мая — День труда", "1 Mayıs Emek ve Dayanışma Günü", "International Workers' Day"),
+  HD("children", "06-01", "🧒", "1 İyun — Beynəlxalq Uşaq Günü", "1 июня — Международный день защиты детей", "1 Haziran Dünya Çocuk Günü", "International Children's Day"),
+  HD("christmas", "12-25", "🎄", "Milad bayramı", "Рождество", "Noel", "Christmas"),
+  HD("ramazan", "", "🌙", "Ramazan bayramı", "Ураза-байрам", "Ramazan Bayramı", "Eid al-Fitr", "2027-03-10"),
+  HD("qurban", "", "🐑", "Qurban bayramı", "Курбан-байрам", "Kurban Bayramı", "Eid al-Adha", "2027-05-17")
 ];
-function holList() { var c = jget("pt_x_hol", null); return (c && Array.isArray(c.list)) ? c.list : DEF_HOL; }
+var GREET = {
+  az: function (n, e) { return n + " münasibəti ilə sizi ProTechtor olaraq təbrik edirik! " + e + "🎉🎆"; },
+  ru: function (n, e) { return "Поздравляем вас от лица ProTechtor с праздником: " + n + "! " + e + "🎉🎆"; },
+  tr: function (n, e) { return n + " münasebetiyle sizi ProTechtor olarak tebrik ederiz! " + e + "🎉🎆"; },
+  en: function (n, e) { return "Happy " + n + "! ProTechtor congratulates you on this occasion. " + e + "🎉🎆"; }
+};
+function mergeHol(saved) {
+  var m = {}; (saved || []).forEach(function (x) { if (x && x.id && x.names) m[x.id] = x; });
+  return DEF_HOL.map(function (d) {
+    var x = m[d.id], o = JSON.parse(JSON.stringify(d)); if (!x) return o;
+    o.on = !!x.on; o.gift = Math.max(0, Math.min(365, Math.round(+x.gift || 0)));
+    if (!d.md && x.date) o.date = String(x.date);
+    return o;
+  });
+}
+function holList() { var c = jget("pt_x_hol", null); return (c && Array.isArray(c.list) && c.list.length) ? mergeHol(c.list) : DEF_HOL; }
 function loadHol() {
   if (!fire()) return Promise.resolve();
   return db.doc("app_data/holidays").get().then(function (s) { if (s.exists) jset("pt_x_hol", { list: (s.data() || {}).list || [] }); }).catch(function () {});
 }
-function bakuNow() { var d = new Date(Date.now() + 4 * 3600000); return { y: d.getUTCFullYear(), md: two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()), full: d.getUTCFullYear() + "-" + two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()) }; }
+function bakuAt(back) { var d = new Date(Date.now() + 4 * 3600000 - (back || 0) * 86400000); return { y: d.getUTCFullYear(), md: two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()), full: d.getUTCFullYear() + "-" + two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()) }; }
+function holAge(h) {
+  for (var k = 0; k <= 2; k++) { var t = bakuAt(k); if ((h.md && h.md === t.md) || (h.date && h.date === t.full)) return k; }
+  return -1;
+}
+var holTried = {};
 function holidayCheck() {
   try {
     var u = me(); if (!u || u.isAnonymous || !isRegisteredUser()) return;
-    var tk = bakuNow();
     holList().forEach(function (h) {
-      if (h.off || !h.texts) return;
-      if (!((h.date && h.date === tk.full) || (h.md && h.md === tk.md))) return;
-      var id = "hol_" + h.id + "_" + tk.y, mk = "pt_x_" + id + "_" + u.uid;
-      if (localStorage.getItem(mk)) return;
-      try { localStorage.setItem(mk, "1"); } catch (e) {}
-      addLocal({ local: id, uid: u.uid, type: "holiday", texts: h.texts, createdAt: Date.now() });
-      toast(personalize(h.texts[L()] || h.texts.az || ""), 6500);
-      if (+h.gift > 0) claimGift(h, id, u);
+      if (!h.on) return;
+      var k = holAge(h); if (k < 0) return;
+      var t = bakuAt(k), id = "hol_" + h.id + "_" + t.y, mk = "pt_x_" + id + "_" + u.uid;
+      if (!localStorage.getItem(mk)) {
+        try { localStorage.setItem(mk, "1"); } catch (e) {}
+        var texts = {}; ["az", "ru", "tr", "en"].forEach(function (l) { texts[l] = GREET[l](h.names[l] || h.names.az, h.em); });
+        addLocal({ local: id, uid: u.uid, type: "holiday", texts: texts, createdAt: Date.now() });
+        if (k === 0) toast(texts[L()] || texts.az, 6500);
+      }
+      if (+h.gift > 0) claimGift(h, t.y, u);
     });
   } catch (e) {}
 }
-function claimGift(h, id, u) {
+function claimGift(h, yr, u) {
   try {
-    var a = accountData || {}; if (a.holGift === id) return;
-    var until = Math.max(Date.now(), +a.premiumUntil || 0) + Math.round(h.gift) * DAY_MS;
-    var ref = db.collection("users").doc(u.uid);
-    ref.update({ premiumUntil: until, holGift: id }).then(function () {
-      ref.collection("notifications").add({ type: "premium_gift", days: Math.round(h.gift), reason: "holiday", until: until, createdAt: Date.now(), read: false }).catch(function () {});
+    var a = (typeof accountData !== "undefined" && accountData) || {};
+    if (!Object.keys(a).length) return;
+    if (a.holGift === h.id && +a.holGiftY === yr) return;
+    var tk = u.uid + h.id + yr; if (holTried[tk]) return; holTried[tk] = 1;
+    var days = Math.round(+h.gift); if (days < 1) return;
+    var until = Math.max(Date.now(), +a.premiumUntil || 0) + days * DAY_MS;
+    db.collection("users").doc(u.uid).update({ premiumUntil: until, holGift: h.id, holGiftY: yr }).then(function () {
+      addLocal({ local: "holgift_" + h.id + "_" + yr, uid: u.uid, type: "premium_gift", days: days, reason: "holiday", until: until, createdAt: Date.now() });
+      try { updateNotifBadge(); giftPopupCheck(); } catch (e) {}
     }).catch(function () {});
   } catch (e) {}
 }
+
+/* ---------- hədiyyə təşəkkürü ---------- */
+function thxDone(x) { return !!(x && x.thanked) || !!jget("pt_x_thx", {})[notifKey(x)]; }
+function thxSend(x, btn) {
+  var u = me(); if (!u || !x || thxDone(x)) return;
+  var key = notifKey(x), m = jget("pt_x_thx", {}); m[key] = 1; jset("pt_x_thx", m);
+  toast(T("pxThxSent"));
+  if (btn) { btn.classList.add("done"); btn.textContent = T("pxThxDone"); }
+  var a = (typeof accountData !== "undefined" && accountData) || {};
+  var nid = key.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 80);
+  db.collection("gift_thanks").doc(u.uid + "_" + nid).set({
+    uid: u.uid, nid: nid, name: String(a.username || a.displayName || "").slice(0, 60), email: String(u.email || a.email || "").slice(0, 100),
+    days: Math.round(+x.days || 0), reason: String(x.reason || "").slice(0, 30), createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function () {});
+  if (x.id) db.collection("users").doc(u.uid).collection("notifications").doc(x.id).update({ thanked: true }).catch(function () {});
+}
+var _renderNotifs = renderNotifications;
+renderNotifications = function () {
+  var r = _renderNotifs.apply(this, arguments);
+  try {
+    [].forEach.call(document.querySelectorAll("#notifList .notif-item"), function (el) {
+      var x = notifRendered[+el.getAttribute("data-i")];
+      if (!x || x.type !== "premium_gift" || el.querySelector(".pt-thx")) return;
+      var nb = el.querySelector(".nbody"); if (!nb) return;
+      var b = document.createElement("button"); b.type = "button"; b.className = "pt-thx" + (thxDone(x) ? " done" : "");
+      b.textContent = thxDone(x) ? T("pxThxDone") : "🙏 " + T("pxThx");
+      b.onclick = function (ev) { ev.stopPropagation(); thxSend(x, b); };
+      nb.appendChild(b);
+    });
+  } catch (e) {}
+  return r;
+};
+giftPopupCheck = function () {
+  if (!isRegisteredUser()) return;
+  var shown = jget("pt_gift_shown", []); if (!Array.isArray(shown)) shown = [];
+  var x = allNotifs().filter(function (n) { return n.type === "premium_gift" && !n.read && shown.indexOf(notifKey(n)) < 0; })[0];
+  if (!x) return;
+  shown.push(notifKey(x)); jset("pt_gift_shown", shown.slice(-50));
+  appDialog({ mode: "confirm", icon: "🎁", title: T("giftTitle"), text: giftMsg(x), ok: "🙏 " + T("pxThx"), cancel: T("closeBtn") }).then(function (v) { if (v === true) thxSend(x, null); });
+};
 
 /* ---------- 3) blok: atmasın, geri sayım göstərsin ---------- */
 var blkData = null, blkTimer = null;
@@ -10800,9 +10913,49 @@ function openSheet(it, id) {
     s.classList.add("show");
   });
 }
+/* istifadəçi seçiləndə «Gəlir» səhifəsi kimi tam səhifə açılır */
+var upId = "";
+function userPage() {
+  var pg = $("pt-user-page");
+  if (!pg) {
+    pg = document.createElement("div"); pg.id = "pt-user-page"; pg.className = "sub-view adm-page";
+    pg.innerHTML = '<header class="settings-header"><button class="settings-back" onclick="history.back()">‹</button><div class="settings-heading"><div class="settings-small">ADMIN</div><div class="settings-title" id="ptUpTitle"></div></div></header><div class="settings-content" id="ptUpBody"></div>';
+    document.body.appendChild(pg);
+  }
+  return pg;
+}
+function fillUserPage(it, id) {
+  var name = (it.querySelector(".au-name") || {}).textContent || "", sub = (it.querySelector(".au-sub") || {}).textContent || "";
+  var infos = [].map.call(it.querySelectorAll(".au-body .au-info"), function (n) { return n.outerHTML; }).join("");
+  var items = [].map.call(it.querySelectorAll(".au-body .au-btn"), function (b) {
+    var cls = (b.className || "").replace("au-btn", "").trim();
+    return '<button type="button" class="pt-mi ' + esc(cls) + '" onclick="' + (b.getAttribute("onclick") || "").replace(/"/g, "&quot;") + '">' + b.innerHTML + "</button>";
+  }).join("");
+  loadNotes(function () {
+    var n = notes && notes[id] && notes[id].t, sid = String(id).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    if (!$("ptUpBody")) return;
+    $("ptUpTitle").textContent = name;
+    $("ptUpBody").innerHTML = '<div class="pt-up-card"><div class="pt-sh-h" style="padding:14px 16px 0"><b>' + esc(name) + "</b><small>" + esc(sub) + "</small></div>" +
+      '<div class="pt-sh-i">' + infos + "</div>" + (n ? '<div class="pt-note"><b>' + esc(T("pxNoteTag")) + "</b>\n" + esc(n) + "</div>" : "") + "</div>" +
+      '<div class="pt-up-card">' + items + '<button type="button" class="pt-mi" onclick="PTX.note(\'' + esc(sid) + '\')">' + esc(T("pxNote")) + "</button></div>";
+  });
+}
+function refreshUserPage() {
+  var pg = $("pt-user-page"); if (!pg || !pg.classList.contains("active") || !upId) return;
+  var its = document.querySelectorAll("#adminUsersList .au-item");
+  for (var i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === upId) { fillUserPage(its[i], upId); return; }
+  var ex = (typeof adminUsersCache !== "undefined" ? adminUsersCache : []).some(function (u) { return u._id === upId; });
+  if (!ex) { upId = ""; history.back(); }
+}
+var _renderAU = renderAdminUsers;
+renderAdminUsers = function () { var r = _renderAU.apply(this, arguments); try { refreshUserPage(); } catch (e) {} return r; };
 admToggleUser = function (id) {
   var its = document.querySelectorAll("#adminUsersList .au-item");
-  for (var i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) { openSheet(its[i], id); return; }
+  for (var i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) {
+    upId = id; var pg = userPage(); fillUserPage(its[i], id);
+    if (!pg.classList.contains("active")) openSubView("pt-user-page");
+    return;
+  }
 };
 function noteEdit(id) {
   loadNotes(function () {
@@ -10813,7 +10966,7 @@ function noteEdit(id) {
       o[id] = txt ? { t: txt, at: Date.now() } : firebase.firestore.FieldValue.delete();
       db.doc("admin/notes").set(o, { merge: true }).then(function () {
         if (txt) notes[id] = { t: txt, at: Date.now() }; else delete notes[id];
-        toast(T("pxNoteSaved"));
+        toast(T("pxNoteSaved")); try { refreshUserPage(); } catch (e) {}
       }).catch(function (e) { toast(T("pxErr") + ": " + ((e && (e.code || e.message)) || "")); });
     });
   });
@@ -10899,41 +11052,97 @@ adminSendMessage = function (id) {
   });
 };
 
-/* bayram redaktoru */
+/* bayramlar + təşəkkürlər: «Hədiyyələr» bölməsinin daxilində */
 var holAdm = [];
-function holOpen() {
-  if (!isAdmin || !fire()) return;
-  db.doc("app_data/holidays").get().then(function (s) { var l = s.exists ? (s.data() || {}).list : null; holAdm = JSON.parse(JSON.stringify(Array.isArray(l) ? l : DEF_HOL)); holRender(); })
-    .catch(function () { holAdm = JSON.parse(JSON.stringify(holList())); holRender(); });
+function holDateInt(h) {
+  if (h.md) { var p = h.md.split("-"); return (+p[0]) * 100 + (+p[1]); }
+  if (h.date) { var q = h.date.split("-"); return (+q[0]) * 10000 + (+q[1]) * 100 + (+q[2]); }
+  return 0;
+}
+function holLoad() {
+  if (!isAdmin || !fire() || !$("ptHolBox")) return;
+  $("ptHolBox").innerHTML = '<div class="fm-status">Yüklənir…</div>';
+  db.doc("app_data/holidays").get().then(function (s) {
+    var l = s.exists ? (s.data() || {}).list : null;
+    holAdm = JSON.parse(JSON.stringify(Array.isArray(l) ? mergeHol(l) : DEF_HOL)); holRender();
+  }).catch(function () { holAdm = JSON.parse(JSON.stringify(holList())); holRender(); });
 }
 function holRender() {
+  var box = $("ptHolBox"); if (!box) return;
   var rows = holAdm.map(function (h, i) {
-    return '<div class="pt-r"><span><label><input type="checkbox" style="width:auto" ' + (h.off ? "" : "checked") + ' onchange="PTX.holTog(' + i + ',this.checked)"> <b>' + esc(h.name || h.id) + "</b></label><br><small>" + esc(h.date || h.md) + (+h.gift > 0 ? " · 🎁 " + (+h.gift) : "") + '</small></span><button type="button" onclick="PTX.holDel(' + i + ')">🗑</button></div>';
+    var when = h.md ? (h.md.slice(3) + "." + h.md.slice(0, 2) + " · hər il") : "tarixi özünüz seçin (hər il dəyişir)";
+    return '<div class="pt-hrow"><div class="pt-hh"><div><b>' + esc(h.em + " " + h.names.az) + "</b><small>" + esc(when) + '</small></div>' +
+      '<label class="switch"><input type="checkbox" ' + (h.on ? "checked" : "") + ' onchange="PTX.holTog(' + i + ',this.checked)"><span class="slider"></span></label></div>' +
+      '<div class="pt-hb"><span class="fm-lbl">🎁 Premium hədiyyə (gün, 0 = yoxdur)</span><input type="number" class="fm-in" min="0" max="365" value="' + (+h.gift || 0) + '" oninput="PTX.holGift(' + i + ',this.value)">' +
+      (h.md ? "" : '<span class="fm-lbl">Tarix</span><input type="date" class="fm-in" value="' + esc(h.date || "") + '" onchange="PTX.holDate(' + i + ',this.value)">') +
+      '<div class="pt-prev">' + esc(GREET.az(h.names.az, h.em)) + "</div></div></div>";
   }).join("");
-  modal(T("pxHol"), '<p class="pt-mut">' + esc(T("pxHolH")) + "</p>" + rows +
-    '<input id="ptH_n" placeholder="' + esc(T("pxHolName")) + '"><input id="ptH_d" type="date" title="' + esc(T("pxHolDate")) + '"><label class="pt-mut"><input id="ptH_y" type="checkbox" style="width:auto" checked> ' + esc(T("pxHolYear")) + "</label>" +
-    '<input id="ptH_g" type="number" min="0" max="365" value="0" placeholder="' + esc(T("pxHolGift")) + '"><div class="pt-mut">' + esc(T("pxHolGift")) + '</div><textarea id="ptH_az" placeholder="AZ"></textarea><textarea id="ptH_ru" placeholder="RU"></textarea><textarea id="ptH_tr" placeholder="TR"></textarea><textarea id="ptH_en" placeholder="EN"></textarea>' +
-    '<button type="button" class="pt-pri" onclick="PTX.holAdd()">' + esc(T("pxHolAdd")) + '</button><button type="button" class="pt-pri" onclick="PTX.holSave()">☁ ' + esc(T("pxSave")) + "</button>");
-}
-function holAdd() {
-  var n = ($("ptH_n").value || "").trim(), d = $("ptH_d").value, az = ($("ptH_az").value || "").trim();
-  if (!n || !d || !az) { toast(T("pxHolNeed")); return; }
-  var h = { id: "c" + Date.now().toString(36), name: n, gift: Math.max(0, Math.min(365, +$("ptH_g").value || 0)), texts: { az: az } };
-  if ($("ptH_y").checked) h.md = d.slice(5); else h.date = d;
-  ["ru", "tr", "en"].forEach(function (l) { var v = ($("ptH_" + l).value || "").trim(); if (v) h.texts[l] = v; });
-  holAdm.push(h); holRender();
+  box.innerHTML = '<div class="fm-note"><div>Aktiv etdiyiniz bayramda istifadəçi tətbiqi açanda (bayram günü və sonrakı 2 gün ərzində) öz dilində (AZ/RU/TR/EN) təbrik alır. Hədiyyə yazsanız, Premium də avtomatik əlavə olunur. Hər istifadəçi hər bayramı ildə bir dəfə alır.</div></div>' + rows +
+    '<button type="button" class="fm-btn pri wide" onclick="PTX.holSave()">☁ Yadda saxla</button><div id="ptHolSt" class="fm-status"></div>';
 }
 function holSave() {
-  db.doc("app_data/holidays").set({ list: holAdm, updatedAt: Date.now() }).then(function () { jset("pt_x_hol", { list: holAdm }); toast(T("pxHolSaved")); closeModal(); })
-    .catch(function (e) { toast(errT(e)); });
+  var miss = holAdm.filter(function (h) { return h.on && !holDateInt(h); });
+  if (miss.length) { toast("Tarix seçin: " + miss[0].names.az); return; }
+  var gifts = {}, dates = {};
+  var list = holAdm.map(function (h) {
+    var g = Math.max(0, Math.min(365, Math.round(+h.gift || 0))), di = holDateInt(h);
+    if (h.on && di) { dates[h.id] = di; if (g > 0) gifts[h.id] = g; }
+    return { id: h.id, on: !!h.on, gift: g, md: h.md || "", date: h.date || "", em: h.em, names: h.names };
+  });
+  db.doc("app_data/holidays").set({ list: list, gifts: gifts, dates: dates, updatedAt: Date.now() }).then(function () {
+    jset("pt_x_hol", { list: list }); toast("Bayramlar yadda saxlandı ✓");
+    var st = $("ptHolSt"); if (st) st.textContent = list.filter(function (h) { return h.on; }).length + " bayram aktivdir";
+  }).catch(function (e) { toast(errT(e)); });
+}
+function thxLoad() {
+  var box = $("ptThxList"); if (!box || !isAdmin || !fire()) return;
+  box.innerHTML = '<div class="fm-status">Yüklənir…</div>';
+  db.collection("gift_thanks").orderBy("createdAt", "desc").limit(50).get().then(function (snap) {
+    var rows = [];
+    snap.forEach(function (d) {
+      var x = d.data() || {}, ms = x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : 0;
+      rows.push('<div class="pt-thr"><span>🙏 <b>' + esc(x.name || x.email || "—") + "</b><small>" + esc((x.email || "") + (x.days ? " · 🎁 " + x.days + " gün" : "")) + " · " + esc(ms ? fmtDate(ms) : "") + '</small></span><button type="button" onclick="PTX.thxDel(\'' + esc(d.id) + '\')">🗑</button></div>');
+    });
+    box.innerHTML = rows.length ? rows.join("") : '<div class="fm-status">Hələ təşəkkür yoxdur</div>';
+    jset("pt_x_thx_seen", Date.now()); var c = $("ptThxCnt"); if (c) c.textContent = "";
+  }).catch(function (e) { box.innerHTML = '<div class="fm-status">' + esc(errT(e)) + "</div>"; });
+}
+function thxDel(id) { db.collection("gift_thanks").doc(id).delete().then(thxLoad).catch(function (e) { toast(errT(e)); }); }
+var thxAnnounced = false;
+function thxCheck() {
+  try {
+    if (!isAdmin || !fire()) return;
+    var seen = jget("pt_x_thx_seen", 0);
+    db.collection("gift_thanks").orderBy("createdAt", "desc").limit(30).get().then(function (snap) {
+      var n = 0; snap.forEach(function (d) { var c = (d.data() || {}).createdAt; if (c && c.toMillis && c.toMillis() > seen) n++; });
+      var c = $("ptThxCnt"); if (c) c.textContent = n ? String(n) : "";
+      if (n && !thxAnnounced) { thxAnnounced = true; toast("🙏 " + n + " istifadəçi hədiyyəyə görə təşəkkür etdi", 5000); }
+    }).catch(function () {});
+  } catch (e) {}
+}
+function buildGiftTabs() {
+  try {
+    var logPane = document.querySelector('[data-pane="gf-log"]'); if (!logPane || $("ptHolBox")) return;
+    var fm = logPane.parentNode, seg = fm.querySelector(".fm-seg"); if (!seg) return;
+    seg.classList.add("pt-seg6");
+    var b1 = document.createElement("button"); b1.type = "button"; b1.textContent = "🎉 Bayram"; b1.onclick = function () { fmSeg(b1, "gf", "hol"); holLoad(); };
+    var b2 = document.createElement("button"); b2.type = "button"; b2.textContent = "🙏 Təşəkkür"; b2.onclick = function () { fmSeg(b2, "gf", "thx"); thxLoad(); };
+    seg.appendChild(b1); seg.appendChild(b2);
+    var p1 = document.createElement("div"); p1.className = "fm-pane"; p1.setAttribute("data-pane", "gf-hol"); p1.innerHTML = '<div id="ptHolBox"></div>';
+    var p2 = document.createElement("div"); p2.className = "fm-pane"; p2.setAttribute("data-pane", "gf-thx"); p2.innerHTML = '<div id="ptThxList"></div>';
+    fm.appendChild(p1); fm.appendChild(p2);
+    var det = fm.closest("details"), ttl = det && det.querySelector(".adm-ttl");
+    if (ttl && !$("ptThxCnt")) { var c = document.createElement("span"); c.id = "ptThxCnt"; c.className = "adm-cnt warn"; ttl.parentNode.insertBefore(c, ttl.nextSibling); }
+  } catch (e) {}
 }
 
 /* admin panelə alət düymələri */
 function buildAdminBox() {
+  buildGiftTabs();
   if ($("pt-adm-tools")) return;
   var row = document.querySelector(".adm-acc.adm-link"); if (!row || !row.parentNode) return;
   var box = document.createElement("div"); box.id = "pt-adm-tools";
-  box.innerHTML = '<div class="adm-grp" id="pt-adm-grp"></div><div class="pt-adm-row"><button type="button" onclick="PTX.alias()" id="pt-b1"></button><button type="button" onclick="PTX.group()" id="pt-b2"></button><button type="button" onclick="PTX.hol()" id="pt-b3"></button></div>';
+  box.innerHTML = '<div class="adm-grp" id="pt-adm-grp"></div><div class="pt-adm-row"><button type="button" onclick="PTX.alias()" id="pt-b1"></button><button type="button" onclick="PTX.group()" id="pt-b2"></button></div>';
   row.parentNode.insertBefore(box, row);
   relabel();
 }
@@ -11007,17 +11216,45 @@ window.PTX = {
   fit: fitConfirm, closeSheet: closeSheet, close: closeModal, note: noteEdit,
   alias: aliasOpen, aliasAdd: aliasAdd, aliasSave: aliasSave, aliasSug: aliasSug, aliasDel: function (i) { aliasAdm.splice(i, 1); aliasRender(); },
   group: groupOpen, groupSend: groupSend,
-  hol: holOpen, holAdd: holAdd, holSave: holSave, holDel: function (i) { holAdm.splice(i, 1); holRender(); }, holTog: function (i, on) { holAdm[i].off = !on; }
+  holSave: holSave, holTog: function (i, on) { holAdm[i].on = !!on; }, holGift: function (i, v) { holAdm[i].gift = Math.max(0, Math.min(365, Math.round(+v || 0))); }, holDate: function (i, v) { holAdm[i].date = v || ""; },
+  thxDel: thxDel
 };
+
+/* ---------- istifadəçi bazası: avtomatik yeniləmə ---------- */
+var dbSyncAt = 0, dbSyncBusy = false;
+function dbSync(force) {
+  try {
+    if (isAdmin || dbSyncBusy || !navigator.onLine) return;
+    var u = me(); if (!u || u.isAnonymous) return;
+    if (!force && Date.now() - dbSyncAt < 10 * 60 * 1000) return;
+    dbSyncBusy = true; dbSyncAt = Date.now();
+    readDbFromFirestore().then(function (res) {
+      if (!res || !res.data || !res.groups || !res.groups.length) return;
+      var ver = (catalogMeta && +catalogMeta.ver) || 0, old = +localStorage.getItem("pt_db_ver") || 0;
+      var nameDiff = JSON.stringify(res.groups) !== JSON.stringify(database);
+      try { applyChangelogFromFirestore(res.data); } catch (e) {}
+      if (ver) { try { localStorage.setItem("pt_db_ver", String(ver)); } catch (e) {} }
+      if (nameDiff || (old && ver && ver !== old)) {
+        applyDb(res);
+        try { localStorage.setItem(UPDATE_KEY, Date.now().toString()); } catch (e) {}
+        indexFor = null;
+        try { updateLastUpdate(); } catch (e) {}
+        try { var inp = $("searchInput"); if (inp && inp.value.trim()) performSearch(inp.value); } catch (e) {}
+      }
+    }).catch(function () {}).then(function () { dbSyncBusy = false; });
+  } catch (e) { dbSyncBusy = false; }
+}
 
 /* ---------- başlanğıc ---------- */
 function init() {
   applyOH(); buildOH(); buildAdminBox(); loadAlias(); loadFit(false); loadHol();
   setTimeout(checkUpd, 4000); setInterval(checkUpd, 30 * 60 * 1000);
-  document.addEventListener("visibilitychange", function () { if (!document.hidden) checkUpd(); });
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { checkUpd(); dbSync(false); holidayCheck(); thxCheck(); } });
+  window.addEventListener("online", function () { dbSync(true); });
+  setInterval(function () { dbSync(false); }, 15 * 60 * 1000);
   try {
     auth.onAuthStateChanged(function () {
-      setTimeout(function () { loadAlias(); loadFit(false); loadHol().then(holidayCheck); buildAdminBox(); blkTick(); }, 1500);
+      setTimeout(function () { loadAlias(); loadFit(false); loadHol().then(holidayCheck); buildAdminBox(); blkTick(); dbSync(true); setTimeout(holidayCheck, 6000); setTimeout(holidayCheck, 15000); setTimeout(thxCheck, 3000); }, 1500);
     });
   } catch (e) {}
 }
