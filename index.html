@@ -8088,7 +8088,6 @@ function tsMs(v) {
 }
 
 function needsEmailVerify() {
-    return false; // E-poçt təsdiqi ləğv edilib
     const u = auth.currentUser;
     if (!u || u.isAnonymous || isAdmin || u.emailVerified) return false;
     const pw = (u.providerData || []).some(function (p) { return p && p.providerId === "password"; });
@@ -8130,6 +8129,29 @@ function renderEmailVerify(u) {
     }
 }
 
+function verifyActionSettings() {
+    var url = "";
+    try {
+        if (location.protocol === "http:" || location.protocol === "https:") {
+            url = location.origin + (location.pathname || "/");
+        }
+    } catch (e) {}
+    var s = { handleCodeInApp: false };
+    if (url && url.indexOf("http") === 0) s.url = url;
+    return s;
+}
+function sendVerifyEmail(user) {
+    var u = user || auth.currentUser;
+    if (!u) return Promise.reject(new Error("no-user"));
+    var settings = verifyActionSettings();
+    return u.sendEmailVerification(settings).catch(function (e) {
+        var code = (e && e.code) || "";
+        if (code === "auth/invalid-continue-uri" || code === "auth/unauthorized-continue-uri") {
+            return u.sendEmailVerification();
+        }
+        throw e;
+    });
+}
 function profVerifyClick() {
     const u = auth.currentUser;
     if (!u) return;
@@ -8143,19 +8165,17 @@ function profVerifyClick() {
         }).catch(function (e) { showAppToast(pvMsg("not") + " [" + ((e && e.code) || "?") + "]", 3500); });
         return;
     }
-    btn.disabled = true;
-    const settings = { url: location.origin + location.pathname, handleCodeInApp: false };
-    u.sendEmailVerification(settings).catch(function (e) {
-        if (e && (e.code === "auth/invalid-continue-uri" || e.code === "auth/unauthorized-continue-uri")) return u.sendEmailVerification();
-        throw e;
-    }).then(function () {
+    if (btn) btn.disabled = true;
+    sendVerifyEmail(u).then(function () {
         pvSent = true;
         showAppToast(pvMsg("sent"), 5000);
     }).catch(function (e) {
         const code = (e && e.code) || "?";
-        showAppToast(code === "auth/too-many-requests" ? pvMsg("many") : pvMsg("fail") + " [" + code + "]", 5000);
+        if (code === "auth/too-many-requests") showAppToast(pvMsg("many"), 5000);
+        else showAppToast(pvMsg("fail") + " [" + code + "]", 5000);
+        try { console.warn("sendEmailVerification:", code, e && e.message); } catch (x) {}
     }).then(function () {
-        btn.disabled = false;
+        if (btn) btn.disabled = false;
         renderEmailVerify(auth.currentUser);
     });
 }
@@ -8169,8 +8189,11 @@ function openVerifyEmail() {
         choices: [{ label: t("verifySend"), value: "send" }, { label: t("verifyDone"), value: "done" }]
     }).then(function (v) {
         if (v === "send") {
-            u.sendEmailVerification().then(function () { showAppToast(t("verifySent"), 4000); })
-                .catch(function () { showAppToast(t("verifyWait"), 4000); });
+            sendVerifyEmail(u).then(function () { showAppToast(t("verifySent"), 4000); })
+                .catch(function (e) {
+                    var code = (e && e.code) || "";
+                    showAppToast(code === "auth/too-many-requests" ? t("verifyWait") : (t("verifyWait") + " [" + code + "]"), 4000);
+                });
         } else if (v === "done") {
             u.reload().then(function () { return u.getIdToken(true); }).then(function () {
                 if (auth.currentUser && auth.currentUser.emailVerified) {
@@ -8433,7 +8456,18 @@ function registerUser() {
                 localStorage.setItem(SEARCH_COUNT_KEY, "0");
                 document.getElementById("auth-modal").style.display = "none";
                 showAppToast(t("regOk"));
-                // 373/374: auto refresh DB after successful registration
+                // Avtomatik e-poçt təsdiq linki
+                try {
+                    var nu = auth.currentUser;
+                    if (nu && !nu.emailVerified) {
+                        sendVerifyEmail(nu).then(function () {
+                            showAppToast(pvMsg("sent"), 5000);
+                            pvSent = true;
+                        }).catch(function (e) {
+                            try { console.warn("reg verify mail:", e && e.code, e && e.message); } catch (x) {}
+                        });
+                    }
+                } catch (e) {}
                 forceUpdateSilent();
             });
         })
