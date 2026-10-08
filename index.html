@@ -2737,6 +2737,7 @@
                     <option value="premium">Premium</option>
                     <option value="active7">Son 7 gündə aktiv</option>
                     <option value="blocked">Bloklular</option>
+                    <option value="unverified">E-poçtu təsdiqlənməyən</option>
                 </select>
             </div>
             <button class="admin-btn admin-btn-secondary" style="height:34px;font-size:12px;margin-bottom:8px;" onclick="toggleBlockLog()">📜 Bloklama tarixçəsi</button>
@@ -3880,6 +3881,7 @@ function renderAdminUsers() {
         return (+b.lastSeen || 0) - (+a.lastSeen || 0);
     });
     if (filter === "blocked") users = users.filter(function (u) { return !!u.blocked; });
+    if (filter === "unverified") users = users.filter(function (u) { return (u.provider || "email") === "email" && !u.ev && !u.emailVerifiedByAdmin; });
     if (q) {
         users = users.filter(function (u) {
             return ((u.username || u.displayName || "") + " " + (u.email || "") + " " + (u.storeName || "")).toLowerCase().indexOf(q) >= 0;
@@ -5648,6 +5650,7 @@ function touchLastSeen(uid) {
     } catch (e) {}
     db.collection("users").doc(uid).set({
         lastSeen: Date.now(),
+        ev: !!(auth.currentUser && auth.currentUser.emailVerified),
         deviceOS: os,
         lastDevice: (typeof deviceName === "function" ? deviceName() : os),
         lang: currentLang || "az"
@@ -8088,6 +8091,7 @@ function needsEmailVerify() {
     if (!u || u.isAnonymous || isAdmin || u.emailVerified) return false;
     const pw = (u.providerData || []).some(function (p) { return p && p.providerId === "password"; });
     if (!pw) return false;
+    if (accountData && accountData.emailVerifiedByAdmin === true) return false;
     const c = tsMs(accountData && accountData.createdAt);
     if (c && c < VERIFY_CUTOFF) return false;
     return true;
@@ -8114,9 +8118,10 @@ function renderEmailVerify(u) {
     document.getElementById("profEmail").textContent = u.email;
     const btn = document.getElementById("profVerifyBtn");
     const ok = document.getElementById("profVerified");
-    if (u.emailVerified || !pw) {
+    const adminOk = !!(accountData && accountData.emailVerifiedByAdmin === true);
+    if (u.emailVerified || !pw || adminOk) {
         btn.style.display = "none";
-        ok.style.display = u.emailVerified ? "inline" : "none";
+        ok.style.display = (u.emailVerified || adminOk) ? "inline" : "none";
         ok.textContent = pvMsg("ok");
     } else {
         ok.style.display = "none";
@@ -8139,10 +8144,11 @@ function verifyActionSettings() {
 function sendVerifyEmail(user) {
     var u = user || auth.currentUser;
     if (!u) return Promise.reject(new Error("no-user"));
+    try { auth.languageCode = currentLang || "az"; } catch (e) {}
     var settings = verifyActionSettings();
     return u.sendEmailVerification(settings).catch(function (e) {
         var code = (e && e.code) || "";
-        if (code === "auth/invalid-continue-uri" || code === "auth/unauthorized-continue-uri") {
+        if (code === "auth/invalid-continue-uri" || code === "auth/unauthorized-continue-uri" || code === "auth/missing-continue-uri") {
             return u.sendEmailVerification();
         }
         throw e;
@@ -8529,15 +8535,69 @@ function resetPassword() {
         return;
     }
 
-    auth.sendPasswordResetEmail(email)
+    msgDiv.style.color = "var(--muted)";
+    msgDiv.innerText = t("saving");
+    sendResetMail(email)
         .then(() => {
             msgDiv.style.color = "green";
             msgDiv.innerText = t("resetSent");
         })
         .catch((error) => {
+            const code = (error && error.code) || "";
             msgDiv.style.color = "red";
-            msgDiv.innerText = t("resetNotFound");
+            if (code === "auth/user-not-found") msgDiv.innerText = t("resetNotFound");
+            else if (code === "auth/invalid-email") msgDiv.innerText = t("enterEmail");
+            else if (code === "auth/too-many-requests") msgDiv.innerText = t("tooMany");
+            else msgDiv.innerText = t("errPrefix") + " " + (code || (error && error.message) || "?");
+            try { console.warn("sendPasswordResetEmail:", code, error && error.message); } catch (x) {}
         });
+}
+
+// E-poçt məktubları istifadəçinin dilində getsin; continue URL icazəli deyilsə, URL-siz yenidən göndər
+function sendResetMail(email) {
+    try { auth.languageCode = currentLang || "az"; } catch (e) {}
+    const s = verifyActionSettings();
+    if (!s.url) return auth.sendPasswordResetEmail(email);
+    return auth.sendPasswordResetEmail(email, s).catch(function (e) {
+        const code = (e && e.code) || "";
+        if (code === "auth/invalid-continue-uri" || code === "auth/unauthorized-continue-uri" || code === "auth/missing-continue-uri") {
+            return auth.sendPasswordResetEmail(email);
+        }
+        throw e;
+    });
+}
+
+// Admin: istifadəçinin e-poçtunu əl ilə təsdiqlə / ləğv et
+function adminVerifyEmail(id) {
+    const u = adminFindUser(id);
+    if (!u) return;
+    const on = !u.emailVerifiedByAdmin;
+    appConfirm((u.username || u.email || id) + (on
+        ? "\nE-poçt admin tərəfindən təsdiqlənsin? İstifadəçi dərhal axtarış edə biləcək."
+        : "\nAdmin təsdiqi ləğv edilsin?"), on ? "Bəli, təsdiqlə" : "Bəli, ləğv et", !on).then(function (ok) {
+        if (!ok) return;
+        db.collection("users").doc(id).set({ emailVerifiedByAdmin: on, emailVerifiedAt: on ? Date.now() : 0 }, { merge: true }).then(function () {
+            u.emailVerifiedByAdmin = on;
+            if (on) {
+                db.collection("users").doc(id).collection("notifications").add({
+                    type: "msg", text: "✓ E-poçtunuz admin tərəfindən təsdiqləndi. Artıq axtarış edə bilərsiniz.", createdAt: Date.now(), read: false
+                }).catch(function () {});
+            }
+            showAppToast(on ? "E-poçt təsdiqləndi ✓" : "Təsdiq ləğv edildi");
+            renderAdminUsers();
+        }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+    });
+}
+
+// Admin: istifadəçinin e-poçtuna parol bərpa linki göndər
+function adminSendReset(id) {
+    const u = adminFindUser(id);
+    if (!u || !u.email) { showAppToast("İstifadəçinin e-poçtu yoxdur"); return; }
+    sendResetMail(u.email).then(function () {
+        showAppToast("Parol bərpa linki göndərildi: " + u.email, 4500);
+    }).catch(function (e) {
+        appAlert("Link göndərilmədi.\nXəta kodu: " + ((e && e.code) || (e && e.message) || "?"), "Parol bərpası", "⚠️");
+    });
 }
 
 function isStandaloneApp() {
@@ -9509,7 +9569,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.3.0";
+const APP_VERSION = "3.3.1";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -11041,6 +11101,9 @@ function fillUserPage(it, id) {
     if (email) rows += '<div class="pt-up-row"><div class="pt-up-ic">✉️</div><span>' + escE + '<em>' + esc(provider) + '</em></span></div>';
     if (phone) rows += '<div class="pt-up-row"><div class="pt-up-ic">📞</div><span>' + esc(phone) + '</span></div>';
     if (store) rows += '<div class="pt-up-row"><div class="pt-up-ic">🏪</div><span>' + esc(store) + (addr ? '<em>' + esc(addr) + '</em>' : '') + '</span></div>';
+    if (email && provider !== "google") {
+      rows += '<div class="pt-up-row"><div class="pt-up-ic">' + (u.emailVerifiedByAdmin ? '✅' : '📧') + '</div><span>E-poçt təsdiqi<em>' + (u.emailVerifiedByAdmin ? 'Admin tərəfindən təsdiqlənib' : 'Admin təsdiqi yoxdur (istifadəçi linklə təsdiqləyə bilər)') + '</em></span></div>';
+    }
     rows += '<div class="pt-up-row"><div class="pt-up-ic">🕐</div><span>Son aktivlik<em>' + esc(lastSeen) + (offlineDays >= 0 ? ' · ' + offlineDays + ' gün əvvəl' : '') + '</em></span></div>';
     rows += '<div class="pt-up-row"><div class="pt-up-ic">📱</div><span>Qurğu<em>' + esc(devLine) + '</em></span></div>';
     if (pu) {
@@ -11060,6 +11123,11 @@ function fillUserPage(it, id) {
       act("gift", "🎁", "Hədiyyə ver", "gfPickUser") +
       (pu ? act("soft", "✖️", "Premium ləğv et", "adminRevokePremium") : "") +
       "</div>";
+
+    var mailSec = (email ? '<div class="pt-up-sec"><div class="pt-up-sec-t">E-poçt</div>' +
+      (provider !== "google" ? act(u.emailVerifiedByAdmin ? "soft" : "ok", u.emailVerifiedByAdmin ? "↩️" : "✅", u.emailVerifiedByAdmin ? "Təsdiqi ləğv et" : "E-poçtu təsdiqlə", "adminVerifyEmail") : "") +
+      act("", "🔑", "Parol bərpa linki göndər", "adminSendReset") +
+      "</div>" : "");
 
     var manageSec = '<div class="pt-up-sec"><div class="pt-up-sec-t">İdarəetmə</div>' +
       act("", "✏️", "Adı dəyiş", "adminRenameUser") +
@@ -11084,7 +11152,7 @@ function fillUserPage(it, id) {
         (badges ? '<div class="pt-up-badges">' + badges + "</div>" : "") +
         '<div class="pt-up-rows">' + rows + "</div>" +
       "</div>" +
-      noteHtml + premiumSec + manageSec + dangerSec;
+      noteHtml + mailSec + premiumSec + manageSec + dangerSec;
   });
 }
 function refreshUserPage() {
