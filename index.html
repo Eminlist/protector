@@ -279,6 +279,17 @@
             display: flex;
         }
 
+        .brand-suggest{
+            display:none;flex-wrap:wrap;gap:6px;padding:6px 2px 10px;max-height:72px;overflow:hidden;
+        }
+        .brand-suggest.show{display:flex}
+        html.low-power .brand-suggest{display:none !important}
+        .brand-chip{
+            height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--border);
+            background:var(--surface);color:var(--text);font-size:12.5px;font-weight:700;
+            cursor:pointer;font-family:inherit;white-space:nowrap;
+        }
+        .brand-chip:active{transform:scale(.96);border-color:var(--accent-color);color:var(--accent-color)}
         .clear-button.rotate {
             transform: rotate(180deg);
         }
@@ -1211,6 +1222,11 @@
         .m-spec .cut-ic.cut-cam{color:#e74c3c}
         .m-spec .cut-ic.cut-sensor{color:#f1c40f}
         .m-spec .sz small{font-size:.82em;font-weight:500;opacity:.7;margin-left:3px}
+        /* 157/214: size source dots */
+        .sz-src{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:4px;flex-shrink:0;vertical-align:middle}
+        .sz-src.official{background:#27ae60;box-shadow:0 0 6px rgba(39,174,96,.5)}
+        .sz-src.measured{background:#3498db;box-shadow:0 0 6px rgba(52,152,219,.5)}
+        .sz-src.approx{background:#95a5a6;box-shadow:0 0 4px rgba(149,165,166,.4)}
         /* 116: sticky selected model at top of compatibility list */
         .compatibility-item.selected.sticky-sel{
             position:sticky;top:0;z-index:4;
@@ -2061,6 +2077,8 @@
                 >
                 <button id="clearButton" class="clear-button" onclick="clearSearch()">×</button>
             </div>
+            <!-- 111/112: brand suggestions (hidden in low-power) -->
+            <div id="brandSuggest" class="brand-suggest" style="display:none;" role="listbox" aria-label="Brand suggestions"></div>
 
             <div id="recent"></div>
             <div id="status" class="status"></div>
@@ -2868,7 +2886,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     searchInput.addEventListener("input", function () {
         updateClearButton();
+        updateBrandSuggest(this.value);
         performSearch(this.value);
+    });
+    searchInput.addEventListener("blur", function () {
+        setTimeout(hideBrandSuggest, 180);
     });
 
     loadDatabaseFromCacheOnly();
@@ -3695,7 +3717,13 @@ function renderAdminUsers() {
     if (filter === "google") users = users.filter(function (u) { return u.provider === "google"; });
     if (filter === "premium") users = users.filter(function (u) { return (+u.premiumUntil || 0) > Date.now(); });
     if (filter === "active7") users = users.filter(function (u) { return (+u.lastSeen || 0) > Date.now() - 7 * DAY_MS; });
-    users.sort(function (a, b) { return (+b.lastSeen || 0) - (+a.lastSeen || 0); });
+    // Premium users always on top, then by lastSeen
+    users.sort(function (a, b) {
+        var ap = (+a.premiumUntil || 0) > Date.now() ? 1 : 0;
+        var bp = (+b.premiumUntil || 0) > Date.now() ? 1 : 0;
+        if (bp !== ap) return bp - ap;
+        return (+b.lastSeen || 0) - (+a.lastSeen || 0);
+    });
     if (filter === "blocked") users = users.filter(function (u) { return !!u.blocked; });
     if (q) {
         users = users.filter(function (u) {
@@ -3763,32 +3791,56 @@ function renderAdminUsers() {
 }
 
 function adminBlockUser(id) {
+    // Flexible block: minutes / hours / days / indefinite + custom number
     var u0 = adminFindUser(id) || {};
-    var reason = null, days = 0, until = 0;
+    var reason = null, until = 0, label = "";
     appPrompt("Blokla", (u0.username || u0.email || "") + "\nBlok səbəbini yazın:", "", true).then(function (r) {
         if (r == null) return null;
         reason = r;
-        return appChoice("Blok müddəti", "", [
-            { label: "Müddətsiz", value: "0" }, { label: "1 gün", value: "1" },
-            { label: "7 gün", value: "7" }, { label: "30 gün", value: "30" }
+        return appChoice("Blok müddəti", "Vahid seçin və ya «Özüm yazım»", [
+            { label: "Müddətsiz", value: "0" },
+            { label: "30 dəqiqə", value: "m30" },
+            { label: "1 saat", value: "h1" },
+            { label: "6 saat", value: "h6" },
+            { label: "1 gün", value: "d1" },
+            { label: "7 gün", value: "d7" },
+            { label: "30 gün", value: "d30" },
+            { label: "Özüm yazım…", value: "custom" }
         ]);
     }).then(function (d) {
         if (d == null || reason == null) return;
-        days = parseInt(d, 10) || 0;
-        until = days > 0 ? Date.now() + days * DAY_MS : 0;
+        if (d === "0") { until = 0; label = "müddətsiz"; doBlock(); return; }
+        if (d === "custom") {
+            appPrompt("Müddət", "Rəqəm + vahid: məs. 45m, 3h, 2d", "2d", true).then(function (raw) {
+                if (!raw) return;
+                var m = String(raw).trim().toLowerCase().match(/^(\d+)\s*([mhd])?/);
+                if (!m) { showAppToast("Format: 30m / 2h / 5d"); return; }
+                var n = parseInt(m[1], 10) || 0;
+                var u = m[2] || "d";
+                var ms = u === "m" ? n * 60 * 1000 : u === "h" ? n * 3600 * 1000 : n * DAY_MS;
+                until = Date.now() + ms;
+                label = n + (u === "m" ? " dəq" : u === "h" ? " saat" : " gün");
+                doBlock();
+            });
+            return;
+        }
+        var map = { m30: [30 * 60 * 1000, "30 dəq"], h1: [3600 * 1000, "1 saat"], h6: [6 * 3600 * 1000, "6 saat"], d1: [DAY_MS, "1 gün"], d7: [7 * DAY_MS, "7 gün"], d30: [30 * DAY_MS, "30 gün"] };
+        var x = map[d] || [DAY_MS, "1 gün"];
+        until = Date.now() + x[0];
+        label = x[1];
         doBlock();
     });
     function doBlock() {
-    db.collection("users").doc(id).update({
-        blocked: true,
-        blockReason: reason,
-        blockUntil: until,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () {
-        logBlockAction(id, days > 0 ? "temp" : "block", reason, until);
-        showAppToast(days > 0 ? ("Bloklandı: " + days + " gün") : "Bloklandı");
-        loadAdminStats();
-    }).catch(function (e) { showAppToast("Xəta: " + e.message); });
+        db.collection("users").doc(id).update({
+            blocked: true,
+            blockReason: reason,
+            blockUntil: until,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function () {
+            logBlockAction(id, until > 0 ? "temp" : "block", reason, until);
+            showAppToast(until > 0 ? ("Bloklandı: " + label) : "Bloklandı (müddətsiz)");
+            loadAdminStats();
+        }).catch(function (e) { showAppToast("Xəta: " + e.message); });
     }
 }
 
@@ -4462,9 +4514,9 @@ function renderModelRequestsList() {
         return '<div class="req-row">' +
             '<span>' + escapeHtml(r.text) + count + ' <small style="color:var(--muted)">' + escapeHtml(r.date) + '</small></span>' +
             '<span class="req-acts">' +
-            '<button onclick="replyModelRequest(' + i + ',\'added\')">Əlavə olundu</button>' +
-            '<button onclick="replyModelRequest(' + i + ',\'not_sale\')">Satışda deyil</button>' +
-            '<button onclick="replyModelRequest(' + i + ',\'not_exist\')">Mövcud deyil</button>' +
+            '<button onclick="pickReplyTemplate(' + i + ')">✉ Şablon</button>' +
+            '<button onclick="replyModelRequest(' + i + ',\'1\')">✅ 1</button>' +
+            '<button onclick="replyModelRequest(' + i + ',\'6\')">❌ 6</button>' +
             '</span></div>';
     }).join("");
 }
@@ -4473,21 +4525,105 @@ function resolveModelRequest(i) {
     replyModelRequest(i, "added");
 }
 
+// 203: report reply templates 1,2,4,6,7,8 — delivered in each user's language
+const REPLY_TPL = {
+    "1": { // Model added
+        az: "Model bazaya əlavə olundu. Yenilə düyməsinə basın.",
+        ru: "Модель добавлена в базу. Нажмите «Обновить».",
+        tr: "Model veritabanına eklendi. Güncelle düğmesine basın.",
+        en: "The model was added to the database. Press Update."
+    },
+    "2": { // Already in DB
+        az: "Model artıq bazada var — axtarışda yoxlayın.",
+        ru: "Модель уже есть в базе — проверьте поиск.",
+        tr: "Model zaten veritabanında — aramada kontrol edin.",
+        en: "The model is already in the database — check search."
+    },
+    "4": { // Duplicate
+        az: "Dublikat hesabat — əvvəlki sorğunuz işlənir.",
+        ru: "Дубликат — ваш предыдущий запрос уже обрабатывается.",
+        tr: "Yinelenen bildirim — önceki talebiniz işleniyor.",
+        en: "Duplicate report — your earlier request is being processed."
+    },
+    "6": { // Reject insufficient
+        az: "Rədd: kifayət qədər məlumat yoxdur.",
+        ru: "Отклонено: недостаточно данных.",
+        tr: "Red: yeterli bilgi yok.",
+        en: "Rejected: not enough information."
+    },
+    "7": { // Region
+        az: "Region versiyası fərqli ola bilər; tam kodu yazın.",
+        ru: "Региональная версия может отличаться; укажите полный код.",
+        tr: "Bölge sürümü farklı olabilir; tam kodu yazın.",
+        en: "Regional version may differ; enter the full model code."
+    },
+    "8": { // Not found alt spelling
+        az: "Bu adla rəsmi model tapılmadı; başqa yazımla göndərin.",
+        ru: "Официальная модель с таким названием не найдена; отправьте другой вариант написания.",
+        tr: "Bu adla resmi model bulunamadı; farklı yazımla gönderin.",
+        en: "No official model found under this name; try a different spelling."
+    }
+};
+function replyTplText(id, lang) {
+    const t0 = REPLY_TPL[id] || REPLY_TPL["1"];
+    const L = lang || "az";
+    return (t0 && (t0[L] || t0.az)) || "";
+}
 function replyModelRequest(i, kind) {
     const r = adminModelReqs[i];
     if (!r) return;
+    // Map legacy kinds → template ids
+    if (kind === "added") kind = "1";
+    if (kind === "not_sale") kind = "8";
+    if (kind === "not_exist") kind = "6";
+    if (!REPLY_TPL[kind]) kind = "1";
     const now = Date.now();
     Promise.all((r.uids || []).map(function (uid) {
-        return db.collection("users").doc(uid).collection("notifications").add({ type: "req_reply", reply: kind, model: r.text, createdAt: now, read: false }).catch(function () {});
+        // fetch user language so notification is in their language
+        return db.collection("users").doc(uid).get().then(function (doc) {
+            const d = (doc && doc.exists && doc.data()) || {};
+            const lang = d.lang || d.language || "az";
+            const text = replyTplText(kind, lang);
+            return db.collection("users").doc(uid).collection("notifications").add({
+                type: "req_reply",
+                reply: kind,
+                model: r.text,
+                text: text,
+                createdAt: now,
+                read: false
+            });
+        }).catch(function () {
+            return db.collection("users").doc(uid).collection("notifications").add({
+                type: "req_reply", reply: kind, model: r.text,
+                text: replyTplText(kind, "az"), createdAt: now, read: false
+            }).catch(function () {});
+        });
     })).then(function () { return Promise.all(r.ids.map(function (id) {
         const ref = db.collection("model_requests").doc(id);
-        return ref.delete().catch(function () { return ref.update({ resolved: true }); });
+        return ref.delete().catch(function () { return ref.update({ resolved: true, reply: kind }); });
     })); }).then(function () {
         loadModelRequests();
         showAppToast("Cavab göndərildi" + ((r.uids || []).length ? " (" + r.uids.length + " istifadəçi)" : ""));
     }).catch(function (e) {
         showAppToast("Xəta: " + ((e && (e.code || e.message)) || ""));
     });
+}
+function pickReplyTemplate(i) {
+    // Admin chooses among templates 1,2,4,6,7,8
+    const choices = [
+        { label: "1 · Əlavə olundu", value: "1" },
+        { label: "2 · Artıq bazada", value: "2" },
+        { label: "4 · Dublikat", value: "4" },
+        { label: "6 · Rədd (məlumat az)", value: "6" },
+        { label: "7 · Region fərqi", value: "7" },
+        { label: "8 · Model tapılmadı", value: "8" }
+    ];
+    if (typeof appDialog === "function") {
+        appDialog({ mode: "choice", icon: "✉", title: "Cavab şablonu", text: "İstifadəçinin dilində göndəriləcək", choices: choices })
+            .then(function (v) { if (v) replyModelRequest(i, v); });
+    } else {
+        replyModelRequest(i, "1");
+    }
 }
 
 function isRegisteredUser() {
@@ -5070,10 +5206,10 @@ const MAINT_TEMPLATES = {
     scheduled: {
         label: { az: "Planlı iş", ru: "Плановые работы", tr: "Planlı çalışma", en: "Scheduled" },
         text: {
-            az: "Planlı texniki iş aparılır. Anlayışınız üçün təşəkkürlər.",
-            ru: "Проводятся плановые технические работы. Спасибо за понимание.",
-            tr: "Planlı teknik çalışma sürüyor. Anlayışınız için teşekkürler.",
-            en: "Scheduled maintenance is in progress. Thank you for your patience."
+            az: "Planlı texniki iş aparılır. Təxminən {saat}-ə qədər. Anlayışınız üçün təşəkkürlər.",
+            ru: "Проводятся плановые технические работы. Примерно до {saat}. Спасибо за понимание.",
+            tr: "Planlı teknik çalışma sürüyor. Yaklaşık {saat}'e kadar. Anlayışınız için teşekkürler.",
+            en: "Scheduled maintenance is in progress. Until about {saat}. Thank you for your patience."
         }
     },
     urgent: {
@@ -5089,7 +5225,20 @@ const MAINT_TEMPLATES = {
 function maintTplText(id, lang) {
     const t0 = MAINT_TEMPLATES[id] || MAINT_TEMPLATES.short;
     const L = lang || currentLang || "az";
-    return (t0.text && (t0.text[L] || t0.text.az)) || "";
+    let s = (t0.text && (t0.text[L] || t0.text.az)) || "";
+    // replace {saat} with reopen time if available
+    try {
+        const reopen = (typeof maintReopenAt !== "undefined" && maintReopenAt) ? maintReopenAt :
+            (window._maintReopen || "");
+        if (reopen && s.indexOf("{saat}") >= 0) {
+            const d = new Date(reopen);
+            const hh = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+            s = s.replace(/\{saat\}/g, hh);
+        } else {
+            s = s.replace(/\{saat\}/g, "—");
+        }
+    } catch (e) { s = s.replace(/\{saat\}/g, "—"); }
+    return s;
 }
 function renderMaintTplChips() {
     const box = document.getElementById("maintTplChips");
@@ -5311,7 +5460,22 @@ function touchLastSeen(uid) {
     const last = parseInt(localStorage.getItem(k) || "0", 10) || 0;
     if (Date.now() - last < 60 * 60 * 1000) return;
     localStorage.setItem(k, String(Date.now()));
-    db.collection("users").doc(uid).set({ lastSeen: Date.now() }, { merge: true }).catch(function () {});
+    // admin-only device/OS info (not shown in user profile)
+    var os = "Web";
+    try {
+        var ua = navigator.userAgent || "";
+        if (/iPhone|iPad|iPod/i.test(ua)) os = "iOS";
+        else if (/Android/i.test(ua)) os = "Android";
+        else if (/Windows/i.test(ua)) os = "Windows";
+        else if (/Mac OS|Macintosh/i.test(ua)) os = "macOS";
+        else if (/Linux/i.test(ua)) os = "Linux";
+    } catch (e) {}
+    db.collection("users").doc(uid).set({
+        lastSeen: Date.now(),
+        deviceOS: os,
+        lastDevice: os,
+        lang: currentLang || "az"
+    }, { merge: true }).catch(function () {});
 }
 
 function reportMisfit() {
@@ -5713,8 +5877,28 @@ function specLineEl(model, selected) {
         mm.textContent = "mm";
         sp.appendChild(mm);
         el.appendChild(sp);
+        // 157/214: size source icon — official / measured / approx
+        const src = sizeSourceOf(model);
+        if (src) {
+            const dot = document.createElement("span");
+            dot.className = "sz-src " + src;
+            dot.title = src === "official" ? (t("srcOfficial") || "Rəsmi") : src === "measured" ? (t("srcMeasured") || "Ölçülüb") : (t("srcApprox") || "Təxmini");
+            dot.setAttribute("aria-label", dot.title);
+            el.appendChild(dot);
+        }
     }
     return el;
+}
+function sizeSourceOf(model) {
+    const k = norm(model);
+    const raw = sizesMap[k];
+    if (!raw) return "approx";
+    const a = String(raw).split("|");
+    // optional 5th field: o=official, m=measured, a=approx
+    if (a[4] === "m") return "measured";
+    if (a[4] === "a") return "approx";
+    if (a[1] && a[2]) return "official";
+    return "approx";
 }
 
 function renderSizeWarn(group) {
@@ -8618,6 +8802,52 @@ function getBrand(model) {
     return parts.length > 0 ? parts[0] : "";
 }
 
+// 111/112: brand suggestion chips under search (off in low-power)
+const KNOWN_BRANDS = ["Samsung","Xiaomi","Redmi","POCO","iPhone","Huawei","Honor","OPPO","Realme","Vivo","Infinix","Tecno","Nokia","Motorola","OnePlus","Google","Sony","LG","ZTE","Itel","HMD","TCL"];
+function updateBrandSuggest(q) {
+    const box = document.getElementById("brandSuggest");
+    if (!box) return;
+    if (document.documentElement.classList.contains("low-power")) { hideBrandSuggest(); return; }
+    q = String(q || "").trim();
+    // only suggest when typing a short brand-like token (no full model yet)
+    if (!q || q.length < 1 || q.indexOf(" ") >= 0 || q.length > 12) { hideBrandSuggest(); return; }
+    const nq = norm(q);
+    const hits = KNOWN_BRANDS.filter(function (b) {
+        return norm(b).indexOf(nq) === 0 || norm(b).indexOf(nq) >= 0;
+    }).slice(0, 6);
+    if (!hits.length) { hideBrandSuggest(); return; }
+    box.innerHTML = "";
+    hits.forEach(function (b) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "brand-chip";
+        btn.textContent = b;
+        btn.addEventListener("mousedown", function (e) { e.preventDefault(); }); // keep focus
+        btn.addEventListener("click", function () {
+            // 112: auto space + cursor active
+            const input = document.getElementById("searchInput");
+            if (!input) return;
+            input.value = b + " ";
+            input.focus();
+            const len = input.value.length;
+            try { input.setSelectionRange(len, len); } catch (e) {}
+            hideBrandSuggest();
+            updateClearButton();
+            performSearch(input.value);
+        });
+        box.appendChild(btn);
+    });
+    box.classList.add("show");
+    box.style.display = "flex";
+}
+function hideBrandSuggest() {
+    const box = document.getElementById("brandSuggest");
+    if (!box) return;
+    box.classList.remove("show");
+    box.style.display = "none";
+    box.innerHTML = "";
+}
+
 function getAllModels(db) {
     const set = new Set();
     if (!Array.isArray(db)) return set;
@@ -8868,10 +9098,10 @@ Object.keys(I18N_WL).forEach(function (l) { Object.assign(I18N[l], I18N_WL[l]); 
 const I18N_AV = {"az": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı dəyiş", "avatarPro": "Premium avatarlar", "avatarUpload": "Öz şəklini yüklə", "avatarRemove": "Standart", "avatarSaved": "Avatar yadda saxlanıldı", "avatarProOnly": "Bu seçim Premium istifadəçilər üçündür", "avatarFail": "Şəkil yüklənmədi. Başqa şəkil seçin."}, "ru": {"avatarTitle": "Выберите аватар", "avatarChange": "Сменить аватар", "avatarPro": "Премиум-аватары", "avatarUpload": "Загрузить своё фото", "avatarRemove": "Стандартный", "avatarSaved": "Аватар сохранён", "avatarProOnly": "Эта опция доступна в Премиум", "avatarFail": "Не удалось загрузить фото. Выберите другое."}, "tr": {"avatarTitle": "Avatar seçin", "avatarChange": "Avatarı değiştir", "avatarPro": "Premium avatarlar", "avatarUpload": "Kendi fotoğrafını yükle", "avatarRemove": "Standart", "avatarSaved": "Avatar kaydedildi", "avatarProOnly": "Bu seçenek Premium kullanıcılar içindir", "avatarFail": "Fotoğraf yüklenemedi. Başka bir fotoğraf seçin."}, "en": {"avatarTitle": "Choose an avatar", "avatarChange": "Change avatar", "avatarPro": "Premium avatars", "avatarUpload": "Upload your own photo", "avatarRemove": "Default", "avatarSaved": "Avatar saved", "avatarProOnly": "This option is for Premium users", "avatarFail": "Couldn't load the photo. Try another one."}};
 Object.keys(I18N_AV).forEach(function (l) { Object.assign(I18N[l], I18N_AV[l]); });
 const I18N_LOG = {
-  az: { logoutConfirm: "Hesabdan çıxmaq istədiyinizə əminsiniz?", loading: "Yüklənir…", checking: "Yoxlanılır…", limitNear: "Axtarış limitinə yaxınlaşırsınız: qalıb {n}", misfitLong: "Uzundu", misfitShort: "Qısadır", misfitSensor: "Sensoru bağlayır", misfitCamera: "Kameranı bağlayır", misfitOther: "Digər…" },
-  ru: { logoutConfirm: "Вы уверены, что хотите выйти из аккаунта?", loading: "Загрузка…", checking: "Проверка…", limitNear: "Близко к лимиту поиска: осталось {n}", misfitLong: "Слишком длинное", misfitShort: "Слишком короткое", misfitSensor: "Закрывает сенсор", misfitCamera: "Закрывает камеру", misfitOther: "Другое…" },
-  tr: { logoutConfirm: "Hesaptan çıkmak istediğinize emin misiniz?", loading: "Yükleniyor…", checking: "Kontrol ediliyor…", limitNear: "Arama limitine yaklaşıyorsunuz: kalan {n}", misfitLong: "Uzun", misfitShort: "Kısa", misfitSensor: "Sensörü kapatıyor", misfitCamera: "Kamerayı kapatıyor", misfitOther: "Diğer…" },
-  en: { logoutConfirm: "Are you sure you want to sign out?", loading: "Loading…", checking: "Checking…", limitNear: "Approaching search limit: {n} left", misfitLong: "Too long", misfitShort: "Too short", misfitSensor: "Covers the sensor", misfitCamera: "Covers the camera", misfitOther: "Other…" }
+  az: { logoutConfirm: "Hesabdan çıxmaq istədiyinizə əminsiniz?", loading: "Yüklənir…", checking: "Yoxlanılır…", limitNear: "Axtarış limitinə yaxınlaşırsınız: qalıb {n}", misfitLong: "Uzundu", misfitShort: "Qısadır", misfitSensor: "Sensoru bağlayır", misfitCamera: "Kameranı bağlayır", misfitOther: "Digər…", srcOfficial: "Rəsmi ölçü", srcMeasured: "Ölçülüb", srcApprox: "Təxmini" },
+  ru: { logoutConfirm: "Вы уверены, что хотите выйти из аккаунта?", loading: "Загрузка…", checking: "Проверка…", limitNear: "Близко к лимиту поиска: осталось {n}", misfitLong: "Слишком длинное", misfitShort: "Слишком короткое", misfitSensor: "Закрывает сенсор", misfitCamera: "Закрывает камеру", misfitOther: "Другое…", srcOfficial: "Официальный размер", srcMeasured: "Измерено", srcApprox: "Примерно" },
+  tr: { logoutConfirm: "Hesaptan çıkmak istediğinize emin misiniz?", loading: "Yükleniyor…", checking: "Kontrol ediliyor…", limitNear: "Arama limitine yaklaşıyorsunuz: kalan {n}", misfitLong: "Uzun", misfitShort: "Kısa", misfitSensor: "Sensörü kapatıyor", misfitCamera: "Kamerayı kapatıyor", misfitOther: "Diğer…", srcOfficial: "Resmi ölçü", srcMeasured: "Ölçüldü", srcApprox: "Tahmini" },
+  en: { logoutConfirm: "Are you sure you want to sign out?", loading: "Loading…", checking: "Checking…", limitNear: "Approaching search limit: {n} left", misfitLong: "Too long", misfitShort: "Too short", misfitSensor: "Covers the sensor", misfitCamera: "Covers the camera", misfitOther: "Other…", srcOfficial: "Official size", srcMeasured: "Measured", srcApprox: "Approximate" }
 };
 Object.keys(I18N_LOG).forEach(function (l) { Object.assign(I18N[l], I18N_LOG[l]); });
 const PRIVACY = {"az": {"intro": "ProTechtor™ · MƏXFİLİK SİYASƏTİ VƏ İSTİFADƏ ŞƏRTLƏRİ\nProqramdan istifadə etməzdən əvvəl bütün 10 bəndi diqqətlə oxuyun.\nSon redaktə: 06.10.2026", "items": [["ÜMUMİ MÜDDƏALAR", ["Bu Məxfilik Siyasəti ProTechtor™ proqramının (bundan sonra – «Proqram») istifadəsi zamanı məlumatların toplanması, istifadəsi və mühafizəsi qaydalarını, habelə istifadəçilərin hüquq və öhdəliklərini müəyyən edir.", "Proqramın operatoru və fərdi məlumatların sahibi (bundan sonra – «Operator»): ProTechtor™ (©By Emin). Operatorla əlaqə Proqramdakı «WhatsApp ilə əlaqə» düyməsi vasitəsilə saxlanılır.", "Proqramın və bazanın mülkiyyət və müəllif hüquqları ©By Emin-ə məxsusdur.", "Proqramdan istifadə bu Siyasətin bütün şərtlərinin tam və qeyd-şərtsiz qəbul edilməsi deməkdir. Şərtlərlə razı olmayan şəxs Proqramdan istifadəni dayandırmalıdır."]], ["UYĞUNLUQ ÖLÇÜLƏRİNİN DƏQİQLİYİ (ƏSAS XƏBƏRDARLIQ)", ["Proqramda təqdim edilən qoruyucu şüşə uyğunluğu və ölçülər məlumat xarakteri daşıyır və TAM DƏQİQ OLMAYA BİLƏR. Cihaz modifikasiyaları, bölgə versiyaları, istehsal partiyaları və istehsalçı fərqləri real ölçülərə təsir edə bilər.", "İstifadəçi məhsulu satmazdan, kəsməzdən, yapışdırmazdan və ya tətbiq etməzdən əvvəl cihazın və məhsulun ölçülərini MÜSTƏQİL ŞƏKİLDƏ ÖLÇMƏLİ və uyğunluğu özü yoxlamalıdır.", "Proqramdakı məlumatlara əsaslanan qərarlara, alınmış və ya satılmış məhsullara, yarana biləcək maddi zərərə və cihazın zədələnməsinə görə məsuliyyət istifadəçiyə aiddir. Operator bu hallara görə qanunvericiliklə icazə verilən maksimal həddə məsuliyyət daşımır."]], ["TOPLANAN MƏLUMATLAR", ["Proqram yalnız qeydiyyat və ya giriş zamanı istifadəçi tərəfindən təqdim edilən və ya seçilmiş giriş üsulu ilə əldə olunan məlumatları emal edir: ləqəb, e-poçt ünvanı, telefon nömrəsi, mağaza adı və ünvanı, Google hesabının e-poçt ünvanı.", "İstifadəçinin özü seçdiyi profil şəkli və ya avatar (şəkil kiçildilmiş formada saxlanılır və yalnız istifadəçinin özünə və Operatora görünür).", "«Bu modeli bizə bildir» funksiyası ilə göndərilən model adı və göndərilmə tarixi; istifadəçi daxil olubsa, həmçinin hesabın texniki identifikatoru.", "Premium abunəlik və hesabın təhlükəsizliyi məqsədilə: ödəniş tarixi, məbləği və abunəlik müddəti; hesabın istifadə edildiyi cihazın növü (əməliyyat sistemi və brauzer) və son aktivlik vaxtı; aylıq axtarış sayı.", "«Uyğun gəlmədi» funksiyası ilə göndərilən model adı, uyğunluq qrupu və istifadəçinin qısa şərhi.", "Giriş etmədən məhdud istifadə zamanı şəxsi məlumat tələb olunmur. Proqram məkan məlumatlarını, reklam və davranış izləmə alətlərini istifadə etmir."]], ["İSTİFADƏ MƏQSƏDİ VƏ ÖTÜRÜLMƏ", ["Məlumatlar yalnız hesabın identifikasiyası, girişin təmin olunması, axtarış limitlərinin tətbiqi, profilin idarə edilməsi, əlaqə və təhlükəsizlik məqsədilə istifadə olunur.", "Məlumatlar satılmır, reklam məqsədilə istifadə edilmir və qanuni əsas olmadan üçüncü şəxslərə ötürülmür. Qanunvericiliyin tələbi ilə səlahiyyətli dövlət orqanlarına təqdim edilə bilər."]], ["YERLİ YADDAŞ", ["Proqram cihazın yerli yaddaşından (Local Storage) istifadə edir: mövzu, şrift, dil, səs və vibrasiya parametrləri, baza surəti, axtarış limiti sayğacları və son axtarışlar.", "Bu məlumatlar cihazda qalır və brauzer yaddaşı təmizləndikdə silinir."]], ["ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ", ["Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.", "Firebase xidmətlərində saxlanılan məlumatlar Google LLC-nin serverlərində, o cümlədən Azərbaycan Respublikasının hüdudlarından kənarda yerləşə bilər. Proqramdan istifadə etməklə istifadəçi məlumatlarının bu qaydada ötürülməsinə və saxlanmasına razılıq verir.", "Operator üçüncü tərəf xidmətlərinin fəaliyyətinə və qaydalarına görə məsuliyyət daşımır.", "Premium istifadəçilər üçün AI köməkçi Google Gemini (Firebase AI Logic) xidməti vasitəsilə işləyir: köməkçiyə yazılan suallar cavab hazırlanması üçün Google-a ötürülür və Google tərəfindən xidmətin təkmilləşdirilməsi üçün istifadə oluna bilər. Köməkçiyə şəxsi məlumat yazmayın."]], ["MƏLUMATLARIN MÜHAFİZƏSİ VƏ İSTİFADƏÇİ HÜQUQLARI", ["Operator məlumatların qorunması üçün məqbul texniki və təşkilati tədbirlər görür. İnternet üzərindən ötürmənin mütləq təhlükəsizliyi təmin edilə bilməz.", "Məlumatlar hesab aktiv olduğu müddətdə saxlanılır. İstifadəçi öz məlumatlarına baxmaq, onları düzəltmək (Profil bölməsi) və silinməsini tələb etmək hüququna malikdir.", "Məlumatlara baxmaq, düzəltmək və ya silmək barədə müraciətlər Operatora Proqramdakı «WhatsApp ilə əlaqə» düyməsi vasitəsilə göndərilir."]], ["UŞAQLARIN HÜQUQLARI", ["Qeydiyyat yalnız 18 yaşı tamam olmuş şəxslər üçün nəzərdə tutulub. 18 yaşınadək şəxslərin məlumatları qanuni nümayəndənin (valideyn, himayəçi) razılığı olmadan toplanmır.", "Operator uşaqlardan məlumatı bilərəkdən toplamır. Belə məlumatın aşkar edilməsi halında o, dərhal silinir. Valideyn və ya qanuni nümayəndə uşağa aid məlumatın silinməsini istənilən vaxt tələb edə bilər."]], ["MAĞAZA İSTİFADƏÇİLƏRİNİN HÜQUQ VƏ ÖHDƏLİKLƏRİ", ["Mağaza adı, ünvanı və telefon nömrəsi dəqiq və aktual olmalıdır. Saxta məlumatla və ya üçüncü şəxsin adından qeydiyyat qadağandır.", "Mağaza öz müştəriləri qarşısında satış, zəmanət və geri qaytarma üzrə məsuliyyəti özü daşıyır. Proqram mağaza ilə müştəri arasındakı münasibətlərin tərəfi deyil.", "Mağaza öz profil məlumatlarını idarə etmək, düzəltmək və silinməsini tələb etmək hüququna malikdir. Qaydalar pozulduqda, sui-istifadə və ya bazanın icazəsiz surətinin çıxarılması halında Operator hesabı məhdudlaşdırmaq və ya silmək hüququnu saxlayır.", "Axtarış üçün qeydiyyat və daxil olmaq tələb olunur; qeydiyyatlı istifadəçiyə hər ay 30 pulsuz axtarış verilir. E-poçtla qeydiyyatdan keçən istifadəçi e-poçt ünvanını təsdiqləməlidir. Premium abunəliyin qiymətləri: 1 ay — 3 AZN, 3 ay — 8 AZN, 6 ay — 15 AZN, 1 il — 25 AZN. Aktiv abunəlik uzadıldıqda yeni müddət qalan günlərin üzərinə əlavə olunur. Premium limitsiz axtarış imkanı verir və ödəniş təsdiqləndikdən sonra Operator tərəfindən aktivləşdirilir. Abunəlik bitdikdən sonra 3 günlük güzəşt müddəti tətbiq olunur. Bir hesab eyni anda ən çox 2 cihazda istifadə oluna bilər. Yeni qeydiyyatdan keçən istifadəçiyə bir dəfə 14 günlük pulsuz Premium sınaq müddəti verilir.", "Hesab bloklandıqda və ya silindikdə bunun səbəbi istifadəçiyə Proqramda göstərilir. İstifadəçi bu qərarla bağlı Operatora müraciət edə bilər. Bloklama müəyyən müddətə və ya müddətsiz ola bilər."]], ["MƏSULİYYƏT, DƏYİŞİKLİKLƏR VƏ HÜQUQİ TƏNZİMLƏMƏ", ["Baza ardıcıl 3 (üç) gün yenilənmədikdə Proqramın fəaliyyəti avtomatik məhdudlaşdırılır; bərpa üçün internetə qoşulub bazanı yeniləmək lazımdır.", "ProTechtor™ adı, Proqram, baza və dizayn ©By Emin-in mülkiyyətidir. İcazəsiz surətçıxarma, yayma və kommersiya məqsədilə istifadə qadağandır.", "Operator Siyasətə birtərəfli qaydada dəyişiklik etmək hüququnu saxlayır; yeni redaksiya Proqramda dərc edildiyi andan qüvvəyə minir. Münasibətlər Azərbaycan Respublikasının qüvvədə olan qanunvericiliyi ilə tənzimlənir."]]], "foot": "ProTechtor™ · ©By Emin · Bütün hüquqlar qorunur. · Son redaktə: 06.10.2026"}, "ru": {"intro": "ProTechtor™ · ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ И УСЛОВИЯ ИСПОЛЬЗОВАНИЯ\nПеред использованием приложения внимательно прочитайте все 10 пунктов.\nПоследняя редакция: 06.10.2026", "foot": "ProTechtor™ · ©By Emin · Все права защищены. · Последняя редакция: 06.10.2026", "items": [["ОБЩИЕ ПОЛОЖЕНИЯ", ["Настоящая Политика конфиденциальности определяет правила сбора, использования и защиты данных при использовании приложения ProTechtor™ (далее — «Приложение»), а также права и обязанности пользователей.", "Оператор Программы и обладатель персональных данных (далее – «Оператор»): ProTechtor™ (©By Emin). Связь с Оператором осуществляется через кнопку «Связаться в WhatsApp» в Программе.", "Права собственности и авторские права на Приложение и его базу данных принадлежат ©By Emin.", "Использование Приложения означает полное и безоговорочное принятие всех условий настоящей Политики. Лицо, не согласное с условиями, должно прекратить использование Приложения."]], ["ТОЧНОСТЬ ДАННЫХ О СОВМЕСТИМОСТИ И РАЗМЕРАХ (ГЛАВНОЕ ПРЕДУПРЕЖДЕНИЕ)", ["Информация о совместимости и размерах защитных стёкол, представленная в Приложении, носит справочный характер и МОЖЕТ БЫТЬ НЕ ПОЛНОСТЬЮ ТОЧНОЙ. Модификации устройств, региональные версии, производственные партии и различия между производителями могут влиять на фактические размеры.", "Перед продажей, нарезкой, наклеиванием или применением продукта пользователь ОБЯЗАН САМОСТОЯТЕЛЬНО ИЗМЕРИТЬ устройство и продукт и лично проверить совместимость.", "Ответственность за решения, принятые на основании информации в Приложении, за приобретённые или проданные товары, а также за возможный материальный ущерб и повреждение устройства лежит на пользователе. В максимально допустимой законом степени Оператор не несёт ответственности в таких случаях."]], ["СОБИРАЕМЫЕ ДАННЫЕ", ["Приложение обрабатывает только данные, предоставленные пользователем при регистрации или входе либо полученные через выбранный способ входа: псевдоним, адрес электронной почты, номер телефона, название и адрес магазина, адрес электронной почты аккаунта Google.", "Фото профиля или аватар, выбранные самим пользователем (фото хранится в уменьшенном виде и видно только самому пользователю и Оператору).", "Название модели и дата отправки, переданные через функцию «Сообщить об этой модели»; если пользователь вошёл в аккаунт — также технический идентификатор аккаунта.", "В целях Премиум-подписки и безопасности аккаунта: дата, сумма и срок оплаты подписки; тип устройства, на котором используется аккаунт (операционная система и браузер), и время последней активности; количество поисков за месяц.", "Название модели, группа совместимости и краткий комментарий пользователя, отправленные через функцию «Не подошло».", "При ограниченном использовании без входа персональные данные не запрашиваются. Приложение не использует данные о местоположении, рекламные инструменты и инструменты отслеживания поведения."]], ["ЦЕЛИ ИСПОЛЬЗОВАНИЯ И ПЕРЕДАЧА ДАННЫХ", ["Данные используются исключительно для идентификации аккаунта, обеспечения входа, применения лимитов поиска, управления профилем, связи и обеспечения безопасности.", "Данные не продаются, не используются в рекламных целях и не передаются третьим лицам без законных оснований. Они могут быть предоставлены уполномоченным государственным органам в случаях, предусмотренных законодательством."]], ["ЛОКАЛЬНОЕ ХРАНИЛИЩЕ", ["Приложение использует локальное хранилище устройства (Local Storage): тему, размер шрифта, язык, настройки звука и вибрации, копию базы данных, счётчики лимита поиска и последние запросы.", "Эти данные остаются на устройстве и удаляются при очистке памяти браузера."]], ["СТОРОННИЕ СЕРВИСЫ", ["Приложение использует сервисы Google Firebase (Authentication и Firestore) и вход через аккаунт Google. При переходе в WhatsApp дальнейший процесс регулируется правилами этой платформы.", "Данные, хранящиеся в сервисах Firebase, могут размещаться на серверах Google LLC, в том числе за пределами Азербайджанской Республики. Используя Приложение, пользователь соглашается на такую передачу и хранение своих данных.", "Оператор не несёт ответственности за работу и правила сторонних сервисов.", "AI-помощник для Премиум-пользователей работает через сервис Google Gemini (Firebase AI Logic): вопросы, отправленные помощнику, передаются в Google для подготовки ответа и могут использоваться Google для улучшения сервиса. Не сообщайте помощнику личные данные."]], ["ЗАЩИТА ДАННЫХ И ПРАВА ПОЛЬЗОВАТЕЛЕЙ", ["Оператор принимает разумные технические и организационные меры для защиты данных. Абсолютная безопасность передачи данных через интернет не может быть гарантирована.", "Данные хранятся, пока аккаунт активен. Пользователь вправе просматривать свои данные, исправлять их (в разделе «Профиль») и требовать их удаления.", "Запросы на просмотр, исправление или удаление данных направляются Оператору через кнопку «Связаться в WhatsApp» в Программе."]], ["ПРАВА ДЕТЕЙ", ["Регистрация предназначена только для лиц, достигших 18 лет. Данные лиц младше 18 лет не собираются без согласия законного представителя (родителя, опекуна).", "Оператор не собирает данные детей сознательно. В случае обнаружения таких данных они немедленно удаляются. Родитель или законный представитель может в любое время потребовать удаления данных ребёнка."]], ["ПРАВА И ОБЯЗАННОСТИ МАГАЗИНОВ", ["Название, адрес и номер телефона магазина должны быть точными и актуальными. Регистрация с ложными данными или от имени третьего лица запрещена.", "Магазин самостоятельно несёт ответственность перед своими клиентами за продажу, гарантию и возврат. Приложение не является стороной отношений между магазином и клиентами.", "Магазин вправе управлять данными своего профиля, исправлять их и требовать их удаления. В случае нарушения правил, злоупотреблений или несанкционированного копирования базы данных Оператор оставляет за собой право ограничить или удалить аккаунт.", "Для поиска необходимо зарегистрироваться и войти; зарегистрированному пользователю доступно 30 бесплатных поисков в месяц. Пользователь, зарегистрированный по e-mail, должен подтвердить адрес электронной почты. Цены Премиум-подписки: 1 месяц — 3 AZN, 3 месяца — 8 AZN, 6 месяцев — 15 AZN, 1 год — 25 AZN. При продлении активной подписки новый срок добавляется к оставшимся дням. Премиум даёт безлимитный поиск и активируется Оператором после подтверждения оплаты. После окончания подписки действует льготный период 3 дня. Один аккаунт можно использовать одновременно не более чем на 2 устройствах. Новому зарегистрированному пользователю однократно предоставляется бесплатный пробный период Премиум на 14 дней.", "При блокировке или удалении аккаунта причина отображается пользователю в Приложении. Пользователь может обратиться к Оператору по поводу этого решения. Блокировка может быть временной или бессрочной."]], ["ОТВЕТСТВЕННОСТЬ, ИЗМЕНЕНИЯ И ПРИМЕНИМОЕ ПРАВО", ["Если база данных не обновляется 3 (три) дня подряд, работа Приложения автоматически ограничивается; для восстановления необходимо подключиться к интернету и обновить базу.", "Название ProTechtor™, Приложение, база данных и дизайн являются собственностью ©By Emin. Несанкционированное копирование, распространение и коммерческое использование запрещены.", "Оператор оставляет за собой право в одностороннем порядке вносить изменения в Политику; новая редакция вступает в силу с момента публикации в Приложении. Отношения регулируются действующим законодательством Азербайджанской Республики."]]]}, "tr": {"intro": "ProTechtor™ · GİZLİLİK POLİTİKASI VE KULLANIM KOŞULLARI\nUygulamayı kullanmadan önce 10 maddenin tamamını dikkatle okuyunuz.\nSon düzenleme: 06.10.2026", "foot": "ProTechtor™ · ©By Emin · Tüm hakları saklıdır. · Son düzenleme: 06.10.2026", "items": [["GENEL HÜKÜMLER", ["Bu Gizlilik Politikası, ProTechtor™ uygulamasının (bundan sonra “Uygulama”) kullanımı sırasında verilerin toplanması, kullanılması ve korunmasına ilişkin kuralları ile kullanıcıların hak ve yükümlülüklerini belirler.", "Uygulamanın operatörü ve kişisel verilerin sorumlusu (bundan sonra – «Operatör»): ProTechtor™ (©By Emin). Operatörle iletişim Uygulamadaki «WhatsApp ile iletişim» düğmesi üzerinden sağlanır.", "Uygulamanın ve veri tabanının mülkiyet ve telif hakları ©By Emin'e aittir.", "Uygulamanın kullanılması, bu Politikanın tüm koşullarının tam ve kayıtsız şartsız kabul edildiği anlamına gelir. Koşulları kabul etmeyen kişi Uygulamayı kullanmayı bırakmalıdır."]], ["UYUMLULUK VE ÖLÇÜ BİLGİLERİNİN DOĞRULUĞU (ÖNEMLİ UYARI)", ["Uygulamada sunulan cam koruyucu uyumluluğu ve ölçü bilgileri bilgilendirme niteliğindedir ve TAM DOĞRU OLMAYABİLİR. Cihaz modifikasyonları, bölgesel sürümler, üretim partileri ve üretici farklılıkları gerçek ölçüleri etkileyebilir.", "Kullanıcı, ürünü satmadan, kesmeden, yapıştırmadan veya uygulamadan önce cihazın ve ürünün ölçülerini KENDİSİ ÖLÇMELİ ve uyumluluğu bizzat kontrol etmelidir.", "Uygulamadaki bilgilere dayanarak verilen kararlardan, satın alınan veya satılan ürünlerden, ortaya çıkabilecek maddi zarardan ve cihazın hasar görmesinden kullanıcı sorumludur. İşletmeci, bu durumlardan dolayı yasaların izin verdiği azami ölçüde sorumluluk kabul etmez."]], ["TOPLANAN VERİLER", ["Uygulama yalnızca kayıt veya giriş sırasında kullanıcı tarafından sağlanan ya da seçilen giriş yöntemiyle elde edilen verileri işler: takma ad, e-posta adresi, telefon numarası, mağaza adı ve adresi, Google hesabının e-posta adresi.", "Kullanıcının kendi seçtiği profil fotoğrafı veya avatar (fotoğraf küçültülmüş biçimde saklanır ve yalnızca kullanıcının kendisine ve İşletmeciye görünür).", "“Bu modeli bize bildir” işleviyle gönderilen model adı ve gönderim tarihi; kullanıcı giriş yaptıysa ayrıca hesabın teknik tanımlayıcısı.", "Premium abonelik ve hesap güvenliği amacıyla: ödeme tarihi, tutarı ve abonelik süresi; hesabın kullanıldığı cihazın türü (işletim sistemi ve tarayıcı) ve son etkinlik zamanı; aylık arama sayısı.", "“Uymadı” işleviyle gönderilen model adı, uyumluluk grubu ve kullanıcının kısa yorumu.", "Giriş yapmadan sınırlı kullanımda kişisel veri istenmez. Uygulama konum verilerini, reklam ve davranış izleme araçlarını kullanmaz."]], ["KULLANIM AMACI VE AKTARIM", ["Veriler yalnızca hesabın tanımlanması, girişin sağlanması, arama sınırlarının uygulanması, profilin yönetilmesi, iletişim ve güvenlik amacıyla kullanılır.", "Veriler satılmaz, reklam amacıyla kullanılmaz ve hukuki dayanak olmaksızın üçüncü kişilere aktarılmaz. Mevzuatın gerektirdiği hâllerde yetkili devlet kurumlarına sunulabilir."]], ["YEREL DEPOLAMA", ["Uygulama, cihazın yerel depolama alanını (Local Storage) kullanır: tema, yazı boyutu, dil, ses ve titreşim ayarları, veri tabanı kopyası, arama sınırı sayaçları ve son aramalar.", "Bu veriler cihazda kalır ve tarayıcı belleği temizlendiğinde silinir."]], ["ÜÇÜNCÜ TARAF HİZMETLERİ", ["Uygulama, Google Firebase (Authentication ve Firestore) hizmetlerini ve Google hesabıyla girişi kullanır. WhatsApp'a geçiş yapıldığında süreç söz konusu platformun kurallarına tabi olur.", "Firebase hizmetlerinde saklanan veriler, Azerbaycan Cumhuriyeti sınırları dışında da dahil olmak üzere Google LLC sunucularında bulunabilir. Uygulamayı kullanarak kullanıcı, verilerinin bu şekilde aktarılmasına ve saklanmasına onay verir.", "İşletmeci, üçüncü taraf hizmetlerinin işleyişinden ve kurallarından sorumlu değildir.", "Premium kullanıcılar için AI asistan Google Gemini (Firebase AI Logic) hizmeti üzerinden çalışır: asistana yazılan sorular yanıt hazırlamak için Google'a iletilir ve Google tarafından hizmeti geliştirmek için kullanılabilir. Asistana kişisel bilgi yazmayın."]], ["VERİLERİN KORUNMASI VE KULLANICI HAKLARI", ["İşletmeci, verilerin korunması için makul teknik ve idari tedbirler alır. İnternet üzerinden iletimin mutlak güvenliği garanti edilemez.", "Veriler hesap etkin olduğu sürece saklanır. Kullanıcı, verilerini görme, düzeltme (Profil bölümünde) ve silinmesini talep etme hakkına sahiptir.", "Verileri görüntüleme, düzeltme veya silme talepleri Operatöre Uygulamadaki «WhatsApp ile iletişim» düğmesi üzerinden iletilir."]], ["ÇOCUKLARIN HAKLARI", ["Kayıt yalnızca 18 yaşını doldurmuş kişiler için öngörülmüştür. 18 yaşın altındaki kişilerin verileri yasal temsilcinin (ebeveyn, vasi) onayı olmaksızın toplanmaz.", "İşletmeci çocuklardan bilerek veri toplamaz. Bu tür bir verinin tespit edilmesi hâlinde veri derhal silinir. Ebeveyn veya yasal temsilci, çocuğa ait verinin silinmesini her zaman talep edebilir."]], ["MAĞAZA KULLANICILARININ HAK VE YÜKÜMLÜLÜKLERİ", ["Mağaza adı, adresi ve telefon numarası doğru ve güncel olmalıdır. Sahte bilgilerle veya üçüncü bir kişi adına kayıt yaptırmak yasaktır.", "Mağaza, müşterilerine karşı satış, garanti ve iade konularındaki sorumluluğu kendisi taşır. Uygulama, mağaza ile müşteri arasındaki ilişkilerin tarafı değildir.", "Mağaza, profil verilerini yönetme, düzeltme ve silinmesini talep etme hakkına sahiptir. Kuralların ihlali, kötüye kullanım veya veri tabanının izinsiz kopyalanması hâlinde İşletmeci hesabı kısıtlama veya silme hakkını saklı tutar.", "Arama için kayıt olmak ve giriş yapmak gerekir; kayıtlı kullanıcıya her ay 30 ücretsiz arama verilir. E-posta ile kayıt olan kullanıcı e-posta adresini doğrulamalıdır. Premium abonelik fiyatları: 1 ay — 3 AZN, 3 ay — 8 AZN, 6 ay — 15 AZN, 1 yıl — 25 AZN. Aktif abonelik uzatıldığında yeni süre kalan günlerin üzerine eklenir. Premium sınırsız arama imkânı sağlar ve ödeme onaylandıktan sonra İşletmeci tarafından etkinleştirilir. Abonelik bittikten sonra 3 günlük ek süre uygulanır. Bir hesap aynı anda en fazla 2 cihazda kullanılabilir. Yeni kayıt olan kullanıcıya bir kez 14 günlük ücretsiz Premium deneme süresi verilir.", "Hesap engellendiğinde veya silindiğinde nedeni kullanıcıya Uygulamada gösterilir. Kullanıcı bu kararla ilgili İşletmeciye başvurabilir. Engelleme belirli bir süre için veya süresiz olabilir."]], ["SORUMLULUK, DEĞİŞİKLİKLER VE UYGULANACAK HUKUK", ["Veri tabanı art arda 3 (üç) gün güncellenmezse Uygulamanın çalışması otomatik olarak kısıtlanır; yeniden çalıştırmak için internete bağlanıp veri tabanını güncellemek gerekir.", "ProTechtor™ adı, Uygulama, veri tabanı ve tasarım ©By Emin'in mülkiyetindedir. İzinsiz kopyalama, dağıtma ve ticari amaçla kullanma yasaktır.", "İşletmeci, Politikada tek taraflı değişiklik yapma hakkını saklı tutar; yeni sürüm Uygulamada yayımlandığı andan itibaren yürürlüğe girer. İlişkiler, Azerbaycan Cumhuriyeti'nin yürürlükteki mevzuatıyla düzenlenir."]]]}, "en": {"intro": "ProTechtor™ · PRIVACY POLICY AND TERMS OF USE\nPlease read all 10 clauses carefully before using the application.\nLast revised: 06.10.2026", "foot": "ProTechtor™ · ©By Emin · All rights reserved. · Last revised: 06.10.2026", "items": [["GENERAL PROVISIONS", ["This Privacy Policy sets out the rules for the collection, use and protection of data when using the ProTechtor™ application (hereinafter, the “Application”), as well as the rights and obligations of users.", "The operator of the App and controller of personal data (hereinafter the “Operator”): ProTechtor™ (©By Emin). The Operator can be contacted via the “Contact on WhatsApp” button in the App.", "The ownership and copyright of the Application and its database belong to ©By Emin.", "Use of the Application constitutes full and unconditional acceptance of all terms of this Policy. A person who does not agree with these terms must stop using the Application."]], ["ACCURACY OF COMPATIBILITY AND SIZE DATA (MAIN WARNING)", ["The screen protector compatibility and size information provided in the Application is for reference only and MAY NOT BE FULLY ACCURATE. Device modifications, regional versions, production batches and manufacturer differences may affect actual dimensions.", "Before selling, cutting, attaching or applying a product, the user MUST MEASURE the device and the product INDEPENDENTLY and verify compatibility personally.", "Responsibility for decisions based on the information in the Application, for products purchased or sold, and for any financial loss or damage to a device that may result lies with the user. To the maximum extent permitted by law, the Operator bears no liability for such cases."]], ["DATA COLLECTED", ["The Application processes only the data provided by the user during registration or login, or obtained through the chosen login method: nickname, email address, phone number, store name and address, the email address of the Google account.", "A profile photo or avatar chosen by the user (the photo is stored in a reduced size and is visible only to the user and the Operator).", "The model name and submission date sent via the “Report this model to us” function and, if the user is signed in, the account's technical identifier.", "For the Premium subscription and account security: payment date, amount and subscription period; the type of device the account is used on (operating system and browser) and the last activity time; the monthly number of searches.", "The model name, compatibility group and the user's short comment sent via the “Didn't fit” function.", "Limited use without logging in does not require personal data. The Application does not use location data, advertising or behavioural tracking tools."]], ["PURPOSE OF USE AND DISCLOSURE", ["Data is used solely for account identification, providing access, applying search limits, managing the profile, communication and security.", "Data is not sold, is not used for advertising, and is not disclosed to third parties without a lawful basis. It may be provided to authorised state bodies where required by law."]], ["LOCAL STORAGE", ["The Application uses the device's local storage (Local Storage): theme, font, language, sound and vibration settings, a copy of the database, search limit counters and recent searches.", "This data remains on the device and is deleted when the browser storage is cleared."]], ["THIRD-PARTY SERVICES", ["The Application uses Google Firebase services (Authentication and Firestore) and Google account sign-in. When you switch to WhatsApp, the process is governed by the rules of that platform.", "Data stored in Firebase services may be located on servers of Google LLC, including outside the Republic of Azerbaijan. By using the Application, the user consents to such transfer and storage of their data.", "The Operator is not responsible for the operation or rules of third-party services.", "The AI assistant for Premium users runs on Google Gemini (Firebase AI Logic): questions sent to the assistant are passed to Google to generate a reply and may be used by Google to improve its services. Do not share personal data with the assistant."]], ["DATA PROTECTION AND USER RIGHTS", ["The Operator takes reasonable technical and organisational measures to protect data. The absolute security of transmission over the internet cannot be guaranteed.", "Data is kept while the account is active. The user has the right to view their data, correct it (in the Profile section) and request its deletion.", "Requests to view, correct or delete data are sent to the Operator via the “Contact on WhatsApp” button in the App."]], ["RIGHTS OF CHILDREN", ["Registration is intended only for persons who have reached 18 years of age. Data of persons under 18 is not collected without the consent of a legal representative (parent or guardian).", "The Operator does not knowingly collect data from children. If such data is discovered, it is deleted immediately. A parent or legal representative may request deletion of a child's data at any time."]], ["RIGHTS AND OBLIGATIONS OF STORE USERS", ["The store name, address and phone number must be accurate and up to date. Registration with false information or in the name of a third party is prohibited.", "The store is itself responsible to its customers for sales, warranty and returns. The Application is not a party to relations between a store and its customers.", "A store has the right to manage and correct its profile data and to request its deletion. In case of violations, abuse or unauthorised copying of the database, the Operator reserves the right to restrict or delete the account.", "Searching requires registering and signing in; registered users get 30 free searches per month. Users who register by email must verify their email address. Premium prices: 1 month — 3 AZN, 3 months — 8 AZN, 6 months — 15 AZN, 1 year — 25 AZN. When an active subscription is extended, the new period is added to the remaining days. Premium provides unlimited searches and is activated by the Operator after the payment is confirmed. A 3-day grace period applies after the subscription ends. An account can be used on at most 2 devices at the same time. Newly registered users receive a one-time 14-day free Premium trial.", "If an account is blocked or deleted, the reason is shown to the user in the Application. The user may contact the Operator regarding this decision. A block may be temporary or indefinite."]], ["LIABILITY, CHANGES AND GOVERNING LAW", ["If the database is not updated for 3 (three) consecutive days, the operation of the Application is automatically restricted; to restore it, connect to the internet and update the database.", "The ProTechtor™ name, the Application, the database and the design are the property of ©By Emin. Unauthorised copying, distribution and commercial use are prohibited.", "The Operator reserves the right to amend the Policy unilaterally; the new version takes effect upon publication in the Application. Relations are governed by the applicable legislation of the Republic of Azerbaijan."]]]}};
@@ -9014,6 +9244,13 @@ function setLang(l, save) {
     if (!I18N[l]) l = "az";
     currentLang = l;
     if (save !== false) { try { localStorage.setItem(LANG_KEY, l); } catch (e) {} }
+    // save language to user profile so admin templates arrive in their language
+    try {
+        const u = auth && auth.currentUser;
+        if (u && !u.isAnonymous && db) {
+            db.collection("users").doc(u.uid).set({ lang: l }, { merge: true }).catch(function () {});
+        }
+    } catch (e) {}
     applyLang();
 }
 
