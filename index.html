@@ -2959,8 +2959,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (doc.exists) {
                         var d = doc.data() || {};
                         if (isBlockActive(d)) {
-                            appAlert(blockMessage(d), "", "⛔");
-                            auth.signOut();
+                            if (window.ptBlockedShow && !d.deleted) { ptBlockedShow(d); }
+                            else { appAlert(blockMessage(d), "", "⛔"); auth.signOut(); }
                         }
                     }
                 }).catch(function () {});
@@ -8441,6 +8441,11 @@ function loginUser() {
                 if (doc.exists) {
                     var d = doc.data() || {};
                     if (isBlockActive(d) || d.deleted) {
+                        if (window.ptBlockedShow && !d.deleted) {
+                            ptBlockedShow(d);
+                            document.getElementById("auth-modal").style.display = "none";
+                            return;
+                        }
                         appAlert(blockMessage(d), "", "⛔");
                         return auth.signOut();
                     }
@@ -9447,7 +9452,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3";
+const APP_VERSION = "3.2.0";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10402,6 +10407,626 @@ function checkBlockStatus() {
 
 setInterval(checkBlockStatus, 60 * 1000);
 </script>
+
+<!-- ===== ProTechtor EXT v1 (müstəqil blok: əsas skriptdən asılı olmayaraq yüklənir) ===== -->
+<style id="pt-ext-css">
+/* admin: istifadəçi kartı Android menyu kimi (aşağı açılmır) */
+.au-item .au-body{display:none!important}
+#pt-sheet{position:fixed;inset:0;z-index:2300;display:none;background:rgba(0,0,0,.55)}
+#pt-sheet.show{display:block}
+#pt-sheet .pt-sh{position:absolute;left:0;right:0;bottom:0;max-height:82vh;overflow-y:auto;background:var(--surface);border-top:2px solid var(--accent-color,var(--gold));border-radius:22px 22px 0 0;padding:8px 0 calc(14px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .22s ease}
+#pt-sheet.show .pt-sh{transform:translateY(0)}
+.pt-grab{width:42px;height:4px;border-radius:4px;background:var(--border);margin:4px auto 10px}
+.pt-sh-h{padding:2px 20px 8px;display:flex;flex-direction:column;gap:2px}
+.pt-sh-h b{font-size:17px;color:var(--text)}.pt-sh-h small{color:var(--muted);font-size:12px}
+.pt-sh-i{padding:0 20px 8px;font-size:12px;color:var(--muted);line-height:1.6}
+.pt-sh-i .au-info{margin:2px 0}
+.pt-note{margin:4px 16px 8px;padding:9px 12px;border-radius:12px;background:rgba(212,175,55,.14);border:1px dashed var(--gold);font-size:12.5px;color:var(--text);white-space:pre-wrap}
+.pt-mi{display:flex;align-items:center;width:100%;min-height:50px;padding:0 22px;background:transparent;border:0;border-top:1px solid var(--border);color:var(--text);font-size:15px;text-align:left;font-family:inherit;cursor:pointer}
+.pt-mi:active{background:var(--result-hover)}
+.pt-mi.danger{color:#e74c3c}.pt-mi.ok{color:#2ecc71}.pt-mi.soft{color:var(--muted)}
+/* admin alətlər */
+.pt-adm-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 12px}
+.pt-adm-row button{min-height:46px;border-radius:14px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;padding:8px}
+/* modal */
+#pt-modal{position:fixed;inset:0;z-index:2400;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);padding:14px}
+#pt-modal.show{display:flex}
+.pt-mb{width:100%;max-width:420px;max-height:90vh;overflow-y:auto;background:var(--surface);border:2px solid var(--accent-color,var(--gold));border-radius:20px;padding:16px}
+.pt-mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--text)}
+.pt-x{background:none;border:0;color:var(--muted);font-size:26px;line-height:1;cursor:pointer}
+.pt-mc input,.pt-mc textarea,.pt-mc select{width:100%;box-sizing:border-box;margin:5px 0;padding:10px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:inherit;font-size:14px}
+.pt-mc textarea{min-height:60px;resize:vertical}
+.pt-mut{color:var(--muted);font-size:12px;margin:4px 0 8px;line-height:1.5}
+.pt-r{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text)}
+.pt-r button{background:none;border:0;font-size:16px;cursor:pointer;color:var(--muted)}
+.pt-pri{width:100%;min-height:44px;margin-top:8px;border-radius:12px;border:0;background:var(--gold);color:#111;font-weight:800;font-family:inherit;cursor:pointer}
+.pt-chip{display:inline-block;margin:3px 4px 0 0;padding:5px 10px;border-radius:14px;background:var(--surface-2);border:1px solid var(--border);font-size:12px;color:var(--text);cursor:pointer}
+/* bloklanmış istifadəçi ekranı */
+#pt-blk{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;background:var(--bg);padding:24px;text-align:center}
+#pt-blk.show{display:flex}
+.pt-blk-box{max-width:360px;width:100%;color:var(--text)}
+.pt-blk-box h3{margin:8px 0}
+#pt-blk-cd{font-size:34px;font-weight:800;letter-spacing:1px;color:var(--orange,#ff5722);margin:14px 0 4px;font-variant-numeric:tabular-nums}
+.pt-blk-box button{margin-top:18px;min-height:46px;padding:0 22px;border-radius:14px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:inherit;font-weight:700;cursor:pointer}
+/* uyğun gəldi / yoxlanılıb */
+#pt-fit{display:flex;flex-direction:column;align-items:center;gap:8px;margin:10px 16px 4px}
+.pt-fit-badge{font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:14px;background:rgba(46,204,113,.14);color:#2ecc71}
+.pt-fit-badge.top{background:rgba(212,175,55,.16);color:var(--gold)}
+.pt-fit-badge.low{background:var(--surface-2);color:var(--muted);font-weight:600}
+.pt-fit-btn{min-height:42px;padding:0 20px;border-radius:14px;border:1px solid #2ecc71;background:transparent;color:#2ecc71;font-weight:700;font-family:inherit;cursor:pointer}
+.pt-fit-btn.done{opacity:.55}
+.pt-vf{color:#2ecc71;font-weight:800;margin-right:6px;font-size:14px}
+/* yeniləmə var */
+#pt-upd{position:fixed;left:10px;right:10px;top:calc(8px + env(safe-area-inset-top,0px));z-index:2600;display:none;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--gold);color:#111;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+#pt-upd.show{display:flex}#pt-upd span{flex:1}
+#pt-upd button{border:0;border-radius:10px;padding:8px 12px;font-weight:800;font-family:inherit;cursor:pointer;background:#111;color:#fff}
+#pt-upd .x{background:transparent;color:#111;font-size:20px;padding:0 6px}
+/* tək əl rejimi */
+body.pt-oh .search-wrapper{position:fixed;left:0;right:0;bottom:0;margin:0;z-index:60;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--header-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--border);box-sizing:border-box}
+body.pt-oh #main-view .main-content{padding-bottom:96px}
+body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + env(safe-area-inset-bottom,0px));z-index:59;max-height:38vh;overflow:auto;background:var(--surface)}
+</style>
+
+<script id="pt-ext">
+(function () {
+"use strict";
+try {
+
+/* ---------- köməkçilər ---------- */
+function $(i) { return document.getElementById(i); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function L() { return (typeof currentLang !== "undefined" && currentLang) || "az"; }
+function T(k) { return (typeof t === "function") ? t(k) : k; }
+function toast(m, d) { try { showAppToast(m, d); } catch (e) {} }
+function jget(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+function jset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function fire() { return typeof db !== "undefined" && db; }
+function me() { try { return auth.currentUser; } catch (e) { return null; } }
+function two(n) { return ("0" + n).slice(-2); }
+function hash(s) { var x = 5381; for (var i = 0; i < s.length; i++) x = ((x << 5) + x + s.charCodeAt(i)) | 0; return (x >>> 0).toString(36); }
+function allModels() { var o = []; try { database.forEach(function (g) { if (Array.isArray(g)) g.forEach(function (m) { o.push(m); }); }); } catch (e) {} return o; }
+
+/* ---------- 4 dilli mətnlər ---------- */
+var X = {
+az: { pxDear: "Hörmətli istifadəçi", pxBlkTitle: "Hesabınız müvəqqəti məhdudlaşdırılıb", pxBlkReason: "Səbəb:", pxBlkLeft: "Blokun bitməsinə qalıb", pxBlkPerm: "Blok müddətsizdir", pxBlkDone: "Blok müddəti bitdi ✓", pxD: "gün",
+  pxNewM: "Yeniliklər: {n} yeni model əlavə olundu — {m}", pxFit: "✓ Uyğun gəldi", pxFitThx: "Təşəkkür edirik! Təsdiqiniz qeyd olundu", pxFitDup: "Bu modeli artıq təsdiq etmisiniz", pxFitAcc: "Təsdiq üçün daxil olun və ya qeydiyyatdan keçin",
+  pxFitV: "Yoxlanılıb · {n} təsdiq", pxFitTop: "Çox yoxlanılıb · {n} təsdiq", pxFitN: "{n} nəfər uyğun olduğunu təsdiqləyib",
+  pxOH: "Tək əl rejimi", pxOHd: "Axtarış sahəsi ekranın aşağısına keçir", pxUpd: "🔄 Yeniləmə var — v{v}", pxUpdBtn: "Yenilə", pxUpdN: "Yeni versiya mövcuddur (v{v}). Yeniləmək üçün tətbiqi yenidən yükləyin.",
+  pxTools: "ƏLAVƏ ALƏTLƏR", pxAlias: "🔤 Model alias", pxGroup: "📣 Qrup bildirişi", pxHol: "🎉 Bayramlar", pxSave: "Yadda saxla", pxCancel: "Bağla",
+  pxAliasH: "İstifadəçi alternativ adı yazdıqda (məs. «s23 ultra») avtomatik əsas modelə yönləndirilir.", pxAliasA: "Alternativ ad (məs: s23 ultra)", pxAliasM: "Əsas model adı", pxAliasAdd: "+ Əlavə et", pxAliasBad: "Model bazada tapılmadı", pxAliasSaved: "Alias-lar yadda saxlandı ✓",
+  pxAud: "Hədəf qrup", pxAudAll: "Hamı", pxAudPro: "Yalnız Premium", pxAudFree: "Premium olmayanlar", pxVarH: "{ad} yazsanız istifadəçinin adı əvəz olunur. Ad yoxdursa «Hörmətli istifadəçi» yazılır.", pxMsgPh: "Mesaj mətni... (az)", pxSend: "Göndər", pxSentN: "{n} istifadəçiyə göndərildi", pxNoUsers: "Hədəf istifadəçi tapılmadı. İstifadəçilər yüklənir, bir az sonra yenidən cəhd edin.", pxConfirmN: "{n} istifadəçiyə bildiriş göndərilsin?", pxMsg: "Mesaj",
+  pxHolH: "Bayram günü istifadəçi tətbiqi açanda avtomatik təbrik (və hədiyyə) göndərilir. {ad} dəstəklənir.", pxHolName: "Bayramın adı", pxHolDate: "Tarix", pxHolYear: "Hər il təkrarlansın", pxHolGift: "Premium hədiyyə (gün, 0 = yoxdur)", pxHolAdd: "+ Bayram əlavə et", pxHolSaved: "Bayramlar yadda saxlandı ✓", pxHolNeed: "Ad, tarix və Azərbaycan dilində mətn tələb olunur",
+  pxNote: "📝 Gizli qeyd", pxNoteH: "Gizli qeyd (yalnız admin görür)", pxNoteSaved: "Qeyd yadda saxlandı", pxNoteTag: "📝 Admin qeydi", pxErr: "Xəta" },
+ru: { pxDear: "Уважаемый пользователь", pxBlkTitle: "Ваш аккаунт временно ограничен", pxBlkReason: "Причина:", pxBlkLeft: "До снятия блокировки", pxBlkPerm: "Блокировка бессрочная", pxBlkDone: "Срок блокировки истёк ✓", pxD: "дн.",
+  pxNewM: "Новинки: добавлено моделей — {n}: {m}", pxFit: "✓ Подошло", pxFitThx: "Спасибо! Ваше подтверждение учтено", pxFitDup: "Вы уже подтверждали эту модель", pxFitAcc: "Чтобы подтвердить, войдите или зарегистрируйтесь",
+  pxFitV: "Проверено · подтверждений: {n}", pxFitTop: "Многократно проверено · подтверждений: {n}", pxFitN: "Подтвердили, что подходит: {n}",
+  pxOH: "Режим одной руки", pxOHd: "Строка поиска переходит вниз экрана", pxUpd: "🔄 Доступно обновление — v{v}", pxUpdBtn: "Обновить", pxUpdN: "Доступна новая версия (v{v}). Перезагрузите приложение для обновления.",
+  pxTools: "ДОПОЛНИТЕЛЬНО", pxAlias: "🔤 Алиасы моделей", pxGroup: "📣 Групповое уведомление", pxHol: "🎉 Праздники", pxSave: "Сохранить", pxCancel: "Закрыть",
+  pxAliasH: "Когда пользователь вводит альтернативное название (напр. «s23 ultra»), он автоматически перенаправляется на основную модель.", pxAliasA: "Альтернативное название (напр.: s23 ultra)", pxAliasM: "Основное название модели", pxAliasAdd: "+ Добавить", pxAliasBad: "Модель не найдена в базе", pxAliasSaved: "Алиасы сохранены ✓",
+  pxAud: "Целевая группа", pxAudAll: "Все", pxAudPro: "Только Премиум", pxAudFree: "Без Премиума", pxVarH: "{ad} заменяется именем пользователя. Если имени нет — «Уважаемый пользователь».", pxMsgPh: "Текст сообщения... (az)", pxSend: "Отправить", pxSentN: "Отправлено пользователям: {n}", pxNoUsers: "Нет подходящих пользователей. Список загружается, повторите чуть позже.", pxConfirmN: "Отправить уведомление пользователям: {n}?", pxMsg: "Сообщение",
+  pxHolH: "В праздничный день при открытии приложения пользователю автоматически приходит поздравление (и подарок). Поддерживается {ad}.", pxHolName: "Название праздника", pxHolDate: "Дата", pxHolYear: "Повторять каждый год", pxHolGift: "Подарок Премиум (дней, 0 = нет)", pxHolAdd: "+ Добавить праздник", pxHolSaved: "Праздники сохранены ✓", pxHolNeed: "Нужны название, дата и текст на азербайджанском",
+  pxNote: "📝 Скрытая заметка", pxNoteH: "Скрытая заметка (видит только админ)", pxNoteSaved: "Заметка сохранена", pxNoteTag: "📝 Заметка админа", pxErr: "Ошибка" },
+tr: { pxDear: "Sayın kullanıcı", pxBlkTitle: "Hesabınız geçici olarak kısıtlandı", pxBlkReason: "Sebep:", pxBlkLeft: "Engelin kalkmasına kalan", pxBlkPerm: "Engel süresizdir", pxBlkDone: "Engel süresi doldu ✓", pxD: "gün",
+  pxNewM: "Yenilikler: {n} yeni model eklendi — {m}", pxFit: "✓ Uydu", pxFitThx: "Teşekkürler! Onayınız kaydedildi", pxFitDup: "Bu modeli zaten onayladınız", pxFitAcc: "Onaylamak için giriş yapın veya kayıt olun",
+  pxFitV: "Doğrulandı · {n} onay", pxFitTop: "Çok doğrulandı · {n} onay", pxFitN: "{n} kişi uyduğunu onayladı",
+  pxOH: "Tek el modu", pxOHd: "Arama alanı ekranın altına geçer", pxUpd: "🔄 Güncelleme var — v{v}", pxUpdBtn: "Güncelle", pxUpdN: "Yeni sürüm mevcut (v{v}). Güncellemek için uygulamayı yeniden yükleyin.",
+  pxTools: "EK ARAÇLAR", pxAlias: "🔤 Model takma adları", pxGroup: "📣 Grup bildirimi", pxHol: "🎉 Bayramlar", pxSave: "Kaydet", pxCancel: "Kapat",
+  pxAliasH: "Kullanıcı alternatif ad yazdığında (örn. «s23 ultra») otomatik olarak ana modele yönlendirilir.", pxAliasA: "Alternatif ad (örn: s23 ultra)", pxAliasM: "Ana model adı", pxAliasAdd: "+ Ekle", pxAliasBad: "Model veritabanında bulunamadı", pxAliasSaved: "Takma adlar kaydedildi ✓",
+  pxAud: "Hedef grup", pxAudAll: "Herkes", pxAudPro: "Sadece Premium", pxAudFree: "Premium olmayanlar", pxVarH: "{ad} yazarsanız kullanıcının adı yazılır. Ad yoksa «Sayın kullanıcı» yazılır.", pxMsgPh: "Mesaj metni... (az)", pxSend: "Gönder", pxSentN: "{n} kullanıcıya gönderildi", pxNoUsers: "Hedef kullanıcı bulunamadı. Liste yükleniyor, biraz sonra tekrar deneyin.", pxConfirmN: "{n} kullanıcıya bildirim gönderilsin mi?", pxMsg: "Mesaj",
+  pxHolH: "Bayram günü kullanıcı uygulamayı açınca otomatik tebrik (ve hediye) gönderilir. {ad} desteklenir.", pxHolName: "Bayram adı", pxHolDate: "Tarih", pxHolYear: "Her yıl tekrarlansın", pxHolGift: "Premium hediye (gün, 0 = yok)", pxHolAdd: "+ Bayram ekle", pxHolSaved: "Bayramlar kaydedildi ✓", pxHolNeed: "Ad, tarih ve Azerbaycan dilinde metin gerekli",
+  pxNote: "📝 Gizli not", pxNoteH: "Gizli not (sadece admin görür)", pxNoteSaved: "Not kaydedildi", pxNoteTag: "📝 Admin notu", pxErr: "Hata" },
+en: { pxDear: "Dear user", pxBlkTitle: "Your account is temporarily restricted", pxBlkReason: "Reason:", pxBlkLeft: "Time until unblock", pxBlkPerm: "The block has no end date", pxBlkDone: "Block period ended ✓", pxD: "d",
+  pxNewM: "What's new: {n} new models added — {m}", pxFit: "✓ It fit", pxFitThx: "Thank you! Your confirmation was recorded", pxFitDup: "You've already confirmed this model", pxFitAcc: "Sign in or register to confirm",
+  pxFitV: "Verified · {n} confirmations", pxFitTop: "Highly verified · {n} confirmations", pxFitN: "{n} people confirmed it fits",
+  pxOH: "One-hand mode", pxOHd: "Moves the search bar to the bottom of the screen", pxUpd: "🔄 Update available — v{v}", pxUpdBtn: "Update", pxUpdN: "A new version is available (v{v}). Reload the app to update.",
+  pxTools: "EXTRA TOOLS", pxAlias: "🔤 Model aliases", pxGroup: "📣 Group notification", pxHol: "🎉 Holidays", pxSave: "Save", pxCancel: "Close",
+  pxAliasH: "When a user types an alternative name (e.g. “s23 ultra”) they are redirected to the main model automatically.", pxAliasA: "Alternative name (e.g. s23 ultra)", pxAliasM: "Main model name", pxAliasAdd: "+ Add", pxAliasBad: "Model not found in the database", pxAliasSaved: "Aliases saved ✓",
+  pxAud: "Target group", pxAudAll: "Everyone", pxAudPro: "Premium only", pxAudFree: "Non-Premium", pxVarH: "{ad} is replaced with the user's name. If there is no name, “Dear user” is used.", pxMsgPh: "Message text... (az)", pxSend: "Send", pxSentN: "Sent to {n} users", pxNoUsers: "No matching users. The list is loading — try again shortly.", pxConfirmN: "Send the notification to {n} users?", pxMsg: "Message",
+  pxHolH: "On a holiday, users get an automatic greeting (and gift) when they open the app. {ad} is supported.", pxHolName: "Holiday name", pxHolDate: "Date", pxHolYear: "Repeat every year", pxHolGift: "Premium gift (days, 0 = none)", pxHolAdd: "+ Add holiday", pxHolSaved: "Holidays saved ✓", pxHolNeed: "Name, date and an Azerbaijani text are required",
+  pxNote: "📝 Private note", pxNoteH: "Private note (admin only)", pxNoteSaved: "Note saved", pxNoteTag: "📝 Admin note", pxErr: "Error" }
+};
+Object.keys(X).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], X[l]); });
+
+/* ---------- {ad} dəyişəni + bildiriş mətnləri ---------- */
+function userName() { var a = (typeof accountData !== "undefined" && accountData) || {}; var n = String(a.username || a.displayName || "").trim(); return n.length >= 2 ? n : ""; }
+function personalize(s) { return String(s || "").replace(/\{(ad|name|имя|isim)\}/gi, function () { return userName() || T("pxDear"); }); }
+
+var _notifText = notifText;
+notifText = function (x) {
+  try {
+    if (x && x.type === "newmodels") return T("pxNewM").replace("{n}", x.n).replace("{m}", (x.names || []).join(", ") + (x.n > (x.names || []).length ? "…" : ""));
+    if (x && x.type === "upd") return T("pxUpdN").replace("{v}", x.v);
+    if (x && x.texts) { var tx = x.texts[L()] || x.texts.az; if (tx) return personalize(tx); }
+  } catch (e) {}
+  return personalize(_notifText(x));
+};
+
+/* yerli (cihazda yaranan) bildirişlər */
+var _localNotifs = localNotifs;
+localNotifs = function () {
+  var out = _localNotifs();
+  try {
+    var seen = getSeenLocal(), hid = getHiddenLocal(), u = me();
+    jget("pt_x_local", []).forEach(function (x) {
+      if (x.uid && (!u || x.uid !== u.uid)) return;
+      if (hid.indexOf(x.local) >= 0) return;
+      x.read = seen.indexOf(x.local) >= 0;
+      out.push(x);
+    });
+  } catch (e) {}
+  return out;
+};
+function addLocal(x) {
+  var a = jget("pt_x_local", []);
+  if (a.some(function (y) { return y.local === x.local; })) return false;
+  a.unshift(x); jset("pt_x_local", a.slice(0, 40));
+  try { updateNotifBadge(); } catch (e) {}
+  return true;
+}
+
+/* qrup bildirişi, tək mesaj: {ad} haqqında qeyd */
+var _gruptxt = null;
+
+/* ---------- 1) Model alias ---------- */
+function aliasFix(q) {
+  try {
+    var list = jget("pt_x_alias", []); if (!list.length) return q;
+    var nq = norm(q); if (nq.length < 2) return q;
+    for (var i = 0; i < list.length; i++) if (norm(list[i].a) === nq) return list[i].m;
+  } catch (e) {}
+  return q;
+}
+function loadAlias() {
+  if (!fire()) return;
+  db.doc("app_data/aliases").get().then(function (s) {
+    var d = s.exists ? (s.data() || {}) : {};
+    jset("pt_x_alias", Array.isArray(d.list) ? d.list : []);
+  }).catch(function () {});
+}
+
+/* ---------- 8) uyğun gəldi / yoxlanılıb ---------- */
+var FIT = "app_data/confirms";
+var fitC = jget("pt_x_fit", { t: 0, c: {}, th: 3 });
+function fitTh() { return Math.max(1, +fitC.th || 3); }
+function loadFit(force) {
+  if (!fire()) return;
+  if (!force && Date.now() - (fitC.t || 0) < 1800000) return;
+  db.doc(FIT).get().then(function (s) {
+    var d = s.exists ? (s.data() || {}) : {};
+    fitC = { t: Date.now(), c: d.c || {}, th: +d.th || 3 }; jset("pt_x_fit", fitC); renderFit(); markRows();
+  }).catch(function () {});
+}
+function votedKey(k) { var u = me(); return (u ? u.uid : "x") + ":" + k; }
+function hasVoted(k) {
+  var u = me(); if (!u) return false;
+  var a = (typeof accountData !== "undefined" && accountData && accountData.fits) || [];
+  return a.indexOf(k) >= 0 || !!jget("pt_x_voted", {})[votedKey(k)];
+}
+function renderFit() {
+  try {
+    var m = (typeof selectedModel !== "undefined") ? selectedModel : ""; if (!m) return;
+    var box = $("pt-fit");
+    if (!box) {
+      var bar = document.querySelector("#detail-view .misfit-bar"); if (!bar) return;
+      box = document.createElement("div"); box.id = "pt-fit"; bar.parentNode.insertBefore(box, bar);
+    }
+    var k = norm(m), n = +(fitC.c || {})[k] || 0, th = fitTh(), done = hasVoted(k), badge = "";
+    if (n >= th * 3) badge = '<div class="pt-fit-badge top">🏅 ' + esc(T("pxFitTop").replace("{n}", n)) + "</div>";
+    else if (n >= th) badge = '<div class="pt-fit-badge">✓ ' + esc(T("pxFitV").replace("{n}", n)) + "</div>";
+    else if (n > 0) badge = '<div class="pt-fit-badge low">' + esc(T("pxFitN").replace("{n}", n)) + "</div>";
+    box.innerHTML = badge + '<button type="button" class="pt-fit-btn' + (done ? " done" : "") + '" onclick="PTX.fit()">' + esc(T("pxFit")) + "</button>";
+  } catch (e) {}
+}
+function markRows() {
+  try {
+    var th = fitTh();
+    [].forEach.call(document.querySelectorAll("#results .result-item"), function (row) {
+      if (row.querySelector(".pt-vf")) return;
+      var me_ = row.querySelector(".result-model"); if (!me_) return;
+      var c = me_.cloneNode(true);
+      [].slice.call(c.children).forEach(function (ch) { if (ch.tagName !== "MARK") ch.remove(); });
+      var n = +(fitC.c || {})[norm(c.textContent.trim())] || 0;
+      if (n >= th) { var s = document.createElement("span"); s.className = "pt-vf"; s.textContent = "✓"; var ar = row.querySelector(".result-arrow"); if (ar) row.insertBefore(s, ar); }
+    });
+  } catch (e) {}
+}
+function fitConfirm() {
+  var m = (typeof selectedModel !== "undefined") ? selectedModel : ""; if (!m) return;
+  var u = me();
+  if (!u || !isRegisteredUser()) { toast(T("pxFitAcc")); try { handleSearchBlocked("login"); } catch (e) {} return; }
+  var k = norm(m);
+  if (hasVoted(k)) { toast(T("pxFitDup")); return; }
+  var v = jget("pt_x_voted", {}); v[votedKey(k)] = 1; jset("pt_x_voted", v);
+  fitC.c = fitC.c || {}; fitC.c[k] = (+fitC.c[k] || 0) + 1; jset("pt_x_fit", fitC);
+  renderFit(); toast(T("pxFitThx"));
+  var o = { c: {} }; o.c[k] = firebase.firestore.FieldValue.increment(1);
+  db.doc(FIT).set(o, { merge: true }).catch(function () {});
+  db.collection("users").doc(u.uid).update({ fits: firebase.firestore.FieldValue.arrayUnion(k) }).catch(function () {});
+}
+
+/* ---------- 4) yeni modellər → «Yeniliklər» ---------- */
+function detectNew() {
+  try {
+    if (isAdmin || !isRegisteredUser()) return;
+    var names = allModels(); if (names.length < 20) return;
+    var cur = names.map(function (m) { return hash(norm(m)); });
+    var known = jget("pt_x_known", null);
+    if (!known) { jset("pt_x_known", cur); return; }
+    var ks = {}; known.forEach(function (k) { ks[k] = 1; });
+    var nw = []; names.forEach(function (m, i) { if (!ks[cur[i]]) nw.push(m); });
+    cur.forEach(function (k) { if (!ks[k]) known.push(k); }); jset("pt_x_known", known);
+    if (nw.length && nw.length <= 80) {
+      var u = me();
+      addLocal({ local: "newm_" + Date.now(), uid: u ? u.uid : "", type: "newmodels", n: nw.length, names: nw.slice(0, 4), createdAt: Date.now() });
+    }
+  } catch (e) {}
+}
+var _applyDb = applyDb;
+applyDb = function () { var r = _applyDb.apply(this, arguments); setTimeout(detectNew, 400); return r; };
+
+/* ---------- 5) bayram təbrikləri + hədiyyə ---------- */
+function H(id, md, az, ru, tr, en) { return { id: id, md: md, gift: 0, name: id, texts: { az: az, ru: ru, tr: tr, en: en } }; }
+var DEF_HOL = [
+  H("newyear", "01-01", "🎉 Yeni iliniz mübarək, {ad}! Sizə sağlamlıq və uğurlar arzulayırıq.", "🎉 С Новым годом, {ad}! Желаем здоровья и успехов.", "🎉 Yeni yılınız kutlu olsun, {ad}! Sağlık ve başarılar dileriz.", "🎉 Happy New Year, {ad}! Wishing you health and success."),
+  H("women", "03-08", "🌸 8 Mart Beynəlxalq Qadınlar Günü mübarək, {ad}!", "🌸 С 8 Марта, {ad}! Счастья и тепла вам.", "🌸 8 Mart Dünya Kadınlar Günü kutlu olsun, {ad}!", "🌸 Happy International Women's Day, {ad}!"),
+  H("novruz", "03-20", "🌷 Novruz bayramınız mübarək, {ad}! Evinizə bərəkət, ailənizə xoşbəxtlik.", "🌷 С праздником Новруз, {ad}! Благополучия вашему дому.", "🌷 Nevruz Bayramınız kutlu olsun, {ad}! Evinize bereket, ailenize mutluluk.", "🌷 Happy Novruz, {ad}! Wishing you and your family happiness."),
+  H("may28", "05-28", "🇦🇿 28 May — Müstəqillik Günü mübarək, {ad}!", "🇦🇿 С Днём независимости (28 мая), {ad}!", "🇦🇿 28 Mayıs Bağımsızlık Günü kutlu olsun, {ad}!", "🇦🇿 Happy Independence Day (28 May), {ad}!"),
+  H("jun15", "06-15", "🇦🇿 15 İyun — Milli Qurtuluş Günü mübarək, {ad}!", "🇦🇿 С Днём национального спасения (15 июня), {ad}!", "🇦🇿 15 Haziran Ulusal Kurtuluş Günü kutlu olsun, {ad}!", "🇦🇿 Happy National Salvation Day (15 June), {ad}!"),
+  H("oct18", "10-18", "🇦🇿 18 Oktyabr — Müstəqilliyin Bərpası Günü mübarək, {ad}!", "🇦🇿 С Днём восстановления независимости (18 октября), {ad}!", "🇦🇿 18 Ekim Bağımsızlığın Yeniden Tesisi Günü kutlu olsun, {ad}!", "🇦🇿 Happy Independence Restoration Day (18 Oct), {ad}!"),
+  H("nov8", "11-08", "🇦🇿 8 Noyabr — Zəfər Günü mübarək, {ad}!", "🇦🇿 С Днём Победы (8 ноября), {ad}!", "🇦🇿 8 Kasım Zafer Günü kutlu olsun, {ad}!", "🇦🇿 Happy Victory Day (8 Nov), {ad}!")
+];
+function holList() { var c = jget("pt_x_hol", null); return (c && Array.isArray(c.list)) ? c.list : DEF_HOL; }
+function loadHol() {
+  if (!fire()) return Promise.resolve();
+  return db.doc("app_data/holidays").get().then(function (s) { if (s.exists) jset("pt_x_hol", { list: (s.data() || {}).list || [] }); }).catch(function () {});
+}
+function bakuNow() { var d = new Date(Date.now() + 4 * 3600000); return { y: d.getUTCFullYear(), md: two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()), full: d.getUTCFullYear() + "-" + two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()) }; }
+function holidayCheck() {
+  try {
+    var u = me(); if (!u || u.isAnonymous || !isRegisteredUser()) return;
+    var tk = bakuNow();
+    holList().forEach(function (h) {
+      if (h.off || !h.texts) return;
+      if (!((h.date && h.date === tk.full) || (h.md && h.md === tk.md))) return;
+      var id = "hol_" + h.id + "_" + tk.y, mk = "pt_x_" + id + "_" + u.uid;
+      if (localStorage.getItem(mk)) return;
+      try { localStorage.setItem(mk, "1"); } catch (e) {}
+      addLocal({ local: id, uid: u.uid, type: "holiday", texts: h.texts, createdAt: Date.now() });
+      toast(personalize(h.texts[L()] || h.texts.az || ""), 6500);
+      if (+h.gift > 0) claimGift(h, id, u);
+    });
+  } catch (e) {}
+}
+function claimGift(h, id, u) {
+  try {
+    var a = accountData || {}; if (a.holGift === id) return;
+    var until = Math.max(Date.now(), +a.premiumUntil || 0) + Math.round(h.gift) * DAY_MS;
+    var ref = db.collection("users").doc(u.uid);
+    ref.update({ premiumUntil: until, holGift: id }).then(function () {
+      ref.collection("notifications").add({ type: "premium_gift", days: Math.round(h.gift), reason: "holiday", until: until, createdAt: Date.now(), read: false }).catch(function () {});
+    }).catch(function () {});
+  } catch (e) {}
+}
+
+/* ---------- 3) blok: atmasın, geri sayım göstərsin ---------- */
+var blkData = null, blkTimer = null;
+function ensureBlk() {
+  var el = $("pt-blk"); if (el) return el;
+  el = document.createElement("div"); el.id = "pt-blk";
+  el.innerHTML = '<div class="pt-blk-box"><div style="font-size:54px">⛔</div><h3 id="pt-blk-t"></h3><p id="pt-blk-r" class="pt-mut"></p><div class="pt-mut" id="pt-blk-l"></div><div id="pt-blk-cd"></div><div class="pt-mut" id="pt-blk-u"></div><button type="button" id="pt-blk-out"></button></div>';
+  document.body.appendChild(el);
+  $("pt-blk-out").onclick = function () { try { auth.signOut(); } catch (e) {} };
+  return el;
+}
+function activeBlock() {
+  var a = (typeof accountData !== "undefined" && accountData) || {};
+  var src = Object.keys(a).length ? a : blkData;
+  try { return (src && isBlockActive(src) && !src.deleted && !isAdmin) ? src : null; } catch (e) { return null; }
+}
+function fmtLeft(ms) {
+  var s = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(s / 86400); s -= d * 86400;
+  var h = Math.floor(s / 3600); s -= h * 3600; var m = Math.floor(s / 60); s -= m * 60;
+  return (d ? d + " " + T("pxD") + " " : "") + two(h) + ":" + two(m) + ":" + two(s);
+}
+function blkTick() {
+  var el = ensureBlk(), u = me(), d = u ? activeBlock() : null;
+  if (!d) {
+    if (el.classList.contains("show")) {
+      el.classList.remove("show");
+      if (blkData && u) { toast(T("pxBlkDone")); try { db.collection("users").doc(u.uid).update({ blocked: false, blockReason: "", blockUntil: 0 }).catch(function () {}); } catch (e) {} }
+    }
+    blkData = null; return;
+  }
+  el.classList.add("show");
+  $("pt-blk-t").textContent = T("pxBlkTitle");
+  $("pt-blk-r").textContent = d.blockReason ? T("pxBlkReason") + " " + d.blockReason : "";
+  var until = +d.blockUntil || 0;
+  $("pt-blk-l").textContent = until ? T("pxBlkLeft") : T("pxBlkPerm");
+  $("pt-blk-cd").textContent = until ? fmtLeft(until - Date.now()) : "∞";
+  $("pt-blk-u").textContent = until ? T("blockedUntil") + " " + fmtDate(until) : "";
+  $("pt-blk-out").textContent = T("logoutBtn");
+}
+window.ptBlockedShow = function (d) { blkData = d || null; blkTick(); };
+if (!blkTimer) blkTimer = setInterval(blkTick, 1000);
+
+/* admin: müddəti bitmiş blokları avtomatik qaldır */
+function autoUnblock() {
+  try {
+    if (!isAdmin || !fire()) return;
+    (adminUsersCache || []).forEach(function (u) {
+      if (!u.blocked || u._pxAuto) return;
+      var bu = +u.blockUntil || 0; if (!bu || bu > Date.now()) return;
+      u._pxAuto = 1;
+      db.collection("users").doc(u._id).update({ blocked: false, blockReason: "", blockUntil: 0 }).then(function () {
+        u.blocked = false; u.blockUntil = 0; u.blockReason = "";
+        try { logBlockAction(u._id, "unblock", "auto", 0); } catch (e) {}
+        try { renderAdminUsers(); } catch (e) {}
+      }).catch(function () { u._pxAuto = 0; });
+    });
+  } catch (e) {}
+}
+var _navRef = admNavRefresh;
+admNavRefresh = function () { var r = _navRef.apply(this, arguments); autoUnblock(); return r; };
+
+/* ---------- 11) admin istifadəçi kartı: Android menyu (bottom sheet) ---------- */
+var notes = null;
+function loadNotes(cb) {
+  if (notes) { cb(); return; }
+  notes = {};
+  if (!fire()) { cb(); return; }
+  db.doc("admin/notes").get().then(function (s) { notes = s.exists ? (s.data() || {}) : {}; cb(); }).catch(function () { cb(); });
+}
+function sheet() {
+  var s = $("pt-sheet");
+  if (!s) { s = document.createElement("div"); s.id = "pt-sheet"; s.onclick = function (e) { if (e.target === s) closeSheet(); }; document.body.appendChild(s); }
+  return s;
+}
+function closeSheet() { var s = $("pt-sheet"); if (s) s.classList.remove("show"); }
+function openSheet(it, id) {
+  var name = (it.querySelector(".au-name") || {}).textContent || "", sub = (it.querySelector(".au-sub") || {}).textContent || "";
+  var infos = [].map.call(it.querySelectorAll(".au-body .au-info"), function (n) { return n.outerHTML; }).join("");
+  var items = [].map.call(it.querySelectorAll(".au-body .au-btn"), function (b) {
+    var cls = (b.className || "").replace("au-btn", "").trim();
+    return '<button type="button" class="pt-mi ' + esc(cls) + '" onclick="PTX.closeSheet();' + (b.getAttribute("onclick") || "").replace(/"/g, "&quot;") + '">' + b.innerHTML + "</button>";
+  }).join("");
+  loadNotes(function () {
+    var n = notes && notes[id] && notes[id].t;
+    var sid = String(id).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    var s = sheet();
+    s.innerHTML = '<div class="pt-sh"><div class="pt-grab"></div><div class="pt-sh-h"><b>' + esc(name) + "</b><small>" + esc(sub) + "</small></div>" +
+      '<div class="pt-sh-i">' + infos + "</div>" + (n ? '<div class="pt-note"><b>' + esc(T("pxNoteTag")) + "</b>\n" + esc(n) + "</div>" : "") +
+      items + '<button type="button" class="pt-mi" onclick="PTX.closeSheet();PTX.note(\'' + esc(sid) + '\')">' + esc(T("pxNote")) + "</button>" +
+      '<button type="button" class="pt-mi soft" onclick="PTX.closeSheet()">' + esc(T("pxCancel")) + "</button></div>";
+    s.classList.add("show");
+  });
+}
+admToggleUser = function (id) {
+  var its = document.querySelectorAll("#adminUsersList .au-item");
+  for (var i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) { openSheet(its[i], id); return; }
+};
+function noteEdit(id) {
+  loadNotes(function () {
+    var u = (typeof adminFindUser === "function" && adminFindUser(id)) || {};
+    appPrompt(T("pxNoteH"), u.username || u.email || id, (notes[id] && notes[id].t) || "", true, "…").then(function (txt) {
+      if (txt == null) return;
+      var o = {}; txt = String(txt).trim().slice(0, 1000);
+      o[id] = txt ? { t: txt, at: Date.now() } : firebase.firestore.FieldValue.delete();
+      db.doc("admin/notes").set(o, { merge: true }).then(function () {
+        if (txt) notes[id] = { t: txt, at: Date.now() }; else delete notes[id];
+        toast(T("pxNoteSaved"));
+      }).catch(function (e) { toast(T("pxErr") + ": " + ((e && (e.code || e.message)) || "")); });
+    });
+  });
+}
+
+/* ---------- admin modal ---------- */
+function modal(title, html) {
+  var m = $("pt-modal");
+  if (!m) { m = document.createElement("div"); m.id = "pt-modal"; m.onclick = function (e) { if (e.target === m) m.classList.remove("show"); }; document.body.appendChild(m); }
+  m.innerHTML = '<div class="pt-mb"><div class="pt-mh"><b>' + esc(title) + '</b><button type="button" class="pt-x" onclick="PTX.close()">×</button></div><div class="pt-mc">' + html + "</div></div>";
+  m.classList.add("show");
+}
+function closeModal() { var m = $("pt-modal"); if (m) m.classList.remove("show"); }
+function errT(e) { return T("pxErr") + ": " + ((e && (e.code || e.message)) || ""); }
+
+/* alias redaktoru */
+var aliasAdm = [];
+function aliasOpen() {
+  if (!isAdmin || !fire()) return;
+  db.doc("app_data/aliases").get().then(function (s) { aliasAdm = (s.exists && Array.isArray((s.data() || {}).list)) ? s.data().list.slice() : []; aliasRender(); })
+    .catch(function () { aliasAdm = jget("pt_x_alias", []).slice(); aliasRender(); });
+}
+function aliasRender() {
+  var rows = aliasAdm.map(function (x, i) { return '<div class="pt-r"><span><b>' + esc(x.a) + "</b> → " + esc(x.m) + '</span><button type="button" onclick="PTX.aliasDel(' + i + ')">🗑</button></div>'; }).join("") || '<div class="pt-mut">—</div>';
+  modal(T("pxAlias"), '<p class="pt-mut">' + esc(T("pxAliasH")) + "</p>" + rows +
+    '<input id="ptA1" placeholder="' + esc(T("pxAliasA")) + '" autocomplete="off"><input id="ptA2" placeholder="' + esc(T("pxAliasM")) + '" autocomplete="off" oninput="PTX.aliasSug(this.value)"><div id="ptSug"></div>' +
+    '<button type="button" class="pt-pri" onclick="PTX.aliasAdd()">' + esc(T("pxAliasAdd")) + '</button><button type="button" class="pt-pri" onclick="PTX.aliasSave()">☁ ' + esc(T("pxSave")) + "</button>");
+}
+function findModel(v) { var k = norm(v), f = null; allModels().forEach(function (n) { if (!f && norm(n) === k) f = n; }); return f; }
+function aliasSug(v) {
+  var k = norm(v), box = $("ptSug"); if (!box) return; if (k.length < 2) { box.innerHTML = ""; return; }
+  var out = []; allModels().some(function (n) { if (norm(n).indexOf(k) >= 0) out.push(n); return out.length >= 6; });
+  box.innerHTML = out.map(function (n) { return '<span class="pt-chip" data-m="' + esc(n) + '">' + esc(n) + "</span>"; }).join("");
+  [].forEach.call(box.querySelectorAll(".pt-chip"), function (c) { c.onclick = function () { $("ptA2").value = c.getAttribute("data-m"); box.innerHTML = ""; }; });
+}
+function aliasAdd() {
+  var a = ($("ptA1").value || "").trim(), m = findModel($("ptA2").value || "");
+  if (a.length < 2) return;
+  if (!m) { toast(T("pxAliasBad")); return; }
+  aliasAdm.push({ a: a, m: m }); aliasRender();
+}
+function aliasSave() {
+  db.doc("app_data/aliases").set({ list: aliasAdm, updatedAt: Date.now() }).then(function () { jset("pt_x_alias", aliasAdm); toast(T("pxAliasSaved")); closeModal(); })
+    .catch(function (e) { toast(errT(e)); });
+}
+
+/* qrup bildirişi */
+function groupOpen() {
+  if (!isAdmin) return;
+  if (!adminUsersCache.length) { try { loadAdminStats(); } catch (e) {} }
+  modal(T("pxGroup"), '<select id="ptAud"><option value="all">' + esc(T("pxAudAll")) + '</option><option value="pro">' + esc(T("pxAudPro")) + '</option><option value="free">' + esc(T("pxAudFree")) + "</option></select>" +
+    '<p class="pt-mut">' + esc(T("pxVarH")) + '</p><textarea id="ptG_az" placeholder="' + esc(T("pxMsgPh")) + '"></textarea><textarea id="ptG_ru" placeholder="RU"></textarea><textarea id="ptG_tr" placeholder="TR"></textarea><textarea id="ptG_en" placeholder="EN"></textarea>' +
+    '<button type="button" class="pt-pri" onclick="PTX.groupSend()">' + esc(T("pxSend")) + "</button>");
+}
+function groupSend() {
+  var aud = $("ptAud").value, az = ($("ptG_az").value || "").trim();
+  if (!az) return;
+  var texts = { az: az.slice(0, 500) };
+  ["ru", "tr", "en"].forEach(function (l) { var v = ($("ptG_" + l).value || "").trim(); if (v) texts[l] = v.slice(0, 500); });
+  var now = Date.now(), me_ = me();
+  var users = (adminUsersCache || []).filter(function (u) {
+    if (u.deleted || u.blocked || !u._id || (me_ && u._id === me_.uid) || String(u.email || "").toLowerCase() === ADMIN_EMAIL) return false;
+    var pro = (+u.premiumUntil || 0) > now;
+    return aud === "all" || (aud === "pro" ? pro : !pro);
+  });
+  if (!users.length) { toast(T("pxNoUsers")); return; }
+  confirmAction(T("pxConfirmN").replace("{n}", users.length), function () {
+    var jobs = [], i = 0;
+    while (i < users.length) {
+      var b = db.batch(), part = users.slice(i, i + 400); i += 400;
+      part.forEach(function (u) { b.set(db.collection("users").doc(u._id).collection("notifications").doc(), { type: "msg", text: texts.az, texts: texts, createdAt: Date.now(), read: false, aud: aud }); });
+      jobs.push(b.commit());
+    }
+    Promise.all(jobs).then(function () { toast(T("pxSentN").replace("{n}", users.length)); closeModal(); }).catch(function (e) { toast(errT(e)); });
+  });
+}
+adminSendMessage = function (id) {
+  var u = (typeof adminFindUser === "function" && adminFindUser(id)) || {};
+  appPrompt("✉ " + T("pxMsg"), (u.username || u.email || id) + "\n" + T("pxVarH"), "", true, T("pxMsgPh")).then(function (text) {
+    if (!text || !text.trim()) return;
+    db.collection("users").doc(id).collection("notifications").add({ type: "msg", text: text.trim().slice(0, 500), createdAt: Date.now(), read: false })
+      .then(function () { toast(T("pxSentN").replace("{n}", 1)); }).catch(function (e) { toast(errT(e)); });
+  });
+};
+
+/* bayram redaktoru */
+var holAdm = [];
+function holOpen() {
+  if (!isAdmin || !fire()) return;
+  db.doc("app_data/holidays").get().then(function (s) { var l = s.exists ? (s.data() || {}).list : null; holAdm = JSON.parse(JSON.stringify(Array.isArray(l) ? l : DEF_HOL)); holRender(); })
+    .catch(function () { holAdm = JSON.parse(JSON.stringify(holList())); holRender(); });
+}
+function holRender() {
+  var rows = holAdm.map(function (h, i) {
+    return '<div class="pt-r"><span><label><input type="checkbox" style="width:auto" ' + (h.off ? "" : "checked") + ' onchange="PTX.holTog(' + i + ',this.checked)"> <b>' + esc(h.name || h.id) + "</b></label><br><small>" + esc(h.date || h.md) + (+h.gift > 0 ? " · 🎁 " + (+h.gift) : "") + '</small></span><button type="button" onclick="PTX.holDel(' + i + ')">🗑</button></div>';
+  }).join("");
+  modal(T("pxHol"), '<p class="pt-mut">' + esc(T("pxHolH")) + "</p>" + rows +
+    '<input id="ptH_n" placeholder="' + esc(T("pxHolName")) + '"><input id="ptH_d" type="date" title="' + esc(T("pxHolDate")) + '"><label class="pt-mut"><input id="ptH_y" type="checkbox" style="width:auto" checked> ' + esc(T("pxHolYear")) + "</label>" +
+    '<input id="ptH_g" type="number" min="0" max="365" value="0" placeholder="' + esc(T("pxHolGift")) + '"><div class="pt-mut">' + esc(T("pxHolGift")) + '</div><textarea id="ptH_az" placeholder="AZ"></textarea><textarea id="ptH_ru" placeholder="RU"></textarea><textarea id="ptH_tr" placeholder="TR"></textarea><textarea id="ptH_en" placeholder="EN"></textarea>' +
+    '<button type="button" class="pt-pri" onclick="PTX.holAdd()">' + esc(T("pxHolAdd")) + '</button><button type="button" class="pt-pri" onclick="PTX.holSave()">☁ ' + esc(T("pxSave")) + "</button>");
+}
+function holAdd() {
+  var n = ($("ptH_n").value || "").trim(), d = $("ptH_d").value, az = ($("ptH_az").value || "").trim();
+  if (!n || !d || !az) { toast(T("pxHolNeed")); return; }
+  var h = { id: "c" + Date.now().toString(36), name: n, gift: Math.max(0, Math.min(365, +$("ptH_g").value || 0)), texts: { az: az } };
+  if ($("ptH_y").checked) h.md = d.slice(5); else h.date = d;
+  ["ru", "tr", "en"].forEach(function (l) { var v = ($("ptH_" + l).value || "").trim(); if (v) h.texts[l] = v; });
+  holAdm.push(h); holRender();
+}
+function holSave() {
+  db.doc("app_data/holidays").set({ list: holAdm, updatedAt: Date.now() }).then(function () { jset("pt_x_hol", { list: holAdm }); toast(T("pxHolSaved")); closeModal(); })
+    .catch(function (e) { toast(errT(e)); });
+}
+
+/* admin panelə alət düymələri */
+function buildAdminBox() {
+  if ($("pt-adm-tools")) return;
+  var row = document.querySelector(".adm-acc.adm-link"); if (!row || !row.parentNode) return;
+  var box = document.createElement("div"); box.id = "pt-adm-tools";
+  box.innerHTML = '<div class="adm-grp" id="pt-adm-grp"></div><div class="pt-adm-row"><button type="button" onclick="PTX.alias()" id="pt-b1"></button><button type="button" onclick="PTX.group()" id="pt-b2"></button><button type="button" onclick="PTX.hol()" id="pt-b3"></button></div>';
+  row.parentNode.insertBefore(box, row);
+  relabel();
+}
+
+/* ---------- 9) tək əl rejimi ---------- */
+function applyOH() { document.body.classList.toggle("pt-oh", localStorage.getItem("pt_x_oh") === "1"); }
+function buildOH() {
+  if ($("ptOneHand")) return;
+  var f = $("fontPct"), sec = f && f.closest ? f.closest(".settings-section") : null; if (!sec) return;
+  var box = document.createElement("div"); box.className = "settings-box"; box.style.marginTop = "10px";
+  box.innerHTML = '<div class="settings-row"><div class="row-ic"><span style="font-size:20px">🖐️</span></div><span style="flex:1;line-height:1.3"><span id="ptOHl"></span><br><small id="ptOHd" style="color:var(--muted)"></small></span><label class="switch"><input type="checkbox" id="ptOneHand"><span class="slider"></span></label></div>';
+  sec.appendChild(box);
+  var cb = $("ptOneHand"); cb.checked = localStorage.getItem("pt_x_oh") === "1";
+  cb.onchange = function () { try { localStorage.setItem("pt_x_oh", cb.checked ? "1" : "0"); } catch (e) {} applyOH(); try { if (typeof triggerHaptic === "function") triggerHaptic(15); } catch (e) {} };
+  relabel();
+}
+
+/* ---------- 10) yeniləmə var ---------- */
+function vcmp(a, b) { var x = String(a).split("."), y = String(b).split("."); for (var i = 0; i < 4; i++) { var d = (+x[i] || 0) - (+y[i] || 0); if (d) return d > 0 ? 1 : -1; } return 0; }
+function showUpd(v) {
+  var el = $("pt-upd");
+  if (!el) {
+    el = document.createElement("div"); el.id = "pt-upd";
+    el.innerHTML = '<span id="pt-upd-t"></span><button type="button" id="pt-upd-b"></button><button type="button" class="x" id="pt-upd-x">×</button>';
+    document.body.appendChild(el);
+    $("pt-upd-x").onclick = function () { el.classList.remove("show"); };
+    $("pt-upd-b").onclick = function () {
+      var done = function () { location.reload(); };
+      try {
+        var p = [];
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) p.push(navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }));
+        if (window.caches && caches.keys) p.push(caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); }));
+        Promise.all(p).then(done, done);
+      } catch (e) { done(); }
+    };
+  }
+  el.setAttribute("data-v", v);
+  $("pt-upd-t").textContent = T("pxUpd").replace("{v}", v); $("pt-upd-b").textContent = T("pxUpdBtn");
+  if (jget("pt_x_updx", "") !== v) el.classList.add("show");
+  var u = me(); addLocal({ local: "upd_" + v, uid: u ? u.uid : "", type: "upd", v: v, createdAt: Date.now() });
+}
+function checkUpd() {
+  try {
+    if (!navigator.onLine || location.protocol === "file:") return;
+    fetch(location.pathname, { cache: "no-store" }).then(function (r) { return r.ok ? r.text() : ""; }).then(function (txt) {
+      var m = /APP_VERSION\s*=\s*"([\d.]+)"/.exec(txt || ""); if (!m) return;
+      if (vcmp(m[1], APP_VERSION) > 0) showUpd(m[1]);
+    }).catch(function () {});
+  } catch (e) {}
+}
+
+/* ---------- etiketləri yenilə (dil dəyişəndə) ---------- */
+function relabel() {
+  var s = function (id, v) { var e = $(id); if (e) e.textContent = v; };
+  s("pt-adm-grp", T("pxTools")); s("pt-b1", T("pxAlias")); s("pt-b2", T("pxGroup")); s("pt-b3", T("pxHol"));
+  s("ptOHl", T("pxOH")); s("ptOHd", T("pxOHd"));
+  var u = $("pt-upd"); if (u && u.getAttribute("data-v")) { s("pt-upd-t", T("pxUpd").replace("{v}", u.getAttribute("data-v"))); s("pt-upd-b", T("pxUpdBtn")); }
+  renderFit();
+}
+var _setLang = setLang;
+setLang = function () { var r = _setLang.apply(this, arguments); try { relabel(); blkTick(); } catch (e) {} return r; };
+
+/* ---------- axtarış və detal hook-ları ---------- */
+var _perform = performSearch;
+performSearch = function (q) { var r = _perform.call(this, aliasFix(String(q == null ? "" : q))); setTimeout(markRows, 0); return r; };
+var _detail = openDetailWith;
+openDetailWith = function () { var r = _detail.apply(this, arguments); setTimeout(function () { renderFit(); loadFit(false); }, 30); return r; };
+
+/* inline onclick üçün qlobal obyekt */
+window.PTX = {
+  fit: fitConfirm, closeSheet: closeSheet, close: closeModal, note: noteEdit,
+  alias: aliasOpen, aliasAdd: aliasAdd, aliasSave: aliasSave, aliasSug: aliasSug, aliasDel: function (i) { aliasAdm.splice(i, 1); aliasRender(); },
+  group: groupOpen, groupSend: groupSend,
+  hol: holOpen, holAdd: holAdd, holSave: holSave, holDel: function (i) { holAdm.splice(i, 1); holRender(); }, holTog: function (i, on) { holAdm[i].off = !on; }
+};
+
+/* ---------- başlanğıc ---------- */
+function init() {
+  applyOH(); buildOH(); buildAdminBox(); loadAlias(); loadFit(false); loadHol();
+  setTimeout(checkUpd, 4000); setInterval(checkUpd, 30 * 60 * 1000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) checkUpd(); });
+  try {
+    auth.onAuthStateChanged(function () {
+      setTimeout(function () { loadAlias(); loadFit(false); loadHol().then(holidayCheck); buildAdminBox(); blkTick(); }, 1500);
+    });
+  } catch (e) {}
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+
+} catch (err) { try { console.warn("PT-EXT:", err); } catch (e) {} }
+})();
+</script>
+<!-- ===== /ProTechtor EXT ===== -->
 
 </body>
 </html>
