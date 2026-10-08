@@ -1931,6 +1931,53 @@
         .admin-user-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:8px}
         .admin-user-card.blocked{border-color:#e74c3c;opacity:0.85}
 
+    
+        /* ===== admin pages / users menu / duration dialog / inline progress ===== */
+        .sub-view.adm-page{z-index:670}
+        .adm-page .settings-content{padding:14px 12px 28px}
+        .adm-nav{padding:12px 12px 2px;display:flex;flex-direction:column;gap:10px;background:var(--surface)}
+        .adm-nav .settings-box{cursor:pointer}
+        .adm-nav .settings-row{border-bottom:none}
+        .adm-nav .settings-box:active{transform:scale(.99)}
+        #adm-db-page .adm-db-acc>summary .adm-chev{display:none}
+        .au-item{border:1px solid var(--border);background:var(--card-bg);border-radius:18px;overflow:hidden;margin-bottom:8px}
+        .au-item.blocked{border-color:#e74c3c}
+        .au-head{cursor:pointer;border-bottom:none !important;padding:13px 14px}
+        .au-who{display:flex;flex-direction:column;gap:2px;min-width:0}
+        .au-name{font-size:calc(15px * var(--font-scale));font-weight:800;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .au-sub{font-size:11px;color:var(--muted);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .au-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+        .au-pro{font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 7px;border-radius:999px;border:1px solid var(--accent-color);color:var(--accent-color)}
+        .au-blk{font-size:10px;font-weight:800;letter-spacing:1px;padding:2px 7px;border-radius:999px;border:1px solid #e74c3c;color:#e74c3c}
+        .au-chev{color:var(--accent-color);font-size:18px;line-height:14px;transition:transform .25s}
+        .au-item.open .au-chev{transform:rotate(90deg)}
+        .au-body{display:none;padding:2px 14px 14px;border-top:1px solid var(--border)}
+        .au-item.open .au-body{display:block}
+        .au-info{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5;word-break:break-word}
+        .au-info.pro{color:var(--accent-color);font-weight:700}
+        .au-info.off{color:#e74c3c}
+        .au-acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+        .au-btn{min-height:38px;padding:8px 10px;border-radius:12px;border:1px solid color-mix(in srgb,var(--accent-color) 55%,var(--border));background:transparent;color:var(--accent-color);font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer}
+        .au-btn:active{transform:scale(.97)}
+        .au-btn.danger{border-color:#e74c3c;color:#e74c3c}
+        .au-btn.ok{border-color:#27ae60;color:#27ae60}
+        .au-btn.soft{color:var(--text);border-color:var(--border)}
+        .dur-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0 6px}
+        .dur-chip{height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit}
+        .dur-chip:active{background:var(--accent-color);color:#111}
+        .dur-lbl{font-size:11px;letter-spacing:2px;color:var(--accent-color);margin:14px 0 6px;text-align:left}
+        .dur-custom{display:flex;gap:8px;margin-bottom:14px}
+        .dur-custom input,.dur-custom select{height:44px;min-width:0;padding:0 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:14px;font-family:inherit}
+        .dur-custom input{flex:1 1 90px}
+        .dur-custom select{flex:1 1 110px}
+        .dur-acts{display:flex;gap:8px}
+        .dur-acts button{flex:1;padding:12px;border-radius:12px;font-weight:800;cursor:pointer;font-family:inherit;font-size:14px}
+        .dur-acts .no{background:transparent;border:1px solid var(--border);color:var(--text)}
+        .dur-acts .yes{background:var(--accent-color);border:none;color:#111}
+        .fm-in.gf-du{width:92px;height:36px;flex:0 0 92px;padding:0 8px}
+        #pt-progress.inline{position:relative;left:auto;top:auto;transform:none;width:100%;max-height:0;overflow:hidden;opacity:0;margin:0;z-index:auto;transition:max-height .35s ease,opacity .3s ease,margin .3s ease}
+        #pt-progress.inline.show{transform:none;max-height:96px;opacity:1;margin-top:12px}
+        #pt-progress.inline .pt-prog-card{box-shadow:none}
     </style>
 </head>
 
@@ -2193,8 +2240,28 @@
                 <div class="admin-title">Baza İdarəetməsi</div>
             </div>
         </header>
+        <div class="adm-nav">
+            <div class="settings-box privacy-box" onclick="admPageOpen('db')">
+                <div class="settings-row">
+                    <span>Modellər bazası <small id="admNavDbSub" style="opacity:.75;font-weight:500"></small></span>
+                    <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
+                </div>
+            </div>
+            <div class="settings-box privacy-box" onclick="admPageOpen('users')">
+                <div class="settings-row">
+                    <span>İstifadəçilər <small id="admNavUsersSub" style="opacity:.75;font-weight:500"></small></span>
+                    <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
+                </div>
+            </div>
+            <div class="settings-box privacy-box" onclick="admPageOpen('rev')">
+                <div class="settings-row">
+                    <span>Gəlir <small id="admNavRevSub" style="opacity:.75;font-weight:500"></small></span>
+                    <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
+                </div>
+            </div>
+        </div>
         <div class="adm-menus">
-        <details class="adm-acc" open>
+        <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></svg></span><span>Baza idarəsi</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
                 <input type="text" id="adminSearch" class="admin-search adm-search" placeholder="🔎 Qrup / model axtar..." oninput="renderAdminList()">
@@ -2224,7 +2291,7 @@
         <details class="adm-acc">
             <summary><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg></span><span>Hədiyyələr</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
-                <div class="fm"><div class="fm-seg"><button type="button" class="on" onclick="gfTab(this,'one')">Fərdi</button><button type="button" onclick="gfTab(this,'bulk')">Toplu</button><button type="button" onclick="gfTab(this,'new')">Yenilər</button><button type="button" onclick="gfTab(this,'log')">Tarixçə</button></div><div class="fm-pane on" data-pane="gf-one"><div><span class="fm-lbl">İstifadəçi</span><input type="text" id="gfUserQ" class="fm-in" placeholder="Ad, e-poçt, mağaza və ya telefon" oninput="gfSearchUsers()"><div id="gfUserSel"></div><div id="gfUserList" class="gf-ulist"></div></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'one',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'one',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',30)">30 gün</button><input type="number" id="gfDays_one" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('one')"></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_one" class="fm-in" onchange="gfReasonCh('one')"><option value="reg">İlk qeydiyyat</option><option value="holiday">Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal" selected>Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_one" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('one')"></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_one"></div></div><button type="button" class="fm-btn pri wide" onclick="gfGiveOne()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg>Hədiyyə et</button></div><div class="fm-pane" data-pane="gf-bulk"><div><span class="fm-lbl">Kimlərə</span><select id="gfTarget" class="fm-in" onchange="gfCount()"><option value="nopro">Premiumu olmayanlar</option><option value="all">Bütün istifadəçilər</option><option value="pro">Aktiv premiumlar</option><option value="new7">Son 7 gündə qeydiyyat</option><option value="new30">Son 30 gündə qeydiyyat</option><option value="active7">Son 7 gündə aktiv olanlar</option></select><div id="gfCount" class="fm-status" style="margin-top:6px"></div></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'bulk',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'bulk',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',30)">30 gün</button><input type="number" id="gfDays_bulk" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('bulk')"></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_bulk" class="fm-in" onchange="gfReasonCh('bulk')"><option value="reg">İlk qeydiyyat</option><option value="holiday" selected>Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal">Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_bulk" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('bulk')"></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_bulk"></div></div><button type="button" class="fm-btn pri wide" onclick="gfGiveBulk()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg>Toplu hədiyyə et</button><div id="gfProg" class="fm-status"></div></div><div class="fm-pane" data-pane="gf-new"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div>Kampaniya aktiv olanda bu müddətdə qeydiyyatdan keçən hər kəs seçilən gün qədər Premium alır və hədiyyə bildirişi görür. Kampaniya olmayanda standart sınaq müddəti tətbiq olunur.</div></div><div class="fm-sw-row"><span>Kampaniya aktivdir</span><label class="switch"><input type="checkbox" id="gfNewOn" onchange="gfPrev('new')"><span class="slider"></span></label></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'new',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'new',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',30)">30 gün</button><input type="number" id="gfDays_new" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('new')"></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_new" class="fm-in" onchange="gfReasonCh('new')"><option value="reg" selected>İlk qeydiyyat</option><option value="holiday">Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal">Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_new" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('new')"></div><div class="fm-grid2"><div><span class="fm-lbl">Bitmə tarixi</span><input type="date" id="gfNewUntil" class="fm-in"></div><div><span class="fm-lbl">Standart sınaq, gün</span><input type="number" id="gfStd" class="fm-in" min="0" max="365"></div></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_new"></div></div><button type="button" class="fm-btn pri wide" onclick="gfSaveNew()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Yadda saxla</button><div id="gfNewStatus" class="fm-status"></div></div><div class="fm-pane" data-pane="gf-log"><div id="gfLog" class="gf-log"></div></div></div>
+                <div class="fm"><div class="fm-seg"><button type="button" class="on" onclick="gfTab(this,'one')">Fərdi</button><button type="button" onclick="gfTab(this,'bulk')">Toplu</button><button type="button" onclick="gfTab(this,'new')">Yenilər</button><button type="button" onclick="gfTab(this,'log')">Tarixçə</button></div><div class="fm-pane on" data-pane="gf-one"><div><span class="fm-lbl">İstifadəçi</span><input type="text" id="gfUserQ" class="fm-in" placeholder="Ad, e-poçt, mağaza və ya telefon" oninput="gfSearchUsers()"><div id="gfUserSel"></div><div id="gfUserList" class="gf-ulist"></div></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'one',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'one',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'one',30)">30 gün</button><input type="number" id="gfDays_one" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('one')"><select id="gfUnit_one" class="fm-in gf-du" onchange="gfDayInput('one')" aria-label="Vahid"><option value="h">saat</option><option value="d" selected>gün</option><option value="m">ay</option><option value="y">il</option></select></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_one" class="fm-in" onchange="gfReasonCh('one')"><option value="reg">İlk qeydiyyat</option><option value="holiday">Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal" selected>Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_one" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('one')"></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_one"></div></div><button type="button" class="fm-btn pri wide" onclick="gfGiveOne()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg>Hədiyyə et</button></div><div class="fm-pane" data-pane="gf-bulk"><div><span class="fm-lbl">Kimlərə</span><select id="gfTarget" class="fm-in" onchange="gfCount()"><option value="nopro">Premiumu olmayanlar</option><option value="all">Bütün istifadəçilər</option><option value="pro">Aktiv premiumlar</option><option value="new7">Son 7 gündə qeydiyyat</option><option value="new30">Son 30 gündə qeydiyyat</option><option value="active7">Son 7 gündə aktiv olanlar</option></select><div id="gfCount" class="fm-status" style="margin-top:6px"></div></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'bulk',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'bulk',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'bulk',30)">30 gün</button><input type="number" id="gfDays_bulk" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('bulk')"><select id="gfUnit_bulk" class="fm-in gf-du" onchange="gfDayInput('bulk')" aria-label="Vahid"><option value="h">saat</option><option value="d" selected>gün</option><option value="m">ay</option><option value="y">il</option></select></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_bulk" class="fm-in" onchange="gfReasonCh('bulk')"><option value="reg">İlk qeydiyyat</option><option value="holiday" selected>Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal">Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_bulk" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('bulk')"></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_bulk"></div></div><button type="button" class="fm-btn pri wide" onclick="gfGiveBulk()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v14" /><path d="M20 11v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8" /><path d="M7.5 7a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5 1 1 0 0 1 0 5" /><rect x="3" y="7" width="18" height="4" rx="1" /></svg>Toplu hədiyyə et</button><div id="gfProg" class="fm-status"></div></div><div class="fm-pane" data-pane="gf-new"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div>Kampaniya aktiv olanda bu müddətdə qeydiyyatdan keçən hər kəs seçilən gün qədər Premium alır və hədiyyə bildirişi görür. Kampaniya olmayanda standart sınaq müddəti tətbiq olunur.</div></div><div class="fm-sw-row"><span>Kampaniya aktivdir</span><label class="switch"><input type="checkbox" id="gfNewOn" onchange="gfPrev('new')"><span class="slider"></span></label></div><div><span class="fm-lbl">Müddət</span><div class="gf-days"><button type="button" class="gf-d" onclick="gfDay(this,'new',1)">1 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',2)">2 gün</button><button type="button" class="gf-d on" onclick="gfDay(this,'new',3)">3 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',7)">7 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',14)">14 gün</button><button type="button" class="gf-d" onclick="gfDay(this,'new',30)">30 gün</button><input type="number" id="gfDays_new" class="fm-in gf-dn" min="1" max="3650" value="3" oninput="gfDayInput('new')"></div></div><div><span class="fm-lbl">Səbəb</span><select id="gfR_new" class="fm-in" onchange="gfReasonCh('new')"><option value="reg" selected>İlk qeydiyyat</option><option value="holiday">Bayram</option><option value="novruz">Novruz bayramı</option><option value="newyear">Yeni il</option><option value="loyal">Sadiq istifadəçi</option><option value="apology">Üzrxahlıq</option><option value="promo">Kampaniya</option><option value="none">Səbəbsiz</option><option value="custom">Öz mətnim</option></select><input type="text" id="gfRT_new" class="fm-in" maxlength="120" placeholder="məs: Novruz bayramı münasibətilə" style="display:none;margin-top:8px" oninput="gfPrev('new')"></div><div class="fm-grid2"><div><span class="fm-lbl">Bitmə tarixi</span><input type="date" id="gfNewUntil" class="fm-in"></div><div><span class="fm-lbl">Standart sınaq, gün</span><input type="number" id="gfStd" class="fm-in" min="0" max="365"></div></div><div><span class="fm-lbl">İstifadəçi belə görəcək</span><div class="gf-prev" id="gfPrev_new"></div></div><button type="button" class="fm-btn pri wide" onclick="gfSaveNew()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Yadda saxla</button><div id="gfNewStatus" class="fm-status"></div></div><div class="fm-pane" data-pane="gf-log"><div id="gfLog" class="gf-log"></div></div></div>
             </div>
         </details>
         <details class="adm-acc">
@@ -2258,38 +2325,6 @@
             </div>
         </details>
         </div>
-
-        <div class="admin-tabs-sticky" style="display:flex;border-bottom:1px solid var(--border);background:var(--surface);">
-            <button id="adminTabDb" onclick="switchAdminTab('db')" style="flex:1;padding:12px;background:var(--accent-color);color:#111;border:none;font-weight:800;font-size:13px;cursor:pointer;">Modellər Bazası</button>
-            <button id="adminTabUsers" onclick="switchAdminTab('users')" style="flex:1;padding:12px;background:transparent;color:var(--text);border:none;font-weight:700;font-size:13px;cursor:pointer;">İstifadəçilər</button>
-            <button id="adminTabRev" onclick="switchAdminTab('rev')" style="flex:1;padding:12px;background:transparent;color:var(--text);border:none;font-weight:700;font-size:13px;cursor:pointer;">Gəlir</button>
-        </div>
-
-        <div id="adminDbSection" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-            <details class="adm-acc adm-db-acc" id="admDbAcc">
-                <summary><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="8" height="18" x="3" y="3" rx="1" /><path d="M7 3v18" /><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z" /></svg></span><span>Modellər bazası <small id="admDbCount" class="adm-db-count"></small></span><span class="chev">›</span></summary>
-                <div class="adm-acc-body"><div id="adminList" class="admin-list"></div></div>
-            </details>
-        </div>
-
-        <div id="adminUsersSection" style="flex:1;display:none;flex-direction:column;overflow:hidden;padding:12px;">
-            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-                <input type="text" id="adminUserSearch" class="admin-search" placeholder="İstifadəçi axtar (ad, e-poçt, mağaza)..." oninput="renderAdminUsers()">
-                <select id="adminUserFilter" class="admin-search" style="flex:0 0 140px;height:40px;" onchange="renderAdminUsers()">
-                    <option value="all">Bütün rollar</option>
-                    <option value="email">E-poçt</option>
-                    <option value="google">Google</option>
-                    <option value="premium">Premium</option>
-                    <option value="active7">Son 7 gündə aktiv</option>
-                    <option value="blocked">Bloklular</option>
-                </select>
-            </div>
-            <button class="admin-btn admin-btn-secondary" style="height:34px;font-size:12px;margin-bottom:8px;" onclick="toggleBlockLog()">📜 Bloklama tarixçəsi</button>
-            <div id="adminBlockLog" class="rev-list" style="display:none;max-height:220px;overflow-y:auto;"></div>
-            <div id="adminUsersList" style="flex:1;overflow-y:auto;"></div>
-        </div>
-
-        <div id="adminRevSection" style="flex:1;display:none;overflow-y:auto;padding:12px;"></div>
 
         <div class="adm-stats">
             <span id="adminStatTotalUsers">Ümumi istifadəçi: 0</span>
@@ -2432,7 +2467,7 @@
             <h3 id="confirmTitle" style="color:var(--accent-color);margin-bottom:10px;font-size:18px;" data-i18n="confirmTitle">Təsdiq</h3>
             <p id="confirmText" style="font-size:14px;color:var(--text);margin-bottom:20px;line-height:1.4;"></p>
             <div style="display:flex;gap:10px;">
-                <button id="confirmYesBtn" style="flex:1;padding:12px;background:#e74c3c;color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;" data-i18n="confirmYes">Bəli, Sil</button>
+                <button id="confirmYesBtn" style="flex:1;padding:12px;background:#e74c3c;color:#fff;border:none;border-radius:12px;font-weight:800;cursor:pointer;" data-i18n="confirmYes">Təsdiq et</button>
                 <button onclick="closeConfirmModal()" style="flex:1;padding:12px;background:var(--surface-2);color:var(--text);border:1px solid var(--border);border-radius:12px;font-weight:700;cursor:pointer;" data-i18n="confirmNo">İmtina</button>
             </div>
         </div>
@@ -2488,6 +2523,7 @@
                     <div class="spinner" id="updateSpinner"></div>
                     <span data-i18n="updateNow">YENİLƏ</span>
                 </button>
+                <div id="ptProgSlotSettings"></div>
             </div>
 
             <div class="settings-section">
@@ -2650,6 +2686,68 @@
         </div>
     </div>
 
+    <div id="adm-db-page" class="sub-view adm-page">
+        <header class="settings-header">
+            <button class="settings-back" onclick="history.back()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">ADMIN</div>
+                <div class="settings-title">Modellər bazası</div>
+            </div>
+        </header>
+        <div class="settings-content">
+        <div id="adminDbSection" style="display:block;">
+            <details class="adm-acc adm-db-acc" id="admDbAcc">
+                <summary><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="8" height="18" x="3" y="3" rx="1" /><path d="M7 3v18" /><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z" /></svg></span><span>Modellər bazası <small id="admDbCount" class="adm-db-count"></small></span><span class="chev">›</span></summary>
+                <div class="adm-acc-body"><div id="adminList" class="admin-list"></div></div>
+            </details>
+        </div>
+
+        </div>
+    </div>
+
+    <div id="adm-users-page" class="sub-view adm-page">
+        <header class="settings-header">
+            <button class="settings-back" onclick="history.back()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">ADMIN</div>
+                <div class="settings-title">İstifadəçilər</div>
+            </div>
+        </header>
+        <div class="settings-content">
+        <div id="adminUsersSection" style="display:block;padding:0;">
+            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+                <input type="text" id="adminUserSearch" class="admin-search" placeholder="İstifadəçi axtar (ad, e-poçt, mağaza)..." oninput="renderAdminUsers()">
+                <select id="adminUserFilter" class="admin-search" style="flex:0 0 140px;height:40px;" onchange="renderAdminUsers()">
+                    <option value="all">Bütün rollar</option>
+                    <option value="email">E-poçt</option>
+                    <option value="google">Google</option>
+                    <option value="premium">Premium</option>
+                    <option value="active7">Son 7 gündə aktiv</option>
+                    <option value="blocked">Bloklular</option>
+                </select>
+            </div>
+            <button class="admin-btn admin-btn-secondary" style="height:34px;font-size:12px;margin-bottom:8px;" onclick="toggleBlockLog()">📜 Bloklama tarixçəsi</button>
+            <div id="adminBlockLog" class="rev-list" style="display:none;max-height:220px;overflow-y:auto;"></div>
+            <div id="adminUsersList" style="flex:1;overflow-y:auto;"></div>
+        </div>
+
+        </div>
+    </div>
+
+    <div id="adm-rev-page" class="sub-view adm-page">
+        <header class="settings-header">
+            <button class="settings-back" onclick="history.back()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">ADMIN</div>
+                <div class="settings-title">Gəlir</div>
+            </div>
+        </header>
+        <div class="settings-content">
+        <div id="adminRevSection" style="display:block;padding:0;"></div>
+
+        </div>
+    </div>
+
     <div id="lang-view" class="sub-view">
         <header class="settings-header">
             <button class="settings-back" onclick="history.back()">‹</button>
@@ -2742,6 +2840,7 @@
             Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.
         </div>
         <button class="update-button" data-i18n="updateBase" onclick="forceUpdate()">BAZANI YENİLƏ</button>
+        <div id="ptProgSlotBlock" style="width:100%;max-width:420px;margin:0 auto"></div>
     </div>
 
 </div>
@@ -3360,14 +3459,14 @@ function updateRegButtonState() {
 
 function logoutUser() {
     // 137: two-step confirmation for logout
-    const confirmMsg = (I18N[currentLang] && I18N[currentLang].logoutConfirm) || "Hesabdan çıxmaq istədiyinizə əminsiniz?";
-    const confirmYes = t("confirmYes") || "Bəli";
+    const confirmMsg = (I18N[currentLang] && I18N[currentLang].logoutConfirm) || "Hesabınızdan çıxış etməyi təsdiq edirsiniz?";
+    const confirmYes = t("logoutYes") || "Çıxışı təsdiq et";
     const confirmNo = t("confirmNo") || "İmtina";
     if (typeof appDialog === "function") {
         appDialog({
             mode: "choice",
             icon: "🚪",
-            title: t("confirmTitle") || "Təsdiq",
+            title: t("logoutTitle") || t("confirmTitle") || "Hesabdan çıxış",
             text: confirmMsg,
             choices: [{ label: confirmYes, value: "yes" }, { label: confirmNo, value: "no" }]
         }).then(function (v) {
@@ -3426,7 +3525,7 @@ function openAdmin() {
     adminSelected.clear();
     adminDirty = false;
     renderAdminList();
-    switchAdminTab("db");
+    admNavRefresh();
     loadAdminStats();
     loadModelRequests();
     loadMisfits();
@@ -3467,6 +3566,7 @@ function renderAdminList() {
         dbc.textContent = "· " + (Array.isArray(adminEditDb) ? adminEditDb.length : 0) + " qrup · " + mc + " model";
     }
     if (q) admDbOpen();
+    admNavRefresh();
 
     if (!Array.isArray(adminEditDb) || adminEditDb.length === 0) {
         box.innerHTML = '<div class="admin-empty">Baza boşdur. «+ Yeni qrup» ilə əlavə edin.</div>';
@@ -3660,18 +3760,25 @@ function closeConfirmModal() {
     confirmCallback = null;
 }
 
-function switchAdminTab(tab) {
-    document.getElementById("adminDbSection").style.display = tab === "db" ? "flex" : "none";
-    document.getElementById("adminUsersSection").style.display = tab === "users" ? "flex" : "none";
-    document.getElementById("adminRevSection").style.display = tab === "rev" ? "block" : "none";
-    [["adminTabDb", "db"], ["adminTabUsers", "users"], ["adminTabRev", "rev"]].forEach(function (x) {
-        var b = document.getElementById(x[0]);
-        if (!b) return;
-        b.style.background = tab === x[1] ? "var(--accent-color)" : "transparent";
-        b.style.color = tab === x[1] ? "#111" : "var(--text)";
-    });
-    if (tab === "users") renderAdminUsers();
+var ADM_PAGES = { db: "adm-db-page", users: "adm-users-page", rev: "adm-rev-page" };
+function admPageOpen(tab) {
+    var id = ADM_PAGES[tab];
+    if (!id) return;
+    openSubView(id);
+    if (tab === "db") { admDbOpen(); renderAdminList(); }
+    if (tab === "users") { renderAdminUsers(); if (!adminUsersCache.length) loadAdminStats(); }
     if (tab === "rev") loadRevenue();
+}
+function switchAdminTab(tab) { admPageOpen(tab); }
+function admNavRefresh() {
+    var d = document.getElementById("admNavDbSub");
+    if (d) {
+        var mc = 0;
+        (Array.isArray(adminEditDb) ? adminEditDb : []).forEach(function (g) { mc += Array.isArray(g) ? g.length : 0; });
+        d.textContent = "· " + (Array.isArray(adminEditDb) ? adminEditDb.length : 0) + " qrup · " + mc + " model";
+    }
+    var u = document.getElementById("admNavUsersSub");
+    if (u) u.textContent = adminUsersCache.length ? "· " + adminUsersCache.length : "";
 }
 
 function loadAdminStats() {
@@ -3700,12 +3807,26 @@ function loadAdminStats() {
             var td = document.getElementById("adminStatTodayUsers");
             if (t) t.textContent = "Ümumi istifadəçi: " + adminUsersCache.length;
             if (td) td.textContent = "Bugünkü qeydiyyat: " + todayCount;
-            if (document.getElementById("adminUsersSection").style.display !== "none") renderAdminUsers();
+            admNavRefresh();
+            var upg = document.getElementById("adm-users-page");
+            if (upg && upg.classList.contains("active")) renderAdminUsers();
         }).catch(function () {
             var t = document.getElementById("adminStatTotalUsers");
             if (t) t.textContent = "Ümumi istifadəçi: —";
         });
     }
+}
+
+var admOpenUsers = {};
+function admToggleUser(id) {
+    var items = document.querySelectorAll("#adminUsersList .au-item");
+    for (var i = 0; i < items.length; i++) {
+        if (items[i].getAttribute("data-uid") === id) {
+            var on = items[i].classList.toggle("open");
+            if (on) admOpenUsers[id] = 1; else delete admOpenUsers[id];
+        }
+    }
+    if (typeof triggerHaptic === "function") triggerHaptic(15);
 }
 
 function renderAdminUsers() {
@@ -3738,99 +3859,123 @@ function renderAdminUsers() {
     }
     box.innerHTML = users.map(function (u) {
         var id = u._id || u.email || "";
+        var sid = jsArg(id);
         var name = escapeHtml(u.username || u.displayName || "—");
-        var email = escapeHtml(u.email || "");
+        var emailRaw = u.email || "";
+        var phoneRaw = u.phoneNumber || "";
+        var headSub = escapeHtml(emailRaw || phoneRaw || "—");
         var store = escapeHtml(u.storeName || "");
-        var phone = escapeHtml(u.phoneNumber || "");
         var provider = escapeHtml(u.provider || "email");
         var blocked = !!u.blocked;
         var reason = escapeHtml(u.blockReason || "");
         var pu = +u.premiumUntil || 0;
         var proActive = pu > Date.now();
         var bu = +u.blockUntil || 0;
-        var blockInfo = blocked ? (' · BLOK' + (bu ? (bu > Date.now() ? ' (' + fmtDate(bu) + '-dək)' : ' (müddəti bitib)') : '') + ': ' + reason) : '';
+        var blockInfo = blocked ? ('BLOK' + (bu ? (bu > Date.now() ? ' (' + fmtDate(bu) + '-dək)' : ' (müddəti bitib)') : ' (müddətsiz)') + (reason ? ': ' + reason : '')) : '';
         // 184/191/233: last login + device/OS (admin only)
         var devInfo = "";
-        if (u.lastDevice || u.deviceOS || u.userAgent) {
-            var os = escapeHtml(u.deviceOS || u.lastDevice || "");
-            if (!os && u.userAgent) {
-                var ua = String(u.userAgent);
-                if (/iPhone|iPad/i.test(ua)) os = "iOS";
-                else if (/Android/i.test(ua)) os = "Android";
-                else if (/Windows/i.test(ua)) os = "Windows";
-                else if (/Mac/i.test(ua)) os = "macOS";
-                else if (/Linux/i.test(ua)) os = "Linux";
-                else os = "Digər";
-            }
-            if (os) devInfo = ' · 📱 ' + os;
+        var os = escapeHtml(u.deviceOS || u.lastDevice || "");
+        if (!os && u.userAgent) {
+            var ua = String(u.userAgent);
+            if (/iPhone|iPad/i.test(ua)) os = "iOS";
+            else if (/Android/i.test(ua)) os = "Android";
+            else if (/Windows/i.test(ua)) os = "Windows";
+            else if (/Mac/i.test(ua)) os = "macOS";
+            else if (/Linux/i.test(ua)) os = "Linux";
+            else os = "Digər";
         }
+        if (os) devInfo = ' · 📱 ' + os;
         var offlineDays = u.lastSeen ? Math.floor((Date.now() - (+u.lastSeen)) / DAY_MS) : -1;
-        var offlineTag = offlineDays >= 90 ? ' <span style="color:#e74c3c;font-weight:700;">· 90+ gün offline</span>' : "";
-        var seenLine = '<div style="font-size:11px;color:var(--muted);margin-top:2px;">Son aktivlik: ' + (u.lastSeen ? fmtDate(u.lastSeen) : '—') + devInfo + offlineTag + '</div>';
-        var proLine = pu ? ('<div style="font-size:11px;margin-top:4px;color:' + (proActive ? '#d4af37' : 'var(--muted)') + ';">' + (proActive ? 'PRO · bitmə: ' : 'PRO bitib: ') + fmtDate(pu) + '</div>') : '';
-        var sid = jsArg(id);
-        return '<div class="admin-user-card' + (blocked ? ' blocked' : '') + '">' +
-            '<div style="font-weight:700;font-size:14px;">' + name + '</div>' +
-            '<div style="font-size:12px;color:var(--muted);">' + email + ' · ' + provider + (store ? ' · ' + store : '') + '</div>' +
-            '<div style="font-size:11px;color:var(--muted);margin-top:4px;">' + phone + blockInfo + '</div>' +
-            seenLine +
-            proLine +
-            '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;">' +
-            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#d4af37;" onclick="adminGrantPremium(\'' + sid + '\')">' + (proActive ? 'PRO uzat' : 'Premium ver') + '</button>' +
-            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#d4af37;" onclick="gfPickUser(\'' + sid + '\')">🎁 Hədiyyə</button>' +
-            (pu ? '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminRevokePremium(\'' + sid + '\')">PRO ləğv et</button>' : '') +
-            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminRenameUser(\'' + sid + '\')">✏️ Adı dəyiş</button>' +
-            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminResetDevices(\'' + sid + '\')">Cihazları sıfırla</button>' +
-            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;" onclick="adminSendMessage(\'' + sid + '\')">✉ Mesaj</button>' +
-            (blocked
-                ? '<button class="admin-btn admin-btn-success" style="height:30px;font-size:11px;" onclick="adminUnblockUser(\'' + jsArg(id) + '\')">Blokdan çıxar</button>'
-                : '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminBlockUser(\'' + jsArg(id) + '\')">Blokla</button>') +
-            '<button class="admin-btn admin-btn-secondary" style="height:30px;font-size:11px;color:#e74c3c;" onclick="adminDeleteUser(\'' + jsArg(id) + '\')">Sil</button>' +
-            '</div></div>';
+        var offlineTag = offlineDays >= 90 ? ' · <span style="color:#e74c3c;font-weight:700;">90+ gün offline</span>' : "";
+        var line1 = [escapeHtml(emailRaw), provider, store].filter(Boolean).join(" · ");
+        var open = admOpenUsers[id] ? " open" : "";
+        var btn = function (cls, fn, label) { return '<button type="button" class="au-btn' + (cls ? " " + cls : "") + '" onclick="' + fn + '(\'' + sid + '\')">' + label + '</button>'; };
+        return '<div class="au-item' + (blocked ? ' blocked' : '') + open + '" data-uid="' + escapeHtml(id) + '">' +
+            '<div class="settings-row au-head" onclick="admToggleUser(\'' + sid + '\')">' +
+                '<span class="au-who"><span class="au-name">' + name + '</span><span class="au-sub">' + headSub + '</span></span>' +
+                '<span class="au-right">' + (blocked ? '<span class="au-blk">BLOK</span>' : '') + (proActive ? '<span class="au-pro">PRO</span>' : '') + '<span class="au-chev">›</span></span>' +
+            '</div>' +
+            '<div class="au-body">' +
+                '<div class="au-info">' + line1 + '</div>' +
+                (phoneRaw ? '<div class="au-info">' + escapeHtml(phoneRaw) + '</div>' : '') +
+                (blocked ? '<div class="au-info off">' + blockInfo + '</div>' : '') +
+                '<div class="au-info">Son aktivlik: ' + (u.lastSeen ? fmtDate(u.lastSeen) : '—') + devInfo + offlineTag + '</div>' +
+                (pu ? '<div class="au-info' + (proActive ? ' pro' : '') + '">' + (proActive ? 'PRO · bitmə: ' : 'PRO bitib: ') + fmtDate(pu) + '</div>' : '') +
+                '<div class="au-acts">' +
+                    btn('', 'adminGrantPremium', proActive ? 'PRO uzat' : 'Premium ver') +
+                    btn('', 'gfPickUser', '🎁 Hədiyyə') +
+                    (pu ? btn('soft', 'adminRevokePremium', 'PRO ləğv et') : '') +
+                    btn('soft', 'adminRenameUser', '✏️ Adı dəyiş') +
+                    btn('soft', 'adminResetDevices', 'Cihazları sıfırla') +
+                    btn('soft', 'adminSendMessage', '✉ Mesaj') +
+                    (blocked ? btn('ok', 'adminUnblockUser', 'Blokdan çıxar') : btn('danger', 'adminBlockUser', 'Blokla')) +
+                    btn('danger', 'adminDeleteUser', 'Sil') +
+                '</div>' +
+            '</div>' +
+        '</div>';
     }).join("");
 }
 
+// Duration dialog: ready chips + own number with a short unit menu (dəqiqə / saat / gün / ay / il)
+function admDurDialog(title, text) {
+    return new Promise(function (resolve) {
+        var m = document.getElementById("adm-dur-modal");
+        if (!m) {
+            m = document.createElement("div");
+            m.id = "adm-dur-modal";
+            m.className = "ov-modal";
+            document.body.appendChild(m);
+        }
+        var presets = [["0", "Müddətsiz"], ["m30", "30 dəqiqə"], ["h1", "1 saat"], ["h6", "6 saat"], ["d1", "1 gün"], ["d7", "7 gün"], ["d30", "30 gün"]];
+        m.innerHTML = '<div class="ov-box">' +
+            '<h3>' + escapeHtml(title) + '</h3>' +
+            '<p style="color:var(--muted);font-size:13px">' + escapeHtml(text || "") + '</p>' +
+            '<div class="dur-chips">' + presets.map(function (p) { return '<button type="button" class="dur-chip" data-p="' + p[0] + '">' + p[1] + '</button>'; }).join("") + '</div>' +
+            '<div class="dur-lbl">ÖZÜM YAZIM</div>' +
+            '<div class="dur-custom"><input type="number" id="durNum" min="1" max="9999" inputmode="numeric" placeholder="məs: 45">' +
+            '<select id="durUnit"><option value="m">dəqiqə</option><option value="h">saat</option><option value="d" selected>gün</option><option value="mo">ay</option><option value="y">il</option></select></div>' +
+            '<div class="dur-acts"><button type="button" class="no" id="durNo">İmtina</button><button type="button" class="yes" id="durYes">Təsdiq et</button></div>' +
+            '</div>';
+        m.style.display = "flex";
+        var done = function (v) { m.style.display = "none"; m.innerHTML = ""; resolve(v); };
+        var calc = function (unit, n) {
+            var now = Date.now();
+            if (unit === "m") return { until: now + n * 60000, label: n + " dəqiqə" };
+            if (unit === "h") return { until: now + n * 3600000, label: n + " saat" };
+            if (unit === "d") return { until: now + n * DAY_MS, label: n + " gün" };
+            if (unit === "mo") return { until: addMonths(now, n), label: n + " ay" };
+            return { until: addMonths(now, n * 12), label: n + " il" };
+        };
+        var map = { m30: ["m", 30], h1: ["h", 1], h6: ["h", 6], d1: ["d", 1], d7: ["d", 7], d30: ["d", 30] };
+        [].forEach.call(m.querySelectorAll(".dur-chip"), function (c) {
+            c.onclick = function () {
+                var p = c.getAttribute("data-p");
+                if (p === "0") { done({ until: 0, label: "müddətsiz" }); return; }
+                done(calc(map[p][0], map[p][1]));
+            };
+        });
+        document.getElementById("durNo").onclick = function () { done(null); };
+        document.getElementById("durYes").onclick = function () {
+            var n = parseInt(document.getElementById("durNum").value, 10);
+            if (!(n > 0)) { showAppToast("Rəqəm yazın"); document.getElementById("durNum").focus(); return; }
+            done(calc(document.getElementById("durUnit").value, Math.min(n, 9999)));
+        };
+        m.onclick = function (e) { if (e.target === m) done(null); };
+    });
+}
+
 function adminBlockUser(id) {
-    // Flexible block: minutes / hours / days / indefinite + custom number
     var u0 = adminFindUser(id) || {};
-    var reason = null, until = 0, label = "";
+    var reason = null;
     appPrompt("Blokla", (u0.username || u0.email || "") + "\nBlok səbəbini yazın:", "", true).then(function (r) {
         if (r == null) return null;
         reason = r;
-        return appChoice("Blok müddəti", "Vahid seçin və ya «Özüm yazım»", [
-            { label: "Müddətsiz", value: "0" },
-            { label: "30 dəqiqə", value: "m30" },
-            { label: "1 saat", value: "h1" },
-            { label: "6 saat", value: "h6" },
-            { label: "1 gün", value: "d1" },
-            { label: "7 gün", value: "d7" },
-            { label: "30 gün", value: "d30" },
-            { label: "Özüm yazım…", value: "custom" }
-        ]);
+        return admDurDialog("Blok müddəti", "Hazır seçim edin və ya özünüz yazın");
     }).then(function (d) {
-        if (d == null || reason == null) return;
-        if (d === "0") { until = 0; label = "müddətsiz"; doBlock(); return; }
-        if (d === "custom") {
-            appPrompt("Müddət", "Rəqəm + vahid: məs. 45m, 3h, 2d", "2d", true).then(function (raw) {
-                if (!raw) return;
-                var m = String(raw).trim().toLowerCase().match(/^(\d+)\s*([mhd])?/);
-                if (!m) { showAppToast("Format: 30m / 2h / 5d"); return; }
-                var n = parseInt(m[1], 10) || 0;
-                var u = m[2] || "d";
-                var ms = u === "m" ? n * 60 * 1000 : u === "h" ? n * 3600 * 1000 : n * DAY_MS;
-                until = Date.now() + ms;
-                label = n + (u === "m" ? " dəq" : u === "h" ? " saat" : " gün");
-                doBlock();
-            });
-            return;
-        }
-        var map = { m30: [30 * 60 * 1000, "30 dəq"], h1: [3600 * 1000, "1 saat"], h6: [6 * 3600 * 1000, "6 saat"], d1: [DAY_MS, "1 gün"], d7: [7 * DAY_MS, "7 gün"], d30: [30 * DAY_MS, "30 gün"] };
-        var x = map[d] || [DAY_MS, "1 gün"];
-        until = Date.now() + x[0];
-        label = x[1];
-        doBlock();
+        if (!d || reason == null) return;
+        doBlock(d.until, d.label);
     });
-    function doBlock() {
+    function doBlock(until, label) {
         db.collection("users").doc(id).update({
             blocked: true,
             blockReason: reason,
@@ -7069,7 +7214,8 @@ function giftReasonText(x, lang) {
 function giftMsg(x, lang) {
     const tr = function (k) { return lang ? ((I18N[lang] || {})[k] || "") : t(k); };
     const r = giftReasonText(x, lang);
-    return tr(r ? "giftMsgR" : "giftMsg").replace("{r}", r).replace("{d}", x.days || 0);
+    const dtxt = x.unit ? gfDurText(x.unit, x.gAmount, lang || currentLang) : gfDurText("d", Math.round(x.days || 0), lang || currentLang);
+    return tr(r ? "giftMsgR" : "giftMsg").replace("{r}", r).replace("{d}", dtxt);
 }
 
 function giftPopupCheck() {
@@ -7311,29 +7457,67 @@ function gfTab(btn, l) {
     ["one", "bulk", "new"].forEach(gfPrev);
 }
 
-function gfGetDays(k) {
-    const n = parseInt((document.getElementById("gfDays_" + k) || {}).value, 10);
-    return isFinite(n) && n > 0 ? Math.min(n, 3650) : 0;
+function gfDur(k) {
+    const inp = document.getElementById("gfDays_" + k);
+    const sel = document.getElementById("gfUnit_" + k);
+    const unit = (sel && sel.value) || "d";
+    const n = parseFloat(inp && inp.value);
+    if (!isFinite(n) || n <= 0) return { days: 0, unit: unit, amount: 0 };
+    const amount = unit === "h" ? Math.min(Math.round(n), 87600) : Math.min(Math.round(n), unit === "d" ? 3650 : unit === "m" ? 120 : 10);
+    if (!amount) return { days: 0, unit: unit, amount: 0 };
+    const now = Date.now();
+    let days;
+    if (unit === "h") days = amount / 24;
+    else if (unit === "d") days = amount;
+    else days = Math.round((addMonths(now, unit === "m" ? amount : amount * 12) - now) / DAY_MS);
+    return { days: days, unit: unit, amount: amount };
+}
+
+function gfGetDays(k) { return gfDur(k).days; }
+
+// readable duration in the given language: h / d / m / y
+function gfDurText(unit, amount, lang) {
+    const L = lang || currentLang || "az";
+    const n = +amount || 0;
+    const W = {
+        az: { h: "saat", d: "gün", m: "ay", y: "il" },
+        tr: { h: "saat", d: "gün", m: "ay", y: "yıl" },
+        en: { h: ["hour", "hours"], d: ["day", "days"], m: ["month", "months"], y: ["year", "years"] },
+        ru: { h: ["час", "часа", "часов"], d: ["день", "дня", "дней"], m: ["месяц", "месяца", "месяцев"], y: ["год", "года", "лет"] }
+    };
+    const w = (W[L] || W.az)[unit] || (W[L] || W.az).d;
+    if (L === "en") return n + " " + (n === 1 ? w[0] : w[1]);
+    if (L === "ru") {
+        const m10 = n % 10, m100 = n % 100;
+        const f = (m10 === 1 && m100 !== 11) ? w[0] : (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) ? w[1] : w[2];
+        return n + " " + f;
+    }
+    return n + " " + w;
 }
 
 function gfDay(btn, k, d) {
     btn.parentNode.querySelectorAll(".gf-d").forEach(function (b) { b.classList.toggle("on", b === btn); });
     const inp = document.getElementById("gfDays_" + k);
     if (inp) inp.value = d;
+    const us = document.getElementById("gfUnit_" + k);
+    if (us) us.value = "d";
     gfPrev(k);
 }
 
 function gfDayInput(k) {
     const d = gfGetDays(k);
     const inp = document.getElementById("gfDays_" + k);
-    if (inp) inp.parentNode.querySelectorAll(".gf-d").forEach(function (b) { b.classList.toggle("on", parseInt(b.textContent, 10) === d); });
+    const us = document.getElementById("gfUnit_" + k);
+    const isDay = !us || us.value === "d";
+    if (inp) inp.parentNode.querySelectorAll(".gf-d").forEach(function (b) { b.classList.toggle("on", isDay && parseInt(b.textContent, 10) === d); });
     gfPrev(k);
 }
 
 function gfReason(k) {
     const r = (document.getElementById("gfR_" + k) || {}).value || "none";
     const txt = ((document.getElementById("gfRT_" + k) || {}).value || "").trim();
-    return { reason: r, reasonText: r === "custom" ? txt.slice(0, 120) : "" };
+    const du = gfDur(k);
+    return { reason: r, reasonText: r === "custom" ? txt.slice(0, 120) : "", unit: du.unit, gAmount: du.amount };
 }
 
 function gfReasonCh(k) {
@@ -7348,7 +7532,7 @@ function gfPrev(k) {
     if (!el) return;
     const d = gfGetDays(k);
     const r = gfReason(k);
-    el.textContent = d ? giftMsg({ days: d, reason: r.reason, reasonText: r.reasonText }, "az") : "Gün sayını seçin";
+    el.textContent = d ? giftMsg({ days: d, reason: r.reason, reasonText: r.reasonText, unit: r.unit, gAmount: r.gAmount }, "az") : "Müddəti seçin";
 }
 
 function gfSearchUsers() {
@@ -7383,6 +7567,12 @@ function gfSelect(id) {
 }
 
 function gfPickUser(id) {
+    const upg = document.getElementById("adm-users-page");
+    if (upg && upg.classList.contains("active")) {
+        history.back();
+        setTimeout(function () { gfPickUser(id); }, 380);
+        return;
+    }
     const acc = [].filter.call(document.querySelectorAll("details.adm-acc"), function (d) { return !!d.querySelector('[data-pane="gf-one"]'); })[0];
     if (!acc) return;
     if (!acc.open) acc.open = true;
@@ -7401,12 +7591,12 @@ function giftGrantOne(u, days, r, batch) {
     return ref.set({ premiumUntil: until, premiumSince: u.premiumSince || now }, { merge: true }).then(function () {
         return db.collection("payments").add({
             uid: u._id, email: u.email || "", storeName: u.storeName || "", username: u.username || "",
-            amount: 0, gift: true, days: days, reason: r.reason, reasonText: r.reasonText || "",
+            amount: 0, gift: true, days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "",
             from: base, until: until, createdAt: now, batch: batch || "",
             by: (auth.currentUser && auth.currentUser.email) || ""
         });
     }).then(function () {
-        return ref.collection("notifications").add({ type: "premium_gift", days: days, reason: r.reason, reasonText: r.reasonText || "", until: until, createdAt: now, read: false });
+        return ref.collection("notifications").add({ type: "premium_gift", days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "", until: until, createdAt: now, read: false });
     }).then(function () {
         u.premiumUntil = until;
         if (!u.premiumSince) u.premiumSince = now;
@@ -7419,13 +7609,13 @@ function gfGiveOne() {
     const days = gfGetDays("one");
     const r = gfReason("one");
     if (!u) { appAlert("Əvvəlcə istifadəçini seçin.", "Hədiyyə", "🎁"); return; }
-    if (!days) { appAlert("Gün sayını seçin.", "Hədiyyə", "🎁"); return; }
+    if (!days) { appAlert("Müddəti seçin.", "Hədiyyə", "🎁"); return; }
     if (r.reason === "custom" && !r.reasonText) { appAlert("Səbəbi yazın.", "Hədiyyə", "🎁"); return; }
     const until = Math.max(Date.now(), +u.premiumUntil || 0) + days * DAY_MS;
-    appConfirm(gfName(u) + " üçün " + days + " gün Premium hədiyyə edilsin?\nYeni bitmə tarixi: " + fmtDate(until) + "\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText }, "az"), "Bəli, hədiyyə et").then(function (ok) {
+    appConfirm(gfName(u) + " üçün " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə edilsin?\nYeni bitmə tarixi: " + fmtDate(until) + "\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText, unit: r.unit, gAmount: r.gAmount }, "az"), "Bəli, hədiyyə et").then(function (ok) {
         if (!ok) return;
         giftGrantOne(u, days, r, "").then(function (nu) {
-            showAppToast("🎁 " + gfName(u) + ": " + days + " gün · " + fmtDate(nu) + "-dək");
+            showAppToast("🎁 " + gfName(u) + ": " + gfDurText(r.unit, r.gAmount, "az") + " · " + fmtDate(nu) + "-dək");
             gfSelect("");
             renderAdminUsers();
             triggerHaptic(40);
@@ -7463,9 +7653,9 @@ function gfGiveBulk() {
     const sel = document.getElementById("gfTarget");
     const label = sel ? sel.options[sel.selectedIndex].text : "";
     if (!list.length) { appAlert("Bu qrupda istifadəçi yoxdur.", "Toplu hədiyyə", "🎁"); return; }
-    if (!days) { appAlert("Gün sayını seçin.", "Toplu hədiyyə", "🎁"); return; }
+    if (!days) { appAlert("Müddəti seçin.", "Toplu hədiyyə", "🎁"); return; }
     if (r.reason === "custom" && !r.reasonText) { appAlert("Səbəbi yazın.", "Toplu hədiyyə", "🎁"); return; }
-    appConfirm(label + ": " + list.length + " istifadəçiyə " + days + " gün Premium hədiyyə edilsin?\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText }, "az"), "Bəli, hamısına ver").then(function (ok) {
+    appConfirm(label + ": " + list.length + " istifadəçiyə " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə edilsin?\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText, unit: r.unit, gAmount: r.gAmount }, "az"), "Bəli, hamısına ver").then(function (ok) {
         if (!ok) return;
         const batch = "b" + Date.now();
         const prog = document.getElementById("gfProg");
@@ -7481,7 +7671,7 @@ function gfGiveBulk() {
         };
         step().then(function () {
             if (prog) prog.textContent = "✓ " + done + " istifadəçiyə hədiyyə edildi" + (fail ? " · xəta: " + fail : "");
-            showAppToast("🎁 " + done + " istifadəçiyə " + days + " gün Premium hədiyyə edildi");
+            showAppToast("🎁 " + done + " istifadəçiyə " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə edildi");
             renderAdminUsers();
             gfCount();
             triggerHaptic(50);
@@ -7552,7 +7742,7 @@ function gfLoadLog() {
             const who = g.username || g.storeName || g.email || g.uid || "—";
             return '<div class="gf-row' + (g.revoked ? " off" : "") + '"><span>' + escapeHtml(who) +
                 '<small>' + fmtDate(g.createdAt) + " · " + escapeHtml(gfReasonLabel(g)) + (g.batch ? " · toplu" : "") + (g.revoked ? " · geri alınıb" : "") + '</small></span>' +
-                '<span class="ga"><b>' + (g.days || 0) + ' gün</b>' +
+                '<span class="ga"><b>' + (g.unit ? gfDurText(g.unit, g.gAmount, "az") : (g.days || 0) + " gün") + '</b>' +
                 (g.revoked ? "" : '<button type="button" onclick="gfRevoke(\'' + jsArg(g._id) + '\')">Geri al</button>') +
                 '<button type="button" onclick="gfDeleteLog(\'' + jsArg(g._id) + '\')" aria-label="Sil">🗑</button></span></div>';
         }).join("");
@@ -8033,8 +8223,8 @@ function authErrText(err) {
     const c = err && err.code;
     if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return t("loginCancelled");
     if (c === "auth/popup-blocked") return t("popupBlocked");
-    if (c === "auth/unauthorized-domain") return "Bu domen Firebase-də icazəli deyil (Authorized domains).";
-    if (c === "auth/operation-not-allowed") return "Bu giriş üsulu Firebase-də aktiv deyil və ya region bloklanıb.";
+    if (c === "auth/unauthorized-domain") return t("authUnauthDomain");
+    if (c === "auth/operation-not-allowed") return t("authOpNotAllowed");
     if (c === "auth/too-many-requests") return t("tooMany");
     return t("errPrefix") + " " + ((err && err.message) || "");
 }
@@ -8091,7 +8281,7 @@ function handleMfa(error) {
     const resolver = error.resolver;
     const hint = (resolver.hints || []).find(function (h) { return h && h.factorId === "phone"; });
     if (!hint) {
-        appAlert("Bu hesabda SMS-dən başqa ikinci addım qoşulub. Firebase Console-da bu istifadəçidən ikinci addımı silin.", "", "⚠️");
+        appAlert(t("mfaOther"), "", "⚠️");
         return Promise.reject(error);
     }
     let box = document.getElementById("pt-recaptcha");
@@ -8102,7 +8292,7 @@ function handleMfa(error) {
     const done = function () { try { verifier.clear(); } catch (e) {} };
     return provider.verifyPhoneNumber({ multiFactorHint: hint, session: resolver.session }, verifier)
         .then(function (vid) {
-            return appPrompt("SMS kodu", (hint.phoneNumber || "Telefonunuza") + " — göndərilən 6 rəqəmli kodu yazın", "", false, "123456").then(function (code) {
+            return appPrompt(t("mfaCodeTitle"), t("mfaCodeText").replace("{p}", hint.phoneNumber || t("mfaPhoneDef")), "", false, "123456").then(function (code) {
                 code = String(code || "").replace(/\D/g, "");
                 if (!code) throw error;
                 const cred = firebase.auth.PhoneAuthProvider.credential(vid, code);
@@ -9089,7 +9279,7 @@ const I18N_VF = {"az": {"authMsgLogin": "Axtarış üçün daxil olun və ya pul
 Object.keys(I18N_VF).forEach(function (l) { Object.assign(I18N[l], I18N_VF[l]); });
 const I18N_UI2 = {"az": {"themeReading": "OXUMA", "eyeComfort": "Göz rahatlığı", "eyeComfortDesc": "Ekranı isti, yumşaq dumanlı tonla rahatladır", "fontReset": "Sıfırla", "fontSample": "Samsung Galaxy A55 — nümunə mətn", "secAbout": "HAQQINDA", "aboutOpen": "Proqram haqqında"}, "ru": {"themeReading": "ЧТЕНИЕ", "eyeComfort": "Комфорт для глаз", "eyeComfortDesc": "Смягчает экран тёплым дымчатым оттенком", "fontReset": "Сбросить", "fontSample": "Samsung Galaxy A55 — пример текста", "secAbout": "О ПРОГРАММЕ", "aboutOpen": "О программе"}, "tr": {"themeReading": "OKUMA", "eyeComfort": "Göz konforu", "eyeComfortDesc": "Ekranı sıcak, yumuşak sisli bir tonla rahatlatır", "fontReset": "Sıfırla", "fontSample": "Samsung Galaxy A55 — örnek metin", "secAbout": "HAKKINDA", "aboutOpen": "Uygulama hakkında"}, "en": {"themeReading": "READING", "eyeComfort": "Eye comfort", "eyeComfortDesc": "Softens the screen with a warm, misty tint", "fontReset": "Reset", "fontSample": "Samsung Galaxy A55 — sample text", "secAbout": "ABOUT", "aboutOpen": "About the app"}};
 Object.keys(I18N_UI2).forEach(function (l) { Object.assign(I18N[l], I18N_UI2[l]); });
-const I18N_GIFT = {"az": {"giftTitle": "Hədiyyə", "giftMsgR": "🎁 {r} ProTechtor™ tərəfindən sizə {d} gün Premium hədiyyə edildi!", "giftMsg": "🎁 ProTechtor™ tərəfindən sizə {d} gün Premium hədiyyə edildi!", "payGift": "Hədiyyə", "gR_reg": "İlk qeydiyyatınız münasibətilə", "gR_holiday": "Bayram münasibətilə", "gR_novruz": "Novruz bayramı münasibətilə", "gR_newyear": "Yeni il münasibətilə", "gR_loyal": "Sadiq istifadəçimiz olduğunuz üçün", "gR_apology": "Yaranmış narahatlığa görə üzrxahlıq olaraq", "gR_promo": "Kampaniya çərçivəsində"}, "ru": {"giftTitle": "Подарок", "giftMsgR": "🎁 {r} — ProTechtor™ дарит вам Premium на {d} дн.!", "giftMsg": "🎁 ProTechtor™ дарит вам Premium на {d} дн.!", "payGift": "Подарок", "gR_reg": "В честь вашей регистрации", "gR_holiday": "В честь праздника", "gR_novruz": "В честь праздника Новруз", "gR_newyear": "В честь Нового года", "gR_loyal": "Как нашему постоянному пользователю", "gR_apology": "В качестве извинения за неудобства", "gR_promo": "В рамках акции"}, "tr": {"giftTitle": "Hediye", "giftMsgR": "🎁 {r} ProTechtor™ tarafından size {d} gün Premium hediye edildi!", "giftMsg": "🎁 ProTechtor™ tarafından size {d} gün Premium hediye edildi!", "payGift": "Hediye", "gR_reg": "İlk kaydınız vesilesiyle", "gR_holiday": "Bayram münasebetiyle", "gR_novruz": "Nevruz Bayramı münasebetiyle", "gR_newyear": "Yeni yıl münasebetiyle", "gR_loyal": "Sadık kullanıcımız olduğunuz için", "gR_apology": "Yaşanan aksaklık için özür olarak", "gR_promo": "Kampanya kapsamında"}, "en": {"giftTitle": "Gift", "giftMsgR": "🎁 {r} — ProTechtor™ has gifted you {d} days of Premium!", "giftMsg": "🎁 ProTechtor™ has gifted you {d} days of Premium!", "payGift": "Gift", "gR_reg": "To celebrate your registration", "gR_holiday": "To celebrate the holiday", "gR_novruz": "To celebrate Novruz", "gR_newyear": "To celebrate the New Year", "gR_loyal": "For being a loyal user", "gR_apology": "As an apology for the inconvenience", "gR_promo": "As part of our promotion"}};
+const I18N_GIFT = {"az": {"giftTitle": "Hədiyyə", "giftMsgR": "🎁 {r} ProTechtor™ tərəfindən sizə {d} Premium hədiyyə edildi!", "giftMsg": "🎁 ProTechtor™ tərəfindən sizə {d} Premium hədiyyə edildi!", "payGift": "Hədiyyə", "gR_reg": "İlk qeydiyyatınız münasibətilə", "gR_holiday": "Bayram münasibətilə", "gR_novruz": "Novruz bayramı münasibətilə", "gR_newyear": "Yeni il münasibətilə", "gR_loyal": "Sadiq istifadəçimiz olduğunuz üçün", "gR_apology": "Yaranmış narahatlığa görə üzrxahlıq olaraq", "gR_promo": "Kampaniya çərçivəsində"}, "ru": {"giftTitle": "Подарок", "giftMsgR": "🎁 {r} — ProTechtor™ дарит вам Premium на {d}!", "giftMsg": "🎁 ProTechtor™ дарит вам Premium на {d}!", "payGift": "Подарок", "gR_reg": "В честь вашей регистрации", "gR_holiday": "В честь праздника", "gR_novruz": "В честь праздника Новруз", "gR_newyear": "В честь Нового года", "gR_loyal": "Как нашему постоянному пользователю", "gR_apology": "В качестве извинения за неудобства", "gR_promo": "В рамках акции"}, "tr": {"giftTitle": "Hediye", "giftMsgR": "🎁 {r} ProTechtor™ tarafından size {d} Premium hediye edildi!", "giftMsg": "🎁 ProTechtor™ tarafından size {d} Premium hediye edildi!", "payGift": "Hediye", "gR_reg": "İlk kaydınız vesilesiyle", "gR_holiday": "Bayram münasebetiyle", "gR_novruz": "Nevruz Bayramı münasebetiyle", "gR_newyear": "Yeni yıl münasebetiyle", "gR_loyal": "Sadık kullanıcımız olduğunuz için", "gR_apology": "Yaşanan aksaklık için özür olarak", "gR_promo": "Kampanya kapsamında"}, "en": {"giftTitle": "Gift", "giftMsgR": "🎁 {r} — ProTechtor™ has gifted you {d} of Premium!", "giftMsg": "🎁 ProTechtor™ has gifted you {d} of Premium!", "payGift": "Gift", "gR_reg": "To celebrate your registration", "gR_holiday": "To celebrate the holiday", "gR_novruz": "To celebrate Novruz", "gR_newyear": "To celebrate the New Year", "gR_loyal": "For being a loyal user", "gR_apology": "As an apology for the inconvenience", "gR_promo": "As part of our promotion"}};
 Object.keys(I18N_GIFT).forEach(function (l) { Object.assign(I18N[l], I18N_GIFT[l]); });
 const I18N_MENU = {"az": {"menuTheme": "Interfeys", "menuLang": "Dil"}, "ru": {"menuTheme": "Интерфейс", "menuLang": "Язык"}, "tr": {"menuTheme": "Arayüz", "menuLang": "Dil"}, "en": {"menuTheme": "Interface", "menuLang": "Language"}};
 Object.keys(I18N_MENU).forEach(function (l) { Object.assign(I18N[l], I18N_MENU[l]); });
@@ -9104,6 +9294,22 @@ const I18N_LOG = {
   en: { logoutConfirm: "Are you sure you want to sign out?", loading: "Loading…", checking: "Checking…", limitNear: "Approaching search limit: {n} left", misfitLong: "Too long", misfitShort: "Too short", misfitSensor: "Covers the sensor", misfitCamera: "Covers the camera", misfitOther: "Other…", srcOfficial: "Official size", srcMeasured: "Measured", srcApprox: "Approximate" }
 };
 Object.keys(I18N_LOG).forEach(function (l) { Object.assign(I18N[l], I18N_LOG[l]); });
+const I18N_FIX = {
+    az: { logoutConfirm: "Hesabınızdan çıxış etməyi təsdiq edirsiniz?", logoutTitle: "Hesabdan çıxış", logoutYes: "Çıxışı təsdiq et", confirmYes: "Təsdiq et",
+          mfaOther: "Bu hesabda SMS-dən başqa ikinci addım qoşulub. Firebase Console-da bu istifadəçidən ikinci addımı silin.", mfaCodeTitle: "SMS kodu", mfaCodeText: "{p} — göndərilən 6 rəqəmli kodu yazın", mfaPhoneDef: "Telefonunuza",
+          authUnauthDomain: "Bu domen Firebase-də icazəli deyil (Authorized domains).", authOpNotAllowed: "Bu giriş üsulu Firebase-də aktiv deyil və ya region bloklanıb." },
+    ru: { logoutConfirm: "Подтверждаете выход из аккаунта?", logoutTitle: "Выход из аккаунта", logoutYes: "Подтвердить выход", confirmYes: "Подтвердить",
+          mfaOther: "В этом аккаунте подключён второй шаг, отличный от SMS. Удалите второй шаг у этого пользователя в Firebase Console.", mfaCodeTitle: "SMS-код", mfaCodeText: "{p} — введите отправленный 6-значный код", mfaPhoneDef: "На ваш телефон",
+          authUnauthDomain: "Этот домен не разрешён в Firebase (Authorized domains).", authOpNotAllowed: "Этот способ входа не включён в Firebase, либо регион заблокирован." },
+    tr: { logoutConfirm: "Hesabınızdan çıkış yapmayı onaylıyor musunuz?", logoutTitle: "Hesaptan çıkış", logoutYes: "Çıkışı onayla", confirmYes: "Onayla",
+          mfaOther: "Bu hesapta SMS dışında bir ikinci adım etkin. Firebase Console'da bu kullanıcının ikinci adımını kaldırın.", mfaCodeTitle: "SMS kodu", mfaCodeText: "{p} — gönderilen 6 haneli kodu yazın", mfaPhoneDef: "Telefonunuza",
+          authUnauthDomain: "Bu alan adı Firebase'de yetkili değil (Authorized domains).", authOpNotAllowed: "Bu giriş yöntemi Firebase'de etkin değil veya bölge engellenmiş." },
+    en: { logoutConfirm: "Please confirm that you want to sign out of your account.", logoutTitle: "Sign out", logoutYes: "Confirm sign out", confirmYes: "Confirm",
+          mfaOther: "This account has a second step other than SMS enabled. Remove the second step for this user in Firebase Console.", mfaCodeTitle: "SMS code", mfaCodeText: "{p} — enter the 6-digit code that was sent", mfaPhoneDef: "your phone",
+          authUnauthDomain: "This domain is not authorized in Firebase (Authorized domains).", authOpNotAllowed: "This sign-in method is not enabled in Firebase, or the region is blocked." }
+};
+Object.keys(I18N_FIX).forEach(function (l) { Object.assign(I18N[l], I18N_FIX[l]); });
+
 const PRIVACY = {"az": {"intro": "ProTechtor™ · MƏXFİLİK SİYASƏTİ VƏ İSTİFADƏ ŞƏRTLƏRİ\nProqramdan istifadə etməzdən əvvəl bütün 10 bəndi diqqətlə oxuyun.\nSon redaktə: 06.10.2026", "items": [["ÜMUMİ MÜDDƏALAR", ["Bu Məxfilik Siyasəti ProTechtor™ proqramının (bundan sonra – «Proqram») istifadəsi zamanı məlumatların toplanması, istifadəsi və mühafizəsi qaydalarını, habelə istifadəçilərin hüquq və öhdəliklərini müəyyən edir.", "Proqramın operatoru və fərdi məlumatların sahibi (bundan sonra – «Operator»): ProTechtor™ (©By Emin). Operatorla əlaqə Proqramdakı «WhatsApp ilə əlaqə» düyməsi vasitəsilə saxlanılır.", "Proqramın və bazanın mülkiyyət və müəllif hüquqları ©By Emin-ə məxsusdur.", "Proqramdan istifadə bu Siyasətin bütün şərtlərinin tam və qeyd-şərtsiz qəbul edilməsi deməkdir. Şərtlərlə razı olmayan şəxs Proqramdan istifadəni dayandırmalıdır."]], ["UYĞUNLUQ ÖLÇÜLƏRİNİN DƏQİQLİYİ (ƏSAS XƏBƏRDARLIQ)", ["Proqramda təqdim edilən qoruyucu şüşə uyğunluğu və ölçülər məlumat xarakteri daşıyır və TAM DƏQİQ OLMAYA BİLƏR. Cihaz modifikasiyaları, bölgə versiyaları, istehsal partiyaları və istehsalçı fərqləri real ölçülərə təsir edə bilər.", "İstifadəçi məhsulu satmazdan, kəsməzdən, yapışdırmazdan və ya tətbiq etməzdən əvvəl cihazın və məhsulun ölçülərini MÜSTƏQİL ŞƏKİLDƏ ÖLÇMƏLİ və uyğunluğu özü yoxlamalıdır.", "Proqramdakı məlumatlara əsaslanan qərarlara, alınmış və ya satılmış məhsullara, yarana biləcək maddi zərərə və cihazın zədələnməsinə görə məsuliyyət istifadəçiyə aiddir. Operator bu hallara görə qanunvericiliklə icazə verilən maksimal həddə məsuliyyət daşımır."]], ["TOPLANAN MƏLUMATLAR", ["Proqram yalnız qeydiyyat və ya giriş zamanı istifadəçi tərəfindən təqdim edilən və ya seçilmiş giriş üsulu ilə əldə olunan məlumatları emal edir: ləqəb, e-poçt ünvanı, telefon nömrəsi, mağaza adı və ünvanı, Google hesabının e-poçt ünvanı.", "İstifadəçinin özü seçdiyi profil şəkli və ya avatar (şəkil kiçildilmiş formada saxlanılır və yalnız istifadəçinin özünə və Operatora görünür).", "«Bu modeli bizə bildir» funksiyası ilə göndərilən model adı və göndərilmə tarixi; istifadəçi daxil olubsa, həmçinin hesabın texniki identifikatoru.", "Premium abunəlik və hesabın təhlükəsizliyi məqsədilə: ödəniş tarixi, məbləği və abunəlik müddəti; hesabın istifadə edildiyi cihazın növü (əməliyyat sistemi və brauzer) və son aktivlik vaxtı; aylıq axtarış sayı.", "«Uyğun gəlmədi» funksiyası ilə göndərilən model adı, uyğunluq qrupu və istifadəçinin qısa şərhi.", "Giriş etmədən məhdud istifadə zamanı şəxsi məlumat tələb olunmur. Proqram məkan məlumatlarını, reklam və davranış izləmə alətlərini istifadə etmir."]], ["İSTİFADƏ MƏQSƏDİ VƏ ÖTÜRÜLMƏ", ["Məlumatlar yalnız hesabın identifikasiyası, girişin təmin olunması, axtarış limitlərinin tətbiqi, profilin idarə edilməsi, əlaqə və təhlükəsizlik məqsədilə istifadə olunur.", "Məlumatlar satılmır, reklam məqsədilə istifadə edilmir və qanuni əsas olmadan üçüncü şəxslərə ötürülmür. Qanunvericiliyin tələbi ilə səlahiyyətli dövlət orqanlarına təqdim edilə bilər."]], ["YERLİ YADDAŞ", ["Proqram cihazın yerli yaddaşından (Local Storage) istifadə edir: mövzu, şrift, dil, səs və vibrasiya parametrləri, baza surəti, axtarış limiti sayğacları və son axtarışlar.", "Bu məlumatlar cihazda qalır və brauzer yaddaşı təmizləndikdə silinir."]], ["ÜÇÜNCÜ TƏRƏF XİDMƏTLƏRİ", ["Proqram Google Firebase (Authentication və Firestore) xidmətlərindən, Google hesabı ilə girişdən istifadə edir. WhatsApp-a keçid edildikdə proses həmin platformanın qaydalarına tabe olur.", "Firebase xidmətlərində saxlanılan məlumatlar Google LLC-nin serverlərində, o cümlədən Azərbaycan Respublikasının hüdudlarından kənarda yerləşə bilər. Proqramdan istifadə etməklə istifadəçi məlumatlarının bu qaydada ötürülməsinə və saxlanmasına razılıq verir.", "Operator üçüncü tərəf xidmətlərinin fəaliyyətinə və qaydalarına görə məsuliyyət daşımır.", "Premium istifadəçilər üçün AI köməkçi Google Gemini (Firebase AI Logic) xidməti vasitəsilə işləyir: köməkçiyə yazılan suallar cavab hazırlanması üçün Google-a ötürülür və Google tərəfindən xidmətin təkmilləşdirilməsi üçün istifadə oluna bilər. Köməkçiyə şəxsi məlumat yazmayın."]], ["MƏLUMATLARIN MÜHAFİZƏSİ VƏ İSTİFADƏÇİ HÜQUQLARI", ["Operator məlumatların qorunması üçün məqbul texniki və təşkilati tədbirlər görür. İnternet üzərindən ötürmənin mütləq təhlükəsizliyi təmin edilə bilməz.", "Məlumatlar hesab aktiv olduğu müddətdə saxlanılır. İstifadəçi öz məlumatlarına baxmaq, onları düzəltmək (Profil bölməsi) və silinməsini tələb etmək hüququna malikdir.", "Məlumatlara baxmaq, düzəltmək və ya silmək barədə müraciətlər Operatora Proqramdakı «WhatsApp ilə əlaqə» düyməsi vasitəsilə göndərilir."]], ["UŞAQLARIN HÜQUQLARI", ["Qeydiyyat yalnız 18 yaşı tamam olmuş şəxslər üçün nəzərdə tutulub. 18 yaşınadək şəxslərin məlumatları qanuni nümayəndənin (valideyn, himayəçi) razılığı olmadan toplanmır.", "Operator uşaqlardan məlumatı bilərəkdən toplamır. Belə məlumatın aşkar edilməsi halında o, dərhal silinir. Valideyn və ya qanuni nümayəndə uşağa aid məlumatın silinməsini istənilən vaxt tələb edə bilər."]], ["MAĞAZA İSTİFADƏÇİLƏRİNİN HÜQUQ VƏ ÖHDƏLİKLƏRİ", ["Mağaza adı, ünvanı və telefon nömrəsi dəqiq və aktual olmalıdır. Saxta məlumatla və ya üçüncü şəxsin adından qeydiyyat qadağandır.", "Mağaza öz müştəriləri qarşısında satış, zəmanət və geri qaytarma üzrə məsuliyyəti özü daşıyır. Proqram mağaza ilə müştəri arasındakı münasibətlərin tərəfi deyil.", "Mağaza öz profil məlumatlarını idarə etmək, düzəltmək və silinməsini tələb etmək hüququna malikdir. Qaydalar pozulduqda, sui-istifadə və ya bazanın icazəsiz surətinin çıxarılması halında Operator hesabı məhdudlaşdırmaq və ya silmək hüququnu saxlayır.", "Axtarış üçün qeydiyyat və daxil olmaq tələb olunur; qeydiyyatlı istifadəçiyə hər ay 30 pulsuz axtarış verilir. E-poçtla qeydiyyatdan keçən istifadəçi e-poçt ünvanını təsdiqləməlidir. Premium abunəliyin qiymətləri: 1 ay — 3 AZN, 3 ay — 8 AZN, 6 ay — 15 AZN, 1 il — 25 AZN. Aktiv abunəlik uzadıldıqda yeni müddət qalan günlərin üzərinə əlavə olunur. Premium limitsiz axtarış imkanı verir və ödəniş təsdiqləndikdən sonra Operator tərəfindən aktivləşdirilir. Abunəlik bitdikdən sonra 3 günlük güzəşt müddəti tətbiq olunur. Bir hesab eyni anda ən çox 2 cihazda istifadə oluna bilər. Yeni qeydiyyatdan keçən istifadəçiyə bir dəfə 14 günlük pulsuz Premium sınaq müddəti verilir.", "Hesab bloklandıqda və ya silindikdə bunun səbəbi istifadəçiyə Proqramda göstərilir. İstifadəçi bu qərarla bağlı Operatora müraciət edə bilər. Bloklama müəyyən müddətə və ya müddətsiz ola bilər."]], ["MƏSULİYYƏT, DƏYİŞİKLİKLƏR VƏ HÜQUQİ TƏNZİMLƏMƏ", ["Baza ardıcıl 3 (üç) gün yenilənmədikdə Proqramın fəaliyyəti avtomatik məhdudlaşdırılır; bərpa üçün internetə qoşulub bazanı yeniləmək lazımdır.", "ProTechtor™ adı, Proqram, baza və dizayn ©By Emin-in mülkiyyətidir. İcazəsiz surətçıxarma, yayma və kommersiya məqsədilə istifadə qadağandır.", "Operator Siyasətə birtərəfli qaydada dəyişiklik etmək hüququnu saxlayır; yeni redaksiya Proqramda dərc edildiyi andan qüvvəyə minir. Münasibətlər Azərbaycan Respublikasının qüvvədə olan qanunvericiliyi ilə tənzimlənir."]]], "foot": "ProTechtor™ · ©By Emin · Bütün hüquqlar qorunur. · Son redaktə: 06.10.2026"}, "ru": {"intro": "ProTechtor™ · ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ И УСЛОВИЯ ИСПОЛЬЗОВАНИЯ\nПеред использованием приложения внимательно прочитайте все 10 пунктов.\nПоследняя редакция: 06.10.2026", "foot": "ProTechtor™ · ©By Emin · Все права защищены. · Последняя редакция: 06.10.2026", "items": [["ОБЩИЕ ПОЛОЖЕНИЯ", ["Настоящая Политика конфиденциальности определяет правила сбора, использования и защиты данных при использовании приложения ProTechtor™ (далее — «Приложение»), а также права и обязанности пользователей.", "Оператор Программы и обладатель персональных данных (далее – «Оператор»): ProTechtor™ (©By Emin). Связь с Оператором осуществляется через кнопку «Связаться в WhatsApp» в Программе.", "Права собственности и авторские права на Приложение и его базу данных принадлежат ©By Emin.", "Использование Приложения означает полное и безоговорочное принятие всех условий настоящей Политики. Лицо, не согласное с условиями, должно прекратить использование Приложения."]], ["ТОЧНОСТЬ ДАННЫХ О СОВМЕСТИМОСТИ И РАЗМЕРАХ (ГЛАВНОЕ ПРЕДУПРЕЖДЕНИЕ)", ["Информация о совместимости и размерах защитных стёкол, представленная в Приложении, носит справочный характер и МОЖЕТ БЫТЬ НЕ ПОЛНОСТЬЮ ТОЧНОЙ. Модификации устройств, региональные версии, производственные партии и различия между производителями могут влиять на фактические размеры.", "Перед продажей, нарезкой, наклеиванием или применением продукта пользователь ОБЯЗАН САМОСТОЯТЕЛЬНО ИЗМЕРИТЬ устройство и продукт и лично проверить совместимость.", "Ответственность за решения, принятые на основании информации в Приложении, за приобретённые или проданные товары, а также за возможный материальный ущерб и повреждение устройства лежит на пользователе. В максимально допустимой законом степени Оператор не несёт ответственности в таких случаях."]], ["СОБИРАЕМЫЕ ДАННЫЕ", ["Приложение обрабатывает только данные, предоставленные пользователем при регистрации или входе либо полученные через выбранный способ входа: псевдоним, адрес электронной почты, номер телефона, название и адрес магазина, адрес электронной почты аккаунта Google.", "Фото профиля или аватар, выбранные самим пользователем (фото хранится в уменьшенном виде и видно только самому пользователю и Оператору).", "Название модели и дата отправки, переданные через функцию «Сообщить об этой модели»; если пользователь вошёл в аккаунт — также технический идентификатор аккаунта.", "В целях Премиум-подписки и безопасности аккаунта: дата, сумма и срок оплаты подписки; тип устройства, на котором используется аккаунт (операционная система и браузер), и время последней активности; количество поисков за месяц.", "Название модели, группа совместимости и краткий комментарий пользователя, отправленные через функцию «Не подошло».", "При ограниченном использовании без входа персональные данные не запрашиваются. Приложение не использует данные о местоположении, рекламные инструменты и инструменты отслеживания поведения."]], ["ЦЕЛИ ИСПОЛЬЗОВАНИЯ И ПЕРЕДАЧА ДАННЫХ", ["Данные используются исключительно для идентификации аккаунта, обеспечения входа, применения лимитов поиска, управления профилем, связи и обеспечения безопасности.", "Данные не продаются, не используются в рекламных целях и не передаются третьим лицам без законных оснований. Они могут быть предоставлены уполномоченным государственным органам в случаях, предусмотренных законодательством."]], ["ЛОКАЛЬНОЕ ХРАНИЛИЩЕ", ["Приложение использует локальное хранилище устройства (Local Storage): тему, размер шрифта, язык, настройки звука и вибрации, копию базы данных, счётчики лимита поиска и последние запросы.", "Эти данные остаются на устройстве и удаляются при очистке памяти браузера."]], ["СТОРОННИЕ СЕРВИСЫ", ["Приложение использует сервисы Google Firebase (Authentication и Firestore) и вход через аккаунт Google. При переходе в WhatsApp дальнейший процесс регулируется правилами этой платформы.", "Данные, хранящиеся в сервисах Firebase, могут размещаться на серверах Google LLC, в том числе за пределами Азербайджанской Республики. Используя Приложение, пользователь соглашается на такую передачу и хранение своих данных.", "Оператор не несёт ответственности за работу и правила сторонних сервисов.", "AI-помощник для Премиум-пользователей работает через сервис Google Gemini (Firebase AI Logic): вопросы, отправленные помощнику, передаются в Google для подготовки ответа и могут использоваться Google для улучшения сервиса. Не сообщайте помощнику личные данные."]], ["ЗАЩИТА ДАННЫХ И ПРАВА ПОЛЬЗОВАТЕЛЕЙ", ["Оператор принимает разумные технические и организационные меры для защиты данных. Абсолютная безопасность передачи данных через интернет не может быть гарантирована.", "Данные хранятся, пока аккаунт активен. Пользователь вправе просматривать свои данные, исправлять их (в разделе «Профиль») и требовать их удаления.", "Запросы на просмотр, исправление или удаление данных направляются Оператору через кнопку «Связаться в WhatsApp» в Программе."]], ["ПРАВА ДЕТЕЙ", ["Регистрация предназначена только для лиц, достигших 18 лет. Данные лиц младше 18 лет не собираются без согласия законного представителя (родителя, опекуна).", "Оператор не собирает данные детей сознательно. В случае обнаружения таких данных они немедленно удаляются. Родитель или законный представитель может в любое время потребовать удаления данных ребёнка."]], ["ПРАВА И ОБЯЗАННОСТИ МАГАЗИНОВ", ["Название, адрес и номер телефона магазина должны быть точными и актуальными. Регистрация с ложными данными или от имени третьего лица запрещена.", "Магазин самостоятельно несёт ответственность перед своими клиентами за продажу, гарантию и возврат. Приложение не является стороной отношений между магазином и клиентами.", "Магазин вправе управлять данными своего профиля, исправлять их и требовать их удаления. В случае нарушения правил, злоупотреблений или несанкционированного копирования базы данных Оператор оставляет за собой право ограничить или удалить аккаунт.", "Для поиска необходимо зарегистрироваться и войти; зарегистрированному пользователю доступно 30 бесплатных поисков в месяц. Пользователь, зарегистрированный по e-mail, должен подтвердить адрес электронной почты. Цены Премиум-подписки: 1 месяц — 3 AZN, 3 месяца — 8 AZN, 6 месяцев — 15 AZN, 1 год — 25 AZN. При продлении активной подписки новый срок добавляется к оставшимся дням. Премиум даёт безлимитный поиск и активируется Оператором после подтверждения оплаты. После окончания подписки действует льготный период 3 дня. Один аккаунт можно использовать одновременно не более чем на 2 устройствах. Новому зарегистрированному пользователю однократно предоставляется бесплатный пробный период Премиум на 14 дней.", "При блокировке или удалении аккаунта причина отображается пользователю в Приложении. Пользователь может обратиться к Оператору по поводу этого решения. Блокировка может быть временной или бессрочной."]], ["ОТВЕТСТВЕННОСТЬ, ИЗМЕНЕНИЯ И ПРИМЕНИМОЕ ПРАВО", ["Если база данных не обновляется 3 (три) дня подряд, работа Приложения автоматически ограничивается; для восстановления необходимо подключиться к интернету и обновить базу.", "Название ProTechtor™, Приложение, база данных и дизайн являются собственностью ©By Emin. Несанкционированное копирование, распространение и коммерческое использование запрещены.", "Оператор оставляет за собой право в одностороннем порядке вносить изменения в Политику; новая редакция вступает в силу с момента публикации в Приложении. Отношения регулируются действующим законодательством Азербайджанской Республики."]]]}, "tr": {"intro": "ProTechtor™ · GİZLİLİK POLİTİKASI VE KULLANIM KOŞULLARI\nUygulamayı kullanmadan önce 10 maddenin tamamını dikkatle okuyunuz.\nSon düzenleme: 06.10.2026", "foot": "ProTechtor™ · ©By Emin · Tüm hakları saklıdır. · Son düzenleme: 06.10.2026", "items": [["GENEL HÜKÜMLER", ["Bu Gizlilik Politikası, ProTechtor™ uygulamasının (bundan sonra “Uygulama”) kullanımı sırasında verilerin toplanması, kullanılması ve korunmasına ilişkin kuralları ile kullanıcıların hak ve yükümlülüklerini belirler.", "Uygulamanın operatörü ve kişisel verilerin sorumlusu (bundan sonra – «Operatör»): ProTechtor™ (©By Emin). Operatörle iletişim Uygulamadaki «WhatsApp ile iletişim» düğmesi üzerinden sağlanır.", "Uygulamanın ve veri tabanının mülkiyet ve telif hakları ©By Emin'e aittir.", "Uygulamanın kullanılması, bu Politikanın tüm koşullarının tam ve kayıtsız şartsız kabul edildiği anlamına gelir. Koşulları kabul etmeyen kişi Uygulamayı kullanmayı bırakmalıdır."]], ["UYUMLULUK VE ÖLÇÜ BİLGİLERİNİN DOĞRULUĞU (ÖNEMLİ UYARI)", ["Uygulamada sunulan cam koruyucu uyumluluğu ve ölçü bilgileri bilgilendirme niteliğindedir ve TAM DOĞRU OLMAYABİLİR. Cihaz modifikasyonları, bölgesel sürümler, üretim partileri ve üretici farklılıkları gerçek ölçüleri etkileyebilir.", "Kullanıcı, ürünü satmadan, kesmeden, yapıştırmadan veya uygulamadan önce cihazın ve ürünün ölçülerini KENDİSİ ÖLÇMELİ ve uyumluluğu bizzat kontrol etmelidir.", "Uygulamadaki bilgilere dayanarak verilen kararlardan, satın alınan veya satılan ürünlerden, ortaya çıkabilecek maddi zarardan ve cihazın hasar görmesinden kullanıcı sorumludur. İşletmeci, bu durumlardan dolayı yasaların izin verdiği azami ölçüde sorumluluk kabul etmez."]], ["TOPLANAN VERİLER", ["Uygulama yalnızca kayıt veya giriş sırasında kullanıcı tarafından sağlanan ya da seçilen giriş yöntemiyle elde edilen verileri işler: takma ad, e-posta adresi, telefon numarası, mağaza adı ve adresi, Google hesabının e-posta adresi.", "Kullanıcının kendi seçtiği profil fotoğrafı veya avatar (fotoğraf küçültülmüş biçimde saklanır ve yalnızca kullanıcının kendisine ve İşletmeciye görünür).", "“Bu modeli bize bildir” işleviyle gönderilen model adı ve gönderim tarihi; kullanıcı giriş yaptıysa ayrıca hesabın teknik tanımlayıcısı.", "Premium abonelik ve hesap güvenliği amacıyla: ödeme tarihi, tutarı ve abonelik süresi; hesabın kullanıldığı cihazın türü (işletim sistemi ve tarayıcı) ve son etkinlik zamanı; aylık arama sayısı.", "“Uymadı” işleviyle gönderilen model adı, uyumluluk grubu ve kullanıcının kısa yorumu.", "Giriş yapmadan sınırlı kullanımda kişisel veri istenmez. Uygulama konum verilerini, reklam ve davranış izleme araçlarını kullanmaz."]], ["KULLANIM AMACI VE AKTARIM", ["Veriler yalnızca hesabın tanımlanması, girişin sağlanması, arama sınırlarının uygulanması, profilin yönetilmesi, iletişim ve güvenlik amacıyla kullanılır.", "Veriler satılmaz, reklam amacıyla kullanılmaz ve hukuki dayanak olmaksızın üçüncü kişilere aktarılmaz. Mevzuatın gerektirdiği hâllerde yetkili devlet kurumlarına sunulabilir."]], ["YEREL DEPOLAMA", ["Uygulama, cihazın yerel depolama alanını (Local Storage) kullanır: tema, yazı boyutu, dil, ses ve titreşim ayarları, veri tabanı kopyası, arama sınırı sayaçları ve son aramalar.", "Bu veriler cihazda kalır ve tarayıcı belleği temizlendiğinde silinir."]], ["ÜÇÜNCÜ TARAF HİZMETLERİ", ["Uygulama, Google Firebase (Authentication ve Firestore) hizmetlerini ve Google hesabıyla girişi kullanır. WhatsApp'a geçiş yapıldığında süreç söz konusu platformun kurallarına tabi olur.", "Firebase hizmetlerinde saklanan veriler, Azerbaycan Cumhuriyeti sınırları dışında da dahil olmak üzere Google LLC sunucularında bulunabilir. Uygulamayı kullanarak kullanıcı, verilerinin bu şekilde aktarılmasına ve saklanmasına onay verir.", "İşletmeci, üçüncü taraf hizmetlerinin işleyişinden ve kurallarından sorumlu değildir.", "Premium kullanıcılar için AI asistan Google Gemini (Firebase AI Logic) hizmeti üzerinden çalışır: asistana yazılan sorular yanıt hazırlamak için Google'a iletilir ve Google tarafından hizmeti geliştirmek için kullanılabilir. Asistana kişisel bilgi yazmayın."]], ["VERİLERİN KORUNMASI VE KULLANICI HAKLARI", ["İşletmeci, verilerin korunması için makul teknik ve idari tedbirler alır. İnternet üzerinden iletimin mutlak güvenliği garanti edilemez.", "Veriler hesap etkin olduğu sürece saklanır. Kullanıcı, verilerini görme, düzeltme (Profil bölümünde) ve silinmesini talep etme hakkına sahiptir.", "Verileri görüntüleme, düzeltme veya silme talepleri Operatöre Uygulamadaki «WhatsApp ile iletişim» düğmesi üzerinden iletilir."]], ["ÇOCUKLARIN HAKLARI", ["Kayıt yalnızca 18 yaşını doldurmuş kişiler için öngörülmüştür. 18 yaşın altındaki kişilerin verileri yasal temsilcinin (ebeveyn, vasi) onayı olmaksızın toplanmaz.", "İşletmeci çocuklardan bilerek veri toplamaz. Bu tür bir verinin tespit edilmesi hâlinde veri derhal silinir. Ebeveyn veya yasal temsilci, çocuğa ait verinin silinmesini her zaman talep edebilir."]], ["MAĞAZA KULLANICILARININ HAK VE YÜKÜMLÜLÜKLERİ", ["Mağaza adı, adresi ve telefon numarası doğru ve güncel olmalıdır. Sahte bilgilerle veya üçüncü bir kişi adına kayıt yaptırmak yasaktır.", "Mağaza, müşterilerine karşı satış, garanti ve iade konularındaki sorumluluğu kendisi taşır. Uygulama, mağaza ile müşteri arasındaki ilişkilerin tarafı değildir.", "Mağaza, profil verilerini yönetme, düzeltme ve silinmesini talep etme hakkına sahiptir. Kuralların ihlali, kötüye kullanım veya veri tabanının izinsiz kopyalanması hâlinde İşletmeci hesabı kısıtlama veya silme hakkını saklı tutar.", "Arama için kayıt olmak ve giriş yapmak gerekir; kayıtlı kullanıcıya her ay 30 ücretsiz arama verilir. E-posta ile kayıt olan kullanıcı e-posta adresini doğrulamalıdır. Premium abonelik fiyatları: 1 ay — 3 AZN, 3 ay — 8 AZN, 6 ay — 15 AZN, 1 yıl — 25 AZN. Aktif abonelik uzatıldığında yeni süre kalan günlerin üzerine eklenir. Premium sınırsız arama imkânı sağlar ve ödeme onaylandıktan sonra İşletmeci tarafından etkinleştirilir. Abonelik bittikten sonra 3 günlük ek süre uygulanır. Bir hesap aynı anda en fazla 2 cihazda kullanılabilir. Yeni kayıt olan kullanıcıya bir kez 14 günlük ücretsiz Premium deneme süresi verilir.", "Hesap engellendiğinde veya silindiğinde nedeni kullanıcıya Uygulamada gösterilir. Kullanıcı bu kararla ilgili İşletmeciye başvurabilir. Engelleme belirli bir süre için veya süresiz olabilir."]], ["SORUMLULUK, DEĞİŞİKLİKLER VE UYGULANACAK HUKUK", ["Veri tabanı art arda 3 (üç) gün güncellenmezse Uygulamanın çalışması otomatik olarak kısıtlanır; yeniden çalıştırmak için internete bağlanıp veri tabanını güncellemek gerekir.", "ProTechtor™ adı, Uygulama, veri tabanı ve tasarım ©By Emin'in mülkiyetindedir. İzinsiz kopyalama, dağıtma ve ticari amaçla kullanma yasaktır.", "İşletmeci, Politikada tek taraflı değişiklik yapma hakkını saklı tutar; yeni sürüm Uygulamada yayımlandığı andan itibaren yürürlüğe girer. İlişkiler, Azerbaycan Cumhuriyeti'nin yürürlükteki mevzuatıyla düzenlenir."]]]}, "en": {"intro": "ProTechtor™ · PRIVACY POLICY AND TERMS OF USE\nPlease read all 10 clauses carefully before using the application.\nLast revised: 06.10.2026", "foot": "ProTechtor™ · ©By Emin · All rights reserved. · Last revised: 06.10.2026", "items": [["GENERAL PROVISIONS", ["This Privacy Policy sets out the rules for the collection, use and protection of data when using the ProTechtor™ application (hereinafter, the “Application”), as well as the rights and obligations of users.", "The operator of the App and controller of personal data (hereinafter the “Operator”): ProTechtor™ (©By Emin). The Operator can be contacted via the “Contact on WhatsApp” button in the App.", "The ownership and copyright of the Application and its database belong to ©By Emin.", "Use of the Application constitutes full and unconditional acceptance of all terms of this Policy. A person who does not agree with these terms must stop using the Application."]], ["ACCURACY OF COMPATIBILITY AND SIZE DATA (MAIN WARNING)", ["The screen protector compatibility and size information provided in the Application is for reference only and MAY NOT BE FULLY ACCURATE. Device modifications, regional versions, production batches and manufacturer differences may affect actual dimensions.", "Before selling, cutting, attaching or applying a product, the user MUST MEASURE the device and the product INDEPENDENTLY and verify compatibility personally.", "Responsibility for decisions based on the information in the Application, for products purchased or sold, and for any financial loss or damage to a device that may result lies with the user. To the maximum extent permitted by law, the Operator bears no liability for such cases."]], ["DATA COLLECTED", ["The Application processes only the data provided by the user during registration or login, or obtained through the chosen login method: nickname, email address, phone number, store name and address, the email address of the Google account.", "A profile photo or avatar chosen by the user (the photo is stored in a reduced size and is visible only to the user and the Operator).", "The model name and submission date sent via the “Report this model to us” function and, if the user is signed in, the account's technical identifier.", "For the Premium subscription and account security: payment date, amount and subscription period; the type of device the account is used on (operating system and browser) and the last activity time; the monthly number of searches.", "The model name, compatibility group and the user's short comment sent via the “Didn't fit” function.", "Limited use without logging in does not require personal data. The Application does not use location data, advertising or behavioural tracking tools."]], ["PURPOSE OF USE AND DISCLOSURE", ["Data is used solely for account identification, providing access, applying search limits, managing the profile, communication and security.", "Data is not sold, is not used for advertising, and is not disclosed to third parties without a lawful basis. It may be provided to authorised state bodies where required by law."]], ["LOCAL STORAGE", ["The Application uses the device's local storage (Local Storage): theme, font, language, sound and vibration settings, a copy of the database, search limit counters and recent searches.", "This data remains on the device and is deleted when the browser storage is cleared."]], ["THIRD-PARTY SERVICES", ["The Application uses Google Firebase services (Authentication and Firestore) and Google account sign-in. When you switch to WhatsApp, the process is governed by the rules of that platform.", "Data stored in Firebase services may be located on servers of Google LLC, including outside the Republic of Azerbaijan. By using the Application, the user consents to such transfer and storage of their data.", "The Operator is not responsible for the operation or rules of third-party services.", "The AI assistant for Premium users runs on Google Gemini (Firebase AI Logic): questions sent to the assistant are passed to Google to generate a reply and may be used by Google to improve its services. Do not share personal data with the assistant."]], ["DATA PROTECTION AND USER RIGHTS", ["The Operator takes reasonable technical and organisational measures to protect data. The absolute security of transmission over the internet cannot be guaranteed.", "Data is kept while the account is active. The user has the right to view their data, correct it (in the Profile section) and request its deletion.", "Requests to view, correct or delete data are sent to the Operator via the “Contact on WhatsApp” button in the App."]], ["RIGHTS OF CHILDREN", ["Registration is intended only for persons who have reached 18 years of age. Data of persons under 18 is not collected without the consent of a legal representative (parent or guardian).", "The Operator does not knowingly collect data from children. If such data is discovered, it is deleted immediately. A parent or legal representative may request deletion of a child's data at any time."]], ["RIGHTS AND OBLIGATIONS OF STORE USERS", ["The store name, address and phone number must be accurate and up to date. Registration with false information or in the name of a third party is prohibited.", "The store is itself responsible to its customers for sales, warranty and returns. The Application is not a party to relations between a store and its customers.", "A store has the right to manage and correct its profile data and to request its deletion. In case of violations, abuse or unauthorised copying of the database, the Operator reserves the right to restrict or delete the account.", "Searching requires registering and signing in; registered users get 30 free searches per month. Users who register by email must verify their email address. Premium prices: 1 month — 3 AZN, 3 months — 8 AZN, 6 months — 15 AZN, 1 year — 25 AZN. When an active subscription is extended, the new period is added to the remaining days. Premium provides unlimited searches and is activated by the Operator after the payment is confirmed. A 3-day grace period applies after the subscription ends. An account can be used on at most 2 devices at the same time. Newly registered users receive a one-time 14-day free Premium trial.", "If an account is blocked or deleted, the reason is shown to the user in the Application. The user may contact the Operator regarding this decision. A block may be temporary or indefinite."]], ["LIABILITY, CHANGES AND GOVERNING LAW", ["If the database is not updated for 3 (three) consecutive days, the operation of the Application is automatically restricted; to restore it, connect to the internet and update the database.", "The ProTechtor™ name, the Application, the database and the design are the property of ©By Emin. Unauthorised copying, distribution and commercial use are prohibited.", "The Operator reserves the right to amend the Policy unilaterally; the new version takes effect upon publication in the Application. Relations are governed by the applicable legislation of the Republic of Azerbaijan."]]]}};
 
 const ABOUT = {"az": {"tag": "QORUYUCU ŞÜŞƏ UYĞUNLUĞU PLATFORMASI", "s": [["🛡️", "Proqram haqqında", ["ProTechtor™ telefon aksesuarları satan mağazalar və ustalar üçün hazırlanmış peşəkar köməkçi proqramdır. Proqram hansı antiudar (qoruyucu ekran şüşəsi) modelinin hansı telefonlara uyğun gəldiyini saniyələr içində göstərir.", "Məqsədimiz satıcının vaxtına qənaət etmək, səhv satışların qarşısını almaq və müştəri xidmətinin keyfiyyətini artırmaqdır."]], ["🚀", "Əsas imkanlar", ["•Minlərlə telefon modelinin uyğunluq bazası", "•Ani axtarış və uyğun modellər siyahısı", "•Ekran ölçüsü (düym, mm) və kamera kəsiyi göstəricisi", "•Modellər arasında ölçü fərqi xəbərdarlığı", "•İnternetsiz iş rejimi", "•Premium istifadəçilər üçün AI köməkçi", "•Azərbaycan, rus, türk və ingilis dilləri"]], ["📐", "Məlumatların dəqiqliyi", ["Baza mütəmadi olaraq yoxlanılır və yenilənir. Bununla belə, istehsalçılar eyni adlı modellərin müxtəlif versiyalarını buraxa bildiyi üçün ölçülər tam dəqiq olmaya bilər. Satışdan əvvəl şüşəni cihaz üzərində yoxlamaq tövsiyə olunur."]], ["👑", "Müəllif", ["ProTechtor™ ©By Emin tərəfindən Azərbaycanda yaradılıb və inkişaf etdirilir. Proqram, baza və dizayn müəllif hüquqları ilə qorunur."]]], "info": ["VERSİYA", "QRUP", "MODEL", "SON YENİLƏNMƏ"], "foot": "ProTechtor™ · ©By Emin · Bütün hüquqlar qorunur."}, "ru": {"tag": "ПЛАТФОРМА СОВМЕСТИМОСТИ ЗАЩИТНЫХ СТЁКОЛ", "s": [["🛡️", "О программе", ["ProTechtor™ — профессиональный помощник для магазинов и мастеров, продающих аксессуары для телефонов. Программа за секунды показывает, к каким телефонам подходит та или иная модель защитного стекла.", "Наша цель — экономить время продавца, предотвращать ошибочные продажи и повышать качество обслуживания клиентов."]], ["🚀", "Основные возможности", ["•База совместимости тысяч моделей телефонов", "•Мгновенный поиск и список совместимых моделей", "•Размер экрана (дюймы, мм) и тип выреза камеры", "•Предупреждение о разнице размеров между моделями", "•Работа без интернета", "•AI-помощник для Премиум-пользователей", "•Азербайджанский, русский, турецкий и английский языки"]], ["📐", "Точность данных", ["База регулярно проверяется и обновляется. Тем не менее производители могут выпускать разные версии моделей с одинаковым названием, поэтому размеры могут быть не абсолютно точными. Перед продажей рекомендуется примерить стекло на устройстве."]], ["👑", "Автор", ["ProTechtor™ создан и развивается в Азербайджане ©By Emin. Программа, база и дизайн защищены авторским правом."]]], "info": ["ВЕРСИЯ", "ГРУПП", "МОДЕЛЕЙ", "ОБНОВЛЕНО"], "foot": "ProTechtor™ · ©By Emin · Все права защищены."}, "tr": {"tag": "KORUYUCU CAM UYUMLULUK PLATFORMU", "s": [["🛡️", "Uygulama hakkında", ["ProTechtor™, telefon aksesuarı satan mağazalar ve ustalar için hazırlanmış profesyonel bir yardımcı uygulamadır. Uygulama, hangi ekran koruyucu modelinin hangi telefonlara uyduğunu saniyeler içinde gösterir.", "Amacımız satıcının zamanından tasarruf etmek, hatalı satışları önlemek ve müşteri hizmetinin kalitesini artırmaktır."]], ["🚀", "Temel özellikler", ["•Binlerce telefon modelinin uyumluluk veritabanı", "•Anında arama ve uyumlu modeller listesi", "•Ekran boyutu (inç, mm) ve kamera kesiği göstergesi", "•Modeller arasındaki boyut farkı uyarısı", "•İnternetsiz çalışma modu", "•Premium kullanıcılar için AI asistan", "•Azerbaycanca, Rusça, Türkçe ve İngilizce"]], ["📐", "Verilerin doğruluğu", ["Veritabanı düzenli olarak kontrol edilir ve güncellenir. Ancak üreticiler aynı adlı modellerin farklı sürümlerini çıkarabildiğinden ölçüler tam olarak doğru olmayabilir. Satıştan önce camı cihaz üzerinde denemeniz önerilir."]], ["👑", "Yapımcı", ["ProTechtor™, Azerbaycan'da ©By Emin tarafından geliştirilmektedir. Uygulama, veritabanı ve tasarım telif hakkıyla korunmaktadır."]]], "info": ["SÜRÜM", "GRUP", "MODEL", "GÜNCELLEME"], "foot": "ProTechtor™ · ©By Emin · Tüm hakları saklıdır."}, "en": {"tag": "SCREEN PROTECTOR COMPATIBILITY PLATFORM", "s": [["🛡️", "About the app", ["ProTechtor™ is a professional assistant built for phone accessory shops and technicians. It shows in seconds which phones a given screen protector model fits.", "Our goal is to save sellers time, prevent wrong sales and raise the quality of customer service."]], ["🚀", "Key features", ["•Compatibility database of thousands of phone models", "•Instant search and list of compatible models", "•Screen size (inches, mm) and camera cutout indicator", "•Warning about size differences between models", "•Works offline", "•AI assistant for Premium users", "•Azerbaijani, Russian, Turkish and English"]], ["📐", "Data accuracy", ["The database is checked and updated regularly. However, manufacturers may release different versions of models with the same name, so sizes may not be perfectly exact. We recommend trying the protector on the device before selling."]], ["👑", "Author", ["ProTechtor™ is created and developed in Azerbaijan ©By Emin. The app, database and design are protected by copyright."]]], "info": ["VERSION", "GROUPS", "MODELS", "UPDATED"], "foot": "ProTechtor™ · ©By Emin · All rights reserved."}};
@@ -10056,11 +10262,30 @@ function forceUpdateSilent() {
 
 // 106–108: progress panel (accent color, flash on done, red blink on error — never shows "Bitdi")
 var _ptProgTimer = null;
+// put the progress panel right under the visible update button (settings / block screen); otherwise keep it on top
+function ptProgPlace(box) {
+    if (!box._home) box._home = box.parentNode;
+    var ids = ["ptProgSlotSettings", "ptProgSlotBlock"], target = null;
+    for (var i = 0; i < ids.length && !target; i++) {
+        var el = document.getElementById(ids[i]);
+        if (!el || el.offsetParent === null) continue;
+        var r = el.getBoundingClientRect();
+        if (r.width > 0 && r.left < window.innerWidth - 4 && r.right > 4 && r.top < window.innerHeight) target = el;
+    }
+    if (target) {
+        if (box.parentNode !== target) target.appendChild(box);
+        box.classList.add("inline");
+    } else {
+        if (box.parentNode !== box._home) box._home.appendChild(box);
+        box.classList.remove("inline");
+    }
+}
 function showProgress(labelKey) {
     var box = document.getElementById("pt-progress");
     var lab = document.getElementById("ptProgLabel");
     var bar = document.getElementById("ptProgBar");
     if (!box || !lab || !bar) return;
+    ptProgPlace(box);
     box.classList.remove("error", "flash");
     lab.textContent = t(labelKey || "loading") || "Yüklənir…";
     bar.style.width = "8%";
