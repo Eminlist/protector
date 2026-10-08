@@ -2871,7 +2871,14 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 try {
-    if (firebase.appCheck) firebase.appCheck().activate(new firebase.appCheck.ReCaptchaEnterpriseProvider("6Le-_-EtAAAAABzopqfpR0pI3_tNPLd4tHD0qChF"), true);
+    if (firebase.appCheck) {
+        var _ack = "6Le-_-EtAAAAABzopqfpR0pI3_tNPLd4tHD0qChF";
+        try {
+            firebase.appCheck().activate(new firebase.appCheck.ReCaptchaEnterpriseProvider(_ack), true);
+        } catch (e1) {
+            try { firebase.appCheck().activate(new firebase.appCheck.ReCaptchaV3Provider(_ack), true); } catch (e2) {}
+        }
+    }
 } catch (e) {}
 const VERIFY_CUTOFF = Date.UTC(2026, 9, 7);
 const auth = firebase.auth();
@@ -3113,8 +3120,10 @@ function openProfile() {
             document.getElementById("profStore").value = data.storeName || "";
             document.getElementById("profAddress").value = data.storeAddress || "";
             setPhoneInput("profPhone", data.phoneNumber || "");
+            try { validateProfPhone(); } catch (e) {}
         } else {
             setPhoneInput("profPhone", "");
+            try { validateProfPhone(); } catch (e) {}
         }
         history.pushState({modal: 'profile'}, "");
         document.getElementById("profile-view").classList.add("active");
@@ -3220,6 +3229,12 @@ function setPhoneInput(inputId, fullOrPartial) {
     const el = document.getElementById(inputId);
     if (!el) return;
     el.value = formatPhoneMask(extractPhoneDigits(fullOrPartial));
+    el.classList.remove("input-error", "input-ok");
+    var errId = inputId === "regPhone" ? "regPhoneErr" : (inputId === "profPhone" ? "profPhoneErr" : "");
+    if (errId) {
+        var err = document.getElementById(errId);
+        if (err) err.classList.remove("visible");
+    }
 }
 
 function getFullPhone(inputId) {
@@ -10438,8 +10453,8 @@ setInterval(checkBlockStatus, 60 * 1000);
 .pt-mi:active{background:var(--result-hover)}
 .pt-mi.danger{color:#e74c3c}.pt-mi.ok{color:#2ecc71}.pt-mi.soft{color:var(--muted)}
 /* admin alətlər */
-.pt-adm-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 12px}
-.pt-adm-row button{min-height:46px;border-radius:14px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;padding:8px}
+#pt-adm-tools{margin:0}
+#pt-adm-tools .adm-acc{margin-bottom:0}
 /* modal */
 #pt-modal{position:fixed;inset:0;z-index:2400;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);padding:14px}
 #pt-modal.show{display:flex}
@@ -10474,8 +10489,8 @@ setInterval(checkBlockStatus, 60 * 1000);
 #pt-upd button{border:0;border-radius:10px;padding:8px 12px;font-weight:800;font-family:inherit;cursor:pointer;background:#111;color:#fff}
 #pt-upd .x{background:transparent;color:#111;font-size:20px;padding:0 6px}
 /* tək əl rejimi */
-body.pt-oh .search-wrapper{position:fixed;left:0;right:0;bottom:0;margin:0;z-index:60;padding:10px 14px calc(10px + 1cm + env(safe-area-inset-bottom,0px));background:var(--header-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--border);box-sizing:border-box}
-body.pt-oh #main-view .main-content{padding-bottom:calc(96px + 1cm)}
+body.pt-oh .search-wrapper{position:fixed;left:0;right:0;bottom:1cm;margin:0;z-index:60;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--header-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--border);box-sizing:border-box}
+body.pt-oh #main-view .main-content{padding-bottom:calc(96px + 2cm)}
 body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + 1cm + env(safe-area-inset-bottom,0px));z-index:59;max-height:38vh;overflow:auto;background:var(--surface)}
 
 /* istifadəçi səhifəsi (Gəlir səhifəsi kimi daxil olur) */
@@ -10714,7 +10729,7 @@ function HD(id, md, em, az, ru, tr, en, date) { return { id: id, md: md, em: em,
 var DEF_HOL = [
   HD("newyear", "01-01", "🎆", "Yeni il bayramı", "Новый год", "Yeni Yıl", "New Year"),
   HD("orthxmas", "01-07", "🎄", "Pravoslav Milad bayramı", "Православное Рождество", "Ortodoks Noel Bayramı", "Orthodox Christmas"),
-  HD("valentine", "02-14", "💝", "Valentin günü", "День святого Валентина", "Sevgililer Günü", "Valentine's Day"),
+  HD("valentine", "02-14", "💝", "Sevgililər günü", "День святого Валентина", "Sevgililer Günü", "Valentine's Day"),
   HD("women", "03-08", "🌸", "8 Mart — Beynəlxalq Qadınlar Günü", "8 Марта — Международный женский день", "8 Mart Dünya Kadınlar Günü", "International Women's Day"),
   HD("novruz", "03-20", "🌷", "Novruz bayramı", "Новруз", "Nevruz Bayramı", "Novruz"),
   HD("labour", "05-01", "🛠️", "1 May — Beynəlxalq Əmək Günü", "1 Мая — День труда", "1 Mayıs Emek ve Dayanışma Günü", "International Workers' Day"),
@@ -11142,7 +11157,7 @@ function buildAdminBox() {
   if ($("pt-adm-tools")) return;
   var row = document.querySelector(".adm-acc.adm-link"); if (!row || !row.parentNode) return;
   var box = document.createElement("div"); box.id = "pt-adm-tools";
-  box.innerHTML = '<div class="adm-grp" id="pt-adm-grp"></div><div class="pt-adm-row"><button type="button" onclick="PTX.alias()" id="pt-b1"></button><button type="button" onclick="PTX.group()" id="pt-b2"></button></div>';
+  box.innerHTML = '<div class="adm-acc adm-link" role="button" tabindex="0" id="pt-b2-row" onclick="PTX.group()" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();PTX.group()}"><div class="adm-sum"><span class="e3d ic3d" style="--a:#FF8A65;--b:#E64A19" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span><span class="adm-ttl" id="pt-b2">📣 Qrup bildirişi</span><span class="chev">›</span></div></div>';
   row.parentNode.insertBefore(box, row);
   relabel();
 }
@@ -11197,7 +11212,7 @@ function checkUpd() {
 /* ---------- etiketləri yenilə (dil dəyişəndə) ---------- */
 function relabel() {
   var s = function (id, v) { var e = $(id); if (e) e.textContent = v; };
-  s("pt-adm-grp", T("pxTools")); s("pt-b1", T("pxAlias")); s("pt-b2", T("pxGroup")); s("pt-b3", T("pxHol"));
+  s("pt-b2", T("pxGroup")); s("pt-b3", T("pxHol"));
   s("ptOHl", T("pxOH")); s("ptOHd", T("pxOHd"));
   var u = $("pt-upd"); if (u && u.getAttribute("data-v")) { s("pt-upd-t", T("pxUpd").replace("{v}", u.getAttribute("data-v"))); s("pt-upd-b", T("pxUpdBtn")); }
   renderFit();
