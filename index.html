@@ -10495,6 +10495,45 @@ body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + 1cm + 
 
 /* istifadəçi səhifəsi (Gəlir səhifəsi kimi daxil olur) */
 #pt-user-page{z-index:690}
+#pt-user-page .settings-content{padding:16px 14px 28px}
+.pt-up-hero{position:relative;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,rgba(46,204,113,.12) 0%,var(--card-bg) 55%);border:1px solid var(--border);padding:20px 18px 16px;margin-bottom:14px}
+.pt-up-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(46,204,113,.18),transparent 60%);pointer-events:none}
+.pt-up-top{display:flex;align-items:center;gap:14px;position:relative}
+.pt-up-av{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent-color),var(--accent-dark,#145a32));color:#0a0a0a;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(46,204,113,.25)}
+.pt-up-av.blk{background:linear-gradient(135deg,#e74c3c,#922b21);box-shadow:0 4px 14px rgba(231,76,60,.25);color:#fff}
+.pt-up-meta{flex:1;min-width:0}
+.pt-up-meta b{display:block;font-size:18px;font-weight:800;color:var(--text);line-height:1.25;letter-spacing:-.3px}
+.pt-up-meta small{display:block;font-size:12.5px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt-up-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;position:relative}
+.pt-up-badge{font-size:11px;font-weight:800;letter-spacing:.4px;padding:4px 10px;border-radius:999px;text-transform:uppercase}
+.pt-up-badge.pro{background:rgba(212,175,55,.18);color:var(--gold);border:1px solid rgba(212,175,55,.35)}
+.pt-up-badge.free{background:rgba(153,153,153,.12);color:var(--muted);border:1px solid var(--border)}
+.pt-up-badge.blk{background:rgba(231,76,60,.15);color:#e74c3c;border:1px solid rgba(231,76,60,.35)}
+.pt-up-badge.ok{background:rgba(46,204,113,.12);color:var(--accent-color);border:1px solid rgba(46,204,113,.3)}
+.pt-up-rows{margin-top:14px;position:relative;display:flex;flex-direction:column;gap:0}
+.pt-up-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.04)}
+.pt-up-row:first-child{border-top:0;padding-top:4px}
+.pt-up-ic{width:28px;height:28px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px}
+.pt-up-row span{font-size:13px;color:var(--text);line-height:1.4;word-break:break-word}
+.pt-up-row span em{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:1px}
+.pt-up-sec{margin:0 0 14px;border-radius:18px;border:1px solid var(--border);background:var(--card-bg);overflow:hidden}
+.pt-up-sec-t{padding:11px 16px 7px;font-size:10px;font-weight:800;letter-spacing:1.6px;color:var(--muted);text-transform:uppercase}
+.pt-up-act{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:0 16px;background:transparent;border:0;border-top:1px solid var(--border);color:var(--text);font-size:14.5px;font-weight:600;text-align:left;font-family:inherit;cursor:pointer;transition:background .15s}
+.pt-up-act:first-of-type{border-top:0}
+.pt-up-act:active{background:var(--result-hover)}
+.pt-up-act .pt-up-aic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:var(--surface-2)}
+.pt-up-act .pt-up-al{flex:1}
+.pt-up-act .pt-up-ar{color:var(--muted);font-size:16px;opacity:.5}
+.pt-up-act.pro .pt-up-aic{background:rgba(212,175,55,.15)}
+.pt-up-act.gift .pt-up-aic{background:rgba(46,204,113,.12)}
+.pt-up-act.warn .pt-up-aic{background:rgba(241,196,15,.12)}
+.pt-up-act.danger{color:#e74c3c}
+.pt-up-act.danger .pt-up-aic{background:rgba(231,76,60,.12)}
+.pt-up-act.ok{color:#2ecc71}
+.pt-up-act.ok .pt-up-aic{background:rgba(46,204,113,.12)}
+.pt-up-act.soft{color:var(--muted)}
+.pt-up-note{margin:0 0 14px;padding:12px 14px;border-radius:14px;background:rgba(212,175,55,.1);border:1px dashed rgba(212,175,55,.4);font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.45}
+.pt-up-note b{display:block;font-size:11px;letter-spacing:1px;color:var(--gold);margin-bottom:4px;text-transform:uppercase}
 .pt-up-card{margin:0 0 12px;border:1px solid var(--border);background:var(--card-bg);border-radius:18px;overflow:hidden}
 .pt-up-card .pt-sh-i{padding:12px 16px 8px}
 .pt-up-card .pt-mi{border-top:1px solid var(--border);padding:0 18px}
@@ -10940,19 +10979,103 @@ function userPage() {
   return pg;
 }
 function fillUserPage(it, id) {
-  var name = (it.querySelector(".au-name") || {}).textContent || "", sub = (it.querySelector(".au-sub") || {}).textContent || "";
-  var infos = [].map.call(it.querySelectorAll(".au-body .au-info"), function (n) { return n.outerHTML; }).join("");
-  var items = [].map.call(it.querySelectorAll(".au-body .au-btn"), function (b) {
-    var cls = (b.className || "").replace("au-btn", "").trim();
-    return '<button type="button" class="pt-mi ' + esc(cls) + '" onclick="' + (b.getAttribute("onclick") || "").replace(/"/g, "&quot;") + '">' + b.innerHTML + "</button>";
-  }).join("");
+  var u = (typeof adminFindUser === "function" && adminFindUser(id)) || {};
+  var name = u.username || u.displayName || (it && (it.querySelector(".au-name") || {}).textContent) || "—";
+  var email = u.email || "";
+  var phone = u.phoneNumber || "";
+  var store = u.storeName || "";
+  var addr = u.storeAddress || "";
+  var provider = u.provider || "email";
+  var blocked = !!u.blocked;
+  var reason = u.blockReason || "";
+  var pu = +u.premiumUntil || 0;
+  var proActive = pu > Date.now();
+  var bu = +u.blockUntil || 0;
+  var lastSeen = u.lastSeen ? (typeof fmtDate === "function" ? fmtDate(u.lastSeen) : String(u.lastSeen)) : "—";
+  var os = u.lastDevice || u.deviceOS || "";
+  if (!os && u.userAgent) {
+    var ua = String(u.userAgent);
+    if (/iPhone|iPad/i.test(ua)) os = "iOS";
+    else if (/Android/i.test(ua)) os = "Android";
+    else if (/Windows/i.test(ua)) os = "Windows";
+    else if (/Mac/i.test(ua)) os = "macOS";
+    else if (/Linux/i.test(ua)) os = "Linux";
+    else os = "Digər";
+  }
+  var browser = "";
+  if (u.userAgent) {
+    var ua2 = String(u.userAgent);
+    if (/Edg\//i.test(ua2)) browser = "Edge";
+    else if (/Chrome/i.test(ua2) && !/Edg/i.test(ua2)) browser = "Chrome";
+    else if (/Safari/i.test(ua2) && !/Chrome/i.test(ua2)) browser = "Safari";
+    else if (/Firefox/i.test(ua2)) browser = "Firefox";
+  }
+  var devLine = [os, browser].filter(Boolean).join(" · ") || "—";
+  var offlineDays = u.lastSeen ? Math.floor((Date.now() - (+u.lastSeen)) / (86400000)) : -1;
+  var initial = (name.replace(/[^A-Za-zА-Яа-яƏəĞğİıÖöŞşÜüÇç0-9]/g, "").charAt(0) || "?").toUpperCase();
+  var sid = String(id).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+  var escN = esc(name), escE = esc(email);
+
   loadNotes(function () {
-    var n = notes && notes[id] && notes[id].t, sid = String(id).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    var n = notes && notes[id] && notes[id].t;
     if (!$("ptUpBody")) return;
     $("ptUpTitle").textContent = name;
-    $("ptUpBody").innerHTML = '<div class="pt-up-card"><div class="pt-sh-h" style="padding:14px 16px 0"><b>' + esc(name) + "</b><small>" + esc(sub) + "</small></div>" +
-      '<div class="pt-sh-i">' + infos + "</div>" + (n ? '<div class="pt-note"><b>' + esc(T("pxNoteTag")) + "</b>\n" + esc(n) + "</div>" : "") + "</div>" +
-      '<div class="pt-up-card">' + items + '<button type="button" class="pt-mi" onclick="PTX.note(\'' + esc(sid) + '\')">' + esc(T("pxNote")) + "</button></div>";
+
+    var badges = "";
+    if (blocked) badges += '<span class="pt-up-badge blk">BLOK</span>';
+    if (proActive) badges += '<span class="pt-up-badge pro">PREMIUM</span>';
+    else badges += '<span class="pt-up-badge free">FREE</span>';
+    if (offlineDays >= 90) badges += '<span class="pt-up-badge blk">90+ offline</span>';
+    else if (offlineDays >= 0 && offlineDays < 2) badges += '<span class="pt-up-badge ok">Onlayn</span>';
+
+    var rows = "";
+    if (email) rows += '<div class="pt-up-row"><div class="pt-up-ic">✉️</div><span>' + escE + '<em>' + esc(provider) + '</em></span></div>';
+    if (phone) rows += '<div class="pt-up-row"><div class="pt-up-ic">📞</div><span>' + esc(phone) + '</span></div>';
+    if (store) rows += '<div class="pt-up-row"><div class="pt-up-ic">🏪</div><span>' + esc(store) + (addr ? '<em>' + esc(addr) + '</em>' : '') + '</span></div>';
+    rows += '<div class="pt-up-row"><div class="pt-up-ic">🕐</div><span>Son aktivlik<em>' + esc(lastSeen) + (offlineDays >= 0 ? ' · ' + offlineDays + ' gün əvvəl' : '') + '</em></span></div>';
+    rows += '<div class="pt-up-row"><div class="pt-up-ic">📱</div><span>Qurğu<em>' + esc(devLine) + '</em></span></div>';
+    if (pu) {
+      rows += '<div class="pt-up-row"><div class="pt-up-ic">👑</div><span>' + (proActive ? 'Premium aktiv' : 'Premium bitib') + '<em>' + (typeof fmtDate === "function" ? fmtDate(pu) : "") + '</em></span></div>';
+    }
+    if (blocked) {
+      var blkTxt = bu ? (bu > Date.now() ? (typeof fmtDate === "function" ? fmtDate(bu) : "") + '-dək' : 'müddəti bitib') : 'müddətsiz';
+      rows += '<div class="pt-up-row"><div class="pt-up-ic">🚫</div><span>Bloklu<em>' + esc(blkTxt) + (reason ? ' · ' + esc(reason) : '') + '</em></span></div>';
+    }
+
+    var act = function (cls, icon, label, fn) {
+      return '<button type="button" class="pt-up-act ' + cls + '" onclick="' + fn + '(\'' + sid + '\')"><span class="pt-up-aic">' + icon + '</span><span class="pt-up-al">' + label + '</span><span class="pt-up-ar">›</span></button>';
+    };
+
+    var premiumSec = '<div class="pt-up-sec"><div class="pt-up-sec-t">Premium</div>' +
+      act("pro", "👑", proActive ? "Premium uzat" : "Premium ver", "adminGrantPremium") +
+      act("gift", "🎁", "Hədiyyə ver", "gfPickUser") +
+      (pu ? act("soft", "✖️", "Premium ləğv et", "adminRevokePremium") : "") +
+      "</div>";
+
+    var manageSec = '<div class="pt-up-sec"><div class="pt-up-sec-t">İdarəetmə</div>' +
+      act("", "✏️", "Adı dəyiş", "adminRenameUser") +
+      act("", "📱", "Cihazları sıfırla", "adminResetDevices") +
+      act("", "✉️", "Mesaj göndər", "adminSendMessage") +
+      act("", "📝", "Gizli qeyd", "PTX.note") +
+      "</div>";
+
+    var dangerSec = '<div class="pt-up-sec"><div class="pt-up-sec-t">Təhlükəli</div>' +
+      (blocked
+        ? act("ok", "✅", "Blokdan çıxar", "adminUnblockUser")
+        : act("danger", "🚫", "Blokla", "adminBlockUser")) +
+      act("danger", "🗑️", "Hesabı sil", "adminDeleteUser") +
+      "</div>";
+
+    var noteHtml = n ? '<div class="pt-up-note"><b>Gizli qeyd</b>' + esc(n) + "</div>" : "";
+
+    $("ptUpBody").innerHTML =
+      '<div class="pt-up-hero">' +
+        '<div class="pt-up-top"><div class="pt-up-av' + (blocked ? " blk" : "") + '">' + esc(initial) + "</div>" +
+        '<div class="pt-up-meta"><b>' + escN + "</b><small>" + (escE || esc(phone) || "—") + "</small></div></div>" +
+        (badges ? '<div class="pt-up-badges">' + badges + "</div>" : "") +
+        '<div class="pt-up-rows">' + rows + "</div>" +
+      "</div>" +
+      noteHtml + premiumSec + manageSec + dangerSec;
   });
 }
 function refreshUserPage() {
