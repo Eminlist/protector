@@ -2264,7 +2264,7 @@
                 <div class="admin-title">Baza İdarəetməsi</div>
             </div>
         </header>
-        <div class="adm-menus">
+        <div class="adm-menus acc-exclusive">
         <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></svg></span><span>Baza idarəsi</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
@@ -9569,7 +9569,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.3.1";
+const APP_VERSION = "3.1.3";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10627,6 +10627,14 @@ body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + 1cm + 
 .pt-up-card .pt-sh-i{padding:12px 16px 8px}
 .pt-up-card .pt-mi{border-top:1px solid var(--border);padding:0 18px}
 .pt-up-card .pt-note{margin:4px 14px 10px}
+/* istifadəçi səhifəsi: məxfilik siyasəti üslubunda bölmələr */
+.pt-up-intro{white-space:normal;text-align:left;padding:16px;margin-bottom:14px}
+.pt-up-intro .pt-up-meta b{font-size:17px}
+.pt-up-acc .pp-body{padding:2px 14px 10px}
+.pt-up-acc .pt-up-act{padding:0 2px;min-height:50px}
+.pt-up-acc .pt-up-act:first-child{border-top:0}
+.pt-up-acc .pt-up-rows{margin-top:6px}
+.pt-up-acc .pt-up-note{margin:8px 0 6px}
 /* hədiyyə: təşəkkür düyməsi (tema rəngi) */
 .pt-thx{display:block;margin-top:10px;height:38px;padding:0 20px;border:none;border-radius:12px;background:var(--accent-color);color:#111;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer}
 .pt-thx:active{transform:scale(.97)}
@@ -11037,7 +11045,7 @@ function openSheet(it, id) {
   });
 }
 /* istifadəçi seçiləndə «Gəlir» səhifəsi kimi tam səhifə açılır */
-var upId = "";
+var upId = "", upOpen = {};
 function userPage() {
   var pg = $("pt-user-page");
   if (!pg) {
@@ -11118,41 +11126,53 @@ function fillUserPage(it, id) {
       return '<button type="button" class="pt-up-act ' + cls + '" onclick="' + fn + '(\'' + sid + '\')"><span class="pt-up-aic">' + icon + '</span><span class="pt-up-al">' + label + '</span><span class="pt-up-ar">›</span></button>';
     };
 
-    var premiumSec = '<div class="pt-up-sec"><div class="pt-up-sec-t">Premium</div>' +
-      act("pro", "👑", proActive ? "Premium uzat" : "Premium ver", "adminGrantPremium") +
+    // Məxfilik siyasəti üslubunda nömrəli bölmələr; biri açılanda digərləri bağlanır
+    var num = 0;
+    var sec = function (key, title, body, warn) {
+      if (!body) return "";
+      num++;
+      var open = (upOpen[upId] || "info") === key;
+      return '<details class="adm-acc pp-item' + (warn ? " warn" : "") + '" data-k="' + key + '"' + (open ? " open" : "") + '>' +
+        '<summary class="pp-head"><span class="pp-num">' + two(num) + '</span><span class="pp-title">' + title + '</span><span class="chev">›</span></summary>' +
+        '<div class="adm-acc-body pp-body">' + body + '</div></details>';
+    };
+
+    var infoBody = (n ? '<div class="pt-up-note"><b>Gizli qeyd</b>' + esc(n) + "</div>" : "") + '<div class="pt-up-rows">' + rows + "</div>";
+    var mailBody = email
+      ? (provider !== "google" ? act(u.emailVerifiedByAdmin ? "soft" : "ok", u.emailVerifiedByAdmin ? "↩️" : "✅", u.emailVerifiedByAdmin ? "Təsdiqi ləğv et" : "E-poçtu təsdiqlə", "adminVerifyEmail") : "") +
+        act("", "🔑", "Parol bərpa linki göndər", "adminSendReset")
+      : "";
+    var proBody = act("pro", "👑", proActive ? "Premium uzat" : "Premium ver", "adminGrantPremium") +
       act("gift", "🎁", "Hədiyyə ver", "gfPickUser") +
-      (pu ? act("soft", "✖️", "Premium ləğv et", "adminRevokePremium") : "") +
-      "</div>";
-
-    var mailSec = (email ? '<div class="pt-up-sec"><div class="pt-up-sec-t">E-poçt</div>' +
-      (provider !== "google" ? act(u.emailVerifiedByAdmin ? "soft" : "ok", u.emailVerifiedByAdmin ? "↩️" : "✅", u.emailVerifiedByAdmin ? "Təsdiqi ləğv et" : "E-poçtu təsdiqlə", "adminVerifyEmail") : "") +
-      act("", "🔑", "Parol bərpa linki göndər", "adminSendReset") +
-      "</div>" : "");
-
-    var manageSec = '<div class="pt-up-sec"><div class="pt-up-sec-t">İdarəetmə</div>' +
-      act("", "✏️", "Adı dəyiş", "adminRenameUser") +
+      (pu ? act("soft", "✖️", "Premium ləğv et", "adminRevokePremium") : "");
+    var manageBody = act("", "✏️", "Adı dəyiş", "adminRenameUser") +
       act("", "📱", "Cihazları sıfırla", "adminResetDevices") +
       act("", "✉️", "Mesaj göndər", "adminSendMessage") +
-      act("", "📝", "Gizli qeyd", "PTX.note") +
-      "</div>";
-
-    var dangerSec = '<div class="pt-up-sec"><div class="pt-up-sec-t">Təhlükəli</div>' +
-      (blocked
+      act("", "📝", "Gizli qeyd", "PTX.note");
+    var dangerBody = (blocked
         ? act("ok", "✅", "Blokdan çıxar", "adminUnblockUser")
         : act("danger", "🚫", "Blokla", "adminBlockUser")) +
-      act("danger", "🗑️", "Hesabı sil", "adminDeleteUser") +
-      "</div>";
+      act("danger", "🗑️", "Hesabı sil", "adminDeleteUser");
 
-    var noteHtml = n ? '<div class="pt-up-note"><b>Gizli qeyd</b>' + esc(n) + "</div>" : "";
-
-    $("ptUpBody").innerHTML =
-      '<div class="pt-up-hero">' +
-        '<div class="pt-up-top"><div class="pt-up-av' + (blocked ? " blk" : "") + '">' + esc(initial) + "</div>" +
+    var body = $("ptUpBody");
+    body.innerHTML =
+      '<div class="pp-intro pt-up-intro"><div class="pt-up-top"><div class="pt-up-av' + (blocked ? " blk" : "") + '">' + esc(initial) + "</div>" +
         '<div class="pt-up-meta"><b>' + escN + "</b><small>" + (escE || esc(phone) || "—") + "</small></div></div>" +
         (badges ? '<div class="pt-up-badges">' + badges + "</div>" : "") +
-        '<div class="pt-up-rows">' + rows + "</div>" +
       "</div>" +
-      noteHtml + mailSec + premiumSec + manageSec + dangerSec;
+      '<div class="pt-up-acc acc-exclusive" id="ptUpAcc">' +
+        sec("info", "MƏLUMAT", infoBody) +
+        sec("mail", "E-POÇT", mailBody) +
+        sec("pro", "PREMİUM", proBody) +
+        sec("manage", "İDARƏETMƏ", manageBody) +
+        sec("danger", "TƏHLÜKƏLİ", dangerBody, true) +
+      "</div>";
+    var acc = $("ptUpAcc");
+    acc.addEventListener("toggle", function (e) {
+      var d = e.target;
+      if (d && d.open && d.getAttribute) upOpen[upId] = d.getAttribute("data-k");
+    }, true);
+    try { admAccInit(); } catch (e) {}
   });
 }
 function refreshUserPage() {
