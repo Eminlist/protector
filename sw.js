@@ -1,4 +1,4 @@
-const CACHE_NAME = 'protector-v10';
+const CACHE_NAME = 'protector-v11';
 const LIB_CACHE = 'protector-libs-v1';
 const ASSETS = [
   './',
@@ -9,7 +9,7 @@ const ASSETS = [
 self.addEventListener('install', (e) => {
   self.skipWaiting();
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => Promise.all(ASSETS.map((a) => cache.add(a).catch(() => null))))
   );
 });
 
@@ -37,16 +37,3 @@ self.addEventListener('fetch', (e) => {
         });
       }))
     );
-    return;
-  }
-  if (url.origin !== self.location.origin) return;
-  e.respondWith(
-    fetch(e.request, { cache: 'no-store' }).then((res) => {
-      if (res && res.ok) {
-        const copy = res.clone();
-        e.waitUntil(caches.open(CACHE_NAME).then((c) => c.put(e.request, copy)));
-      }
-      return res;
-    }).catch(() => caches.match(e.request, { ignoreSearch: true }).then((r) => r || (e.request.mode === 'navigate' ? caches.match('./index.html') : Response.error())))
-  );
-});
