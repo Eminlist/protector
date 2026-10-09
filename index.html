@@ -1268,6 +1268,41 @@
         #pt-progress.error .pt-prog-label{color:#e74c3c}
         @keyframes ptProgFlash{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6);box-shadow:0 0 18px var(--accent-color)}}
         @keyframes ptProgBlink{0%,100%{opacity:1}50%{opacity:.45}}
+
+        /* Üzən qızılı geri düyməsi */
+        #detail-view.active,#profile-view.active,#settings-view.active,#privacy-view.active,#admin-view.active,#about-view.active,.sub-view.active,#notif-view.active{transform:none}
+        .settings-header,.detail-header,.profile-header,.admin-header{padding-left:96px !important}
+        .settings-back,.detail-back,.profile-back,.admin-back{
+            position:fixed !important;top:calc(26px + env(safe-area-inset-top,0px)) !important;left:18px !important;z-index:80 !important;
+            width:60px !important;height:60px !important;padding:0 !important;margin:0 !important;
+            border:none !important;border-radius:50% !important;background:none !important;box-shadow:none !important;
+            font-size:0 !important;color:transparent !important;cursor:pointer;
+            -webkit-tap-highlight-color:transparent;
+            filter:drop-shadow(0 6px 10px rgba(0,0,0,.35)) drop-shadow(0 0 6px rgba(243,178,60,.35));
+            animation:ptBackWave 6s ease-in-out infinite;
+        }
+        .settings-back::before,.detail-back::before,.profile-back::before,.admin-back::before{
+            content:"";position:absolute;inset:4px;
+            background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23FFE29A'/><stop offset='.45' stop-color='%23F3B23C'/><stop offset='1' stop-color='%23A8670F'/></linearGradient><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23F4F5F7'/><stop offset='1' stop-color='%236E737B'/></linearGradient></defs><path d='M5 29 31 8v12c17 0 29 13 26 37-5-14-14-21-26-21v12z' fill='url(%23g)' stroke='url(%23s)' stroke-width='3.2' stroke-linejoin='round'/><path d='M12 28 29 15v7c9 0 16 3 21 9-6-3-13-4-21-4' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='2' stroke-linecap='round'/></svg>") center/contain no-repeat;
+            animation:ptBackGlow 6s ease-in-out infinite;
+        }
+        .settings-back:active,.detail-back:active,.profile-back:active,.admin-back:active{transform:scale(.9)}
+        @keyframes ptBackWave{
+            0%,100%{transform:translate(0,0) rotate(0deg)}
+            25%{transform:translate(1px,-4px) rotate(-4deg)}
+            50%{transform:translate(0,1px) rotate(2deg)}
+            75%{transform:translate(-1px,-3px) rotate(-2deg)}
+        }
+        @keyframes ptBackGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+        @media (prefers-reduced-motion: reduce){.settings-back,.detail-back,.profile-back,.admin-back,.settings-back::before,.detail-back::before,.profile-back::before,.admin-back::before{animation:none}}
+        /* Yeniləmə slaydı: artan say + axıcı işıq */
+        #pt-progress .pt-prog-card{position:relative;overflow:hidden}
+        #pt-progress .pt-prog-num{font-size:30px;font-weight:800;text-align:center;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:1px;margin:-2px 0 8px;line-height:1.1}
+        #pt-progress .pt-prog-num small{font-size:12px;font-weight:600;color:var(--muted);margin-left:6px;letter-spacing:0}
+        #pt-progress.run .pt-prog-card::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
+            background:linear-gradient(105deg,transparent 0%,transparent 38%,rgba(255,255,255,.08) 45%,rgba(255,255,255,.45) 50%,rgba(255,255,255,.1) 55%,transparent 62%,transparent 100%);
+            background-size:220% 100%;animation:updShine 2.6s cubic-bezier(.4,0,.2,1) infinite}
+        #pt-progress.run .pt-prog-bar{background:linear-gradient(110deg,#ff6b2c 0%,#ff5722 40%,#e0481b 70%,#ff7043 100%);background-size:220% 100%;animation:updGlowShift 3.2s ease-in-out infinite}
         :root[data-theme="light"] .compatibility-title span,:root[data-theme="reading"] .compatibility-title span{color:#a86b00}
         #results{display:flex;flex-direction:column;gap:9px}
         .result-item{flex-shrink:0;min-height:0;margin:0;padding:12px 12px 12px 14px;gap:14px;border:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:0 8px 18px -14px rgba(0,0,0,.7);transition:transform .15s,border-color .2s}
@@ -2281,7 +2316,7 @@
             <div class="adm-acc-body">
                 <input type="text" id="adminSearch" class="admin-search adm-search" placeholder="🔎 Qrup / model axtar..." oninput="renderAdminList()">
                 <div class="adm-grp">REDAKTƏ</div>
-                <div class="adm-tiles"><button type="button" class="adm-tile " onclick="adminAddGroup()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></svg></span><span>Yeni qrup</span></button><button type="button" class="adm-tile " onclick="adminSelectAll()"><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="m16 9-5.5 5.5L8 12" /></svg></span><span>Hamısını seç</span></button><button type="button" id="adminDelSelBtn" class="adm-tile danger" onclick="adminDeleteSelected()" disabled style="opacity:.5"><span class="e3d ic3d" style="--a:#FF7A7A;--b:#D7263D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></span><span>Seçilənləri sil (<b id="adminDelSelN">0</b>)</span></button><button type="button" class="adm-tile " onclick="adminCheckDuplicates()"><span class="e3d ic3d" style="--a:#8C9BFF;--b:#3F4BD1" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></svg></span><span>Dublikat yoxla</span></button><button type="button" class="adm-tile " onclick="adminFixCase()"><span class="e3d ic3d" style="--a:#5FE0CF;--b:#12968A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" /><path d="M22 9v7" /><path d="M3.304 13h6.392" /><circle cx="18.5" cy="12.5" r="3.5" /></svg></span><span>Hərfləri düzəlt</span></button><button type="button" class="adm-tile " onclick="adminCollapseAll()"><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 22v-6" /><path d="M12 8V2" /><path d="M4 12H2" /><path d="M10 12H8" /><path d="M16 12h-2" /><path d="M22 12h-2" /><path d="m15 19-3-3-3 3" /><path d="m15 5-3 3-3-3" /></svg></span><span>Hamısını yığ</span></button><button type="button" class="adm-tile ok" onclick="adminSaveDatabase()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg></span><span>Yadda saxla</span></button></div>
+                <div class="adm-tiles"><button type="button" class="adm-tile " onclick="adminAddGroup()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></svg></span><span>Yeni qrup</span></button><button type="button" class="adm-tile " onclick="adminSelectAll()"><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="m16 9-5.5 5.5L8 12" /></svg></span><span>Hamısını seç</span></button><button type="button" id="adminDelSelBtn" class="adm-tile danger" onclick="adminDeleteSelected()" disabled style="opacity:.5"><span class="e3d ic3d" style="--a:#FF7A7A;--b:#D7263D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></span><span>Seçilənləri sil (<b id="adminDelSelN">0</b>)</span></button><button type="button" class="adm-tile " onclick="adminCheckDuplicates()"><span class="e3d ic3d" style="--a:#8C9BFF;--b:#3F4BD1" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></svg></span><span>Dublikat yoxla</span></button><button type="button" class="adm-tile " onclick="adminFixCase()"><span class="e3d ic3d" style="--a:#5FE0CF;--b:#12968A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m2 16 4.039-9.69a.5.5 0 0 1 .923 0L11 16" /><path d="M22 9v7" /><path d="M3.304 13h6.392" /><circle cx="18.5" cy="12.5" r="3.5" /></svg></span><span>Hərfləri düzəlt</span></button><button type="button" class="adm-tile ok" onclick="adminSaveDatabase()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg></span><span>Yadda saxla</span></button></div>
                 <div class="adm-grp">DƏRC</div>
                 <div class="adm-pub">
                     <select id="adminNoteSelect" class="admin-search" title="Dərc zamanı tarixçəyə əlavə olunacaq qeyd">
@@ -2842,6 +2877,7 @@
     <div id="pt-progress" aria-live="polite" aria-hidden="true">
         <div class="pt-prog-card">
             <div class="pt-prog-label" id="ptProgLabel">Yüklənir…</div>
+            <div class="pt-prog-num" id="ptProgNum">0<small>model</small></div>
             <div class="pt-prog-track"><div class="pt-prog-bar" id="ptProgBar"></div></div>
         </div>
     </div>
@@ -2915,9 +2951,10 @@ const MODELS_COL = "models";
 const API_BASE = "https://protector-api.o553115544.workers.dev";
 async function apiFetch(path, opts) {
     const u = auth.currentUser;
-    if (!u || u.isAnonymous) { const e = new Error("auth"); e.code = "unauthenticated"; throw e; }
+    if (!u || (u.isAnonymous && !(opts && opts.anon))) { const e = new Error("auth"); e.code = "unauthenticated"; throw e; }
     const tok = await u.getIdToken();
     const o = Object.assign({}, opts || {});
+    delete o.anon;
     o.headers = Object.assign({ "Authorization": "Bearer " + tok }, o.body ? { "Content-Type": "application/json" } : {}, o.headers || {});
     const r = await fetch(API_BASE + path, o);
     let d = null;
@@ -4997,6 +5034,8 @@ async function adminPublishDatabase() {
     adminEditDb = cleaned;
     if (!cleaned.length) { showAppToast("Baza boşdur — dərc dayandırıldı. Əvvəlcə «Əsas baza» basın."); return; }
     setAdminStatus("Dərc edilir...");
+    showProgress("Dərc edilir…");
+    progCountTo(namesFromGroups(cleaned).length);
     try {
         const oldDb = JSON.parse(JSON.stringify(database || []));
         let changelogMsg = generateChangelogMessage(oldDb, cleaned);
@@ -5051,8 +5090,10 @@ async function adminPublishDatabase() {
         triggerHaptic(50);
         if (typeof playSuccessSound === "function") playSuccessSound();
         renderAdminList();
+        setTimeout(function () { finishProgress(true); }, 900);
     } catch (err) {
         console.error(err);
+        finishProgress(false);
         setAdminStatus("Xəta: " + (err.message || "Dərc edilə bilmədi"));
         showAppToast("Dərc xətası: " + (err.message || "yenidən cəhd edin"));
     }
@@ -5262,7 +5303,9 @@ async function readDbFromFirestore() {
         return { groups: groups, data: data, mode: "full" };
     }
     let cat = null;
-    try { cat = await apiFetch("/catalog"); } catch (e) { cat = null; }
+    const haveVer = catalogMeta && +catalogMeta.ver && (database || []).length > 0;
+    try { cat = await apiFetch("/catalog" + (haveVer ? "?ver=" + encodeURIComponent(catalogMeta.ver) : ""), { anon: true }); } catch (e) { cat = null; }
+    if (cat && cat.same) return { groups: database, data: null, mode: "catalog", same: true };
     if (!cat) {
         try { const sn = await db.doc(FS_CATALOG_DOC).get(); if (sn.exists) cat = sn.data() || null; } catch (e) { cat = null; }
     }
@@ -5378,6 +5421,7 @@ async function loadDatabaseFromFirestore() {
     try {
         window.ptDbErr = "";
         const res = await readDbFromFirestore();
+        if (res.same) { indexFor = null; return true; }
         if (res.data) {
             const data = res.data;
             applyChangelogFromFirestore(data);
@@ -9648,7 +9692,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.9";
+const APP_VERSION = "3.1.3.00";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10409,14 +10453,29 @@ async function fetchDatabase(retries = 3) {
         updateButton.classList.add("updating");
         // 106–108: progress panel
         if (typeof showProgress === "function") showProgress("loading");
+        const knownN = namesFromGroups(database || []).length;
+        progCountTo(knownN);
+
+        if (!updGate()) {
+            /* yeni yoxlama vaxtı deyil — şəbəkəyə getmədən slaydı göstər */
+            const left0 = 3800 - (Date.now() - animStart);
+            if (left0 > 0) await new Promise(function (r) { setTimeout(r, left0); });
+            updateButton.querySelector("span").innerText = t("updateNow");
+            spinner.style.display = "none";
+            updateButton.disabled = false;
+            updateButton.classList.remove("updating");
+            finishProgress(true);
+            triggerHaptic(30);
+            return;
+        }
 
         const oldDatabase = JSON.parse(JSON.stringify(database));
         let parsed = null;
 
-        if (typeof setProgress === "function") setProgress(30, "checking");
         const res = await readDbFromFirestore();
         refreshSizes();
         let fsData = null;
+        if (res.same) parsed = database;
         if (res.data) {
             fsData = res.data;
             parsed = res.groups;
@@ -10444,6 +10503,7 @@ async function fetchDatabase(retries = 3) {
         }
         renderChangelogHistory();
         updateLastUpdate();
+        progCountTo(namesFromGroups(database || []).length || (catalogMeta && catalogMeta.modelCount) || knownN);
 
         const input = document.getElementById("searchInput");
         if (input && input.value.trim()) performSearch(input.value);
@@ -10482,6 +10542,11 @@ async function fetchDatabase(retries = 3) {
 
 async function backgroundCheckUpdate() {
     if (!navigator.onLine) return;
+    try {
+        const lastBg = +localStorage.getItem("pt_bg_chk") || 0;
+        if (!isAdmin && Date.now() - lastBg < 3 * 3600e3) return;
+        localStorage.setItem("pt_bg_chk", String(Date.now()));
+    } catch (e) {}
     try {
         const res = await readDbFromFirestore();
         if (!res.data) return;
@@ -10576,7 +10641,10 @@ function showProgress(labelKey) {
     if (!box || !lab || !bar) return;
     ptProgPlace(box);
     box.classList.remove("error", "flash");
-    lab.textContent = t(labelKey || "loading") || "Yüklənir…";
+    box.classList.add("run");
+    if (_ptCnt.raf) { cancelAnimationFrame(_ptCnt.raf); _ptCnt.raf = 0; }
+    _ptCnt.v = 0; _ptCnt.to = 0; progCountRender();
+    lab.textContent = t(labelKey || "loading") || labelKey || "Yüklənir…";
     bar.style.width = "8%";
     box.classList.add("show");
     box.setAttribute("aria-hidden", "false");
@@ -10586,6 +10654,40 @@ function showProgress(labelKey) {
         p = Math.min(p + (p < 60 ? 7 : 2), 92);
         bar.style.width = p + "%";
     }, 280);
+}
+/* Yeniləmə limiti: 10 dəq-də 1, gündə ən çox 5 real yoxlama (admin üçün limitsiz) */
+const UPD_DAILY = 5, UPD_GAP_MS = 10 * 60e3;
+function updGate() {
+    if (isAdmin) return true;
+    if (!navigator.onLine) return false;
+    try {
+        const today = getDateKey(new Date());
+        let st = {};
+        try { st = JSON.parse(localStorage.getItem("pt_upd_gate") || "{}") || {}; } catch (e) { st = {}; }
+        if (st.d !== today) st = { d: today, n: 0, at: 0 };
+        if (!(database || []).length) { st.n++; st.at = Date.now(); localStorage.setItem("pt_upd_gate", JSON.stringify(st)); return true; }
+        if (Date.now() - (st.at || 0) < UPD_GAP_MS || st.n >= UPD_DAILY) return false;
+        st.n++; st.at = Date.now();
+        localStorage.setItem("pt_upd_gate", JSON.stringify(st));
+    } catch (e) {}
+    return true;
+}
+var _ptCnt = { v: 0, to: 0, raf: 0 };
+function progCountRender() {
+    var el = document.getElementById("ptProgNum");
+    if (el) el.innerHTML = Math.round(_ptCnt.v).toLocaleString("az-AZ").replace(/,/g, " ") + "<small>model</small>";
+}
+function progCountTo(n) {
+    _ptCnt.to = Math.max(0, n | 0);
+    if (_ptCnt.raf) return;
+    var step = function () {
+        var d = _ptCnt.to - _ptCnt.v;
+        if (Math.abs(d) < 1) { _ptCnt.v = _ptCnt.to; progCountRender(); _ptCnt.raf = 0; return; }
+        _ptCnt.v += d * 0.035 + (d > 0 ? 0.6 : -0.6);
+        progCountRender();
+        _ptCnt.raf = requestAnimationFrame(step);
+    };
+    _ptCnt.raf = requestAnimationFrame(step);
 }
 function setProgress(pct, labelKey) {
     var lab = document.getElementById("ptProgLabel");
@@ -10599,6 +10701,7 @@ function finishProgress(ok) {
     var lab = document.getElementById("ptProgLabel");
     if (!box) return;
     clearInterval(_ptProgTimer);
+    box.classList.remove("run");
     if (ok === false) {
         box.classList.add("error");
         if (lab) lab.textContent = t("alertFail") ? t("alertFail").split("\n")[0] : "Xəta";
@@ -10616,7 +10719,7 @@ function finishProgress(ok) {
         box.classList.remove("show", "flash");
         box.setAttribute("aria-hidden", "true");
         if (bar) bar.style.width = "0%";
-    }, 700);
+    }, 1400);
 }
 
 function updateLastUpdate() {
