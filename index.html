@@ -2199,7 +2199,7 @@
                     <span class="phone-prefix">+994</span>
                 </div>
                 <div class="phone-input-box">
-                    <input type="tel" id="regPhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="50 123 45 67" maxlength="12" oninput="validateRegPhone(this)" onblur="validateRegPhone(this)">
+                    <input type="tel" id="regPhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="50 123 45 67 *" required maxlength="12" oninput="validateRegPhone(this)" onblur="validateRegPhone(this)">
                 </div>
             </div>
             <div id="regPhoneErr" class="field-error-msg" data-i18n="regPhoneErr">Nömrə yanlışdır, 9 rəqəm olmalı və doğru prefiks ilə başlamalıdır (10,50,51,55,60,70,77,99,12)</div>
@@ -3703,10 +3703,11 @@ function validateProfPhone() {
     if (!el) return true;
     const digits = extractPhoneDigits(el.value);
     if (!digits.length) {
-        el.classList.remove("input-error", "input-ok");
-        if (err) err.classList.remove("visible");
-        if (btn) btn.disabled = false;
-        return true;
+        el.classList.remove("input-ok");
+        el.classList.add("input-error");
+        if (err) err.classList.add("visible");
+        if (btn) btn.disabled = true;
+        return false;
     }
     const res = validatePhoneNumber(digits);
     if (res.ok) {
@@ -3863,7 +3864,7 @@ function updateRegButtonState() {
     const passOk = document.getElementById("regPass") && document.getElementById("regPass").classList.contains("input-ok");
     const phoneEl = document.getElementById("regPhone");
     const phoneDigits = phoneEl ? extractPhoneDigits(phoneEl.value) : "";
-    const phoneOk = !phoneDigits.length || (phoneEl && phoneEl.classList.contains("input-ok"));
+    const phoneOk = !!phoneDigits.length && !!(phoneEl && phoneEl.classList.contains("input-ok"));
     btn.disabled = !(nameOk && emailOk && passOk && phoneOk);
 }
 
@@ -7174,10 +7175,126 @@ function trialDaysFor(ms) {
     return (g.std === 0 || +g.std > 0) ? +g.std : TRIAL_DAYS;
 }
 
-function trialEnd() {
+// ---------- Sınaq qoruması + məcburi telefon ----------
+const TR_MSG = {
+    phTitle: { az: "Telefon nömrəsi", ru: "Номер телефона", tr: "Telefon numarası", en: "Phone number" },
+    phText: { az: "Davam etmək üçün mobil nömrənizi daxil edin. Nömrə hesabınızın təhlükəsizliyi və sizinlə əlaqə üçün istifadə olunur.", ru: "Чтобы продолжить, укажите номер мобильного. Он нужен для защиты аккаунта и связи с вами.", tr: "Devam etmek için cep numaranızı girin. Numara hesap güvenliği ve sizinle iletişim için kullanılır.", en: "Enter your mobile number to continue. It is used to protect your account and to contact you." },
+    phSave: { az: "Yadda saxla və davam et", ru: "Сохранить и продолжить", tr: "Kaydet ve devam et", en: "Save and continue" },
+    phOut: { az: "Hesabdan çıx", ru: "Выйти", tr: "Çıkış yap", en: "Sign out" },
+    phBad: { az: "Nömrə yanlışdır: 9 rəqəm olmalı və düzgün prefiks ilə başlamalıdır (10, 50, 51, 55, 60, 70, 77, 99, 12).", ru: "Неверный номер: 9 цифр с правильным префиксом (10, 50, 51, 55, 60, 70, 77, 99, 12).", tr: "Numara hatalı: 9 hane olmalı ve doğru önekle başlamalı (10, 50, 51, 55, 60, 70, 77, 99, 12).", en: "Invalid number: 9 digits with a valid prefix (10, 50, 51, 55, 60, 70, 77, 99, 12)." },
+    phFail: { az: "Yadda saxlanılmadı, yenidən cəhd edin.", ru: "Не удалось сохранить, попробуйте ещё раз.", tr: "Kaydedilemedi, tekrar deneyin.", en: "Could not save, please try again." },
+    denied: { az: "Pulsuz sınaq müddəti bu cihazda, e-poçt ünvanında və ya telefon nömrəsində artıq istifadə olunub. Hesabınız pulsuz planla davam edir; Premium almaq üçün profil bölməsinə keçin.", ru: "Бесплатный пробный период уже использовался на этом устройстве, e-mail или номере. Аккаунт работает на бесплатном плане; Premium можно оформить в профиле.", tr: "Ücretsiz deneme süresi bu cihazda, e-posta adresinde veya telefon numarasında zaten kullanıldı. Hesabınız ücretsiz planla devam ediyor; Premium için profile gidin.", en: "The free trial has already been used on this device, email or phone number. Your account continues on the free plan; get Premium from your profile." }
+};
+function trMsg(k) { const o = TR_MSG[k]; return o[currentLang] || o.az; }
+
+// Cihaz nişanı: localStorage + cookie + IndexedDB (biri silinsə, digərindən bərpa olunur)
+let ptDevP = null;
+function ptDevId() {
+    if (ptDevP) return ptDevP;
+    const KEY = "pt_dev";
+    const ok = function (v) { return typeof v === "string" && /^[a-zA-Z0-9-]{16,64}$/.test(v) ? v : ""; };
+    const fromCookie = function () { const m = document.cookie.match(/(?:^|;\s*)pt_dev=([^;]+)/); return m ? ok(decodeURIComponent(m[1])) : ""; };
+    const idb = function (val) {
+        return new Promise(function (res) {
+            try {
+                const rq = indexedDB.open("pt_store", 1);
+                rq.onupgradeneeded = function () { rq.result.createObjectStore("kv"); };
+                rq.onerror = function () { res(""); };
+                rq.onsuccess = function () {
+                    try {
+                        const tx = rq.result.transaction("kv", val ? "readwrite" : "readonly");
+                        const st = tx.objectStore("kv");
+                        if (val) { st.put(val, KEY); tx.oncomplete = function () { res(val); }; tx.onerror = function () { res(""); }; }
+                        else { const g = st.get(KEY); g.onsuccess = function () { res(ok(g.result)); }; g.onerror = function () { res(""); }; }
+                    } catch (e) { res(""); }
+                };
+            } catch (e) { res(""); }
+        });
+    };
+    ptDevP = idb("").then(function (fromIdb) {
+        let id = "";
+        try { id = ok(localStorage.getItem(KEY)); } catch (e) {}
+        id = id || fromCookie() || fromIdb;
+        if (!id) id = (crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2)));
+        try { localStorage.setItem(KEY, id); } catch (e) {}
+        try { document.cookie = "pt_dev=" + encodeURIComponent(id) + "; max-age=" + (5 * 365 * 86400) + "; path=/; SameSite=Lax; Secure"; } catch (e) {}
+        if (fromIdb !== id) idb(id);
+        return id;
+    });
+    return ptDevP;
+}
+
+function trialDecision(uid) { try { return localStorage.getItem("pt_trial_" + uid) || ""; } catch (e) { return ""; } }
+
+let ptChecksUid = "", ptTrialBusy = false, ptPhoneOpen = false;
+function ptAccountChecks(user, exists, fromCache) {
+    if (!user || user.isAnonymous || isAdmin || regPending || fromCache || !exists) return;
+    const digits = extractPhoneDigits(accountData.phoneNumber || "");
+    if (!validatePhoneNumber(digits).ok) { ptPhoneGate(user); return; }
+    if (ptChecksUid === user.uid) return;
+    ptChecksUid = user.uid;
+    ptTrialCheck(user, digits);
+}
+
+function ptTrialCheck(user, digits) {
+    if (trialDecision(user.uid) || ptTrialBusy) return;
+    const end = trialEndRaw();
+    if (!end || end < Date.now()) return; // sınaq dövrü yoxdur və ya bitib — yoxlamağa ehtiyac yoxdur
+    ptTrialBusy = true;
+    ptDevId().then(function (dev) {
+        return apiFetch("/trial", { method: "POST", body: JSON.stringify({ dev: dev, phone: "+994" + digits }) });
+    }).then(function (d) {
+        if (!d || d.pending) return;
+        try { localStorage.setItem("pt_trial_" + user.uid, d.granted ? "1" : "0"); } catch (e) {}
+        updateProBadge();
+        if (document.getElementById("profile-view").classList.contains("active")) { renderSubscription(); try { renderProfHero(accountData); } catch (e) {} }
+        if (!d.granted) appAlert(trMsg("denied"), "", "ℹ️");
+    }).catch(function () {}).then(function () { ptTrialBusy = false; });
+}
+
+function ptPhoneGate(user) {
+    if (ptPhoneOpen) return;
+    ptPhoneOpen = true;
+    const ov = document.createElement("div");
+    ov.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px";
+    ov.innerHTML = '<div style="background:var(--surface);color:var(--text);border:2px solid var(--gold);border-radius:22px;padding:22px 18px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.5)">'
+        + '<div style="font-size:30px;margin-bottom:6px">📱</div>'
+        + '<div style="font-weight:800;font-size:18px;margin-bottom:8px">' + escapeHtml(trMsg("phTitle")) + '</div>'
+        + '<div style="font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:14px">' + escapeHtml(trMsg("phText")) + '</div>'
+        + '<div class="phone-field" style="margin-bottom:8px"><div class="phone-code-box"><span class="phone-prefix">+994</span></div><div class="phone-input-box"><input type="tel" id="ptGatePhone" class="phone-input" inputmode="numeric" autocomplete="tel-national" placeholder="50 123 45 67" maxlength="12"></div></div>'
+        + '<div id="ptGateErr" style="color:#ff6b5b;font-size:12.5px;min-height:18px;margin-bottom:8px"></div>'
+        + '<button type="button" id="ptGateSave" style="width:100%;height:50px;border:0;border-radius:14px;font-weight:800;font-size:15px;cursor:pointer;color:#111;background:linear-gradient(135deg,#f7e08a,var(--gold) 55%,#b8902a)">' + escapeHtml(trMsg("phSave")) + '</button>'
+        + '<button type="button" id="ptGateOut" style="margin-top:10px;background:transparent;border:0;color:var(--muted);font-size:13px;cursor:pointer;text-decoration:underline">' + escapeHtml(trMsg("phOut")) + '</button></div>';
+    document.body.appendChild(ov);
+    const inp = document.getElementById("ptGatePhone"), err = document.getElementById("ptGateErr"), btn = document.getElementById("ptGateSave");
+    inp.oninput = function () { inp.value = formatPhoneMask(extractPhoneDigits(inp.value)); err.textContent = ""; };
+    const close = function () { ov.remove(); ptPhoneOpen = false; };
+    document.getElementById("ptGateOut").onclick = function () { close(); auth.signOut(); };
+    btn.onclick = function () {
+        const digits = extractPhoneDigits(inp.value);
+        if (!validatePhoneNumber(digits).ok) { err.textContent = trMsg("phBad"); return; }
+        btn.disabled = true;
+        db.collection("users").doc(user.uid).set({ phoneNumber: "+994" + digits, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).then(function () {
+            accountData.phoneNumber = "+994" + digits;
+            close();
+            ptChecksUid = user.uid;
+            ptTrialCheck(user, digits);
+        }).catch(function () { btn.disabled = false; err.textContent = trMsg("phFail"); });
+    };
+    setTimeout(function () { try { inp.focus(); } catch (e) {} }, 100);
+}
+
+function trialEndRaw() {
     const ms = accCreatedMs();
     if (!ms || ms < TRIAL_FROM) return 0;
     return ms + trialDaysFor(ms) * DAY_MS;
+}
+function trialEnd() {
+    const end = trialEndRaw();
+    if (!end) return 0;
+    const u = auth.currentUser;
+    // Sınaq yalnız Worker təsdiq edəndə verilir (cihaz / e-poçt / telefon əvvəllər sınaq almayıbsa)
+    return (u && trialDecision(u.uid) === "1") ? end : 0;
 }
 
 let dbLoadedForUser = false;
@@ -7203,6 +7320,7 @@ function startAccountWatch(user) {
                 if (input && input.value.trim()) performSearch(input.value);
             });
         }
+        try { ptAccountChecks(user, doc.exists, fromCache); } catch (e) {}
         updateProBadge();
         updateNotifBadge();
         remindPremium();
@@ -8859,7 +8977,7 @@ function registerUser() {
         msgDiv.innerText = t("fillBasic");
         return;
     }
-    if (phoneDigits && !validatePhoneNumber(phoneDigits).ok) {
+    if (!phoneDigits || !validatePhoneNumber(phoneDigits).ok) {
         msgDiv.style.color = "red";
         msgDiv.innerText = t("phoneInvalid");
         return;
