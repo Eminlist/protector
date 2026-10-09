@@ -1818,7 +1818,12 @@
         .admin-box-title{font-size:11px;font-weight:700;color:var(--accent-color);margin-bottom:4px}
         .req-row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px}
         .req-acts{display:flex;gap:4px;flex-shrink:0}
-        .req-acts button{background:none;border:1px solid var(--border);border-radius:8px;color:var(--accent-color);cursor:pointer;font-size:10px;padding:3px 6px;white-space:nowrap}
+        .req-acts button{display:inline-flex;align-items:center;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:999px;color:var(--text);cursor:pointer;font-size:11px;font-weight:700;padding:5px 10px;white-space:nowrap}
+.req-acts button svg{width:13px;height:13px;fill:none;stroke:var(--accent-color);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.req-acts button.ok{border-color:color-mix(in srgb,#2ecc71 45%,var(--border))}
+.req-acts button.ok svg{stroke:#2ecc71}
+.req-acts button.no{border-color:color-mix(in srgb,#e74c3c 45%,var(--border))}
+.req-acts button.no svg{stroke:#e74c3c}
         .bc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
         .bc-grid input{height:34px;font-size:12px}
         .size-row{display:flex;gap:6px;align-items:center;margin:4px 0 10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
@@ -5204,9 +5209,9 @@ function renderModelRequestsList() {
         return '<div class="req-row">' +
             '<span>' + escapeHtml(r.text) + count + ' <small style="color:var(--muted)">' + escapeHtml(r.date) + '</small></span>' +
             '<span class="req-acts">' +
-            '<button onclick="pickReplyTemplate(' + i + ')">✉ Şablon</button>' +
-            '<button onclick="replyModelRequest(' + i + ',\'1\')">✅ 1</button>' +
-            '<button onclick="replyModelRequest(' + i + ',\'6\')">❌ 6</button>' +
+            '<button onclick="pickReplyTemplate(' + i + ')" title="Hazır cavab seç"><svg viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-10 5L2 7"/></svg>Şablon</button>' +
+            '<button class="ok" onclick="replyModelRequest(' + i + ',\'1\')" title="Model bazaya əlavə olundu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Əlavə olundu</button>' +
+            '<button class="no" onclick="replyModelRequest(' + i + ',\'6\')" title="Rədd: kifayət qədər məlumat yoxdur"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Rədd</button>' +
             '</span></div>';
     }).join("");
 }
