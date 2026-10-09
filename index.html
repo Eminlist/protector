@@ -3460,7 +3460,11 @@ function stOpenUser(id) {
     try { upOpen[id] = "hist"; } catch (e) {}
     const its = document.querySelectorAll("#adminUsersList .au-item");
     for (let i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) { admToggleUser(id); return; }
-    try { upId = id; const pg = userPage(); fillUserPage(null, id); if (!pg.classList.contains("active")) openSubView("pt-user-page"); } catch (e) { showAppToast("İstifadəçi tapılmadı"); }
+    try {
+        const fake = document.createElement("div"); fake.className = "au-item"; fake.setAttribute("data-uid", id);
+        upId = id; const pg = userPage(); fillUserPage(fake, id);
+        if (!pg.classList.contains("active")) openSubView("pt-user-page");
+    } catch (e) { console.error("stOpenUser", e); showAppToast("İstifadəçi səhifəsi açılmadı"); }
 }
 
 function adminAutoUnblock(btn) {
