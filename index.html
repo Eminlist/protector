@@ -1909,7 +1909,10 @@
         .ab-item small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
         .ab-item button{flex-shrink:0;border:0;border-radius:10px;padding:9px 12px;font-weight:800;font-size:12.5px;cursor:pointer;color:#111;background:linear-gradient(135deg,#7CF0A6,#2ecc71)}
         .ab-item button:disabled{opacity:.5}
-        .st-per{display:flex;gap:6px;margin-bottom:10px}
+        .st-us{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;max-width:55%}
+.st-u{padding:4px 9px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent-color) 45%,var(--border));background:color-mix(in srgb,var(--accent-color) 12%,var(--surface));color:var(--text);font-size:12px;font-weight:700;cursor:pointer;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st-more{font-size:12px;color:var(--muted);align-self:center}
+.st-per{display:flex;gap:6px;margin-bottom:10px}
 .st-per button{flex:1;padding:8px 6px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:700;font-size:13px}
 .st-per button.on{background:var(--accent-color);color:#111;border-color:transparent}
 .st-h{margin:14px 2px 6px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
@@ -3428,6 +3431,7 @@ function adminStatsLoad(days, btn) {
             }).join("") + '</div>';
         }
         const LBL = { model: "Ən çox baxılan modellər", view: "Ən çox baxılan modellər", miss: "Tapılmayan axtarışlar" };
+        const who = (d && d.who) || {};
         const order = Object.keys(kinds).sort(function (a, b) { return (/miss/.test(a) ? 1 : 0) - (/miss/.test(b) ? 1 : 0); });
         order.forEach(function (kd) {
             const rows = kinds[kd] || [];
@@ -3435,7 +3439,12 @@ function adminStatsLoad(days, btn) {
             const mx = +rows[0].n || 1, isMiss = /miss/.test(kd);
             h += '<div class="st-h">' + escapeHtml(LBL[kd] || kd) + '</div><div class="pt-top">' + rows.map(function (r, i) {
                 const nm = isMiss ? String(r.k) : (typeof uhName === "function" ? uhName(r.k) : r.k);
-                return '<div class="pt-top-row"><span class="pt-top-n">' + (i + 1) + '</span><span class="pt-top-m"><b>' + escapeHtml(nm) + '</b><i style="width:' + Math.max(4, Math.round((+r.n || 0) / mx * 100)) + '%"></i></span><span class="pt-top-c">' + (+r.n || 0) + '</span></div>';
+                const ws = isMiss ? [] : Object.keys(who[r.k] || {}).sort(function (a, b) { return who[r.k][b] - who[r.k][a]; });
+                const chips = ws.slice(0, 6).map(function (uid) {
+                    const u = (typeof adminFindUser === "function" && adminFindUser(uid)) || {};
+                    return '<button type="button" class="st-u" data-uid="' + escapeHtml(uid) + '" onclick="stOpenUser(this.getAttribute(\'data-uid\'))">' + escapeHtml(u.username || u.displayName || u.email || uid.slice(0, 8)) + '</button>';
+                }).join("") + (ws.length > 6 ? '<span class="st-more">+' + (ws.length - 6) + '</span>' : "");
+                return '<div class="pt-top-row"><span class="pt-top-n">' + (i + 1) + '</span><span class="pt-top-m"><b>' + escapeHtml(nm) + '</b><i style="width:' + Math.max(4, Math.round((+r.n || 0) / mx * 100)) + '%"></i></span>' + (chips ? '<span class="st-us">' + chips + '</span>' : '') + '<span class="pt-top-c">' + (+r.n || 0) + '</span></div>';
             }).join("") + '</div>';
         });
         if (!daily.length && !order.length) h = '<div class="ab-empty">Bu dövr üçün məlumat yoxdur</div>';
@@ -3444,6 +3453,14 @@ function adminStatsLoad(days, btn) {
         const c = (e && e.code) || "?";
         box.innerHTML = '<div class="ab-empty">' + "Yüklənmədi (" + escapeHtml(c) + ")" + '</div>';
     });
+}
+
+function stOpenUser(id) {
+    if (!id) return;
+    try { upOpen[id] = "hist"; } catch (e) {}
+    const its = document.querySelectorAll("#adminUsersList .au-item");
+    for (let i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) { admToggleUser(id); return; }
+    try { upId = id; const pg = userPage(); fillUserPage(null, id); if (!pg.classList.contains("active")) openSubView("pt-user-page"); } catch (e) { showAppToast("İstifadəçi tapılmadı"); }
 }
 
 function adminAutoUnblock(btn) {
