@@ -5658,7 +5658,8 @@ async function fetchModelGroup(model) {
 async function readDbFromFirestore() {
     if (isAdmin) {
         const snap = await db.doc(FS_DB_DOC).get();
-        const data = snap.exists ? (snap.data() || {}) : null;
+        // Sənəd yoxdursa da admin paneli açılsın — «Əsas baza» → «Dərc et» ilə yenidən yaradılır
+        const data = snap.exists ? (snap.data() || {}) : {};
         const groups = data ? groupsFromFirestore(data) : [];
         if (data) applyCodes(data.codes, true);
         catalogMeta = { groupCount: groups.length, modelCount: namesFromGroups(groups).length, ver: 0 };
