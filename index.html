@@ -3685,9 +3685,18 @@ function updateProfile() {
     });
 }
 
+/* Təsdiq (uğur) mesajlarının sonuna ✓ */
+const TOAST_BAD = /(xəta|alınmadı|olmadı|mədi|madı|dayandırıldı|ola bilməz|tapılmadı|mütləqdir|yazın|error|ошибк|не удалось|hata|edilemedi|couldn't|failed|…|\.\.\.|\?)/i;
+const TOAST_OK = /(saxlanıldı|saxlanıldı|yeniləndi|göndərildi|silindi|olundu|edildi|çıxarıldı|seçildi|dəyişdirildi|yaradıldı|alındı|qaytarıldı|düzəldildi|gətirildi|yükləndi|dublikat yoxdur|сохран|отправлен|удален|добавлен|обновлен|принят|kaydedildi|gönderildi|eklendi|güncellendi|alındı|saved|sent|deleted|added|updated|removed|received)/i;
+function toastTick(text) {
+    const s = String(text == null ? "" : text);
+    if (!s || /[✓✔⚠❌🎁]/.test(s) || TOAST_BAD.test(s) || !TOAST_OK.test(s)) return s;
+    return s.replace(/[\s.!]+$/, "") + " ✓";
+}
 function showAppToast(text, duration) {
     const toast = document.getElementById("toast");
     if (!toast) return;
+    text = toastTick(text);
     toast.innerText = text;
     toast.classList.remove("show");
     void toast.offsetWidth;
@@ -4603,7 +4612,7 @@ function adminCheckDuplicates() {
         });
     });
     if (!dups.length) {
-        showAppToast("Dublikat yoxdur");
+        showAppToast("Dublikat yoxdur ✓");
         return;
     }
     appAlert(dups.slice(0, 40).map(function (d) {
@@ -10385,7 +10394,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.07";
+const APP_VERSION = "3.1.3.08";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
