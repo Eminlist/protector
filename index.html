@@ -4995,6 +4995,7 @@ async function adminPublishDatabase() {
     }
     const cleaned = adminNormalizeEditDb();
     adminEditDb = cleaned;
+    if (!cleaned.length) { showAppToast("Baza boşdur — dərc dayandırıldı. Əvvəlcə «Əsas baza» basın."); return; }
     setAdminStatus("Dərc edilir...");
     try {
         const oldDb = JSON.parse(JSON.stringify(database || []));
@@ -5381,7 +5382,8 @@ async function loadDatabaseFromFirestore() {
             const data = res.data;
             applyChangelogFromFirestore(data);
             const parsed = res.groups;
-            if (parsed.length > 0) {
+            if (!parsed.length && res.mode === "full" && isAdmin) setTimeout(function () { showAppToast("Admin bazası boşdur — Admin → «Əsas baza» → «Dərc et»", 6000); }, 800);
+            if (parsed.length > 0 || (res.mode === "full" && isAdmin)) {
                 applyDb(res);
                 localStorage.setItem(UPDATE_KEY, Date.now().toString());
                 updateLastUpdate();
@@ -9646,7 +9648,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.8";
+const APP_VERSION = "3.1.9";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
