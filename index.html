@@ -2002,7 +2002,18 @@
         #pt-progress.inline{position:relative;left:auto;top:auto;transform:none;width:100%;max-height:0;overflow:hidden;opacity:0;margin:0;z-index:auto;transition:max-height .35s ease,opacity .3s ease,margin .3s ease}
         #pt-progress.inline.show{transform:none;max-height:96px;opacity:1;margin-top:12px}
         #pt-progress.inline .pt-prog-card{box-shadow:none}
-    </style>
+    
+/* Yeniləmə tarixçəsi — açılan slayd */
+.cl-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;border:1.5px solid var(--accent-color);border-radius:999px;padding:8px 14px 8px 8px;box-shadow:0 0 12px rgba(46,204,113,.18);transition:box-shadow .25s,background .25s}
+.cl-toggle:active{background:rgba(46,204,113,.08)}
+.cl-toggle .cl-chev{width:16px;height:16px;margin-left:auto;flex:none;fill:none;stroke:var(--accent-color);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
+.cl-toggle[aria-expanded="true"] .cl-chev{transform:rotate(180deg)}
+.cl-toggle[aria-expanded="true"]{box-shadow:0 0 16px rgba(46,204,113,.32)}
+.cl-wrap{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .35s ease,opacity .3s ease,margin .35s}
+.cl-wrap>.settings-box{overflow:hidden;min-height:0}
+.cl-wrap.open{grid-template-rows:1fr;opacity:1;margin-top:12px}
+.cl-wrap:not(.open)>.settings-box{border-width:0;padding-top:0;padding-bottom:0}
+</style>
 </head>
 
 <body>
@@ -2540,10 +2551,10 @@
             </div>
 
             <div class="settings-section">
-                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#FF7A7A;--b:#D7263D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 14v2.2l1.6 1" /><path d="M16 2v3" /><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338" /><path d="M3 9h5.859" /><path d="M8 2v3" /><circle cx="16" cy="16" r="6" /></svg></span><span data-i18n="secChangelog">YENİLƏMƏ TARİXÇƏSİ</span></div>
-                <div class="settings-box" id="changelogBox">
+                <div class="settings-section-title cl-toggle" role="button" tabindex="0" aria-expanded="false" onclick="ptClToggle(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ptClToggle(this)}"><span class="e3d ic3d" style="--a:#FF7A7A;--b:#D7263D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M16 14v2.2l1.6 1" /><path d="M16 2v3" /><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338" /><path d="M3 9h5.859" /><path d="M8 2v3" /><circle cx="16" cy="16" r="6" /></svg></span><span data-i18n="secChangelog">YENİLƏMƏ TARİXÇƏSİ</span><svg class="cl-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+                <div class="cl-wrap" id="changelogWrap"><div class="settings-box" id="changelogBox">
                     <div class="changelog-empty" data-i18n="noChangelog">Hələ yeniləmə yoxdur</div>
-                </div>
+                </div></div>
             </div>
 
             <div class="settings-section">
@@ -9631,7 +9642,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.6";
+const APP_VERSION = "3.1.7";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -12074,5 +12085,8 @@ window.ptEditModel = function (model) {
 <!-- ===== /admin menyusu ===== -->
 
 
+<script>
+function ptClToggle(t){var w=document.getElementById("changelogWrap");if(!w)return;var o=!w.classList.contains("open");w.classList.toggle("open",o);t.setAttribute("aria-expanded",o?"true":"false");}
+</script>
 </body>
 </html>
