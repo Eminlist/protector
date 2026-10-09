@@ -6290,10 +6290,25 @@ function adminSendMessage(id) {
     });
 }
 
+function ptSeenAgo(ts) {
+    var m = Math.floor((Date.now() - ts) / 60000);
+    if (m < 60) return m + " dəq əvvəl";
+    var h = Math.floor(m / 60);
+    if (h < 24) return h + " saat əvvəl";
+    return (typeof fmtDate === "function" ? fmtDate(ts) : new Date(ts).toLocaleDateString());
+}
+// Onlayn statusu: tətbiq açıq olduqca və hər açılışda son görülməni yenilə
+(function () {
+    function beat() {
+        try { if (document.visibilityState === "visible" && navigator.onLine && auth && auth.currentUser && !auth.currentUser.isAnonymous) touchLastSeen(auth.currentUser.uid); } catch (e) {}
+    }
+    document.addEventListener("visibilitychange", beat);
+    setInterval(beat, 4 * 60 * 1000);
+})();
 function touchLastSeen(uid) {
     const k = "pt_seen_" + uid;
     const last = parseInt(localStorage.getItem(k) || "0", 10) || 0;
-    if (Date.now() - last < 60 * 60 * 1000) return;
+    if (Date.now() - last < 3 * 60 * 1000) return; // onlayn statusu üçün: ən çox 3 dəqiqədə bir
     localStorage.setItem(k, String(Date.now()));
     // admin-only device/OS info (not shown in user profile)
     var os = "Web";
@@ -10472,7 +10487,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.1.2";
+const APP_VERSION = "3.1.3.1.3";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -12350,7 +12365,8 @@ function fillUserPage(it, id) {
     if (proActive) badges += '<span class="pt-up-badge pro">PREMIUM</span>';
     else badges += '<span class="pt-up-badge free">FREE</span>';
     if (offlineDays >= 90) badges += '<span class="pt-up-badge blk">90+ offline</span>';
-    else if (offlineDays >= 0 && offlineDays < 2) badges += '<span class="pt-up-badge ok">Onlayn</span>';
+    else if (u.lastSeen && Date.now() - (+u.lastSeen) < 7 * 60 * 1000) badges += '<span class="pt-up-badge ok">● Onlayn</span>';
+    else if (u.lastSeen) badges += '<span class="pt-up-badge free">Son görülmə: ' + esc(ptSeenAgo(+u.lastSeen)) + '</span>';
 
     var rows = "";
     if (email) rows += '<div class="pt-up-row"><div class="pt-up-ic">✉️</div><span>' + escE + '<em>' + esc(provider) + '</em></span></div>';
