@@ -1886,7 +1886,18 @@
         #profile-view #emSaveBtn:disabled,#profile-view #pwSaveBtn:disabled{opacity:.5;box-shadow:none}
         #profile-view .logout-btn{background:transparent !important;color:#e74c3c !important;border:1.5px solid rgba(231,76,60,.55) !important}
         .em-input{width:100%;padding:12px;margin:0 0 10px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-size:15px;box-sizing:border-box}
-        .em-hint{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 6px}
+        .em-hint{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--muted);line-height:1.5;margin:2px 0 12px;padding:11px 13px;border-radius:14px;background:rgba(212,175,55,.07);border:1px dashed color-mix(in srgb,var(--gold) 40%,transparent)}
+        .em-hint::before{content:"ℹ";flex:0 0 20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#111;background:linear-gradient(135deg,#f7e08a,var(--gold))}
+        .em-note{display:none;align-items:flex-start;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:14px;font-size:13px;font-weight:600;line-height:1.45;animation:pwOpen .25s ease}
+        .em-note::before{flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff}
+        .em-note.ok{display:flex;color:#2ecc71;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.35)}
+        .em-note.ok::before{content:"✓";background:#2ecc71}
+        .em-note.err{display:flex;color:#ff6b5b;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.4)}
+        .em-note.err::before{content:"!";background:#e74c3c}
+        .em-note.wait{display:flex;color:var(--muted);background:var(--surface-2);border:1px solid var(--border)}
+        .em-note.wait::before{content:"";width:16px;height:16px;flex:0 0 16px;margin:3px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:emSpin .8s linear infinite}
+        @keyframes emSpin{to{transform:rotate(360deg)}}
+        #emForm .pw-input.bad{border-color:#e74c3c !important;box-shadow:0 0 0 3px rgba(231,76,60,.15)}
         #settings-view,#notif-view,#privacy-view,#admin-view{overscroll-behavior-y:contain}
         .notif-item.link{cursor:pointer}
         .notif-item.link::after{content:"›";float:right;color:var(--accent-color);font-size:18px;line-height:1}
@@ -2320,7 +2331,7 @@
                     <input type="email" id="emNew" class="pw-input em-input" autocomplete="email">
                     <div class="pw-field"><input type="password" id="emPass" class="pw-input" autocomplete="current-password"><button type="button" class="pw-eye" onclick="togglePwVis('emPass', this)" aria-label="Göstər"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div>
                     <div id="emHint" class="em-hint"></div>
-                    <div id="emMsg" style="font-size:12px;margin:6px 0;"></div>
+                    <div id="emMsg" class="em-note"></div>
                     <button class="profile-save-btn" id="emSaveBtn" onclick="changeEmail()" style="width:100%; height:48px; background:var(--accent-color); color:#111; border:none; border-radius:12px; font-weight:800; cursor:pointer;"></button>
                 </div>
             </div>
@@ -3325,7 +3336,8 @@ const EM_MSG = {
     sent: { az: "Link {e} ünvanına göndərildi. Gələnlər və «Spam» qovluğuna baxın.", ru: "Ссылка отправлена на {e}. Проверьте входящие и «Спам».", tr: "Bağlantı {e} adresine gönderildi. Gelen kutusu ve Spam klasörüne bakın.", en: "Link sent to {e}. Check your inbox and Spam folder." },
     bad: { az: "E-poçt ünvanını düzgün yazın.", ru: "Введите корректный e-mail.", tr: "Geçerli bir e-posta girin.", en: "Enter a valid email." },
     same: { az: "Bu, hazırkı e-poçtunuzdur.", ru: "Это ваш текущий e-mail.", tr: "Bu zaten mevcut e-postanız.", en: "This is already your email." },
-    wrong: { az: "Cari şifrə yanlışdır.", ru: "Неверный текущий пароль.", tr: "Mevcut şifre yanlış.", en: "Current password is incorrect." },
+    wrong: { az: "Şifrə və ya e-poçt ünvanı düzgün deyil.", ru: "Неверный пароль или e-mail.", tr: "Şifre veya e-posta adresi hatalı.", en: "Password or email address is incorrect." },
+    nomx: { az: "Şifrə və ya e-poçt ünvanı düzgün deyil. Belə e-poçt ünvanı mövcud deyil.", ru: "Неверный пароль или e-mail. Такой почтовый адрес не существует.", tr: "Şifre veya e-posta adresi hatalı. Böyle bir e-posta adresi yok.", en: "Password or email address is incorrect. This email address does not exist." },
     used: { az: "Bu e-poçt artıq başqa hesabda istifadə olunur.", ru: "Этот e-mail уже используется.", tr: "Bu e-posta başka bir hesapta kullanılıyor.", en: "This email is already in use." },
     many: { az: "Çox tez-tez cəhd edildi. Bir neçə dəqiqə sonra yenidən yoxlayın.", ru: "Слишком много попыток. Попробуйте позже.", tr: "Çok fazla deneme. Biraz sonra tekrar deneyin.", en: "Too many attempts. Try again later." },
     fail: { az: "Göndərilmədi", ru: "Не удалось отправить", tr: "Gönderilemedi", en: "Could not send" },
@@ -3377,7 +3389,8 @@ function setupEmSection() {
     btn.disabled = false;
     document.getElementById("emNew").value = "";
     document.getElementById("emPass").value = "";
-    document.getElementById("emMsg").textContent = "";
+    const m = document.getElementById("emMsg"); m.textContent = ""; m.className = "em-note";
+    document.getElementById("emNew").classList.remove("bad"); document.getElementById("emPass").classList.remove("bad");
     toggleEmForm(false);
 }
 
@@ -3393,6 +3406,21 @@ function toggleEmForm(force) {
     if (open) setTimeout(function () { const s = document.getElementById("emSection"); if (s && s.scrollIntoView) s.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
 }
 
+// E-poçt domeninin məktub qəbul edə bildiyini yoxla (MX qeydi). Şəbəkə xətası olsa, mane olmur.
+function emDomainOk(domain) {
+    if (!domain) return Promise.resolve(false);
+    const q = function (type) {
+        return fetch("https://cloudflare-dns.com/dns-query?name=" + encodeURIComponent(domain) + "&type=" + type, { headers: { accept: "application/dns-json" } })
+            .then(function (r) { return r.json(); });
+    };
+    return q("MX").then(function (d) {
+        if (d && d.Status === 3) return false; // domen yoxdur
+        const mx = (d && d.Answer || []).filter(function (a) { return a.type === 15; });
+        if (mx.length) return !mx.every(function (a) { return /\s\.?$/.test(a.data || "") && /^0\s/.test(a.data || ""); }); // "0 ." = məktub qəbul etmir
+        return q("A").then(function (a) { return !!(a && (a.Answer || []).some(function (x) { return x.type === 1; })); });
+    }).catch(function () { return true; });
+}
+
 function changeEmail() {
     const u = auth.currentUser;
     const msg = document.getElementById("emMsg");
@@ -3400,15 +3428,20 @@ function changeEmail() {
     if (!u || !u.email) return;
     const ne = document.getElementById("emNew").value.trim().toLowerCase();
     const pass = document.getElementById("emPass").value;
-    const say = function (k, color, e) { msg.style.color = color || "red"; msg.textContent = emMsg(k).replace("{e}", e || ""); };
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ne)) return say("bad");
-    if (ne === String(u.email).toLowerCase()) return say("same");
-    if (!pass) return say("wrong");
+    const inNew = document.getElementById("emNew"), inPass = document.getElementById("emPass");
+    inNew.classList.remove("bad"); inPass.classList.remove("bad");
+    const say = function (k, cls, e) { msg.className = "em-note " + (cls || "err"); msg.textContent = emMsg(k).replace("{e}", e || ""); };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ne)) { inNew.classList.add("bad"); return say("bad"); }
+    if (ne === String(u.email).toLowerCase()) { inNew.classList.add("bad"); return say("same"); }
+    if (!pass) { inPass.classList.add("bad"); return say("wrong"); }
     btn.disabled = true;
-    msg.style.color = "var(--muted)"; msg.textContent = t("saving");
+    msg.className = "em-note wait"; msg.textContent = t("saving");
     try { auth.languageCode = currentLang || "az"; } catch (e) {}
     const cred = firebase.auth.EmailAuthProvider.credential(u.email, pass);
-    u.reauthenticateWithCredential(cred).then(function () {
+    emDomainOk(ne.split("@")[1]).then(function (ok) {
+        if (!ok) { const e = new Error("nomx"); e.code = "pt/nomx"; throw e; }
+        return u.reauthenticateWithCredential(cred);
+    }).then(function () {
         const s = verifyActionSettings();
         return (s.url ? u.verifyBeforeUpdateEmail(ne, s) : u.verifyBeforeUpdateEmail(ne)).catch(function (e) {
             const c = (e && e.code) || "";
@@ -3416,17 +3449,18 @@ function changeEmail() {
             throw e;
         });
     }).then(function () {
-        say("sent", "#2ecc71", ne);
+        say("sent", "ok", ne);
         document.getElementById("emPass").value = "";
         showAppToast(emMsg("sent").replace("{e}", ne), 6000);
     }).catch(function (e) {
         const c = (e && e.code) || "";
         btn.disabled = false;
-        if (c === "auth/wrong-password" || c === "auth/invalid-credential" || c === "auth/invalid-login-credentials") say("wrong");
-        else if (c === "auth/email-already-in-use") say("used");
-        else if (c === "auth/invalid-email") say("bad");
+        if (c === "pt/nomx") { inNew.classList.add("bad"); say("nomx"); }
+        else if (c === "auth/wrong-password" || c === "auth/invalid-credential" || c === "auth/invalid-login-credentials") { inPass.classList.add("bad"); say("wrong"); }
+        else if (c === "auth/email-already-in-use") { inNew.classList.add("bad"); say("used"); }
+        else if (c === "auth/invalid-email") { inNew.classList.add("bad"); say("bad"); }
         else if (c === "auth/too-many-requests") say("many");
-        else { msg.style.color = "red"; msg.textContent = emMsg("fail") + (c ? " (" + c + ")" : ""); }
+        else { msg.className = "em-note err"; msg.textContent = emMsg("fail") + (c ? " (" + c + ")" : ""); }
     });
 }
 
