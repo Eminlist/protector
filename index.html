@@ -3935,6 +3935,12 @@ function loadAdminStats() {
                 }
                 if (created === today) todayCount++;
             });
+            /* admin təsdiqlədiyi istifadəçiləri Cloudflare-ə ötür (sessiyada bir dəfə) */
+            if (!window._ptVerSynced) {
+                window._ptVerSynced = true;
+                var vs = adminUsersCache.filter(function (x) { return x.emailVerifiedByAdmin; }).map(function (x) { return x._id; });
+                if (vs.length) apiFetch("/admin/verified", { method: "POST", body: JSON.stringify({ set: vs }) }).catch(function () { window._ptVerSynced = false; });
+            }
             var t = document.getElementById("adminStatTotalUsers");
             var td = document.getElementById("adminStatTodayUsers");
             if (t) t.textContent = "Ümumi istifadəçi: " + adminUsersCache.length;
@@ -8693,6 +8699,7 @@ function adminVerifyEmail(id) {
         if (!ok) return;
         db.collection("users").doc(id).set({ emailVerifiedByAdmin: on, emailVerifiedAt: on ? Date.now() : 0 }, { merge: true }).then(function () {
             u.emailVerifiedByAdmin = on;
+            apiFetch("/admin/verified", { method: "POST", body: JSON.stringify(on ? { set: [id] } : { del: [id] }) }).catch(function () {});
             if (on) {
                 db.collection("users").doc(id).collection("notifications").add({
                     type: "msg", text: "✓ E-poçtunuz admin tərəfindən təsdiqləndi. Artıq axtarış edə bilərsiniz.", createdAt: Date.now(), read: false
@@ -9724,7 +9731,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.01";
+const APP_VERSION = "3.1.3.02";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
