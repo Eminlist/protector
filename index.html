@@ -2140,6 +2140,42 @@
 .cl-wrap>.settings-box{overflow:hidden;min-height:0}
 .cl-wrap.open{grid-template-rows:1fr;opacity:1;margin-top:12px}
 .cl-wrap:not(.open)>.settings-box{border-width:0;padding-top:0;padding-bottom:0}
+        /* Profil — kompakt görünüş (v3.1.3.1.1) */
+        #profile-view .profile-header{height:72px !important;min-height:72px !important;padding-top:10px !important;padding-bottom:10px !important}
+        #profile-view .profile-small{font-size:calc(10px * var(--font-scale)) !important;letter-spacing:3px !important;margin-bottom:0}
+        #profile-view .profile-title{font-size:calc(19px * var(--font-scale)) !important}
+        #profile-view .settings-content{padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px))}
+        #profile-view .settings-section{margin-bottom:14px}
+        #profile-view .settings-section-title{font-size:calc(10.5px * var(--font-scale));letter-spacing:2px;margin-bottom:6px}
+        #profile-view .prof-av-wrap{margin:0 0 14px;padding:14px 12px 12px;gap:6px;border-radius:20px}
+        #profile-view .prof-av{width:76px;height:76px;font-size:34px}
+        #profile-view .prof-hero-name{font-size:calc(17px * var(--font-scale));margin-top:0}
+        #profile-view .prof-hero-sub{font-size:calc(12px * var(--font-scale))}
+        #profile-view .prof-av-btn{padding:5px 12px;font-size:calc(12px * var(--font-scale))}
+        #profile-view .settings-box{border-radius:16px}
+        #profile-view .settings-box[style*="padding: 16px"]{padding:12px !important}
+        #profile-view .settings-box label{display:block;font-size:10px !important;margin:0 0 3px 2px}
+        #profile-view .settings-box input[type=text]{height:40px;padding:0 12px !important;margin:0 0 10px 0 !important;font-size:calc(14px * var(--font-scale))}
+        #profile-view #profEmailRow{margin-bottom:10px !important;padding-bottom:8px !important}
+        #profile-view .settings-box .phone-field{margin:0 0 4px 0;gap:6px}
+        #profile-view .phone-code-box{height:40px;padding:0 10px 0 6px;gap:6px}
+        #profile-view .phone-flag-circle{width:24px;height:24px}
+        #profile-view .phone-prefix{font-size:13px}
+        #profile-view .phone-input-box{height:40px}
+        #profile-view .phone-input{font-size:14px;letter-spacing:1px;padding:0 12px !important}
+        #profile-view #profSaveBtn{height:42px !important;margin-top:8px !important;border-radius:12px !important;font-size:calc(14px * var(--font-scale))}
+        #profile-view .dev-row{padding:9px 12px}
+        #profile-view .sub-status{font-size:calc(13px * var(--font-scale))}
+        #profile-view .pro-btn{margin-top:8px;height:44px}
+        /* E-poçt və şifrə — başlıqsız, bir qrupda */
+        #profile-view #emSection,#profile-view #pwSection{margin-bottom:8px}
+        #profile-view #emTitle,#profile-view #pwSection>.settings-section-title{display:none}
+        #profile-view .pw-toggle-btn{padding:11px 14px;border-radius:14px;font-size:calc(14px * var(--font-scale))}
+        #profile-view .pw-toggle-btn.open{border-radius:14px 14px 0 0}
+        #profile-view .pw-form{padding:10px 12px 12px}
+        #profile-view #emSaveBtn,#profile-view #pwSaveBtn{height:42px !important}
+        #profile-view .logout-btn{height:42px !important;border-radius:12px !important;letter-spacing:.5px !important;font-size:calc(14px * var(--font-scale))}
+        #profile-view .settings-section:has(.logout-btn){margin-top:14px;margin-bottom:6px}
 </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style>.ts-box{display:flex;justify-content:center;min-height:65px;margin:8px 0}</style>
@@ -10402,7 +10438,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.1.0";
+const APP_VERSION = "3.1.3.1.1";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
