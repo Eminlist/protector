@@ -1862,6 +1862,31 @@
         #profile-view .profile-header{position:sticky;top:0;z-index:2;background:var(--bg) !important}
         #profile-view .settings-content{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
         #profile-view #profMsg:empty{display:none}
+        /* Profil — premium görünüş */
+        #profile-view .prof-av-wrap{position:relative;margin:6px 0 22px;padding:26px 18px 20px;border-radius:24px;border:1px solid color-mix(in srgb,var(--gold) 35%,var(--border));
+            background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--gold) 22%,transparent) 0%,transparent 60%),linear-gradient(160deg,var(--card-bg),color-mix(in srgb,var(--surface) 92%,#000));
+            box-shadow:0 14px 34px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.06);overflow:hidden}
+        #profile-view .prof-av-wrap::before{content:"";position:absolute;inset:-40% -20% auto;height:180px;background:conic-gradient(from 180deg,transparent,color-mix(in srgb,var(--gold) 30%,transparent),transparent 40%);filter:blur(30px);opacity:.55;pointer-events:none}
+        #profile-view .prof-av{width:108px;height:108px;border:3px solid transparent;background:linear-gradient(var(--surface-2),var(--surface-2)) padding-box,linear-gradient(135deg,#f7e08a,var(--gold),#8a6d1d) border-box;box-shadow:0 0 0 4px rgba(212,175,55,.12),0 10px 26px rgba(0,0,0,.45)}
+        .prof-hero-name{position:relative;font-size:calc(21px * var(--font-scale));font-weight:800;color:var(--text);letter-spacing:-.3px;text-align:center;line-height:1.2;margin-top:4px}
+        .prof-hero-name:empty,.prof-hero-sub:empty,.prof-hero-badges:empty{display:none}
+        .prof-hero-sub{position:relative;font-size:calc(13px * var(--font-scale));color:var(--muted);text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .prof-hero-badges{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:2px 0 4px}
+        .prof-badge{font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 11px;border-radius:999px;text-transform:uppercase;border:1px solid var(--border);color:var(--muted);background:rgba(153,153,153,.1)}
+        .prof-badge.gold{color:#111;border-color:transparent;background:linear-gradient(135deg,#f7e08a,var(--gold) 55%,#b8902a);box-shadow:0 2px 10px rgba(212,175,55,.35)}
+        .prof-badge.ok{color:#2ecc71;border-color:rgba(46,204,113,.35);background:rgba(46,204,113,.12)}
+        .prof-badge.warn{color:#e67e22;border-color:rgba(230,126,34,.35);background:rgba(230,126,34,.12)}
+        #profile-view .settings-section-title{display:flex;align-items:center;gap:8px;color:var(--gold);letter-spacing:2px}
+        #profile-view .settings-section-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 45%,transparent),transparent)}
+        #profile-view .settings-box{border-radius:20px;border:1px solid color-mix(in srgb,var(--gold) 18%,var(--border));background:linear-gradient(165deg,var(--card-bg),color-mix(in srgb,var(--surface) 95%,#000));box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.04)}
+        #profile-view .settings-box label{text-transform:uppercase;letter-spacing:1px;font-weight:700;font-size:11px !important}
+        #profile-view .settings-box input[type=text],#profile-view .em-input{border-radius:12px !important;transition:border-color .2s,box-shadow .2s}
+        #profile-view .settings-box input:focus{outline:none;border-color:var(--gold) !important;box-shadow:0 0 0 3px rgba(212,175,55,.18)}
+        #profile-view #profSaveBtn,#profile-view #emSaveBtn,#profile-view #pwSaveBtn{background:linear-gradient(135deg,#f7e08a,var(--gold) 55%,#b8902a) !important;color:#111 !important;box-shadow:0 6px 18px rgba(212,175,55,.3);letter-spacing:.3px}
+        #profile-view #emSaveBtn:disabled,#profile-view #pwSaveBtn:disabled{opacity:.5;box-shadow:none}
+        #profile-view .logout-btn{background:transparent !important;color:#e74c3c !important;border:1.5px solid rgba(231,76,60,.55) !important}
+        .em-input{width:100%;padding:12px;margin:0 0 10px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-size:15px;box-sizing:border-box}
+        .em-hint{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 6px}
         #settings-view,#notif-view,#privacy-view,#admin-view{overscroll-behavior-y:contain}
         .notif-item.link{cursor:pointer}
         .notif-item.link::after{content:"›";float:right;color:var(--accent-color);font-size:18px;line-height:1}
@@ -2230,6 +2255,9 @@
         <div class="settings-content">
             <div class="prof-av-wrap">
                 <div class="prof-av" id="profAvatar" onclick="openAvatarPicker()"></div>
+                <div class="prof-hero-name" id="profHeroName"></div>
+                <div class="prof-hero-sub" id="profHeroSub"></div>
+                <div class="prof-hero-badges" id="profHeroBadges"></div>
                 <button type="button" class="prof-av-btn" onclick="openAvatarPicker()" data-i18n="avatarChange">Avatarı dəyiş</button>
             </div>
             <div class="settings-section">
@@ -2283,6 +2311,18 @@
             <div class="settings-section">
                 <div class="settings-section-title" data-i18n="devTitle">AKTİV CİHAZLAR</div>
                 <div class="settings-box" id="devicesBox"></div>
+            </div>
+
+            <div class="settings-section" id="emSection" style="display:none;">
+                <div class="settings-section-title" id="emTitle">E-POÇT</div>
+                <button type="button" class="pw-toggle-btn" id="emToggleBtn" onclick="toggleEmForm()"><span id="emBtnTxt">E-poçtu dəyiş</span><span class="pw-chev">›</span></button>
+                <div class="settings-box pw-form" id="emForm">
+                    <input type="email" id="emNew" class="pw-input em-input" autocomplete="email">
+                    <div class="pw-field"><input type="password" id="emPass" class="pw-input" autocomplete="current-password"><button type="button" class="pw-eye" onclick="togglePwVis('emPass', this)" aria-label="Göstər"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div>
+                    <div id="emHint" class="em-hint"></div>
+                    <div id="emMsg" style="font-size:12px;margin:6px 0;"></div>
+                    <button class="profile-save-btn" id="emSaveBtn" onclick="changeEmail()" style="width:100%; height:48px; background:var(--accent-color); color:#111; border:none; border-radius:12px; font-weight:800; cursor:pointer;"></button>
+                </div>
             </div>
 
             <div class="settings-section" id="pwSection" style="display:none;">
@@ -3253,9 +3293,11 @@ function openProfile() {
             document.getElementById("profAddress").value = data.storeAddress || "";
             setPhoneInput("profPhone", data.phoneNumber || "");
             try { validateProfPhone(); } catch (e) {}
+            try { renderProfHero(data); } catch (e) {}
         } else {
             setPhoneInput("profPhone", "");
             try { validateProfPhone(); } catch (e) {}
+            try { renderProfHero({}); } catch (e) {}
         }
         history.pushState({modal: 'profile'}, "");
         document.getElementById("profile-view").classList.add("active");
@@ -3270,6 +3312,121 @@ function openProfile() {
         showAppToast(t("profileLoadFail"));
         renderAccountSections();
         scrollProfileTarget();
+    });
+}
+
+const EM_MSG = {
+    title: { az: "E-POÇT", ru: "E-MAIL", tr: "E-POSTA", en: "EMAIL" },
+    btn: { az: "E-poçtu dəyiş", ru: "Изменить e-mail", tr: "E-postayı değiştir", en: "Change email" },
+    newPh: { az: "Yeni e-poçt ünvanı", ru: "Новый e-mail", tr: "Yeni e-posta adresi", en: "New email address" },
+    passPh: { az: "Cari şifrə", ru: "Текущий пароль", tr: "Mevcut şifre", en: "Current password" },
+    hint: { az: "Yeni ünvana təsdiq linki göndəriləcək. Linkə keçid etdikdən sonra giriş e-poçtunuz dəyişəcək və yeni ünvanla yenidən daxil olmalı olacaqsınız.", ru: "На новый адрес будет отправлена ссылка. После перехода по ней e-mail для входа изменится, и нужно будет войти заново.", tr: "Yeni adrese doğrulama bağlantısı gönderilecek. Bağlantıya tıkladıktan sonra giriş e-postanız değişecek ve yeniden giriş yapmanız gerekecek.", en: "A confirmation link will be sent to the new address. After you open it, your sign-in email changes and you will need to sign in again." },
+    send: { az: "Təsdiq linki göndər", ru: "Отправить ссылку", tr: "Bağlantı gönder", en: "Send confirmation link" },
+    sent: { az: "Link {e} ünvanına göndərildi. Gələnlər və «Spam» qovluğuna baxın.", ru: "Ссылка отправлена на {e}. Проверьте входящие и «Спам».", tr: "Bağlantı {e} adresine gönderildi. Gelen kutusu ve Spam klasörüne bakın.", en: "Link sent to {e}. Check your inbox and Spam folder." },
+    bad: { az: "E-poçt ünvanını düzgün yazın.", ru: "Введите корректный e-mail.", tr: "Geçerli bir e-posta girin.", en: "Enter a valid email." },
+    same: { az: "Bu, hazırkı e-poçtunuzdur.", ru: "Это ваш текущий e-mail.", tr: "Bu zaten mevcut e-postanız.", en: "This is already your email." },
+    wrong: { az: "Cari şifrə yanlışdır.", ru: "Неверный текущий пароль.", tr: "Mevcut şifre yanlış.", en: "Current password is incorrect." },
+    used: { az: "Bu e-poçt artıq başqa hesabda istifadə olunur.", ru: "Этот e-mail уже используется.", tr: "Bu e-posta başka bir hesapta kullanılıyor.", en: "This email is already in use." },
+    many: { az: "Çox tez-tez cəhd edildi. Bir neçə dəqiqə sonra yenidən yoxlayın.", ru: "Слишком много попыток. Попробуйте позже.", tr: "Çok fazla deneme. Biraz sonra tekrar deneyin.", en: "Too many attempts. Try again later." },
+    fail: { az: "Göndərilmədi", ru: "Не удалось отправить", tr: "Gönderilemedi", en: "Could not send" },
+    google: { az: "Google", ru: "Google", tr: "Google", en: "Google" },
+    mail: { az: "E-poçt", ru: "E-mail", tr: "E-posta", en: "Email" },
+    ver: { az: "Təsdiqlənib", ru: "Подтверждён", tr: "Doğrulandı", en: "Verified" },
+    unver: { az: "Təsdiqlənməyib", ru: "Не подтверждён", tr: "Doğrulanmadı", en: "Not verified" }
+};
+function emMsg(k) { const o = EM_MSG[k]; return o[currentLang] || o.en || o.az; }
+
+function renderProfHero(data) {
+    const u = auth.currentUser;
+    const nm = document.getElementById("profHeroName");
+    if (!nm || !u) return;
+    data = data || {};
+    nm.textContent = data.username || data.displayName || u.displayName || "";
+    const sub = [data.storeName, u.email].filter(Boolean).join(" · ");
+    document.getElementById("profHeroSub").textContent = sub;
+    const google = (u.providerData || []).some(function (p) { return p && p.providerId === "google.com"; });
+    const adminOk = !!(accountData && accountData.emailVerifiedByAdmin === true);
+    let b = "";
+    try {
+        if (isAdmin) b += '<span class="prof-badge gold">Admin</span>';
+        else if (typeof isPremiumActive === "function" && isPremiumActive()) b += '<span class="prof-badge gold">Pro</span>';
+        else b += '<span class="prof-badge">Free</span>';
+    } catch (e) {}
+    b += '<span class="prof-badge">' + escapeHtml(google ? emMsg("google") : emMsg("mail")) + '</span>';
+    b += (u.emailVerified || adminOk) ? '<span class="prof-badge ok">✓ ' + escapeHtml(emMsg("ver")) + '</span>' : '<span class="prof-badge warn">' + escapeHtml(emMsg("unver")) + '</span>';
+    document.getElementById("profHeroBadges").innerHTML = b;
+    // Firebase-də e-poçt dəyişibsə, profil sənədində də yenilə
+    if (u.email && data.email && data.email !== u.email) {
+        db.collection("users").doc(u.uid).set({ email: u.email, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }).catch(function () {});
+    }
+}
+
+function setupEmSection() {
+    const u = auth.currentUser;
+    const sec = document.getElementById("emSection");
+    if (!sec) return;
+    const hasPw = !!(u && (u.providerData || []).some(function (p) { return p && p.providerId === "password"; }));
+    sec.style.display = hasPw ? "" : "none";
+    document.getElementById("emTitle").textContent = emMsg("title");
+    document.getElementById("emBtnTxt").textContent = emMsg("btn");
+    document.getElementById("emNew").placeholder = emMsg("newPh");
+    document.getElementById("emPass").placeholder = emMsg("passPh");
+    document.getElementById("emHint").textContent = emMsg("hint");
+    const btn = document.getElementById("emSaveBtn");
+    btn.textContent = emMsg("send");
+    btn.disabled = false;
+    document.getElementById("emNew").value = "";
+    document.getElementById("emPass").value = "";
+    document.getElementById("emMsg").textContent = "";
+    toggleEmForm(false);
+}
+
+function toggleEmForm(force) {
+    const form = document.getElementById("emForm");
+    const btn = document.getElementById("emToggleBtn");
+    if (!form || !btn) return;
+    const open = typeof force === "boolean" ? force : !form.classList.contains("open");
+    form.classList.toggle("open", open);
+    btn.classList.toggle("open", open);
+    const pv = document.getElementById("profile-view");
+    if (pv) pv.classList.toggle("pw-open", open || (document.getElementById("pwForm") || { classList: { contains: function () { return false; } } }).classList.contains("open"));
+    if (open) setTimeout(function () { const s = document.getElementById("emSection"); if (s && s.scrollIntoView) s.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
+}
+
+function changeEmail() {
+    const u = auth.currentUser;
+    const msg = document.getElementById("emMsg");
+    const btn = document.getElementById("emSaveBtn");
+    if (!u || !u.email) return;
+    const ne = document.getElementById("emNew").value.trim().toLowerCase();
+    const pass = document.getElementById("emPass").value;
+    const say = function (k, color, e) { msg.style.color = color || "red"; msg.textContent = emMsg(k).replace("{e}", e || ""); };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ne)) return say("bad");
+    if (ne === String(u.email).toLowerCase()) return say("same");
+    if (!pass) return say("wrong");
+    btn.disabled = true;
+    msg.style.color = "var(--muted)"; msg.textContent = t("saving");
+    try { auth.languageCode = currentLang || "az"; } catch (e) {}
+    const cred = firebase.auth.EmailAuthProvider.credential(u.email, pass);
+    u.reauthenticateWithCredential(cred).then(function () {
+        const s = verifyActionSettings();
+        return (s.url ? u.verifyBeforeUpdateEmail(ne, s) : u.verifyBeforeUpdateEmail(ne)).catch(function (e) {
+            const c = (e && e.code) || "";
+            if (c === "auth/invalid-continue-uri" || c === "auth/unauthorized-continue-uri" || c === "auth/missing-continue-uri") return u.verifyBeforeUpdateEmail(ne);
+            throw e;
+        });
+    }).then(function () {
+        say("sent", "#2ecc71", ne);
+        document.getElementById("emPass").value = "";
+        showAppToast(emMsg("sent").replace("{e}", ne), 6000);
+    }).catch(function (e) {
+        const c = (e && e.code) || "";
+        btn.disabled = false;
+        if (c === "auth/wrong-password" || c === "auth/invalid-credential" || c === "auth/invalid-login-credentials") say("wrong");
+        else if (c === "auth/email-already-in-use") say("used");
+        else if (c === "auth/invalid-email") say("bad");
+        else if (c === "auth/too-many-requests") say("many");
+        else { msg.style.color = "red"; msg.textContent = emMsg("fail") + (c ? " (" + c + ")" : ""); }
     });
 }
 
@@ -7017,6 +7174,7 @@ function renderAccountSections() {
     const sec = document.getElementById("pwSection");
     if (sec) sec.style.display = hasPw ? "" : "none";
     resetPwForm();
+    try { setupEmSection(); } catch (e) {}
 }
 
 function renderSubscription() {
