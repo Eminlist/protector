@@ -1909,7 +1909,15 @@
         .ab-item small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
         .ab-item button{flex-shrink:0;border:0;border-radius:10px;padding:9px 12px;font-weight:800;font-size:12.5px;cursor:pointer;color:#111;background:linear-gradient(135deg,#7CF0A6,#2ecc71)}
         .ab-item button:disabled{opacity:.5}
-        .ab-empty{text-align:center;color:var(--muted);font-size:13px;padding:14px 6px}
+        .st-per{display:flex;gap:6px;margin-bottom:10px}
+.st-per button{flex:1;padding:8px 6px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-weight:700;font-size:13px}
+.st-per button.on{background:var(--accent-color);color:#111;border-color:transparent}
+.st-h{margin:14px 2px 6px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+.st-days{display:flex;align-items:flex-end;gap:3px;height:90px;padding:8px;border-radius:14px;background:var(--surface);border:1px solid var(--border)}
+.st-days>div{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.st-days i{display:block;width:100%;max-width:22px;border-radius:5px 5px 2px 2px;background:var(--accent-color);min-height:3px}
+.st-days small{font-size:9px;color:var(--muted);margin-top:3px}
+.ab-empty{text-align:center;color:var(--muted);font-size:13px;padding:14px 6px}
         .em-input{width:100%;padding:12px;margin:0 0 10px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-size:15px;box-sizing:border-box}
         .em-hint{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--muted);line-height:1.5;margin:2px 0 12px;padding:11px 13px;border-radius:14px;background:rgba(212,175,55,.07);border:1px dashed color-mix(in srgb,var(--gold) 40%,transparent)}
         .em-hint::before{content:"ℹ";flex:0 0 20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#111;background:linear-gradient(135deg,#f7e08a,var(--gold))}
@@ -2472,6 +2480,13 @@
             <summary><span class="e3d ic3d" style="--a:#FF8A80;--b:#D32F2F" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="m4.9 4.9 14.2 14.2" /></svg></span><span class="adm-ttl">Avtomatik bloklananlar <small id="admAbCnt" class="adm-cnt"></small></span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
                 <div class="fm"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div id="admAbInfo">Gündəlik axtarış limitini ardıcıl bir neçə gün dolduran hesablar avtomatik bloklanır və sizə Telegram-da bildiriş gəlir.</div></div><div id="admAbList" class="ab-list"></div></div>
+            </div>
+        </details>
+        <details class="adm-acc st-acc" ontoggle="if(this.open)adminStatsLoad()">
+            <summary><span class="e3d ic3d" style="--a:#7FC8FF;--b:#1E6FD9" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg></span><span class="adm-ttl">Statistika</span><span class="chev">›</span></summary>
+            <div class="adm-acc-body">
+                <div class="st-per"><button type="button" class="on" onclick="adminStatsLoad(1,this)">Bu gün</button><button type="button" onclick="adminStatsLoad(7,this)">7 gün</button><button type="button" onclick="adminStatsLoad(30,this)">30 gün</button></div>
+                <div id="admStBox"><div class="ab-empty">Yüklənir…</div></div>
             </div>
         </details>
         <div class="adm-acc adm-link" role="button" tabindex="0" onclick="admPageOpen('rev')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();admPageOpen('rev')}">
@@ -3384,6 +3399,48 @@ function adminAutoBlockLoad() {
         }).join("");
     }).catch(function (e) {
         box.innerHTML = '<div class="ab-empty">Yüklənmədi (' + escapeHtml((e && e.code) || "?") + ')</div>';
+    });
+}
+
+// ---------- Statistika (Worker /admin/stats) ----------
+var stDays = 1;
+function adminStatsLoad(days, btn) {
+    if (days) stDays = days;
+    if (btn) btn.parentNode.querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b === btn); });
+    const box = document.getElementById("admStBox");
+    if (!box) return;
+    box.innerHTML = '<div class="ab-empty">Yüklənir…</div>';
+    apiFetch("/admin/stats?days=" + stDays).then(function (d) {
+        const daily = (d && d.daily) || [], kinds = (d && d.kinds) || {};
+        const p2 = function (n) { return (n < 10 ? "0" : "") + n; };
+        const dlab = function (day) { return p2(day % 100) + "." + p2(Math.floor(day / 100) % 100); };
+        let users = 0, views = 0, peak = 0;
+        daily.forEach(function (x) { users += +x.users || 0; views += +x.views || 0; peak = Math.max(peak, +x.users || 0); });
+        const today = daily.length ? daily[daily.length - 1] : null;
+        let h = '<div class="uh-sum"><div><b>' + (stDays === 1 ? (today ? +today.users || 0 : 0) : (d.unique != null ? d.unique : Math.round(users / Math.max(1, daily.length)))) + '</b><small>' + (stDays === 1 ? "aktiv istifadəçi" : (d.unique != null ? "fərqli istifadəçi" : "orta gündəlik aktiv")) + '</small></div>' +
+            '<div><b>' + views + '</b><small>baxış</small></div><div><b>' + (stDays === 1 ? Math.round(views / Math.max(1, users)) : peak) + '</b><small>' + (stDays === 1 ? "baxış / istifadəçi" : "ən çox aktiv gün") + '</small></div></div>';
+        if (stDays > 1 && daily.length) {
+            const mx = Math.max(1, peak);
+            h += '<div class="st-h">Gündəlik aktiv istifadəçilər</div><div class="st-days">' + daily.map(function (x) {
+                return '<div title="' + dlab(x.day) + ': ' + (+x.users || 0) + ' istifadəçi, ' + (+x.views || 0) + ' baxış"><i style="height:' + Math.max(3, Math.round((+x.users || 0) / mx * 100)) + '%"></i>' + (daily.length <= 10 ? '<small>' + dlab(x.day) + '</small>' : '') + '</div>';
+            }).join("") + '</div>';
+        }
+        const LBL = { model: "Ən çox baxılan modellər", view: "Ən çox baxılan modellər", miss: "Tapılmayan axtarışlar" };
+        const order = Object.keys(kinds).sort(function (a, b) { return (/miss/.test(a) ? 1 : 0) - (/miss/.test(b) ? 1 : 0); });
+        order.forEach(function (kd) {
+            const rows = kinds[kd] || [];
+            if (!rows.length) return;
+            const mx = +rows[0].n || 1, isMiss = /miss/.test(kd);
+            h += '<div class="st-h">' + escapeHtml(LBL[kd] || kd) + '</div><div class="pt-top">' + rows.map(function (r, i) {
+                const nm = isMiss ? String(r.k) : (typeof uhName === "function" ? uhName(r.k) : r.k);
+                return '<div class="pt-top-row"><span class="pt-top-n">' + (i + 1) + '</span><span class="pt-top-m"><b>' + escapeHtml(nm) + '</b><i style="width:' + Math.max(4, Math.round((+r.n || 0) / mx * 100)) + '%"></i></span><span class="pt-top-c">' + (+r.n || 0) + '</span></div>';
+            }).join("") + '</div>';
+        });
+        if (!daily.length && !order.length) h = '<div class="ab-empty">Bu dövr üçün məlumat yoxdur</div>';
+        box.innerHTML = h;
+    }).catch(function (e) {
+        const c = (e && e.code) || "?";
+        box.innerHTML = '<div class="ab-empty">' + (c === "http-404" || c === "not-found" ? "Worker v9 hələ yüklənməyib" : "Yüklənmədi (" + escapeHtml(c) + ")") + '</div>';
     });
 }
 
