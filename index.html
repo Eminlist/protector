@@ -1256,7 +1256,7 @@
             border-radius:16px;padding:12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.35);
             -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
         }
-        #pt-progress .pt-prog-label{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--accent-color);margin-bottom:8px;text-align:center;text-transform:uppercase;transition:opacity .22s}#pt-progress .pt-prog-label.ph{letter-spacing:.4px;line-height:1.35}#pt-progress .pt-prog-label.fade{opacity:0}
+        #pt-progress .pt-prog-label{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--accent-color);margin-bottom:8px;text-align:center;text-transform:uppercase;transition:opacity .22s}#pt-progress .pt-prog-label.ph{letter-spacing:.4px;line-height:1.35}#pt-progress .pt-prog-label.fade{opacity:0}.ldots::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:ldots 1.2s steps(1,end) infinite}@keyframes ldots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
         #pt-progress .pt-prog-track{height:6px;border-radius:999px;background:var(--surface-2);overflow:hidden}
         #pt-progress .pt-prog-bar{
             height:100%;width:0%;border-radius:999px;
@@ -3685,6 +3685,14 @@ function updateProfile() {
     });
 }
 
+/* Sonu «…» / «...» olan yazılarda nöqtələr artıb-azalsın */
+function setDotsText(el, text) {
+    if (!el) return;
+    const s = String(text == null ? "" : text);
+    const m = s.match(/^([\s\S]*?)\s*(\.{2,}|…)\s*$/);
+    el.textContent = m ? m[1] : s;
+    el.classList.toggle("ldots", !!m);
+}
 /* Təsdiq (uğur) mesajlarının sonuna ✓ */
 const TOAST_BAD = /(xəta|alınmadı|olmadı|mədi|madı|dayandırıldı|ola bilməz|tapılmadı|mütləqdir|yazın|error|ошибк|не удалось|hata|edilemedi|couldn't|failed|…|\.\.\.|\?)/i;
 const TOAST_OK = /(saxlanıldı|saxlanıldı|yeniləndi|göndərildi|silindi|olundu|edildi|çıxarıldı|seçildi|dəyişdirildi|yaradıldı|alındı|qaytarıldı|düzəldildi|gətirildi|yükləndi|dublikat yoxdur|сохран|отправлен|удален|добавлен|обновлен|принят|kaydedildi|gönderildi|eklendi|güncellendi|alındı|saved|sent|deleted|added|updated|removed|received)/i;
@@ -3697,7 +3705,7 @@ function showAppToast(text, duration) {
     const toast = document.getElementById("toast");
     if (!toast) return;
     text = toastTick(text);
-    toast.innerText = text;
+    setDotsText(toast, text);
     toast.classList.remove("show");
     void toast.offsetWidth;
     toast.style.display = "block";
@@ -4086,7 +4094,7 @@ function closeAdmin() {
 
 function setAdminStatus(msg) {
     const el = document.getElementById("adminStatus");
-    if (el) el.innerText = msg;
+    if (el) setDotsText(el, msg);
 }
 
 function renderAdminList() {
@@ -10394,7 +10402,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.08";
+const APP_VERSION = "3.1.3.1.0";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -11162,7 +11170,7 @@ async function fetchDatabase(retries = 3) {
     const MIN_ANIM_MS = 9500;
 
     try {
-        updateButton.querySelector("span").innerText = t("updating");
+        setDotsText(updateButton.querySelector("span"), t("updating"));
         spinner.style.display = "block";
         updateButton.disabled = true;
         updateButton.classList.add("updating");
@@ -11176,7 +11184,7 @@ async function fetchDatabase(retries = 3) {
             /* yeni yoxlama vaxtı deyil — şəbəkəyə getmədən slaydı göstər */
             const left0 = 7500 - (Date.now() - animStart);
             if (left0 > 0) await new Promise(function (r) { setTimeout(r, left0); });
-            updateButton.querySelector("span").innerText = t("updateNow");
+            setDotsText(updateButton.querySelector("span"), t("updateNow"));
             spinner.style.display = "none";
             updateButton.disabled = false;
             updateButton.classList.remove("updating");
@@ -11229,7 +11237,7 @@ async function fetchDatabase(retries = 3) {
         const left = MIN_ANIM_MS - (Date.now() - animStart);
         if (left > 0) await new Promise(function (r) { setTimeout(r, left); });
 
-        updateButton.querySelector("span").innerText = t("updateNow");
+        setDotsText(updateButton.querySelector("span"), t("updateNow"));
         spinner.style.display = "none";
         updateButton.disabled = false;
         updateButton.classList.remove("updating");
@@ -11244,7 +11252,7 @@ async function fetchDatabase(retries = 3) {
         }
         const left = MIN_ANIM_MS - (Date.now() - animStart);
         if (left > 0) await new Promise(function (r) { setTimeout(r, left); });
-        updateButton.querySelector("span").innerText = t("updateNow");
+        setDotsText(updateButton.querySelector("span"), t("updateNow"));
         spinner.style.display = "none";
         updateButton.disabled = false;
         updateButton.classList.remove("updating");
@@ -11361,7 +11369,7 @@ function showProgress(labelKey) {
     if (_ptCnt.raf) { cancelAnimationFrame(_ptCnt.raf); _ptCnt.raf = 0; }
     progPhaseStop();
     _ptCnt.v = 0; _ptCnt.to = 0; progCountRender();
-    lab.textContent = t(labelKey || "loading") || labelKey || "Yüklənir…";
+    setDotsText(lab, t(labelKey || "loading") || labelKey || "Yüklənir…");
     bar.style.width = "8%";
     box.classList.add("show");
     box.setAttribute("aria-hidden", "false");
@@ -11401,7 +11409,7 @@ function progPhaseSet(key) {
     var lab = document.getElementById("ptProgLabel");
     if (!lab) return;
     lab.classList.add("fade", "ph");
-    setTimeout(function () { lab.textContent = t(key) || key; lab.classList.remove("fade"); }, 220);
+    setTimeout(function () { setDotsText(lab, t(key) || key); lab.classList.remove("fade"); }, 220);
 }
 function progPhaseStart() {
     if (!_ptPh.armed || !_ptPh.list.length) return;
@@ -11436,7 +11444,7 @@ function progCountTo(n) {
 function setProgress(pct, labelKey) {
     var lab = document.getElementById("ptProgLabel");
     var bar = document.getElementById("ptProgBar");
-    if (lab && labelKey) lab.textContent = t(labelKey) || labelKey;
+    if (lab && labelKey) setDotsText(lab, t(labelKey) || labelKey);
     if (bar) bar.style.width = Math.max(0, Math.min(100, pct)) + "%";
 }
 function finishProgress(ok) {
@@ -11449,7 +11457,7 @@ function finishProgress(ok) {
     box.classList.remove("run");
     if (ok === false) {
         box.classList.add("error");
-        if (lab) lab.textContent = t("alertFail") ? t("alertFail").split("\n")[0] : "Xəta";
+        if (lab) setDotsText(lab, t("alertFail") ? t("alertFail").split("\n")[0] : "Xəta");
         if (bar) bar.style.width = "100%";
         setTimeout(function () {
             box.classList.remove("show", "error");
