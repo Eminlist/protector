@@ -2293,7 +2293,7 @@
                     <button type="button" class="adm-publish" onclick="adminPublishDatabase()"><span class="e3d ic3d" style="--a:#FFB866;--b:#F06A1D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 13v8" /><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="m8 17 4-4 4 4" /></svg></span><span>Dərc et</span></button>
                 </div>
                 <div class="adm-grp">FAYLLAR</div>
-                <div class="adm-tiles four"><button type="button" class="adm-tile " onclick="adminImportFromGitHub()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>GitHub-dan gətir</span></button><button type="button" class="adm-tile " onclick="adminExportCSV()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></svg></span><span>İstifadəçilər (CSV)</span></button><button type="button" class="adm-tile " onclick="adminBackupJSON()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>JSON yüklə</span><input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)"></label></div>
+                <div class="adm-tiles four"><button type="button" class="adm-tile " onclick="adminImportFromGitHub()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>Əsas baza</span></button><button type="button" class="adm-tile " onclick="adminExportCSV()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></svg></span><span>İstifadəçilər (CSV)</span></button><button type="button" class="adm-tile " onclick="adminBackupJSON()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>JSON yüklə</span><input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)"></label></div>
             </div>
         </details>
         <div class="adm-acc adm-link" role="button" tabindex="0" onclick="admPageOpen('users')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();admPageOpen('users')}">
@@ -2912,6 +2912,24 @@ const FS_DB_DOC = "app_data/database";
 const FS_CATALOG_DOC = "app_data/catalog";
 const FS_PUBIDX_DOC = "app_data/pubindex";
 const MODELS_COL = "models";
+const API_BASE = "https://protector-api.o553115544.workers.dev";
+async function apiFetch(path, opts) {
+    const u = auth.currentUser;
+    if (!u || u.isAnonymous) { const e = new Error("auth"); e.code = "unauthenticated"; throw e; }
+    const tok = await u.getIdToken();
+    const o = Object.assign({}, opts || {});
+    o.headers = Object.assign({ "Authorization": "Bearer " + tok }, o.body ? { "Content-Type": "application/json" } : {}, o.headers || {});
+    const r = await fetch(API_BASE + path, o);
+    let d = null;
+    try { d = await r.json(); } catch (e) { d = null; }
+    if (!r.ok) {
+        const er = (d && d.error) || ("http-" + r.status);
+        const e = new Error(er);
+        e.code = r.status === 401 ? "unauthenticated" : (er === "daily-limit" ? "quota" : er);
+        throw e;
+    }
+    return d;
+}
 const CATALOG_KEY = "pt_catalog_v1";
 const GCACHE_KEY = "pt_gcache_v1";
 const GCACHE_MAX = 300;
@@ -5041,7 +5059,7 @@ async function adminPublishDatabase() {
 
 async function adminImportFromGitHub() {
     if (!isAdmin) return;
-    setAdminStatus("GitHub-dan yüklənir...");
+    setAdminStatus("Əsas baza yüklənir...");
     try {
         const data = await fetchBaseJsonFromGitHub();
         const parsed = normalizeDatabase(data);
@@ -5052,12 +5070,12 @@ async function adminImportFromGitHub() {
         adminSelected.clear();
     adminSelected.clear();
         renderAdminList();
-        setAdminStatus("GitHub-dan gətirildi · " + parsed.length + " qrup · " + Object.keys(adminPendingSizes || {}).length + " ölçü. İndi «Dərc et» basın!");
+        setAdminStatus("Əsas baza gətirildi · " + parsed.length + " qrup · " + Object.keys(adminPendingSizes || {}).length + " ölçü. İndi «Dərc et» basın!");
         showAppToast(parsed.length + " qrup gətirildi — Dərc et!");
     } catch (err) {
         console.error(err);
         setAdminStatus("Import xətası: " + (err.message || ""));
-        showAppToast("GitHub-dan gətirmək alınmadı");
+        showAppToast("Əsas bazanı gətirmək alınmadı");
     }
 }
 
@@ -5214,28 +5232,13 @@ async function fetchModelGroup(model) {
     const wait = 1100 - (Date.now() - lastModelReq);
     if (wait > 0) await new Promise(function (r) { setTimeout(r, wait); });
     lastModelReq = Date.now();
-    const ref = db.collection("users").doc(u.uid);
-    const now = Date.now();
-    const days = [ymdUTC(now), ymdUTC(now + 864e5), ymdUTC(now - 864e5)];
-    let lastErr = null, ok = false;
-    for (let i = 0; i < days.length && !ok; i++) {
-        try {
-            await db.runTransaction(async function (tx) {
-                const sn = await tx.get(ref);
-                const o = sn.exists ? (sn.data() || {}) : {};
-                if (o.q === key) return;
-                const c = (+o.dK === days[i] ? (+o.dC || 0) : 0) + 1;
-                const upd = { q: key, qAt: firebase.firestore.FieldValue.serverTimestamp(), dK: days[i], dC: c };
-                if (sn.exists) tx.update(ref, upd);
-                else tx.set(ref, Object.assign({ email: u.email || "", createdAt: firebase.firestore.FieldValue.serverTimestamp() }, upd));
-            });
-            ok = true;
-        } catch (e) { lastErr = e; if (!e || e.code !== "permission-denied") break; }
+    let d = null;
+    try { d = await apiFetch("/model?k=" + encodeURIComponent(key)); }
+    catch (e) {
+        if (e && e.code === "too-fast") { await new Promise(function (r) { setTimeout(r, 1200); }); d = await apiFetch("/model?k=" + encodeURIComponent(key)); }
+        else throw e;
     }
-    if (!ok) throw lastErr || new Error("q");
-    const snap = await db.collection(MODELS_COL).doc(key).get();
-    if (!snap.exists) return null;
-    const d = snap.data() || {};
+    if (!d) return null;
     const g = Array.isArray(d.g) ? d.g.map(String) : null;
     if (!g || !g.length) return null;
     mergeSizes(d.s);
@@ -5257,10 +5260,13 @@ async function readDbFromFirestore() {
         catalogMeta = { groupCount: groups.length, modelCount: namesFromGroups(groups).length, ver: 0 };
         return { groups: groups, data: data, mode: "full" };
     }
-    let snap = null;
-    try { snap = await db.doc(FS_CATALOG_DOC).get(); } catch (e) { snap = null; }
-    if (snap && snap.exists) {
-        const data = snap.data() || {};
+    let cat = null;
+    try { cat = await apiFetch("/catalog"); } catch (e) { cat = null; }
+    if (!cat) {
+        try { const sn = await db.doc(FS_CATALOG_DOC).get(); if (sn.exists) cat = sn.data() || null; } catch (e) { cat = null; }
+    }
+    if (cat) {
+        const data = cat;
         catalogMeta = { groupCount: +data.groupCount || 0, modelCount: +data.modelCount || 0, ver: +data.ver || 0 };
         checkGroupCacheVer(catalogMeta.ver);
         applyCodes(data.codes, false);
@@ -5278,8 +5284,9 @@ async function ensureCatalog(groups) {
     if (catalogChecked || !isAdmin || !groups || !groups.length) return;
     catalogChecked = true;
     try {
-        const c = await db.doc(FS_CATALOG_DOC).get();
-        if (c.exists && (c.data() || {}).names) return;
+        let c = null;
+        try { c = await apiFetch("/catalog"); } catch (e) { c = null; }
+        if (c && c.names) return;
         await refreshSizes();
         const n = await publishPublicModels(groups);
         showAppToast("İstifadəçi bazası avtomatik yaradıldı · " + n + " model");
@@ -5336,8 +5343,8 @@ async function publishPublicModels(groups) {
     });
     let old = {}, oldVer = 0;
     try {
-        const ps = await db.doc(FS_PUBIDX_DOC).get();
-        if (ps.exists) { const pd = ps.data() || {}; old = pd.h || {}; oldVer = +pd.ver || 0; }
+        const pd = await apiFetch("/admin/meta?key=pubindex");
+        if (pd) { old = pd.h || {}; oldVer = +pd.ver || 0; }
     } catch (e) {}
     const hashes = {};
     const ops = [];
@@ -5347,25 +5354,22 @@ async function publishPublicModels(groups) {
         if (old[k] !== h) ops.push({ k: k, d: docs[k] });
     });
     Object.keys(old).forEach(function (k) { if (!docs[k]) ops.push({ k: k, del: true }); });
-    for (let i = 0; i < ops.length; i += 400) {
-        const b = db.batch();
-        ops.slice(i, i + 400).forEach(function (o) {
-            const ref = db.collection(MODELS_COL).doc(o.k);
-            if (o.del) b.delete(ref); else b.set(ref, o.d);
-        });
-        await b.commit();
+    for (let i = 0; i < ops.length; i += 500) {
+        const body = { set: {}, del: [] };
+        ops.slice(i, i + 500).forEach(function (o) { if (o.del) body.del.push(o.k); else body.set[o.k] = o.d; });
+        await apiFetch("/admin/models", { method: "POST", body: JSON.stringify(body) });
     }
     const ver = ops.length || !oldVer ? Date.now() : oldVer;
-    await db.doc(FS_PUBIDX_DOC).set({ h: hashes, ver: ver, updatedAt: Date.now() });
-    await db.doc(FS_CATALOG_DOC).set({
+    await apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "pubindex", val: { h: hashes, ver: ver, updatedAt: Date.now() } }) });
+    await apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "catalog", val: {
         names: names,
         groupCount: groups.length,
         modelCount: names.length,
         codes: codesFor(groups),
         ver: ver,
         changelog: changelogForFs(),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+        updatedAt: Date.now()
+    } }) });
     return ops.length;
 }
 
@@ -9642,7 +9646,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.7";
+const APP_VERSION = "3.1.8";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10033,7 +10037,7 @@ function openDetail(model, group) {
             const code = e && e.code;
             if (code === "unauthenticated") { handleSearchBlocked("login"); return; }
             const today = ymdUTC(Date.now());
-            const quota = code === "permission-denied" && accountData && +accountData.dK === today && (+accountData.dC || 0) >= 150;
+            const quota = code === "quota" || code === "permission-denied" && accountData && +accountData.dK === today && (+accountData.dC || 0) >= 150;
             showAppToast(ptMsg(quota ? "quota" : "error") + (quota ? "" : " [" + (code || (e && e.message) || "?") + "]"), 5000);
         }).then(function () {
             detailLoading = false;
@@ -10418,7 +10422,7 @@ async function fetchDatabase(retries = 3) {
         }
 
         if (!parsed || parsed.length === 0) {
-            throw new Error("Firebase-də baza yoxdur. Admin: GitHub-dan gətir → Dərc et");
+            throw new Error("Firebase-də baza yoxdur. Admin: Əsas baza → Dərc et");
         }
 
         var dataChanged = JSON.stringify(oldDatabase) !== JSON.stringify(parsed);
@@ -12058,7 +12062,11 @@ window.ptEditModel = function (model) {
         codesMap[ok] = p.codes; indexFor = null;
         var fp = new firebase.firestore.FieldPath("codes", ok);
         var val = p.codes.length ? p.codes : firebase.firestore.FieldValue.delete();
-        Promise.all([db.doc(FS_DB_DOC).update(fp, val), db.doc(FS_CATALOG_DOC).update(fp, val)]).then(function () {
+        Promise.all([db.doc(FS_DB_DOC).update(fp, val), apiFetch("/catalog").then(function (c) {
+          c = c || {}; c.codes = c.codes || {};
+          if (p.codes.length) c.codes[ok] = p.codes; else delete c.codes[ok];
+          return apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "catalog", val: c }) });
+        })]).then(function () {
           cacheCatalog(database);
           showAppToast("Kodlar yadda saxlanıldı ✓");
           var inp = $("searchInput"); if (inp) performSearch(inp.value);
