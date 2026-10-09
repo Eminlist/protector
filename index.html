@@ -3411,7 +3411,9 @@ function adminStatsLoad(days, btn) {
     if (!box) return;
     box.innerHTML = '<div class="ab-empty">Yüklənir…</div>';
     apiFetch("/admin/stats?days=" + stDays).then(function (d) {
-        const daily = (d && d.daily) || [], kinds = (d && d.kinds) || {};
+        const mp = function (a) { return (a || []).map(function (r) { return { k: r.k, n: +r.cnt || +r.n || 0 }; }); };
+        const daily = ((d && (d.daily || d.active)) || []).slice().sort(function (a, b) { return a.day - b.day; });
+        const kinds = (d && d.kinds) || { model: mp(d && d.top).slice(0, 30), miss: mp(d && d.notFound).slice(0, 30) };
         const p2 = function (n) { return (n < 10 ? "0" : "") + n; };
         const dlab = function (day) { return p2(day % 100) + "." + p2(Math.floor(day / 100) % 100); };
         let users = 0, views = 0, peak = 0;
@@ -3440,7 +3442,7 @@ function adminStatsLoad(days, btn) {
         box.innerHTML = h;
     }).catch(function (e) {
         const c = (e && e.code) || "?";
-        box.innerHTML = '<div class="ab-empty">' + (c === "http-404" || c === "not-found" ? "Worker v9 hələ yüklənməyib" : "Yüklənmədi (" + escapeHtml(c) + ")") + '</div>';
+        box.innerHTML = '<div class="ab-empty">' + "Yüklənmədi (" + escapeHtml(c) + ")" + '</div>';
     });
 }
 
