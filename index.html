@@ -1885,6 +1885,23 @@
         #profile-view #profSaveBtn,#profile-view #emSaveBtn,#profile-view #pwSaveBtn{background:linear-gradient(135deg,#f7e08a,var(--gold) 55%,#b8902a) !important;color:#111 !important;box-shadow:0 6px 18px rgba(212,175,55,.3);letter-spacing:.3px}
         #profile-view #emSaveBtn:disabled,#profile-view #pwSaveBtn:disabled{opacity:.5;box-shadow:none}
         #profile-view .logout-btn{background:transparent !important;color:#e74c3c !important;border:1.5px solid rgba(231,76,60,.55) !important}
+        .uh-box{display:flex;flex-direction:column;gap:8px}
+        .uh-empty{text-align:center;color:var(--muted);font-size:13px;padding:12px 6px}
+        .uh-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+        .uh-sum>div{text-align:center;padding:10px 6px;border-radius:14px;background:var(--surface);border:1px solid color-mix(in srgb,var(--gold) 25%,var(--border))}
+        .uh-sum b{display:block;font-size:20px;font-weight:800;color:var(--gold)}
+        .uh-sum small{font-size:11px;color:var(--muted)}
+        .uh-top{display:flex;flex-wrap:wrap;gap:6px}
+        .uh-top span{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.3);color:var(--text)}
+        .uh-top i{font-style:normal;color:var(--gold)}
+        .uh-day{border-radius:14px;background:var(--surface);border:1px solid var(--border);overflow:hidden}
+        .uh-day summary{display:flex;justify-content:space-between;align-items:center;padding:11px 13px;cursor:pointer;font-weight:700;font-size:13.5px;list-style:none}
+        .uh-day summary::-webkit-details-marker{display:none}
+        .uh-day summary em{font-style:normal;font-size:12px;color:var(--gold);font-weight:800}
+        .uh-list{padding:2px 13px 10px;display:flex;flex-direction:column}
+        .uh-it{display:flex;gap:10px;padding:6px 0;border-top:1px solid rgba(255,255,255,.05);font-size:13px}
+        .uh-it time{color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
+        .uh-it span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .ab-list{display:flex;flex-direction:column;gap:8px}
         .ab-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid rgba(231,76,60,.3)}
         .ab-item .ab-meta{flex:1;min-width:0}
@@ -12070,6 +12087,7 @@ function fillUserPage(it, id) {
         sec("info", "MƏLUMAT", infoBody) +
         sec("mail", "E-POÇT", mailBody) +
         sec("pro", "PREMİUM", proBody) +
+        sec("hist", "AXTARIŞ TARİXÇƏSİ", '<div class="uh-box" id="ptUpHist" data-uid="' + esc(id) + '"><div class="uh-empty">Açmaq üçün toxunun…</div></div>') +
         sec("manage", "İDARƏETMƏ", manageBody) +
         sec("danger", "TƏHLÜKƏLİ", dangerBody, true) +
       "</div>";
@@ -12077,10 +12095,56 @@ function fillUserPage(it, id) {
     acc.addEventListener("toggle", function (e) {
       var d = e.target;
       if (d && d.open && d.getAttribute) upOpen[upId] = d.getAttribute("data-k");
+      if (d && d.open && d.getAttribute && d.getAttribute("data-k") === "hist") userHistLoad(id);
     }, true);
+    if ((upOpen[upId] || "info") === "hist") userHistLoad(id);
     try { admAccInit(); } catch (e) {}
   });
 }
+/* istifadəçinin son 30 gündə baxdığı modellər (Worker /admin/history) */
+var uhNames = null;
+function uhName(k) {
+  if (!uhNames || !uhNames.__n) {
+    uhNames = { __n: (Array.isArray(database) ? database.length : 0) };
+    (Array.isArray(database) ? database : []).forEach(function (g) { (Array.isArray(g) ? g : []).forEach(function (m) { var nk = norm(m); if (nk && !uhNames[nk]) uhNames[nk] = String(m); }); });
+  }
+  return uhNames[k] || k;
+}
+function uhWhen(day, hhmm) {
+  var y = Math.floor(day / 10000), mo = Math.floor(day / 100) % 100, d = day % 100;
+  var ms = Date.UTC(y, mo - 1, d, +String(hhmm).slice(0, 2) || 0, +String(hhmm).slice(2, 4) || 0);
+  var b = new Date(ms + 4 * 3600000); // Bakı vaxtı (UTC+4)
+  var p2 = function (n) { return (n < 10 ? "0" : "") + n; };
+  return { date: p2(b.getUTCDate()) + "." + p2(b.getUTCMonth() + 1) + "." + b.getUTCFullYear(), time: p2(b.getUTCHours()) + ":" + p2(b.getUTCMinutes()) };
+}
+function userHistLoad(id) {
+  var box = $("ptUpHist");
+  if (!box || box.getAttribute("data-loaded") === id) return;
+  box.setAttribute("data-loaded", id);
+  box.innerHTML = '<div class="uh-empty">Yüklənir…</div>';
+  apiFetch("/admin/history?days=30&uid=" + encodeURIComponent(id)).then(function (d) {
+    if (!$("ptUpHist") || upId !== id) return;
+    var list = (d && d.list) || [];
+    var total = 0, freq = {};
+    list.forEach(function (x) { total += +x.cnt || 0; (x.items || []).forEach(function (it) { freq[it.k] = (freq[it.k] || 0) + 1; }); });
+    if (!list.length) { box.innerHTML = '<div class="uh-empty">Son 30 gündə baxış yoxdur</div>'; return; }
+    var top = Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a]; }).slice(0, 5);
+    var html = '<div class="uh-sum"><div><b>' + total + '</b><small>baxış</small></div><div><b>' + Object.keys(freq).length + '</b><small>fərqli model</small></div><div><b>' + list.length + '</b><small>aktiv gün</small></div></div>';
+    if (top.length) html += '<div class="uh-top">' + top.map(function (k) { return '<span>' + esc(uhName(k)) + ' <i>×' + freq[k] + '</i></span>'; }).join("") + '</div>';
+    html += list.map(function (x) {
+      var items = (x.items || []).slice().reverse();
+      var head = uhWhen(x.day, "1200").date;
+      return '<details class="uh-day"><summary><span>' + esc(head) + '</span><em>' + (+x.cnt || 0) + ' baxış</em></summary><div class="uh-list">' +
+        (items.length ? items.map(function (it) { return '<div class="uh-it"><time>' + esc(uhWhen(x.day, it.t).time) + '</time><span>' + esc(uhName(it.k)) + '</span></div>'; }).join("") : '<div class="uh-empty">Ətraflı siyahı yoxdur (köhnə qeyd)</div>') +
+        '</div></details>';
+    }).join("");
+    box.innerHTML = html;
+  }).catch(function (e) {
+    box.removeAttribute("data-loaded");
+    box.innerHTML = '<div class="uh-empty">Yüklənmədi (' + esc((e && e.code) || "?") + ')</div>';
+  });
+}
+
 function refreshUserPage() {
   var pg = $("pt-user-page"); if (!pg || !pg.classList.contains("active") || !upId) return;
   var its = document.querySelectorAll("#adminUsersList .au-item");
