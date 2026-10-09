@@ -1885,6 +1885,14 @@
         #profile-view #profSaveBtn,#profile-view #emSaveBtn,#profile-view #pwSaveBtn{background:linear-gradient(135deg,#f7e08a,var(--gold) 55%,#b8902a) !important;color:#111 !important;box-shadow:0 6px 18px rgba(212,175,55,.3);letter-spacing:.3px}
         #profile-view #emSaveBtn:disabled,#profile-view #pwSaveBtn:disabled{opacity:.5;box-shadow:none}
         #profile-view .logout-btn{background:transparent !important;color:#e74c3c !important;border:1.5px solid rgba(231,76,60,.55) !important}
+        .ab-list{display:flex;flex-direction:column;gap:8px}
+        .ab-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid rgba(231,76,60,.3)}
+        .ab-item .ab-meta{flex:1;min-width:0}
+        .ab-item b{display:block;font-size:13.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .ab-item small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
+        .ab-item button{flex-shrink:0;border:0;border-radius:10px;padding:9px 12px;font-weight:800;font-size:12.5px;cursor:pointer;color:#111;background:linear-gradient(135deg,#7CF0A6,#2ecc71)}
+        .ab-item button:disabled{opacity:.5}
+        .ab-empty{text-align:center;color:var(--muted);font-size:13px;padding:14px 6px}
         .em-input{width:100%;padding:12px;margin:0 0 10px;background:var(--surface-2);border:1px solid var(--border);color:var(--text);font-size:15px;box-sizing:border-box}
         .em-hint{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--muted);line-height:1.5;margin:2px 0 12px;padding:11px 13px;border-radius:14px;background:rgba(212,175,55,.07);border:1px dashed color-mix(in srgb,var(--gold) 40%,transparent)}
         .em-hint::before{content:"ℹ";flex:0 0 20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#111;background:linear-gradient(135deg,#f7e08a,var(--gold))}
@@ -2441,6 +2449,12 @@
             <summary><span class="e3d ic3d" style="--a:#5FE0CF;--b:#12968A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z" /><path d="m14.5 12.5 2-2" /><path d="m11.5 9.5 2-2" /><path d="m8.5 6.5 2-2" /><path d="m17.5 15.5 2-2" /></svg></span><span class="adm-ttl">Model ölçüləri</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
                 <div class="fm"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div>Tək model üçün modeli açın və yanındakı <b>✏️</b> düyməsini basın. Toplu dəyişiklik üçün şablonu yükləyin, Excel-də doldurun və sətirləri aşağıya yapışdırın.</div></div><div><span class="fm-lbl">Sətir formatı · şüşənin ölçüsü, mm</span><div class="fm-code">Model ; Hündürlük ; En ; Kəsik</div></div><div><span class="fm-lbl">Kəsik növləri</span><div class="fm-chips"><span class="fm-chip"><code>bezel</code>çərçivə</span><span class="fm-chip"><code>popup</code>motorlu kamera</span><span class="fm-chip"><code>notch</code>çəngəl</span><span class="fm-chip"><code>drop</code>damla</span><span class="fm-chip"><code>hole</code>mərkəzi dəlik</span><span class="fm-chip"><code>holel</code>sol dəlik</span><span class="fm-chip"><code>holer</code>sağ dəlik</span><span class="fm-chip"><code>pill</code>həb</span></div></div><div><span class="fm-lbl">Məlumat</span><textarea id="adminSpecsCsv" class="fm-ta mono" placeholder="Samsung Galaxy A55;6.6;161.1;77.4;hole"></textarea></div><div class="fm-acts"><button type="button" class="fm-btn pri wide" onclick="adminSpecsImport()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12" /><path d="m17 8-5-5-5 5" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /></svg>İdxal et</button><button type="button" class="fm-btn" onclick="adminSpecsTemplate()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg>Şablon (CSV)</button></div></div>
+            </div>
+        </details>
+        <details class="adm-acc ab-auto" ontoggle="if(this.open)adminAutoBlockLoad()">
+            <summary><span class="e3d ic3d" style="--a:#FF8A80;--b:#D32F2F" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="m4.9 4.9 14.2 14.2" /></svg></span><span class="adm-ttl">Avtomatik bloklananlar <small id="admAbCnt" class="adm-cnt"></small></span><span class="chev">›</span></summary>
+            <div class="adm-acc-body">
+                <div class="fm"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div id="admAbInfo">Gündəlik axtarış limitini ardıcıl bir neçə gün dolduran hesablar avtomatik bloklanır və sizə Telegram-da bildiriş gəlir.</div></div><div id="admAbList" class="ab-list"></div></div>
             </div>
         </details>
         <div class="adm-acc adm-link" role="button" tabindex="0" onclick="admPageOpen('rev')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();admPageOpen('rev')}">
@@ -3324,6 +3338,51 @@ function openProfile() {
         renderAccountSections();
         scrollProfileTarget();
     });
+}
+
+// ---------- Avtomatik blok ----------
+const AB_MSG = {
+    az: "Hesabınız gündəlik axtarış limitini ardıcıl bir neçə gün doldurduğu üçün müvəqqəti bloklanıb. Blokdan çıxmaq üçün administratorla əlaqə saxlayın.",
+    ru: "Ваш аккаунт временно заблокирован: дневной лимит поиска исчерпывался несколько дней подряд. Для разблокировки свяжитесь с администратором.",
+    tr: "Hesabınız günlük arama limitini art arda birkaç gün doldurduğu için geçici olarak engellendi. Engeli kaldırmak için yöneticiyle iletişime geçin.",
+    en: "Your account has been temporarily blocked because the daily search limit was reached several days in a row. Please contact the administrator to unblock it."
+};
+function abMsg() { return AB_MSG[currentLang] || AB_MSG.az; }
+
+function adminAutoBlockLoad() {
+    const box = document.getElementById("admAbList");
+    if (!box) return;
+    box.innerHTML = '<div class="ab-empty">Yüklənir…</div>';
+    apiFetch("/admin/autoblock").then(function (d) {
+        const list = (d && d.list) || [];
+        const cnt = document.getElementById("admAbCnt");
+        if (cnt) cnt.textContent = list.length ? String(list.length) : "";
+        if (d && d.streak) document.getElementById("admAbInfo").textContent = "Gündəlik axtarış limitini ardıcıl " + d.streak + " gün dolduran hesablar avtomatik bloklanır və sizə Telegram-da bildiriş gəlir.";
+        if (!list.length) { box.innerHTML = '<div class="ab-empty">✓ Bloklanmış hesab yoxdur</div>'; return; }
+        box.innerHTML = list.map(function (r) {
+            const when = new Date(+r.at || 0);
+            const ds = when.toLocaleDateString("az-AZ") + " " + when.toLocaleTimeString("az-AZ", { hour: "2-digit", minute: "2-digit" });
+            return '<div class="ab-item"><div class="ab-meta"><b>' + escapeHtml(r.email || r.uid) + '</b><small>' + escapeHtml(ds) + ' · ' + (+r.days || 0) + ' gün ardıcıl limit</small></div>' +
+                '<button type="button" data-uid="' + escapeHtml(r.uid) + '" onclick="adminAutoUnblock(this)">Blokdan çıxar</button></div>';
+        }).join("");
+    }).catch(function (e) {
+        box.innerHTML = '<div class="ab-empty">Yüklənmədi (' + escapeHtml((e && e.code) || "?") + ')</div>';
+    });
+}
+
+function adminAutoUnblock(btn) {
+    const uid = btn && btn.getAttribute("data-uid");
+    if (!uid) return;
+    btn.disabled = true;
+    apiFetch("/admin/autoblock", { method: "POST", body: JSON.stringify({ unblock: [uid] }) }).then(function () {
+        showAppToast("Blokdan çıxarıldı ✓");
+        try {
+            db.collection("users").doc(uid).collection("notifications").add({
+                type: "msg", text: "✓ Hesabınız blokdan çıxarıldı. Axtarışa davam edə bilərsiniz.", createdAt: Date.now(), read: false
+            }).catch(function () {});
+        } catch (e) {}
+        adminAutoBlockLoad();
+    }).catch(function () { btn.disabled = false; showAppToast("Xəta baş verdi"); });
 }
 
 const EM_MSG = {
@@ -10387,6 +10446,7 @@ function openDetail(model, group) {
             const code = e && e.code;
             if (code === "unauthenticated") { handleSearchBlocked("login"); return; }
             if (code === "captcha") return;
+            if (code === "blocked") { appAlert(abMsg(), "", "⛔"); return; }
             const today = ymdUTC(Date.now());
             const quota = code === "quota" || code === "permission-denied" && accountData && +accountData.dK === today && (+accountData.dC || 0) >= 150;
             showAppToast(ptMsg(quota ? "quota" : "error") + (quota ? "" : " [" + (code || (e && e.message) || "?") + "]"), 5000);
