@@ -3546,7 +3546,7 @@ function openAdmin() {
         showAppToast("Tam baza yüklənir...");
         loadDatabaseFromFirestore().then(function () {
             if (dbMode === "full") openAdmin();
-            else showAppToast("Tam baza yüklənmədi");
+            else showAppToast("Tam baza yüklənmədi: " + (window.ptDbErr || "?"));
         });
         return;
     }
@@ -5360,6 +5360,7 @@ async function publishPublicModels(groups) {
 
 async function loadDatabaseFromFirestore() {
     try {
+        window.ptDbErr = "";
         const res = await readDbFromFirestore();
         if (res.data) {
             const data = res.data;
@@ -5376,7 +5377,10 @@ async function loadDatabaseFromFirestore() {
         }
     } catch (e) {
         console.log("Firestore baza oxunmadı:", e);
+        window.ptDbErr = (e && (e.code || e.message)) || "xəta";
+        return false;
     }
+    window.ptDbErr = "baza sənədi boşdur/tapılmadı";
     return false;
 }
 
@@ -9627,7 +9631,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.5";
+const APP_VERSION = "3.1.6";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -12062,7 +12066,7 @@ window.ptEditModel = function (model) {
       });
     });
   };
-  if (dbMode !== "full") { showAppToast("Tam baza yüklənir..."); loadDatabaseFromFirestore().then(function () { if (dbMode === "full") go(); else showAppToast("Tam baza yüklənmədi"); }); }
+  if (dbMode !== "full") { showAppToast("Tam baza yüklənir..."); loadDatabaseFromFirestore().then(function () { if (dbMode === "full") go(); else showAppToast("Tam baza yüklənmədi: " + (window.ptDbErr || "?")); }); }
   else go();
 };
 })();
