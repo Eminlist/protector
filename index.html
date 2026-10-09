@@ -9627,7 +9627,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.4";
+const APP_VERSION = "3.1.5";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -9979,6 +9979,12 @@ function performSearch(query) {
 
         row.appendChild(brand);
         row.appendChild(modelEl);
+        if (isAdmin) {
+            const ed = document.createElement("button");
+            ed.type = "button"; ed.className = "res-edit"; ed.textContent = "✏️"; ed.title = "Ad / kod düzəlt";
+            ed.addEventListener("click", function (ev) { ev.stopPropagation(); if (window.ptEditModel) window.ptEditModel(item.model); });
+            row.appendChild(ed);
+        }
         row.appendChild(arrow);
 
         row.addEventListener("click", function () {
@@ -10748,6 +10754,18 @@ body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + 1cm + 
 .pt-up-acc .pt-up-act:first-child{border-top:0}
 .pt-up-acc .pt-up-rows{margin-top:6px}
 .pt-up-acc .pt-up-note{margin:8px 0 6px}
+/* admin: səhifə kimi bölmələr, ən çox axtarılanlar, ✏️ */
+#adm-gift-page{z-index:700}
+.pt-subacc{padding:0;background:none;border:none}
+.res-edit{flex-shrink:0;width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);font-size:15px;cursor:pointer}
+.pt-top{display:flex;flex-direction:column;gap:6px}
+.pt-top-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--border)}
+.pt-top-n{width:26px;height:26px;border-radius:8px;background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(--accent-color);flex-shrink:0}
+.pt-top-row:nth-child(2) .pt-top-n,.pt-top-row:nth-child(3) .pt-top-n,.pt-top-row:nth-child(4) .pt-top-n{background:var(--accent-color);color:#111}
+.pt-top-m{flex:1;min-width:0}
+.pt-top-m b{display:block;font-size:13.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pt-top-m i{display:block;height:4px;border-radius:4px;margin-top:5px;background:linear-gradient(90deg,var(--accent-color),color-mix(in srgb,var(--accent-color) 40%,transparent))}
+.pt-top-c{font-weight:800;color:var(--text);font-variant-numeric:tabular-nums}
 /* hədiyyə: təşəkkür düyməsi (tema rəngi) */
 .pt-thx{display:block;margin-top:10px;height:38px;padding:0 20px;border:none;border-radius:12px;background:var(--accent-color);color:#111;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer}
 .pt-thx:active{transform:scale(.97)}
@@ -11848,6 +11866,209 @@ if (document.readyState === "loading") document.addEventListener("DOMContentLoad
 })();
 </script>
 <!-- ===== /ProTechtor EXT ===== -->
+
+<!-- ===== Admin menyusu: səhifə kimi açılan bölmələr + ən çox axtarılanlar + axtarışda ✏️ ===== -->
+<script id="pt-admmenu">
+(function () {
+"use strict";
+function $(i) { return document.getElementById(i); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+var menus = document.querySelector("#admin-view .adm-menus");
+if (!menus) return;
+
+function findAcc(title) {
+  return [].filter.call(menus.querySelectorAll(":scope > details.adm-acc"), function (d) {
+    var s = d.querySelector(":scope > summary"); return s && s.textContent.trim().indexOf(title) === 0;
+  })[0];
+}
+function iconOf(d) { var i = d && d.querySelector(":scope > summary .e3d, :scope > .adm-sum .e3d"); return i ? i.outerHTML : ""; }
+function makePage(id, title) {
+  var pg = document.createElement("div");
+  pg.id = id; pg.className = "sub-view adm-page";
+  pg.innerHTML = '<header class="settings-header"><button class="settings-back" onclick="history.back()">‹</button><div class="settings-heading"><div class="settings-small">ADMIN</div><div class="settings-title">' + esc(title) + '</div></div></header><div class="settings-content"></div>';
+  document.body.appendChild(pg);
+  return pg.querySelector(".settings-content");
+}
+function makeLink(id, title, icon, extra) {
+  var a = document.createElement("div");
+  a.className = "adm-acc adm-link"; a.setAttribute("role", "button"); a.tabIndex = 0;
+  a.onclick = function () { openSubView(id); if (window.ptAdmPageOpened) window.ptAdmPageOpened(id); };
+  a.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); a.onclick(); } };
+  a.innerHTML = '<div class="adm-sum">' + icon + '<span class="adm-ttl">' + esc(title) + (extra || "") + '</span><span class="chev">›</span></div>';
+  return a;
+}
+/* bütün bölmə səhifəyə köçür (accordion yox) */
+function toPage(d, id, title, extra) {
+  if (!d) return null;
+  var body = makePage(id, title);
+  var inner = d.querySelector(":scope > .adm-acc-body");
+  while (inner && inner.firstChild) body.appendChild(inner.firstChild);
+  var link = makeLink(id, title, iconOf(d), extra);
+  d.parentNode.replaceChild(link, d);
+  return link;
+}
+/* səhifə içində bağlı alt-menyular */
+function toSubAcc(d, body, title) {
+  if (!d) return;
+  var t = d.querySelector(":scope > summary .adm-ttl, :scope > summary > span:nth-child(2)");
+  if (t && title) t.firstChild.nodeValue = title + " ";
+  d.open = false;
+  body.appendChild(d);
+}
+
+/* 1) Baza idarəsi və Hədiyyələr — səhifə */
+toPage(findAcc("Baza idarəsi"), "adm-base-page", "Baza idarəsi");
+toPage(findAcc("Hədiyyələr"), "adm-gift-page", "Hədiyyələr", ' <small id="ptThxCnt" class="adm-cnt warn"></small>');
+
+/* 2) Elanlar: Elanlar (banner) + Salamlama */
+var banner = findAcc("Elan banner"), welcome = findAcc("Salamlama");
+if (banner) {
+  var icon = iconOf(banner);
+  var ebody = makePage("adm-ann-page", "Elanlar");
+  var link = makeLink("adm-ann-page", "Elanlar", icon);
+  menus.insertBefore(link, banner);
+  ebody.classList.add("acc-exclusive");
+  var wrapE = document.createElement("div"); wrapE.className = "adm-menus acc-exclusive pt-subacc"; ebody.appendChild(wrapE);
+  toSubAcc(banner, wrapE, "Elanlar");
+  toSubAcc(welcome, wrapE, "Salamlama");
+}
+
+/* 3) Modellər: Model bazası (bağlı) + Model ölçüləri */
+var dbLink = [].filter.call(menus.querySelectorAll(".adm-link"), function (x) { return (x.getAttribute("onclick") || "").indexOf("'db'") >= 0; })[0];
+var sizes = findAcc("Model ölçüləri");
+var dbPage = $("adm-db-page");
+if (dbLink) { var tt = dbLink.querySelector(".adm-ttl"); if (tt && tt.firstChild) tt.firstChild.nodeValue = "Modellər "; }
+if (dbPage) {
+  var dt = dbPage.querySelector(".settings-title"); if (dt) dt.textContent = "Modellər";
+  var cont = dbPage.querySelector(".settings-content");
+  var acc = $("admDbAcc");
+  if (acc) { acc.open = false; var s = acc.querySelector("summary > span:nth-child(2)"); if (s && s.firstChild) s.firstChild.nodeValue = "Model bazası "; }
+  var wrapM = document.createElement("div"); wrapM.className = "adm-menus acc-exclusive pt-subacc";
+  var sec = $("adminDbSection"); if (sec) { sec.parentNode.insertBefore(wrapM, sec); if (acc) wrapM.appendChild(acc); sec.remove(); }
+  else cont.appendChild(wrapM);
+  toSubAcc(sizes, wrapM, "Model ölçüləri");
+}
+
+/* 4) Ən çox axtarılan modellər — yeni səhifə */
+var tbody = makePage("adm-top-page", "Ən çox axtarılanlar");
+tbody.innerHTML = '<div class="fm-seg" style="margin-bottom:12px"><button type="button" class="on" onclick="ptTop(this,0)">Bu həftə</button><button type="button" onclick="ptTop(this,1)">Keçən həftə</button></div><div id="ptTopList" class="pt-top"></div>';
+var topLink = makeLink("adm-top-page", "Bu həftə ən çox axtarılanlar", '<span class="e3d ic3d" style="--a:#FF8AC2;--b:#D63384" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>');
+var revLink = [].filter.call(menus.querySelectorAll(".adm-link"), function (x) { return (x.getAttribute("onclick") || "").indexOf("'rev'") >= 0; })[0];
+if (revLink) menus.insertBefore(topLink, revLink.nextSibling); else menus.appendChild(topLink);
+
+/* 5) AI Təlimat — ən aşağı, səhifə kimi */
+var ai = findAcc("AI Təlimat");
+if (ai) { var l = toPage(ai, "adm-ai-page", "AI Təlimat"); if (l) menus.appendChild(l); }
+
+/* «Modellər» açılanda Model bazası avtomatik açılmasın */
+try {
+  var _apo = window.admPageOpen;
+  window.admPageOpen = function (tab) {
+    if (tab === "db") { openSubView("adm-db-page"); renderAdminList(); return; }
+    return _apo.apply(this, arguments);
+  };
+} catch (e) {}
+window.ptAdmPageOpened = function (id) {
+  if (id === "adm-top-page") ptTop(null, 0);
+  if (id === "adm-gift-page") { try { ["one", "bulk", "new"].forEach(gfPrev); } catch (e) {} }
+};
+/* Hədiyyə ver (istifadəçi səhifəsindən) — Hədiyyələr səhifəsini aç */
+try {
+  window.gfPickUser = function (id) {
+    openSubView("adm-gift-page");
+    var pg = $("adm-gift-page"), b = pg && pg.querySelector(".fm-seg button");
+    if (b) gfTab(b, "one");
+    gfSelect(id); gfPrev("one");
+  };
+} catch (e) {}
+
+/* ---------- həftəlik axtarış statistikası ---------- */
+function weekKey(back) {
+  var d = new Date(Date.now() + 4 * 3600000 - (back || 0) * 7 * 86400000);
+  d = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  var day = d.getUTCDay() || 7; d.setUTCDate(d.getUTCDate() + 4 - day);
+  var y = d.getUTCFullYear(), w = Math.ceil(((d - Date.UTC(y, 0, 1)) / 86400000 + 1) / 7);
+  return y + "-W" + (w < 10 ? "0" : "") + w;
+}
+window.ptRecordSearch = function (model) {
+  try {
+    if (isAdmin || !isRegisteredUser() || !model) return;
+    var w = weekKey(0), k = norm(model).slice(0, 60); if (!k) return;
+    var lk = "pt_ss_" + w + "_" + k;
+    if (localStorage.getItem(lk)) return;
+    localStorage.setItem(lk, "1");
+    var ref = db.collection("search_stats").doc(w + "_" + k);
+    ref.update({ n: firebase.firestore.FieldValue.increment(1) }).catch(function () {
+      return ref.set({ w: w, m: String(model).slice(0, 100), n: 1 });
+    }).catch(function () {});
+  } catch (e) {}
+};
+window.ptTop = function (btn, back) {
+  if (btn) btn.parentNode.querySelectorAll("button").forEach(function (b) { b.classList.toggle("on", b === btn); });
+  var box = $("ptTopList"); if (!box) return;
+  var w = weekKey(back || 0);
+  box.innerHTML = '<div class="fm-status">Yüklənir…</div>';
+  db.collection("search_stats").where("w", "==", w).get().then(function (snap) {
+    var rows = []; snap.forEach(function (d) { rows.push(d.data() || {}); });
+    rows.sort(function (a, b) { return (b.n || 0) - (a.n || 0); });
+    rows = rows.slice(0, 30);
+    if (!rows.length) { box.innerHTML = '<div class="fm-status">' + esc(w) + ' — hələ məlumat yoxdur</div>'; return; }
+    var max = rows[0].n || 1, total = 0; rows.forEach(function (r) { total += r.n || 0; });
+    box.innerHTML = '<div class="fm-status">' + esc(w) + ' · top ' + rows.length + ' · ' + total + ' baxış</div>' + rows.map(function (r, i) {
+      return '<div class="pt-top-row"><span class="pt-top-n">' + (i + 1) + '</span><span class="pt-top-m"><b>' + esc(r.m) + '</b><i style="width:' + Math.max(4, Math.round((r.n || 0) / max * 100)) + '%"></i></span><span class="pt-top-c">' + (r.n || 0) + '</span></div>';
+    }).join("");
+  }).catch(function (e) { box.innerHTML = '<div class="fm-status" style="color:#e74c3c">Oxunmadı (' + esc((e && e.code) || "") + '). Firestore qaydalarını yeniləyin.</div>'; });
+};
+try {
+  var _odw = window.openDetailWith;
+  window.openDetailWith = function (model) { var r = _odw.apply(this, arguments); window.ptRecordSearch(model); return r; };
+} catch (e) {}
+
+/* ---------- axtarışda ✏️: ad və kodu düzəlt ---------- */
+window.ptEditModel = function (model) {
+  if (!isAdmin) return;
+  var go = function () {
+    appPrompt("✏️ Modeli düzəlt", "Ad və kodlar: Samsung A32 [SM-A325F, SM-A325M]", modelWithCodes(model), false, "Ad [KOD1, KOD2]").then(function (v) {
+      if (v == null) return;
+      var p = parseModelTok(String(v).trim());
+      var nn = smartCase(p.name);
+      if (!nn) { showAppToast("Ad boş ola bilməz"); return; }
+      var ok = norm(model), nk = norm(nn);
+      var gi = -1, mi = -1;
+      (database || []).forEach(function (g, i) { (Array.isArray(g) ? g : []).forEach(function (m, j) { if (gi < 0 && norm(m) === ok) { gi = i; mi = j; } }); });
+      if (gi < 0) { showAppToast("Model bazada tapılmadı"); return; }
+      if (nk !== ok && (database || []).some(function (g) { return (g || []).some(function (m) { return norm(m) === nk; }); })) { showAppToast("Bu adda model artıq var"); return; }
+      if (nk === ok && nn === model) {
+        /* yalnız kodlar */
+        codesMap[ok] = p.codes; indexFor = null;
+        var fp = new firebase.firestore.FieldPath("codes", ok);
+        var val = p.codes.length ? p.codes : firebase.firestore.FieldValue.delete();
+        Promise.all([db.doc(FS_DB_DOC).update(fp, val), db.doc(FS_CATALOG_DOC).update(fp, val)]).then(function () {
+          cacheCatalog(database);
+          showAppToast("Kodlar yadda saxlanıldı ✓");
+          var inp = $("searchInput"); if (inp) performSearch(inp.value);
+        }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
+        return;
+      }
+      /* ad dəyişib — bazanı yenilə və dərc et */
+      appConfirm("«" + model + "» → «" + nn + "»\nAd dəyişəcək və baza yenidən dərc olunacaq.", "Bəli, dəyiş").then(function (yes) {
+        if (!yes) return;
+        database[gi][mi] = nn;
+        codesMap[nk] = p.codes; if (nk !== ok) delete codesMap[ok];
+        if (sizesMap[ok] && !sizesMap[nk]) { var u = {}; u[nk] = sizesMap[ok]; saveSpecs(u, true).catch(function () {}); }
+        adminEditDb = JSON.parse(JSON.stringify(database));
+        indexFor = null;
+        adminPublishDatabase().then(function () { var inp = $("searchInput"); if (inp) { inp.value = nn; performSearch(nn); } });
+      });
+    });
+  };
+  if (dbMode !== "full") { showAppToast("Tam baza yüklənir..."); loadDatabaseFromFirestore().then(function () { if (dbMode === "full") go(); else showAppToast("Tam baza yüklənmədi"); }); }
+  else go();
+};
+})();
+</script>
+<!-- ===== /admin menyusu ===== -->
+
 
 </body>
 </html>
