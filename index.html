@@ -2176,6 +2176,32 @@
         #profile-view #emSaveBtn,#profile-view #pwSaveBtn{height:42px !important}
         #profile-view .logout-btn{height:42px !important;border-radius:12px !important;letter-spacing:.5px !important;font-size:calc(14px * var(--font-scale))}
         #profile-view .settings-section:has(.logout-btn){margin-top:14px;margin-bottom:6px}
+        /* Profil — rəng şemasına uyğun (v3.1.3.1.2) */
+        #profile-view{--pa:var(--accent-color)}
+        #profile-view .prof-av-wrap{border-color:color-mix(in srgb,var(--pa) 35%,var(--border)) !important;
+            background:radial-gradient(130% 110% at 0% 0%,color-mix(in srgb,var(--pa) 55%,transparent) 0%,color-mix(in srgb,var(--pa) 26%,transparent) 28%,color-mix(in srgb,var(--pa) 8%,transparent) 55%,transparent 80%),linear-gradient(160deg,var(--card-bg),color-mix(in srgb,var(--surface) 92%,#000)) !important}
+        #profile-view .prof-av-wrap::before{inset:-30% auto auto -30%;width:75%;height:75%;background:radial-gradient(circle,color-mix(in srgb,var(--pa) 45%,transparent),transparent 70%);filter:blur(28px);opacity:.7}
+        #profile-view .prof-av{width:124px;height:124px;font-size:56px;background:linear-gradient(var(--surface-2),var(--surface-2)) padding-box,linear-gradient(135deg,color-mix(in srgb,var(--pa) 55%,#fff),var(--pa),var(--accent-dark)) border-box !important;box-shadow:0 0 0 4px color-mix(in srgb,var(--pa) 18%,transparent),0 10px 26px rgba(0,0,0,.45) !important}
+        #profile-view .prof-av-btn{color:var(--pa);border-color:color-mix(in srgb,var(--pa) 45%,var(--border))}
+        #profile-view .settings-section-title{color:var(--pa)}
+        #profile-view .settings-section-title::after{background:linear-gradient(90deg,color-mix(in srgb,var(--pa) 45%,transparent),transparent)}
+        #profile-view .settings-box{border-color:color-mix(in srgb,var(--pa) 20%,var(--border))}
+        #profile-view .settings-box input:focus{border-color:var(--pa) !important;box-shadow:0 0 0 3px color-mix(in srgb,var(--pa) 20%,transparent)}
+        #profile-view #profSaveBtn,#profile-view #emSaveBtn,#profile-view #pwSaveBtn{background:linear-gradient(135deg,color-mix(in srgb,var(--pa) 60%,#fff),var(--pa) 55%,var(--accent-dark)) !important;color:#fff !important;text-shadow:0 1px 2px rgba(0,0,0,.3);box-shadow:0 6px 18px color-mix(in srgb,var(--pa) 30%,transparent)}
+        /* Açılan bölmələr */
+        #profile-view .prof-acc{border:1px solid color-mix(in srgb,var(--pa) 35%,var(--border));border-radius:14px;padding:12px 14px;margin:0;box-shadow:none;background:var(--card-bg);letter-spacing:1.5px}
+        #profile-view .prof-acc::after{display:none}
+        #profile-view .prof-acc .cl-chev{stroke:var(--pa)}
+        #profile-view .prof-acc[aria-expanded="true"]{box-shadow:0 0 14px color-mix(in srgb,var(--pa) 28%,transparent)}
+        #profile-view #profInfoWrap.open{margin-top:8px}
+        #profile-view #profInfoWrap:not(.open)>.settings-box{padding:0 12px !important;border-width:0}
+        #accOps:has(#emSection[style*="none"]):has(#pwSection[style*="none"]){display:none}
+        #profile-view .acc-group{border:1px solid color-mix(in srgb,var(--pa) 20%,var(--border));border-radius:16px;overflow:hidden;background:var(--card-bg)}
+        #profile-view .acc-group>.settings-section{margin:0}
+        #profile-view .acc-group>.settings-section+.settings-section{border-top:1px solid var(--border)}
+        #profile-view .acc-group .pw-toggle-btn{border:0 !important;border-radius:0 !important;background:transparent}
+        #profile-view .acc-group .pw-chev{color:var(--pa)}
+        #profile-view .acc-group .pw-form{border:0;border-radius:0;box-shadow:none;background:transparent;padding-top:2px}
 </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style>.ts-box{display:flex;justify-content:center;min-height:65px;margin:8px 0}</style>
@@ -2354,8 +2380,8 @@
                 <button type="button" class="prof-av-btn" onclick="openAvatarPicker()" data-i18n="avatarChange">Avatarı dəyiş</button>
             </div>
             <div class="settings-section">
-                <div class="settings-section-title" data-i18n="profSection">ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI</div>
-                <div class="settings-box" style="padding: 16px;">
+                <div class="settings-section-title cl-toggle prof-acc" id="profInfoToggle" role="button" tabindex="0" aria-expanded="false" onclick="ptAccToggle(this,'profInfoWrap')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ptAccToggle(this,'profInfoWrap')}"><span data-i18n="profSection">ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI</span><svg class="cl-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div>
+                <div class="cl-wrap" id="profInfoWrap"><div class="settings-box" style="padding: 16px;">
                     <div id="profEmailRow" style="display:none; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border);">
                         <span id="profEmail" style="flex:1; min-width:0; font-size:14px; font-weight:600; color:var(--text); word-break:break-all;"></span>
                         <button type="button" id="profVerifyBtn" onclick="profVerifyClick()" style="display:none; padding:8px 14px; border-radius:10px; border:1px solid var(--accent-color); background:transparent; color:var(--accent-color); font-weight:700; font-size:13px; cursor:pointer;"></button>
@@ -2385,7 +2411,7 @@
 
                     <div id="profPhoneErr" class="field-error-msg" data-i18n="regPhoneErr">Nömrə yanlışdır, 9 rəqəm olmalı və doğru prefiks ilə başlamalıdır</div>
                     <button class="profile-save-btn" id="profSaveBtn" onclick="updateProfile()" style="width:100%; height:50px; background:var(--accent-color); color:#111; border:none; border-radius:12px; font-weight:800; cursor:pointer; margin-top:10px;" data-i18n="profSaveBtn">Dəyişiklikləri Yadda Saxla</button>
-                </div>
+                </div></div>
             </div>
 
             <div class="settings-section no-admin">
@@ -2406,6 +2432,9 @@
                 <div class="settings-box" id="devicesBox"></div>
             </div>
 
+            <div class="settings-section" id="accOps">
+            <div class="settings-section-title" data-i18n="accOps">HESAB ƏMƏLİYYATLARI</div>
+            <div class="acc-group">
             <div class="settings-section" id="emSection" style="display:none;">
                 <div class="settings-section-title" id="emTitle">E-POÇT</div>
                 <button type="button" class="pw-toggle-btn" id="emToggleBtn" onclick="toggleEmForm()"><span id="emBtnTxt">E-poçtu dəyiş</span><span class="pw-chev">›</span></button>
@@ -2441,6 +2470,9 @@
                     <div id="pwMsg" style="font-size:12px;margin:6px 0;"></div>
                     <button class="profile-save-btn" id="pwSaveBtn" onclick="changePassword()" data-i18n="pwSave" disabled style="width:100%; height:48px; background:var(--accent-color); color:#111; border:none; border-radius:12px; font-weight:800; cursor:pointer;">Yadda saxla</button>
                 </div>
+            </div>
+
+            </div>
             </div>
 
             <div class="settings-section">
@@ -3603,6 +3635,7 @@ function toggleEmForm(force) {
     const btn = document.getElementById("emToggleBtn");
     if (!form || !btn) return;
     const open = typeof force === "boolean" ? force : !form.classList.contains("open");
+    if (open) { try { togglePwForm(false); } catch (e) {} }
     form.classList.toggle("open", open);
     btn.classList.toggle("open", open);
     const pv = document.getElementById("profile-view");
@@ -7870,6 +7903,7 @@ function togglePwForm(force) {
     const btn = document.getElementById("pwToggleBtn");
     if (!form || !btn) return;
     const open = typeof force === "boolean" ? force : !form.classList.contains("open");
+    if (open) { try { toggleEmForm(false); } catch (e) {} }
     form.classList.toggle("open", open);
     btn.classList.toggle("open", open);
     const pv = document.getElementById("profile-view");
@@ -10272,7 +10306,7 @@ const I18N_MAINT = {"az": {"maintReopen": "Açılma vaxtı: {t} (Bakı vaxtı)"}
 Object.keys(I18N_MAINT).forEach(function (l) { Object.assign(I18N[l], I18N_MAINT[l]); });
 const I18N_INSTALL = {"az": {"installSub": "Ana ekrana əlavə et", "installIos": "Ana ekrana əlavə edin", "installHow": "Necə?", "installIosSteps": "Safari-də aşağıdakı «Paylaş» ⬆️ düyməsinə basın, sonra «Ana ekrana əlavə et» seçin.", "installBtn": "Quraşdır"}, "ru": {"installSub": "На главный экран", "installIos": "На главный экран", "installHow": "Как?", "installIosSteps": "В Safari нажмите кнопку «Поделиться» ⬆️ внизу, затем выберите «На экран „Домой“».", "installBtn": "Установить"}, "tr": {"installSub": "Ana ekrana ekle", "installIos": "Ana ekrana ekleyin", "installHow": "Nasıl?", "installIosSteps": "Safari'de alttaki «Paylaş» ⬆️ düğmesine basın, ardından «Ana Ekrana Ekle»yi seçin.", "installBtn": "Yükle"}, "en": {"installSub": "Add to home screen", "installIos": "Add to home screen", "installHow": "How?", "installIosSteps": "In Safari, tap the «Share» ⬆️ button at the bottom, then choose «Add to Home Screen».", "installBtn": "Install"}};
 Object.keys(I18N_INSTALL).forEach(function (l) { Object.assign(I18N[l], I18N_INSTALL[l]); });
-const I18N_PW = {"az": {"regEmailPh": "E-poçt (şifrə bərpası üçün) *", "regPassPh": "Şifrə (məs: Baku1234) *", "passReqTitle": "Şifrə tələbləri", "passReqHint": "Başqa saytlarda istifadə etdiyiniz və ya asan təxmin olunan şifrədən çəkinin.", "regPassErr": "Şifrə tələblərə uyğun deyil", "regPassOk": "Şifrə uyğundur ✓", "forgotLink": "Şifrəmi unutmuşam", "fillBasic": "Zəhmət olmasa ad və soyad, e-poçt və şifrə sahələrini doldurun!", "enterEmailPass": "E-poçt və şifrəni daxil edin!", "loginFail": "E-poçt və ya şifrə səhvdir!", "mEmail": "E-poçt və şifrə", "loginPassPh": "Şifrə", "forgotTitle": "Şifrəni bərpa et", "pwTitle": "ŞİFRƏ", "pwCurrent": "Cari şifrə", "pwNew": "Yeni şifrə", "pwConfirm": "Yeni şifrəni təkrarlayın", "pwBtn": "Şifrəni dəyiş", "pwWeak": "Yeni şifrə tələblərə uyğun deyil", "pwMismatch": "Şifrələr eyni deyil", "pwWrong": "Cari şifrə səhvdir", "pwOk": "Şifrə uğurla dəyişdirildi", "pwSave": "Yadda saxla", "pwMatchOk": "Şifrələr eynidir ✓", "pwShow": "Göstər"}, "ru": {"pwTitle": "ПАРОЛЬ", "pwNew": "Новый пароль", "pwSave": "Сохранить", "pwMatchOk": "Пароли совпадают ✓", "pwShow": "Показать", "pwMismatch": "Пароли не совпадают", "pwWeak": "Новый пароль не соответствует требованиям"}, "tr": {"pwTitle": "ŞİFRE", "pwNew": "Yeni şifre", "pwSave": "Kaydet", "pwMatchOk": "Şifreler aynı ✓", "pwShow": "Göster", "pwMismatch": "Şifreler aynı değil", "pwWeak": "Yeni şifre gereksinimleri karşılamıyor"}, "en": {"pwTitle": "PASSWORD", "pwNew": "New password", "pwSave": "Save", "pwMatchOk": "Passwords match ✓", "pwShow": "Show", "pwMismatch": "Passwords don't match", "pwWeak": "New password doesn't meet the requirements"}};
+const I18N_PW = {"az": {"accOps": "HESAB ƏMƏLİYYATLARI", "regEmailPh": "E-poçt (şifrə bərpası üçün) *", "regPassPh": "Şifrə (məs: Baku1234) *", "passReqTitle": "Şifrə tələbləri", "passReqHint": "Başqa saytlarda istifadə etdiyiniz və ya asan təxmin olunan şifrədən çəkinin.", "regPassErr": "Şifrə tələblərə uyğun deyil", "regPassOk": "Şifrə uyğundur ✓", "forgotLink": "Şifrəmi unutmuşam", "fillBasic": "Zəhmət olmasa ad və soyad, e-poçt və şifrə sahələrini doldurun!", "enterEmailPass": "E-poçt və şifrəni daxil edin!", "loginFail": "E-poçt və ya şifrə səhvdir!", "mEmail": "E-poçt və şifrə", "loginPassPh": "Şifrə", "forgotTitle": "Şifrəni bərpa et", "pwTitle": "ŞİFRƏ", "pwCurrent": "Cari şifrə", "pwNew": "Yeni şifrə", "pwConfirm": "Yeni şifrəni təkrarlayın", "pwBtn": "Şifrəni dəyiş", "pwWeak": "Yeni şifrə tələblərə uyğun deyil", "pwMismatch": "Şifrələr eyni deyil", "pwWrong": "Cari şifrə səhvdir", "pwOk": "Şifrə uğurla dəyişdirildi", "pwSave": "Yadda saxla", "pwMatchOk": "Şifrələr eynidir ✓", "pwShow": "Göstər"}, "ru": {"accOps": "ОПЕРАЦИИ С АККАУНТОМ", "pwTitle": "ПАРОЛЬ", "pwNew": "Новый пароль", "pwSave": "Сохранить", "pwMatchOk": "Пароли совпадают ✓", "pwShow": "Показать", "pwMismatch": "Пароли не совпадают", "pwWeak": "Новый пароль не соответствует требованиям"}, "tr": {"accOps": "HESAP İŞLEMLERİ", "pwTitle": "ŞİFRE", "pwNew": "Yeni şifre", "pwSave": "Kaydet", "pwMatchOk": "Şifreler aynı ✓", "pwShow": "Göster", "pwMismatch": "Şifreler aynı değil", "pwWeak": "Yeni şifre gereksinimleri karşılamıyor"}, "en": {"accOps": "ACCOUNT ACTIONS", "pwTitle": "PASSWORD", "pwNew": "New password", "pwSave": "Save", "pwMatchOk": "Passwords match ✓", "pwShow": "Show", "pwMismatch": "Passwords don't match", "pwWeak": "New password doesn't meet the requirements"}};
 Object.keys(I18N_PW).forEach(function (l) { Object.assign(I18N[l], I18N_PW[l]); });
 const I18N_NDEL = {"az": {"notifDelete": "Sil", "notifSelect": "Seç", "notifSelectAll": "Hamısını seç", "notifUnselectAll": "Seçimi ləğv et", "notifDeleteSel": "Seçilənləri sil ({n})", "notifClearAll": "Hamısını təmizlə", "notifConfirmSel": "{n} bildiriş silinsin?", "notifConfirmAll": "Bütün bildirişlər silinsin?", "notifDeletedN": "{n} bildiriş silindi"}, "ru": {"notifDelete": "Удалить", "notifSelect": "Выбрать", "notifSelectAll": "Выбрать все", "notifUnselectAll": "Снять выбор", "notifDeleteSel": "Удалить выбранные ({n})", "notifClearAll": "Очистить все", "notifConfirmSel": "Удалить уведомления: {n}?", "notifConfirmAll": "Удалить все уведомления?", "notifDeletedN": "Удалено уведомлений: {n}"}, "tr": {"notifDelete": "Sil", "notifSelect": "Seç", "notifSelectAll": "Tümünü seç", "notifUnselectAll": "Seçimi kaldır", "notifDeleteSel": "Seçilenleri sil ({n})", "notifClearAll": "Tümünü temizle", "notifConfirmSel": "{n} bildirim silinsin mi?", "notifConfirmAll": "Tüm bildirimler silinsin mi?", "notifDeletedN": "{n} bildirim silindi"}, "en": {"notifDelete": "Delete", "notifSelect": "Select", "notifSelectAll": "Select all", "notifUnselectAll": "Unselect all", "notifDeleteSel": "Delete selected ({n})", "notifClearAll": "Clear all", "notifConfirmSel": "Delete {n} notifications?", "notifConfirmAll": "Delete all notifications?", "notifDeletedN": "{n} notifications deleted"}};
 Object.keys(I18N_NDEL).forEach(function (l) { Object.assign(I18N[l], I18N_NDEL[l]); });
@@ -10438,7 +10472,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.1.1";
+const APP_VERSION = "3.1.3.1.2";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -13049,6 +13083,7 @@ window.ptEditModel = function (model) {
 
 
 <script>
+function ptAccToggle(t,id){var w=document.getElementById(id);if(!w)return;var o=!w.classList.contains("open");w.classList.toggle("open",o);t.setAttribute("aria-expanded",o?"true":"false");}
 function ptClToggle(t){var w=document.getElementById("changelogWrap");if(!w)return;var o=!w.classList.contains("open");w.classList.toggle("open",o);t.setAttribute("aria-expanded",o?"true":"false");}
 </script>
 </body>
