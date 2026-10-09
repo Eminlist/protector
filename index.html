@@ -1266,6 +1266,8 @@
         #pt-progress.flash .pt-prog-bar{animation:ptProgFlash .6s ease}
         #pt-progress.error .pt-prog-bar{background:linear-gradient(90deg,#e74c3c,#c0392b);animation:ptProgBlink .5s ease infinite;width:100% !important}
         #pt-progress.error .pt-prog-label{color:#e74c3c}
+#spec-modal .spec-codes{display:flex;flex-direction:column;gap:4px;font-size:11px;color:var(--muted);margin-top:8px}
+#spec-modal .spec-codes input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:14px;font-family:inherit}
         @keyframes ptProgFlash{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6);box-shadow:0 0 18px var(--accent-color)}}
         @keyframes ptProgBlink{0%,100%{opacity:1}50%{opacity:.45}}
 
@@ -2610,6 +2612,7 @@
                 <label>Model adı<input type="text" id="specName" autocomplete="off" spellcheck="false"></label>
                 <datalist id="specBrandList"></datalist>
             </div>
+            <label class="spec-codes">Model kodları (vergüllə)<input type="text" id="specCodes" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="SM-A225F, SM-A225M"></label>
             <div class="spec-grid">
                 <label>Ekran (düym)<input type="number" step="0.01" id="specIn" placeholder="məs: 6.6"></label>
                 <label>Hündürlük (mm)<input type="number" step="0.1" id="specH" placeholder="məs: 161.1"></label>
@@ -6679,6 +6682,7 @@ function openSpecEdit(model) {
     const nm = String(model || "").trim().split(/\s+/);
     document.getElementById("specBrand").value = nm[0] || "";
     document.getElementById("specName").value = nm.slice(1).join(" ");
+    document.getElementById("specCodes").value = modelCodes(model).join(", ");
     const bl = {};
     (Array.isArray(database) ? database : []).forEach(function (g) { (Array.isArray(g) ? g : []).forEach(function (m) { const b = getBrand(m); if (b) bl[b] = 1; }); });
     document.getElementById("specBrandList").innerHTML = Object.keys(bl).sort().map(function (b) { return '<option value="' + escapeHtml(b) + '">'; }).join("");
@@ -6786,9 +6790,20 @@ function specRenameModel(oldName, newName) {
     return n;
 }
 
+function parseCodesInput(v) {
+    const seen = {};
+    return String(v || "").replace(/[\[\]]/g, " ").split(/[,;\s]+/).map(function (c) { return c.trim().toUpperCase(); })
+        .filter(function (c) { if (!c || c.length < 3 || seen[c]) return false; seen[c] = 1; return true; });
+}
 function saveSpecEdit(del) {
     const k0 = norm(specEditModel);
     if (!k0) return;
+    /* Model adına [KOD] yazılıbsa — kodlar sahəsinə köçür */
+    const nmEl = document.getElementById("specName"), cdEl = document.getElementById("specCodes");
+    const mBr = String(nmEl.value || "").match(/\[([^\]]*)\]?/);
+    if (mBr) { nmEl.value = nmEl.value.replace(/\[.*$/, "").trim(); cdEl.value = (cdEl.value ? cdEl.value + ", " : "") + mBr[1]; }
+    const newCodes = del ? modelCodes(specEditModel) : parseCodesInput(cdEl.value);
+    const codesChanged = newCodes.join(",") !== modelCodes(specEditModel).join(",");
     const str = del ? "" : specStr(document.getElementById("specIn").value, document.getElementById("specH").value, document.getElementById("specW").value, specEditCut);
     const upd = {};
     let k = k0;
@@ -6801,6 +6816,7 @@ function saveSpecEdit(del) {
             const clash = nk !== k0 && (Array.isArray(database) ? database : []).some(function (g) { return (Array.isArray(g) ? g : []).some(function (m) { return norm(m) === nk; }); });
             if (clash) { showAppToast("Bu adda model artıq var: " + newName); return; }
             if (specRenameModel(specEditModel, newName)) {
+                codesMap[nk] = newCodes; if (!newCodes.length) delete codesMap[nk];
                 if (nk !== k0) { upd[k0] = ""; k = nk; }
                 specEditModel = newName;
                 closeSpecEdit();
@@ -6818,8 +6834,9 @@ function saveSpecEdit(del) {
         }
     }
     upd[k] = str;
-    saveSpecs(upd).then(function () {
-        showAppToast(str ? "Ölçü saxlanıldı" : "Ölçü silindi");
+    const codeP = codesChanged && window.ptSaveCodes ? window.ptSaveCodes(k, newCodes) : Promise.resolve();
+    Promise.all([saveSpecs(upd), codeP]).then(function () {
+        showAppToast(codesChanged ? "Ölçü və kodlar saxlanıldı ✓" : (str ? "Ölçü saxlanıldı" : "Ölçü silindi"));
     }).catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
     closeSpecEdit();
     if (selectedGroup) { renderCompatibilityList(selectedGroup, selectedModel); renderDetailSize(selectedGroup, selectedModel); }
@@ -10368,7 +10385,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.06";
+const APP_VERSION = "3.1.3.07";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10728,12 +10745,6 @@ function performSearch(query) {
 
         row.appendChild(brand);
         row.appendChild(modelEl);
-        if (isAdmin) {
-            const ed = document.createElement("button");
-            ed.type = "button"; ed.className = "res-edit"; ed.textContent = "✏️"; ed.title = "Ad / kod düzəlt";
-            ed.addEventListener("click", function (ev) { ev.stopPropagation(); if (window.ptEditModel) window.ptEditModel(item.model); });
-            row.appendChild(ed);
-        }
         row.appendChild(arrow);
 
         row.addEventListener("click", function () {
@@ -12929,11 +12940,23 @@ try {
   window.openDetailWith = function (model) { var r = _odw.apply(this, arguments); window.ptRecordSearch(model); return r; };
 } catch (e) {}
 
-/* ---------- axtarışda ✏️: ad və kodu düzəlt ---------- */
+/* ---------- model kodlarını yadda saxla (Firestore + kataloq) ---------- */
+window.ptSaveCodes = function (key, codes) {
+  if (codes.length) codesMap[key] = codes; else delete codesMap[key];
+  indexFor = null;
+  var fp = new firebase.firestore.FieldPath("codes", key);
+  var val = codes.length ? codes : firebase.firestore.FieldValue.delete();
+  return Promise.all([db.doc(FS_DB_DOC).update(fp, val), apiFetch("/catalog").then(function (c) {
+    c = c || {}; c.codes = c.codes || {};
+    if (codes.length) c.codes[key] = codes; else delete c.codes[key];
+    return apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "catalog", val: c }) });
+  })]).then(function () { cacheCatalog(database); });
+};
+/* ---------- ad və kodu düzəlt ---------- */
 window.ptEditModel = function (model) {
   if (!isAdmin) return;
   var go = function () {
-    appPrompt("✏️ Modeli düzəlt", "Ad və kodlar: Samsung A32 [SM-A325F, SM-A325M]", modelWithCodes(model), false, "Ad [KOD1, KOD2]").then(function (v) {
+    appPrompt("✏️ Modeli düzəlt", "Format: Ad [KOD1, KOD2]", modelWithCodes(model), false, "Ad [KOD1, KOD2]").then(function (v) {
       if (v == null) return;
       var p = parseModelTok(String(v).trim());
       var nn = smartCase(p.name);
@@ -12945,14 +12968,7 @@ window.ptEditModel = function (model) {
       if (nk !== ok && (database || []).some(function (g) { return (g || []).some(function (m) { return norm(m) === nk; }); })) { showAppToast("Bu adda model artıq var"); return; }
       if (nk === ok && nn === model) {
         /* yalnız kodlar */
-        codesMap[ok] = p.codes; indexFor = null;
-        var fp = new firebase.firestore.FieldPath("codes", ok);
-        var val = p.codes.length ? p.codes : firebase.firestore.FieldValue.delete();
-        Promise.all([db.doc(FS_DB_DOC).update(fp, val), apiFetch("/catalog").then(function (c) {
-          c = c || {}; c.codes = c.codes || {};
-          if (p.codes.length) c.codes[ok] = p.codes; else delete c.codes[ok];
-          return apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "catalog", val: c }) });
-        })]).then(function () {
+        window.ptSaveCodes(ok, p.codes).then(function () {
           cacheCatalog(database);
           showAppToast("Kodlar yadda saxlanıldı ✓");
           var inp = $("searchInput"); if (inp) performSearch(inp.value);
