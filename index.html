@@ -1278,12 +1278,22 @@
             border:none !important;border-radius:50% !important;background:none !important;box-shadow:none !important;
             font-size:0 !important;color:transparent !important;cursor:pointer;
             -webkit-tap-highlight-color:transparent;
-            filter:drop-shadow(0 6px 10px rgba(0,0,0,.35)) drop-shadow(0 0 6px rgba(243,178,60,.35));
+            filter:drop-shadow(0 6px 10px rgba(0,0,0,.35)) drop-shadow(0 0 6px color-mix(in srgb,var(--accent-color) 45%,transparent));
             animation:ptBackWave 6s ease-in-out infinite;
         }
+        .settings-back::before,.detail-back::before,.profile-back::before,.admin-back::before,
+        .settings-back::after,.detail-back::after,.profile-back::after,.admin-back::after{
+            content:"";position:absolute;-webkit-mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M5 29 31 8v12c17 0 29 13 26 37-5-14-14-21-26-21v12z'/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><path d='M5 29 31 8v12c17 0 29 13 26 37-5-14-14-21-26-21v12z'/></svg>") center/contain no-repeat;
+        }
         .settings-back::before,.detail-back::before,.profile-back::before,.admin-back::before{
-            content:"";position:absolute;inset:4px;
-            background:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23FFE29A'/><stop offset='.45' stop-color='%23F3B23C'/><stop offset='1' stop-color='%23A8670F'/></linearGradient><linearGradient id='s' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23F4F5F7'/><stop offset='1' stop-color='%236E737B'/></linearGradient></defs><path d='M5 29 31 8v12c17 0 29 13 26 37-5-14-14-21-26-21v12z' fill='url(%23g)' stroke='url(%23s)' stroke-width='3.2' stroke-linejoin='round'/><path d='M12 28 29 15v7c9 0 16 3 21 9-6-3-13-4-21-4' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='2' stroke-linecap='round'/></svg>") center/contain no-repeat;
+            inset:3px;
+            background:linear-gradient(170deg,color-mix(in srgb,var(--text) 25%,#fff) 0%,color-mix(in srgb,var(--text) 55%,#888) 55%,color-mix(in srgb,var(--text) 40%,#222) 100%);
+        }
+        .settings-back::after,.detail-back::after,.profile-back::after,.admin-back::after{
+            inset:9px 8px 8px 9px;
+            background:
+                radial-gradient(ellipse 60% 35% at 40% 30%,rgba(255,255,255,.55),transparent 70%),
+                linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 45%,#fff) 0%,var(--accent-color) 50%,color-mix(in srgb,var(--accent-color) 55%,#000) 100%);
             animation:ptBackGlow 6s ease-in-out infinite;
         }
         .settings-back:active,.detail-back:active,.profile-back:active,.admin-back:active{transform:scale(.9)}
@@ -1294,7 +1304,7 @@
             75%{transform:translate(-1px,-3px) rotate(-2deg)}
         }
         @keyframes ptBackGlow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
-        @media (prefers-reduced-motion: reduce){.settings-back,.detail-back,.profile-back,.admin-back,.settings-back::before,.detail-back::before,.profile-back::before,.admin-back::before{animation:none}}
+        @media (prefers-reduced-motion: reduce){.settings-back,.detail-back,.profile-back,.admin-back,.settings-back::after,.detail-back::after,.profile-back::after,.admin-back::after{animation:none}}
         /* Yeniləmə slaydı: artan say + axıcı işıq */
         #pt-progress .pt-prog-card{position:relative;overflow:hidden}
         #pt-progress .pt-prog-num{font-size:30px;font-weight:800;text-align:center;color:var(--text);font-variant-numeric:tabular-nums;letter-spacing:1px;margin:-2px 0 8px;line-height:1.1}
@@ -3620,20 +3630,26 @@ function openAdmin() {
     adminOpenGroups = new Set();
     adminSelected.clear();
     adminDirty = false;
-    renderAdminList();
-    admNavRefresh();
-    loadAdminStats();
-    loadModelRequests();
-    loadMisfits();
-    loadBroadcastToInput();
-    loadWelcomeToInputs();
-    loadAiToInputs();
-    loadAutoMaintToInputs();
+    admListLimit = 150;
     history.pushState({modal: 'admin'}, "");
     document.getElementById("admin-view").classList.add("active");
     document.body.style.overflow = "hidden";
     setAdminStatus("Qrup sayı: " + adminEditDb.length);
     triggerHaptic(25);
+    /* panel dərhal açılsın, ağır işlər sonra */
+    requestAnimationFrame(function () { setTimeout(function () {
+        renderAdminList();
+        admNavRefresh();
+        setTimeout(function () {
+            loadAdminStats();
+            loadModelRequests();
+            loadMisfits();
+            loadBroadcastToInput();
+            loadWelcomeToInputs();
+            loadAiToInputs();
+            loadAutoMaintToInputs();
+        }, 120);
+    }, 30); });
 }
 
 function closeAdmin() {
@@ -3670,11 +3686,16 @@ function renderAdminList() {
     }
 
     let shown = 0;
+    const frag = document.createDocumentFragment();
+    const limit = admListLimit;
     adminEditDb.forEach((group, gi) => {
         if (!Array.isArray(group)) return;
-        const modelsText = group.map(modelWithCodes).join(" ").toLowerCase();
-        if (q && !modelsText.includes(q) && !String(gi + 1).includes(q)) return;
+        if (q) {
+            const modelsText = group.map(modelWithCodes).join(" ").toLowerCase();
+            if (!modelsText.includes(q) && !String(gi + 1).includes(q)) return;
+        }
         shown++;
+        if (shown > limit) return;
 
         const isOpen = adminOpenGroups.has(gi);
         const div = document.createElement("div");
@@ -3696,6 +3717,7 @@ function renderAdminList() {
             renderAdminList();
         });
         div.appendChild(head);
+        if (!isOpen) { frag.appendChild(div); return; }
 
         const body = document.createElement("div");
         body.className = "admin-group-body";
@@ -3776,13 +3798,23 @@ function renderAdminList() {
         body.appendChild(addRow);
 
         div.appendChild(body);
-        box.appendChild(div);
+        frag.appendChild(div);
     });
+    box.appendChild(frag);
 
     if (shown === 0) {
         box.innerHTML = '<div class="admin-empty">Axtarışa uyğun qrup tapılmadı.</div>';
+    } else if (shown > limit) {
+        const more = document.createElement("button");
+        more.type = "button";
+        more.className = "adm-tile";
+        more.style.cssText = "width:100%;margin:10px 0;justify-content:center";
+        more.textContent = "Daha çox göstər (" + (shown - limit) + " qrup qalıb)";
+        more.onclick = function () { admListLimit += 200; renderAdminList(); };
+        box.appendChild(more);
     }
 }
+let admListLimit = 150;
 
 
 function adminVisibleGroupIdx() {
@@ -9692,7 +9724,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.00";
+const APP_VERSION = "3.1.3.01";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10821,9 +10853,9 @@ setInterval(checkBlockStatus, 60 * 1000);
 #pt-upd button{border:0;border-radius:10px;padding:8px 12px;font-weight:800;font-family:inherit;cursor:pointer;background:#111;color:#fff}
 #pt-upd .x{background:transparent;color:#111;font-size:20px;padding:0 6px}
 /* tək əl rejimi */
-body.pt-oh .search-wrapper{position:fixed;left:0;right:0;bottom:1cm;margin:0;z-index:60;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));background:var(--header-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--border);box-sizing:border-box}
-body.pt-oh #main-view .main-content{padding-bottom:calc(96px + 2cm)}
-body.pt-oh #brandSuggest{position:fixed;left:0;right:0;bottom:calc(72px + 1cm + env(safe-area-inset-bottom,0px));z-index:59;max-height:38vh;overflow:auto;background:var(--surface)}
+body.pt-oh .search-wrapper{margin-top:max(0px,calc(52vh - 210px));transition:margin-top .35s ease}
+body.pt-oh #main-view .main-content{padding-bottom:calc(40vh + env(safe-area-inset-bottom,0px))}
+body.pt-oh .settings-back,body.pt-oh .detail-back,body.pt-oh .profile-back,body.pt-oh .admin-back{top:58vh !important;top:58dvh !important}
 
 /* istifadəçi səhifəsi (Gəlir səhifəsi kimi daxil olur) */
 #pt-user-page{z-index:690}
