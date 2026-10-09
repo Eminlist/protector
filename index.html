@@ -1807,6 +1807,9 @@
         .cut-pick button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-size:10px;cursor:pointer}
         .cut-pick button.sel{border-color:var(--accent-color);color:var(--accent-color)}
         .cut-pick svg{width:34px;height:20px}
+        .spec-name{display:grid;grid-template-columns:2fr 3fr;gap:6px;margin-top:6px}
+        .spec-name label{font-size:10.5px;color:var(--muted);text-align:left}
+        .spec-name input{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:0 8px;font-size:15px;margin-top:3px}
         .spec-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:6px}
         .spec-grid label{font-size:10.5px;color:var(--muted);text-align:left}
         .spec-grid input{width:100%;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);padding:0 8px;font-size:15px;margin-top:3px}
@@ -2602,6 +2605,11 @@
     <div id="spec-modal" class="ov-modal">
         <div class="ov-box" style="max-width:380px;text-align:left;">
             <h3 id="specTitle" style="text-align:center;font-size:17px;"></h3>
+            <div class="spec-name">
+                <label>Marka<input type="text" id="specBrand" list="specBrandList" autocomplete="off" spellcheck="false"></label>
+                <label>Model adı<input type="text" id="specName" autocomplete="off" spellcheck="false"></label>
+                <datalist id="specBrandList"></datalist>
+            </div>
             <div class="spec-grid">
                 <label>Ekran (düym)<input type="number" step="0.01" id="specIn" placeholder="məs: 6.6"></label>
                 <label>Hündürlük (mm)<input type="number" step="0.1" id="specH" placeholder="məs: 161.1"></label>
@@ -6631,6 +6639,12 @@ function openSpecEdit(model) {
     specEditModel = model;
     const s = modelSpec(model) || { inch: "", h: "", w: "", cut: "" };
     document.getElementById("specTitle").textContent = model;
+    const nm = String(model || "").trim().split(/\s+/);
+    document.getElementById("specBrand").value = nm[0] || "";
+    document.getElementById("specName").value = nm.slice(1).join(" ");
+    const bl = {};
+    (Array.isArray(database) ? database : []).forEach(function (g) { (Array.isArray(g) ? g : []).forEach(function (m) { const b = getBrand(m); if (b) bl[b] = 1; }); });
+    document.getElementById("specBrandList").innerHTML = Object.keys(bl).sort().map(function (b) { return '<option value="' + escapeHtml(b) + '">'; }).join("");
     document.getElementById("specIn").value = s.inch || "";
     document.getElementById("specH").value = s.h || "";
     document.getElementById("specW").value = s.w || "";
@@ -6715,11 +6729,57 @@ function specStr(inch, hh, ww, cut) {
     return a.some(Boolean) ? a.join("|").replace(/\|+$/, "") : "";
 }
 
+function specRenameModel(oldName, newName) {
+    const sw = function (arr) {
+        let n = 0;
+        (arr || []).forEach(function (g, gi) {
+            if (!Array.isArray(g)) return;
+            for (let i = 0; i < g.length; i++) if (g[i] === oldName) { g[i] = newName; n++; }
+        });
+        return n;
+    };
+    if (!Array.isArray(adminEditDb) || !adminEditDb.length) adminEditDb = JSON.parse(JSON.stringify(database || []));
+    const n = sw(adminEditDb);
+    sw(database);
+    const ok = norm(oldName), nk = norm(newName);
+    if (ok !== nk && codesMap && codesMap[ok]) { codesMap[nk] = codesMap[ok]; delete codesMap[ok]; }
+    if (selectedModel === oldName) selectedModel = newName;
+    indexFor = null;
+    if (typeof uhNames !== "undefined") uhNames = null;
+    return n;
+}
+
 function saveSpecEdit(del) {
-    const k = norm(specEditModel);
-    if (!k) return;
+    const k0 = norm(specEditModel);
+    if (!k0) return;
     const str = del ? "" : specStr(document.getElementById("specIn").value, document.getElementById("specH").value, document.getElementById("specW").value, specEditCut);
     const upd = {};
+    let k = k0;
+    if (!del) {
+        const br = String(document.getElementById("specBrand").value || "").replace(/\s+/g, " ").trim().split(" ")[0];
+        const rest = String(document.getElementById("specName").value || "").replace(/\s+/g, " ").trim();
+        const newName = (br + " " + rest).trim();
+        if (br && rest && newName !== specEditModel) {
+            const nk = norm(newName);
+            const clash = nk !== k0 && (Array.isArray(database) ? database : []).some(function (g) { return (Array.isArray(g) ? g : []).some(function (m) { return norm(m) === nk; }); });
+            if (clash) { showAppToast("Bu adda model artıq var: " + newName); return; }
+            if (specRenameModel(specEditModel, newName)) {
+                if (nk !== k0) { upd[k0] = ""; k = nk; }
+                specEditModel = newName;
+                closeSpecEdit();
+                upd[k] = str;
+                Object.keys(upd).forEach(function (x) { if (upd[x]) sizesMap[x] = upd[x]; else delete sizesMap[x]; });
+                adminPendingSizes = Object.assign(adminPendingSizes || {}, upd);
+                showAppToast("Ad dəyişdirildi: " + newName + " — dərc edilir…");
+                adminPublishDatabase().then(function () {
+                    const sg = (Array.isArray(database) ? database : []).filter(function (g) { return Array.isArray(g) && g.indexOf(selectedModel) >= 0; })[0];
+                    if (sg) selectedGroup = sg;
+                    if (selectedGroup) { renderCompatibilityList(selectedGroup, selectedModel); renderDetailSize(selectedGroup, selectedModel); }
+                });
+                return;
+            }
+        }
+    }
     upd[k] = str;
     saveSpecs(upd).then(function () {
         showAppToast(str ? "Ölçü saxlanıldı" : "Ölçü silindi");
@@ -10269,7 +10329,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.04";
+const APP_VERSION = "3.1.3.05";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -11460,6 +11520,7 @@ body.pt-oh .settings-back,body.pt-oh .detail-back,body.pt-oh .profile-back,body.
 /* admin: səhifə kimi bölmələr, ən çox axtarılanlar, ✏️ */
 #adm-gift-page{z-index:700}
 .pt-subacc{padding:0;background:none;border:none}
+.pt-subacc .adm-db-acc{margin:0}
 .res-edit{flex-shrink:0;width:34px;height:34px;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);font-size:15px;cursor:pointer}
 .pt-top{display:flex;flex-direction:column;gap:6px}
 .pt-top-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--border)}
