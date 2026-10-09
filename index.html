@@ -3462,14 +3462,7 @@ function adminStatsLoad(days, btn) {
 
 function stOpenUser(id) {
     if (!id) return;
-    try { upOpen[id] = "hist"; } catch (e) {}
-    const its = document.querySelectorAll("#adminUsersList .au-item");
-    for (let i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) { admToggleUser(id); return; }
-    try {
-        const fake = document.createElement("div"); fake.className = "au-item"; fake.setAttribute("data-uid", id);
-        upId = id; const pg = userPage(); fillUserPage(fake, id);
-        if (!pg.classList.contains("active")) openSubView("pt-user-page");
-    } catch (e) { console.error("stOpenUser", e); showAppToast("İstifadəçi səhifəsi açılmadı"); }
+    try { window.ptOpenUser(id, "hist"); } catch (e) { console.error("stOpenUser", e); showAppToast("İstifadəçi səhifəsi açılmadı"); }
 }
 
 function adminAutoUnblock(btn) {
@@ -10276,7 +10269,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.03";
+const APP_VERSION = "3.1.3.04";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -12240,6 +12233,14 @@ function refreshUserPage() {
 }
 var _renderAU = renderAdminUsers;
 renderAdminUsers = function () { var r = _renderAU.apply(this, arguments); try { refreshUserPage(); } catch (e) {} return r; };
+window.ptOpenUser = function (id, sec) {
+  if (!id) return;
+  if (sec) upOpen[id] = sec;
+  var its = document.querySelectorAll("#adminUsersList .au-item"), it = null;
+  for (var i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) { it = its[i]; break; }
+  upId = id; var pg = userPage(); fillUserPage(it, id);
+  if (!pg.classList.contains("active")) openSubView("pt-user-page");
+};
 admToggleUser = function (id) {
   var its = document.querySelectorAll("#adminUsersList .au-item");
   for (var i = 0; i < its.length; i++) if (its[i].getAttribute("data-uid") === id) {
