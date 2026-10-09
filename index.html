@@ -2059,6 +2059,8 @@
 .cl-wrap.open{grid-template-rows:1fr;opacity:1;margin-top:12px}
 .cl-wrap:not(.open)>.settings-box{border-width:0;padding-top:0;padding-bottom:0}
 </style>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+    <style>.ts-box{display:flex;justify-content:center;min-height:65px;margin:8px 0}</style>
 </head>
 
 <body>
@@ -2106,6 +2108,7 @@
             <h3 data-i18n="loginTitle">E-poçt ilə Giriş</h3>
             <input type="email" id="logEmail" data-i18n-ph="loginEmailPh" placeholder="E-poçt ünvanınız">
             <div class="pw-field"><input type="password" id="logPass" data-i18n-ph="loginPassPh" placeholder="Parol" autocomplete="current-password"><button type="button" class="pw-eye" onclick="togglePwVis('logPass', this)" data-i18n-aria="pwShow" aria-label="Göstər"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><line class="eye-slash" x1="3" y1="3" x2="21" y2="21"/></svg></button></div>
+            <div id="ts-login" class="ts-box"></div>
             <button onclick="loginUser()" data-i18n="loginBtn">Daxil Ol</button>
             <span class="auth-toggle" onclick="switchAuthMode('forgot')" data-i18n="forgotLink">Parolumu unutmuşam</span>
             <span class="auth-toggle" onclick="switchAuthMode('register')" data-i18n="noAccount">Hesabınız yoxdur? Qeydiyyat</span>
@@ -2156,6 +2159,7 @@
                 </div>
             </div>
             <div id="regPhoneErr" class="field-error-msg" data-i18n="regPhoneErr">Nömrə yanlışdır, 9 rəqəm olmalı və doğru prefiks ilə başlamalıdır (10,50,51,55,60,70,77,99,12)</div>
+            <div id="ts-register" class="ts-box"></div>
             <button id="regSubmitBtn" onclick="registerUser()" data-i18n="regBtn">Qeydiyyatı Tamamla</button>
             <span class="auth-toggle" onclick="switchAuthMode('login')" data-i18n="regHaveAccount">Artıq qeydiyyatdan keçmisiniz? Giriş et</span>
         </div>
@@ -2163,6 +2167,7 @@
         <div id="forgotFormContainer" style="display: none;">
             <h3 data-i18n="forgotTitle">Parolu Bərpa Et</h3>
             <input type="email" id="forgotEmail" data-i18n-ph="forgotPh" placeholder="Qeydiyyat e-poçtunuz">
+            <div id="ts-reset" class="ts-box"></div>
             <button onclick="resetPassword()" data-i18n="forgotBtn">Bərpa Linki Göndər</button>
             <span class="auth-toggle" onclick="switchAuthMode('login')" data-i18n="backToLogin">Girişə qayıt</span>
         </div>
@@ -2977,6 +2982,56 @@ async function apiFetch(path, opts) {
     }
     return d;
 }
+// ---------- Turnstile (bot qoruması) ----------
+const TS_SITEKEY = "0x4AAAAAAFSWDremRZy4kQth";
+const TS_MSG = {
+    need: { az: "Zəhmət olmasa robot olmadığınızı təsdiqləyin.", ru: "Пожалуйста, подтвердите, что вы не робот.", tr: "Lütfen robot olmadığınızı doğrulayın.", en: "Please confirm you are not a robot." },
+    fail: { az: "Robot yoxlaması alınmadı, yenidən cəhd edin.", ru: "Проверка не пройдена, попробуйте ещё раз.", tr: "Doğrulama başarısız, tekrar deneyin.", en: "Verification failed, please try again." },
+    gate: { az: "Davam etmək üçün bir dəfəlik təsdiq", ru: "Одноразовая проверка для продолжения", tr: "Devam etmek için tek seferlik doğrulama", en: "One-time check to continue" },
+    reset: { az: "E-poçt qeydiyyatdadırsa, bərpa linki göndərildi.", ru: "Если email зарегистрирован, ссылка отправлена.", tr: "E-posta kayıtlıysa, sıfırlama bağlantısı gönderildi.", en: "If the email is registered, a reset link has been sent." },
+    cancel: { az: "Bağla", ru: "Закрыть", tr: "Kapat", en: "Close" }
+};
+function tsMsg(k) { const o = TS_MSG[k]; return o[currentLang] || o.az; }
+const tsIds = {};
+function tsRender(boxId, cb) {
+    const el = document.getElementById(boxId);
+    if (!el) return;
+    if (!window.turnstile) { setTimeout(function () { tsRender(boxId, cb); }, 300); return; }
+    if (tsIds[boxId] !== undefined) { if (!cb) try { turnstile.reset(tsIds[boxId]); } catch (e) {} return; }
+    const th = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    const lang = { az: "az", ru: "ru", tr: "tr", en: "en" }[currentLang] || "auto";
+    tsIds[boxId] = turnstile.render(el, { sitekey: TS_SITEKEY, theme: th, language: lang, callback: cb || function () {} });
+}
+function tsToken(boxId) {
+    try { return tsIds[boxId] !== undefined ? (turnstile.getResponse(tsIds[boxId]) || "") : ""; } catch (e) { return ""; }
+}
+function tsReset(boxId) { try { if (tsIds[boxId] !== undefined) turnstile.reset(tsIds[boxId]); } catch (e) {} }
+// Giriş/qeydiyyatdan sonra: istifadəçini Worker-də "insan" kimi qeyd et
+function markHuman(token) {
+    return apiFetch("/human", { method: "POST", body: JSON.stringify({ t: token }) });
+}
+// Köhnə sessiya və ya Google girişi: /model "human-required" deyəndə bir dəfəlik pəncərə
+let tsGateP = null;
+function tsHumanGate() {
+    if (tsGateP) return tsGateP;
+    tsGateP = new Promise(function (resolve, reject) {
+        const ov = document.createElement("div");
+        ov.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px";
+        ov.innerHTML = '<div style="background:var(--surface);color:var(--text);border:2px solid var(--gold);border-radius:20px;padding:22px;max-width:360px;width:100%;text-align:center">'
+            + '<div style="font-weight:700;margin-bottom:10px">' + tsMsg("gate") + '</div>'
+            + '<div id="ts-gate" class="ts-box"></div><div id="ts-gate-msg" style="color:red;min-height:18px;font-size:13px"></div>'
+            + '<button type="button" id="ts-gate-x" style="margin-top:8px">' + tsMsg("cancel") + '</button></div>';
+        document.body.appendChild(ov);
+        const close = function () { try { if (tsIds["ts-gate"] !== undefined) turnstile.remove(tsIds["ts-gate"]); } catch (e) {} delete tsIds["ts-gate"]; ov.remove(); tsGateP = null; };
+        document.getElementById("ts-gate-x").onclick = function () { close(); const e = new Error("captcha"); e.code = "captcha"; reject(e); };
+        tsRender("ts-gate", function (tok) {
+            markHuman(tok).then(function () { close(); resolve(); })
+                .catch(function () { document.getElementById("ts-gate-msg").innerText = tsMsg("fail"); tsReset("ts-gate"); });
+        });
+    });
+    return tsGateP;
+}
+
 const CATALOG_KEY = "pt_catalog_v1";
 const GCACHE_KEY = "pt_gcache_v1";
 const GCACHE_MAX = 300;
@@ -5316,6 +5371,7 @@ async function fetchModelGroup(model) {
     try { d = await apiFetch("/model?k=" + encodeURIComponent(key)); }
     catch (e) {
         if (e && e.code === "too-fast") { await new Promise(function (r) { setTimeout(r, 1200); }); d = await apiFetch("/model?k=" + encodeURIComponent(key)); }
+        else if (e && e.code === "human-required") { await tsHumanGate(); d = await apiFetch("/model?k=" + encodeURIComponent(key)); }
         else throw e;
     }
     if (!d) return null;
@@ -8404,7 +8460,10 @@ function switchAuthMode(mode) {
     document.getElementById("authMsg").innerText = "";
     ["logPass", "regPass"].forEach(function (id) { const e = document.getElementById(id); if (e) { e.type = "password"; const b = e.parentNode && e.parentNode.querySelector(".pw-eye"); if (b) b.classList.remove("on"); } });
 
+    if (mode === "login") tsRender("ts-login");
+    if (mode === "forgot") tsRender("ts-reset");
     if (mode === "register") {
+        tsRender("ts-register");
         const sel = document.getElementById("regLangSelect");
         if (sel) sel.value = currentLang || "az";
         updateRegButtonState();
@@ -8555,6 +8614,9 @@ function registerUser() {
         return;
     }
 
+    const tsTok = tsToken("ts-register");
+    if (!tsTok) { msgDiv.style.color = "red"; msgDiv.innerText = tsMsg("need"); return; }
+
     msgDiv.style.color = "var(--muted)";
     msgDiv.innerText = t("regInProgress");
 
@@ -8573,8 +8635,9 @@ function registerUser() {
                 provider: "email",
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
+            }).then(() => markHuman(tsTok).catch(function () {})).then(() => {
                 regPending = false;
+                tsReset("ts-register");
                 touchLastSeen(uid);
                 localStorage.setItem(SEARCH_COUNT_KEY, "0");
                 document.getElementById("auth-modal").style.display = "none";
@@ -8596,6 +8659,7 @@ function registerUser() {
         })
         .catch((error) => {
             regPending = false;
+            tsReset("ts-register");
             msgDiv.style.color = "red";
             msgDiv.innerText = t("errPrefix") + " " + error.message;
         });
@@ -8610,10 +8674,14 @@ function loginUser() {
         msgDiv.innerText = t("enterEmailPass");
         return;
     }
+    const tsTok = tsToken("ts-login");
+    if (!tsTok) { msgDiv.style.color = "red"; msgDiv.innerText = tsMsg("need"); return; }
 
     auth.signInWithEmailAndPassword(email, pass)
         .catch(handleMfa)
         .then(function (cred) {
+            tsReset("ts-login");
+            markHuman(tsTok).catch(function () {});
             var uid = cred.user && cred.user.uid;
             if (!uid || !db) {
                 localStorage.setItem(SEARCH_COUNT_KEY, "0");
@@ -8642,6 +8710,7 @@ function loginUser() {
             });
         })
         .catch((error) => {
+            tsReset("ts-login");
             msgDiv.style.color = "red";
             msgDiv.innerText = t("loginFail") + (error && error.code && error.code !== "auth/invalid-credential" ? " (" + error.code + ")" : "");
         });
@@ -8656,22 +8725,26 @@ function resetPassword() {
         return;
     }
 
+    const tsTok = tsToken("ts-reset");
+    if (!tsTok) { msgDiv.style.color = "red"; msgDiv.innerText = tsMsg("need"); return; }
+
     msgDiv.style.color = "var(--muted)";
     msgDiv.innerText = t("saving");
-    sendResetMail(email)
-        .then(() => {
-            msgDiv.style.color = "green";
-            msgDiv.innerText = t("resetSent");
-        })
-        .catch((error) => {
-            const code = (error && error.code) || "";
-            msgDiv.style.color = "red";
-            if (code === "auth/user-not-found") msgDiv.innerText = t("resetNotFound");
-            else if (code === "auth/invalid-email") msgDiv.innerText = t("enterEmail");
-            else if (code === "auth/too-many-requests") msgDiv.innerText = t("tooMany");
-            else msgDiv.innerText = t("errPrefix") + " " + (code || (error && error.message) || "?");
-            try { console.warn("sendPasswordResetEmail:", code, error && error.message); } catch (x) {}
-        });
+    // Turnstile Worker-də yoxlanır, məktubu Worker göndərir
+    fetch(API_BASE + "/reset", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, t: tsTok, lang: currentLang || "az" })
+    }).then(function (r) {
+        tsReset("ts-reset");
+        if (!r.ok) throw new Error("captcha");
+        msgDiv.style.color = "green";
+        msgDiv.innerText = tsMsg("reset");
+    }).catch(function () {
+        tsReset("ts-reset");
+        msgDiv.style.color = "red";
+        msgDiv.innerText = tsMsg("fail");
+    });
 }
 
 // E-poçt məktubları istifadəçinin dilində getsin; continue URL icazəli deyilsə, URL-siz yenidən göndər
@@ -10121,6 +10194,7 @@ function openDetail(model, group) {
         }).catch(function (e) {
             const code = e && e.code;
             if (code === "unauthenticated") { handleSearchBlocked("login"); return; }
+            if (code === "captcha") return;
             const today = ymdUTC(Date.now());
             const quota = code === "quota" || code === "permission-denied" && accountData && +accountData.dK === today && (+accountData.dC || 0) >= 150;
             showAppToast(ptMsg(quota ? "quota" : "error") + (quota ? "" : " [" + (code || (e && e.message) || "?") + "]"), 5000);
