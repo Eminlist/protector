@@ -13497,6 +13497,51 @@ window.ptAdminPushSend = function () {
     });
 };
 
+// ---- Proqram yeniləməsi: saytın öz dizaynında pəncərə və gediş ----
+var UTX = {
+    title: { az: "Yeni versiya mövcuddur", ru: "Доступна новая версия", tr: "Yeni sürüm mevcut", en: "New version available" },
+    nw: { az: "Yeni versiya", ru: "Новая версия", tr: "Yeni sürüm", en: "New version" },
+    cur: { az: "Hazırkı versiya", ru: "Текущая версия", tr: "Mevcut sürüm", en: "Current version" },
+    ok: { az: "Yenilə", ru: "Обновить", tr: "Güncelle", en: "Update" },
+    later: { az: "Sonra", ru: "Позже", tr: "Sonra", en: "Later" },
+    dl: { az: "Yeniləmə yüklənir…", ru: "Загрузка обновления…", tr: "Güncelleme indiriliyor…", en: "Downloading update…" },
+    inst: { az: "Quraşdırılır…", ru: "Установка…", tr: "Kuruluyor…", en: "Installing…" },
+    keep: { az: "Zəhmət olmasa, proqramı bağlamayın", ru: "Пожалуйста, не закрывайте приложение", tr: "Lütfen uygulamayı kapatmayın", en: "Please keep the app open" }
+};
+function utx(k) { var o = UTX[k]; return o[L()] || o.az; }
+window.ptShowUpdate = function (o) {
+    o = o || {};
+    var txt = utx("nw") + ": " + o.name + " (" + o.build + ")\n" + utx("cur") + ": " + o.cur + " (" + o.curBuild + ")";
+    if (o.notes) txt += "\n\n" + o.notes;
+    appDialog({ mode: "confirm", icon: "🛡️", title: utx("title"), text: txt, ok: utx("ok"), cancel: utx("later") }).then(function (yes) {
+        if (yes) try { PTAndroid.startUpdate(); } catch (e) {}
+    });
+};
+window.ptUpdProgress = function (p) {
+    var ov = document.getElementById("ptUpdOv");
+    if (p === -1) { if (ov) ov.style.display = "none"; return; }
+    if (!ov) {
+        ov = document.createElement("div");
+        ov.id = "ptUpdOv";
+        ov.className = "ov-modal";
+        ov.style.zIndex = "3700";
+        ov.innerHTML = '<div class="ov-box" style="text-align:center"><div style="font-size:34px;line-height:1;margin-bottom:10px">🛡️</div><h3 id="ptUpdTtl" style="margin:0 0 14px"></h3>' +
+            '<div style="height:10px;border-radius:6px;background:color-mix(in srgb,var(--accent-color) 18%,transparent);overflow:hidden"><div id="ptUpdBar" style="height:100%;width:0;background:var(--accent-color);border-radius:6px;transition:width .25s"></div></div>' +
+            '<div id="ptUpdPct" style="margin-top:10px;font-weight:800;font-size:18px;color:var(--accent-color)"></div><div id="ptUpdSub" class="pt-as-sub" style="margin-top:6px"></div></div>';
+        document.body.appendChild(ov);
+    }
+    ov.style.display = "flex";
+    var bar = document.getElementById("ptUpdBar"), pct = document.getElementById("ptUpdPct");
+    document.getElementById("ptUpdSub").textContent = utx("keep");
+    if (p === -2) {
+        document.getElementById("ptUpdTtl").textContent = utx("inst");
+        bar.style.width = "100%"; pct.textContent = "100%";
+    } else {
+        document.getElementById("ptUpdTtl").textContent = utx("dl");
+        bar.style.width = Math.max(0, Math.min(100, p)) + "%"; pct.textContent = p + "%";
+    }
+};
+
 // ---- Bağlantılar ----
 (function hookUi() {
     if (typeof openSettings === "function") {
