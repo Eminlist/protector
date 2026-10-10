@@ -65,6 +65,9 @@
       mp.className = "mpanel"; mp.id = "mpanel"; mp.setAttribute("aria-hidden", "true");
       mp.innerHTML = '<div class="mpanel-in" id="mpanel-in"></div>';
       top.parentNode.insertBefore(mp, top.nextSibling);
+      var sh = document.createElement("div");
+      sh.className = "mshade"; sh.id = "mshade"; sh.setAttribute("aria-hidden", "true");
+      top.parentNode.insertBefore(sh, mp);
     }
     var f = document.getElementById("foot");
     if (f && !f.firstChild) f.innerHTML = '<div class="wrap"><div class="fcols" id="fcols"></div><div class="fbar"><span>© ' + new Date().getFullYear() + ' ProTechtor™</span><span data-t="foot.rights"></span></div></div>';
@@ -134,12 +137,15 @@
     function setPanel(o) {
       if (!mp || !bu) return;
       mp.classList.toggle("open", o);
+      var sh = document.getElementById("mshade"); if (sh) sh.classList.toggle("open", o);
       body.classList.toggle("menu-open", o);
       bu.classList.toggle("x", o);
       bu.setAttribute("aria-expanded", o ? "true" : "false");
       mp.setAttribute("aria-hidden", o ? "false" : "true");
     }
     if (bu) bu.addEventListener("click", function () { setPanel(!mp.classList.contains("open")); });
+    var shd = document.getElementById("mshade");
+    if (shd) shd.addEventListener("click", function () { setPanel(false); });
     if (mp) mp.addEventListener("click", function (e) {
       var b = e.target.closest(".mx-b");
       if (!b) return;

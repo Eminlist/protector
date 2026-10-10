@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- ProTechtor™ icon — original 3D design: phone back + phone front with a protective glass layer and shield -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14352a"/>
+      <stop offset=".55" stop-color="#0b1f19"/>
+      <stop offset="1" stop-color="#05110d"/>
+    </linearGradient>
+    <radialGradient id="glow" cx=".62" cy=".42" r=".6">
+      <stop offset="0" stop-color="#2ecc71" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#2ecc71" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="back" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d9dde2"/>
+      <stop offset=".18" stop-color="#ffffff"/>
+      <stop offset=".75" stop-color="#eef1f4"/>
+      <stop offset="1" stop-color="#c3c9d0"/>
+    </linearGradient>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4a5058"/>
+      <stop offset=".5" stop-color="#1d2126"/>
+      <stop offset="1" stop-color="#3a3f46"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1fbf73"/>
+      <stop offset=".55" stop-color="#0e8a62"/>
+      <stop offset="1" stop-color="#075a4a"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".55"/>
+      <stop offset=".35" stop-color="#ffffff" stop-opacity=".08"/>
+      <stop offset=".6" stop-color="#ffffff" stop-opacity=".02"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity=".22"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d6f5e4"/>
+    </linearGradient>
+    <linearGradient id="shieldEdge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe9a8"/>
+      <stop offset="1" stop-color="#d4af37"/>
+    </linearGradient>
+    <radialGradient id="lens" cx=".4" cy=".35" r=".7">
+      <stop offset="0" stop-color="#5b7fa8"/>
+      <stop offset=".45" stop-color="#16243a"/>
+      <stop offset="1" stop-color="#05080e"/>
+    </radialGradient>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity=".55"/>
+    </filter>
+    <filter id="sh2" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="-6" dy="10" stdDeviation="10" flood-color="#000" flood-opacity=".5"/>
+    </filter>
+    <clipPath id="scr"><rect x="232" y="104" width="160" height="314" rx="28"/></clipPath>
+  </defs>
+
+  <!-- tile -->
+  <rect width="512" height="512" rx="112" fill="url(#tile)"/>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
+  <rect x="3" y="3" width="506" height="506" rx="109" fill="none" stroke="#2ecc71" stroke-opacity=".35" stroke-width="3"/>
+
+  <!-- phone back -->
+  <g filter="url(#sh)">
+    <rect x="108" y="84" width="184" height="352" rx="40" fill="url(#back)"/>
+    <rect x="108" y="84" width="184" height="352" rx="40" fill="none" stroke="#ffffff" stroke-opacity=".9" stroke-width="2"/>
+    <!-- camera module -->
+    <rect x="128" y="104" width="52" height="104" rx="26" fill="#1a1d22"/>
+    <rect x="130" y="106" width="48" height="100" rx="24" fill="none" stroke="#5c636c" stroke-width="2"/>
+    <circle cx="154" cy="130" r="15" fill="url(#lens)"/>
+    <circle cx="154" cy="182" r="15" fill="url(#lens)"/>
+    <circle cx="149" cy="125" r="4" fill="#cfe3ff" opacity=".8"/>
+    <circle cx="149" cy="177" r="4" fill="#cfe3ff" opacity=".8"/>
+    <circle cx="154" cy="156" r="6" fill="#ffd27a"/>
+    <circle cx="154" cy="156" r="3" fill="#fff6dc"/>
+  </g>
+
+  <!-- phone front -->
+  <g filter="url(#sh2)">
+    <rect x="218" y="90" width="188" height="342" rx="42" fill="url(#frame)"/>
+    <rect x="219" y="91" width="186" height="340" rx="41" fill="none" stroke="#7d848d" stroke-opacity=".6" stroke-width="2"/>
+    <rect x="232" y="104" width="160" height="314" rx="28" fill="url(#screen)"/>
+    <g clip-path="url(#scr)">
+      <!-- light rays -->
+      <path d="M232 300 L392 170 L392 210 L232 340 Z" fill="#ffffff" opacity=".06"/>
+      <!-- shield -->
+      <g transform="translate(312 256)">
+        <path d="M0 -70 L54 -50 L54 -6 C54 34 28 58 0 72 C-28 58 -54 34 -54 -6 L-54 -50 Z" fill="url(#shieldEdge)"/>
+        <path d="M0 -60 L45 -43 L45 -6 C45 28 23 49 0 61 C-23 49 -45 28 -45 -6 L-45 -43 Z" fill="url(#shield)"/>
+        <path d="M-20 0 L-5 15 L22 -14" fill="none" stroke="#12a35a" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M0 -60 L45 -43 L45 -10 C20 -22 -10 -26 -45 -14 L-45 -43 Z" fill="#ffffff" opacity=".45"/>
+      </g>
+      <!-- protective glass layer -->
+      <rect x="232" y="104" width="160" height="314" rx="28" fill="url(#glass)"/>
+      <path d="M232 104 L300 104 L232 230 Z" fill="#ffffff" opacity=".18"/>
+    </g>
+    <!-- notch -->
+    <rect x="282" y="104" width="60" height="16" rx="8" fill="#0d0f12"/>
+    <circle cx="326" cy="112" r="3.5" fill="#26303b"/>
+    <!-- glass edge highlight -->
+    <rect x="233" y="105" width="158" height="312" rx="27" fill="none" stroke="#ffffff" stroke-opacity=".55" stroke-width="2"/>
+  </g>
+</svg>
