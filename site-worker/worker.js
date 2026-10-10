@@ -45,6 +45,12 @@ export default {
     }
 
     const res = await env.ASSETS.fetch(request);
+    if (url.pathname.startsWith("/texts/") && url.pathname.endsWith(".json")) {
+      const h = new Headers(res.headers);
+      h.set("access-control-allow-origin", "*");
+      h.set("cache-control", "no-cache");
+      return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+    }
     if (url.pathname === "/" || url.pathname.endsWith(".html") || url.pathname === "/sw.js") {
       const h = new Headers(res.headers);
       h.set("cache-control", "no-cache");

@@ -2874,9 +2874,15 @@ body:has(#settings-view.active,#admin-view.active,.sub-view.active,#notif-view.a
                         <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
                     </div>
                 </div>
-                <div class="settings-box privacy-box" onclick="openAbout()" style="cursor: pointer;">
+                <div class="settings-box privacy-box" onclick="openAbout()" style="cursor: pointer; margin-bottom: 10px;">
                     <div class="settings-row">
                         <span data-i18n="aboutOpen">Proqram haqqında</span>
+                        <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
+                    </div>
+                </div>
+                <div class="settings-box privacy-box" onclick="ptWebOpen()" style="cursor: pointer;">
+                    <div class="settings-row">
+                        <span data-i18n="webOpen">Web səhifəmiz</span>
                         <span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span>
                     </div>
                 </div>
@@ -2902,6 +2908,28 @@ body:has(#settings-view.active,#admin-view.active,.sub-view.active,#notif-view.a
         </div>
     </div>
     
+        <div id="web-view" class="sub-view">
+        <header class="settings-header">
+            <button class="settings-back" onclick="history.back()">‹</button>
+            <div class="settings-heading">
+                <div class="settings-small">©By Emin</div>
+                <div class="settings-title" data-i18n="webOpen">Web səhifəmiz</div>
+            </div>
+        </header>
+        <div class="settings-content">
+            <div class="settings-section">
+                <div class="settings-box" style="padding:16px;line-height:1.55">
+                    <div data-i18n="webIntro" style="margin-bottom:14px">ProTechtor™ rəsmi saytında proqram haqqında ətraflı məlumat, istifadə və quraşdırma təlimatları, Yardım mərkəzi və ən son versiya təqdim olunur.</div>
+                    <a href="https://protechtor.app/" target="_blank" rel="noopener" class="update-button" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        <span>protechtor.app</span>
+                    </a>
+                </div>
+            </div>
+            <div id="ptWebLinks"></div>
+        </div>
+    </div>
+
         <div id="appearance-view" class="sub-view">
         <header class="settings-header">
             <button class="settings-back" onclick="history.back()">‹</button>
@@ -10007,6 +10035,59 @@ function closeAbout() {
     history.back();
 }
 
+/* «Web səhifəmiz» — menyu saytın texts/common.json faylından oxunur (saytda dəyişəndə tətbiqdə də dəyişir) */
+const I18N_WEB = {
+    az: { webOpen: "Web səhifəmiz", webIntro: "ProTechtor™ rəsmi saytında proqram haqqında ətraflı məlumat, istifadə və quraşdırma təlimatları, Yardım mərkəzi və ən son versiya təqdim olunur.", webOffline: "Bölmələrin siyahısını yükləmək üçün internet bağlantısı tələb olunur." },
+    ru: { webOpen: "Наш веб-сайт", webIntro: "На официальном сайте ProTechtor™ представлены подробные сведения о программе, инструкции по использованию и установке, Справочный центр и последняя версия.", webOffline: "Для загрузки списка разделов требуется подключение к интернету." },
+    tr: { webOpen: "Web sitemiz", webIntro: "ProTechtor™ resmî web sitesinde uygulama hakkında ayrıntılı bilgi, kullanım ve kurulum kılavuzları, Yardım merkezi ve en son sürüm sunulmaktadır.", webOffline: "Bölüm listesini yüklemek için internet bağlantısı gereklidir." },
+    en: { webOpen: "Our website", webIntro: "The official ProTechtor™ website provides detailed information about the app, usage and installation guides, the Help Centre and the latest version.", webOffline: "An internet connection is required to load the list of sections." }
+};
+const PT_WEB = "https://protechtor.app";
+let ptWebMenu = null;
+try { ptWebMenu = JSON.parse(localStorage.getItem("pt_webmenu") || "null"); } catch (e) {}
+
+function ptWebEsc(t) { return String(t == null ? "" : t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+function ptWebRender() {
+    const box = document.getElementById("ptWebLinks");
+    if (!box) return;
+    const L = (ptWebMenu && (ptWebMenu[currentLang] || ptWebMenu.az)) || null;
+    const groups = L && Array.isArray(L.menu) ? L.menu : null;
+    if (!groups) {
+        box.innerHTML = '<div class="settings-section"><div class="settings-box" style="padding:16px;color:var(--muted)">' + ptWebEsc((I18N[currentLang] || I18N.az).webOffline) + '</div></div>';
+        return;
+    }
+    box.innerHTML = groups.map(function (g) {
+        const items = (g.items || []).filter(function (it) { return it && it.u && !/^\/account(\/|$)/.test(it.u); });
+        if (!items.length) return "";
+        return '<div class="settings-section"><div class="settings-section-title"><span>' + ptWebEsc(String(g.h || "").toLocaleUpperCase(currentLang)) + '</span></div>' +
+            items.map(function (it, i) {
+                const href = /^https?:/.test(it.u) ? it.u : PT_WEB + it.u;
+                return '<a class="settings-box privacy-box" href="' + ptWebEsc(href) + '" target="_blank" rel="noopener" style="display:block;text-decoration:none;color:inherit;cursor:pointer;' + (i < items.length - 1 ? 'margin-bottom:10px;' : '') + '">' +
+                    '<div class="settings-row"><span><span style="display:block">' + ptWebEsc(it.t) + '</span>' +
+                    (it.d ? '<small style="opacity:.7;font-weight:500">' + ptWebEsc(it.d) + '</small>' : '') + '</span>' +
+                    '<span style="color:var(--accent-color); font-size: 18px; line-height: 14px;">›</span></div></a>';
+            }).join("") + '</div>';
+    }).join("");
+}
+
+function ptWebLoad() {
+    return fetch(PT_WEB + "/texts/common.json?t=" + Date.now(), { cache: "no-store" })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) {
+            if (!j || !j.az || !Array.isArray(j.az.menu)) return;
+            ptWebMenu = j;
+            try { localStorage.setItem("pt_webmenu", JSON.stringify(j)); } catch (e) {}
+            ptWebRender();
+        }).catch(function () {});
+}
+
+function ptWebOpen() {
+    ptWebRender();
+    openSubView("web-view");
+    ptWebLoad();
+}
+
 function initToggles() {
     const sToggle = document.getElementById("soundToggle");
     const hToggle = document.getElementById("hapticToggle");
@@ -10424,6 +10505,7 @@ const I18N_VF = {"az": {"authMsgLogin": "Axtarış üçün daxil olun və ya pul
 Object.keys(I18N_VF).forEach(function (l) { Object.assign(I18N[l], I18N_VF[l]); });
 const I18N_UI2 = {"az": {"themeReading": "OXUMA", "eyeComfort": "Göz rahatlığı", "eyeComfortDesc": "Ekranı isti, yumşaq dumanlı tonla rahatladır", "fontReset": "Sıfırla", "fontSample": "Samsung Galaxy A55 — nümunə mətn", "secAbout": "HAQQINDA", "aboutOpen": "Proqram haqqında"}, "ru": {"themeReading": "ЧТЕНИЕ", "eyeComfort": "Комфорт для глаз", "eyeComfortDesc": "Смягчает экран тёплым дымчатым оттенком", "fontReset": "Сбросить", "fontSample": "Samsung Galaxy A55 — пример текста", "secAbout": "О ПРОГРАММЕ", "aboutOpen": "О программе"}, "tr": {"themeReading": "OKUMA", "eyeComfort": "Göz konforu", "eyeComfortDesc": "Ekranı sıcak, yumuşak sisli bir tonla rahatlatır", "fontReset": "Sıfırla", "fontSample": "Samsung Galaxy A55 — örnek metin", "secAbout": "HAKKINDA", "aboutOpen": "Uygulama hakkında"}, "en": {"themeReading": "READING", "eyeComfort": "Eye comfort", "eyeComfortDesc": "Softens the screen with a warm, misty tint", "fontReset": "Reset", "fontSample": "Samsung Galaxy A55 — sample text", "secAbout": "ABOUT", "aboutOpen": "About the app"}};
 Object.keys(I18N_UI2).forEach(function (l) { Object.assign(I18N[l], I18N_UI2[l]); });
+Object.keys(I18N_WEB).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], I18N_WEB[l]); });
 const I18N_GIFT = {"az": {"giftTitle": "Hədiyyə", "giftMsgR": "🎁 {r} ProTechtor™ tərəfindən sizə {d} Premium hədiyyə edildi!", "giftMsg": "🎁 ProTechtor™ tərəfindən sizə {d} Premium hədiyyə edildi!", "payGift": "Hədiyyə", "gR_reg": "İlk qeydiyyatınız münasibətilə", "gR_holiday": "Bayram münasibətilə", "gR_novruz": "Novruz bayramı münasibətilə", "gR_newyear": "Yeni il münasibətilə", "gR_loyal": "Sadiq istifadəçimiz olduğunuz üçün", "gR_apology": "Yaranmış narahatlığa görə üzrxahlıq olaraq", "gR_promo": "Kampaniya çərçivəsində"}, "ru": {"giftTitle": "Подарок", "giftMsgR": "🎁 {r} — ProTechtor™ дарит вам Премиум на {d}!", "giftMsg": "🎁 ProTechtor™ дарит вам Премиум на {d}!", "payGift": "Подарок", "gR_reg": "В честь вашей регистрации", "gR_holiday": "В честь праздника", "gR_novruz": "В честь праздника Новруз", "gR_newyear": "В честь Нового года", "gR_loyal": "Как нашему постоянному пользователю", "gR_apology": "В качестве извинения за неудобства", "gR_promo": "В рамках акции"}, "tr": {"giftTitle": "Hediye", "giftMsgR": "🎁 {r} ProTechtor™ tarafından size {d} Premium hediye edildi!", "giftMsg": "🎁 ProTechtor™ tarafından size {d} Premium hediye edildi!", "payGift": "Hediye", "gR_reg": "İlk kaydınız vesilesiyle", "gR_holiday": "Bayram münasebetiyle", "gR_novruz": "Nevruz Bayramı münasebetiyle", "gR_newyear": "Yeni yıl münasebetiyle", "gR_loyal": "Sadık kullanıcımız olduğunuz için", "gR_apology": "Yaşanan aksaklık için özür olarak", "gR_promo": "Kampanya kapsamında"}, "en": {"giftTitle": "Gift", "giftMsgR": "🎁 {r} — ProTechtor™ has gifted you {d} of Premium!", "giftMsg": "🎁 ProTechtor™ has gifted you {d} of Premium!", "payGift": "Gift", "gR_reg": "To celebrate your registration", "gR_holiday": "To celebrate the holiday", "gR_novruz": "To celebrate Novruz", "gR_newyear": "To celebrate the New Year", "gR_loyal": "For being a loyal user", "gR_apology": "As an apology for the inconvenience", "gR_promo": "As part of our promotion"}};
 Object.keys(I18N_GIFT).forEach(function (l) { Object.assign(I18N[l], I18N_GIFT[l]); });
 const I18N_MENU = {"az": {"menuTheme": "Interfeys", "menuLang": "Dil"}, "ru": {"menuTheme": "Интерфейс", "menuLang": "Язык"}, "tr": {"menuTheme": "Arayüz", "menuLang": "Dil"}, "en": {"menuTheme": "Interface", "menuLang": "Language"}};
@@ -10567,7 +10649,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.02";
+const APP_VERSION = "3.1.3.03";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
