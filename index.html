@@ -5087,7 +5087,7 @@ function aiGetChat() {
         const S = L.mod.Schema;
         const model = L.mod.getGenerativeModel(L.ai, {
             model: c.model,
-            systemInstruction: c.instructions + "\n\n" + AI_GUARD + "\n\nİstifadəçinin interfeys dili: " + currentLang + ". Bu gün: " + getDateKey(new Date()) + ".",
+            systemInstruction: c.instructions + "\n\n" + AI_GUARD + "\n\nDİL QAYDASI (ən vacib): HƏMİŞƏ istifadəçinin SON mesajı hansı dildədirsə, cavabı tam o dildə yaz (ingiliscə yazıbsa ingiliscə, rusca yazıbsa rusca). İnterfeys dili (" + currentLang + ") yalnız mesajın dili bəlli olmayanda (məs. yalnız model adı yazılıbsa) istifadə olunur. Cavabın sonuna yalnız mövzuya uyğun olanda qısa təklif əlavə et; salamlaşmada \"Başqa model yoxlayım?\" yazma. Bu gün: " + getDateKey(new Date()) + ".",
             tools: [{ functionDeclarations: [{
                 name: "findCompatible",
                 description: "ProTechtor bazasında telefon modelini axtarır və həmin modelin antiudarı (qoruyucu şüşəsi) uyğun gələn bütün modellərin siyahısını qaytarır.",
@@ -10526,7 +10526,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.1.5";
+const APP_VERSION = "3.1.3.1.6";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
