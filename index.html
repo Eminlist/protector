@@ -650,7 +650,7 @@
 
         .logout-btn {
             background: var(--c-bad);
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            box-shadow: 0 4px 15px color-mix(in srgb,var(--c-bad) 30%,transparent);
         }
 
         .spinner {
@@ -819,10 +819,10 @@
         
         .status-dot { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 18px; height: 18px; border-radius: 50%; z-index: 1100; border: 2px solid rgba(255,255,255,0.3); cursor: pointer; padding: 0; }
         .status-dot::after { content: ""; position: absolute; top: -12px; right: -12px; bottom: -12px; left: -12px; }
-        .status-dot.green { background: var(--c-ok); box-shadow: 0 0 12px rgba(46,204,113,0.7); }
+        .status-dot.green { background: var(--c-ok); box-shadow: 0 0 12px color-mix(in srgb,var(--c-ok) 70%,transparent); }
         .status-dot.gray { background: #8a8a8a; }
-        .status-dot.yellow { background: var(--c-warn); box-shadow: 0 0 12px rgba(255,131,0,0.7); }
-        .status-dot.red { background: var(--c-bad); box-shadow: 0 0 12px rgba(231,76,60,0.7); }
+        .status-dot.yellow { background: var(--c-warn); box-shadow: 0 0 12px color-mix(in srgb,var(--c-warn) 70%,transparent); }
+        .status-dot.red { background: var(--c-bad); box-shadow: 0 0 12px color-mix(in srgb,var(--c-bad) 70%,transparent); }
         
         .offline-corner { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: #ff5722; color: #fff; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 8px; z-index: 1100; display: none; letter-spacing: 1px; }
 
@@ -1241,7 +1241,7 @@
         .m-spec .sz small{font-size:.82em;font-weight:500;opacity:.7;margin-left:3px}
         /* 157/214: size source dots */
         .sz-src{display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:4px;flex-shrink:0;vertical-align:middle}
-        .sz-src.official{background:var(--c-ok2);box-shadow:0 0 6px rgba(39,174,96,.5)}
+        .sz-src.official{background:var(--c-ok2);box-shadow:0 0 6px color-mix(in srgb,var(--c-ok2) 50%,transparent)}
         .sz-src.measured{background:#3498db;box-shadow:0 0 6px rgba(52,152,219,.5)}
         .sz-src.approx{background:#95a5a6;box-shadow:0 0 4px rgba(149,165,166,.4)}
         /* 116: sticky selected model at top of compatibility list */
@@ -1393,7 +1393,7 @@
         .fm-btn.ghost{background:transparent;color:var(--muted);font-weight:700}
         .fm-btn.pri{border:none;color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 88%,#fff),color-mix(in srgb,var(--accent-color) 72%,#000));box-shadow:0 8px 18px -8px color-mix(in srgb,var(--accent-color) 85%,transparent),inset 0 1px 0 rgba(255,255,255,.35);text-shadow:0 1px 1px rgba(0,0,0,.25)}
         .fm-btn.maint{height:50px;border-radius:16px;font-size:13.5px;letter-spacing:.3px}
-        .fm-btn.maint.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#ff6b5e,var(--c-bad2));box-shadow:0 8px 18px -8px rgba(231,76,60,.8)}
+        .fm-btn.maint.on{color:#fff;border-color:transparent;background:linear-gradient(135deg,#ff6b5e,var(--c-bad2));box-shadow:0 8px 18px -8px color-mix(in srgb,var(--c-bad) 80%,transparent)}
         .bi{width:17px;height:17px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
         .fm-note{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.6;color:var(--muted);background:color-mix(in srgb,var(--accent-color) 7%,var(--surface));border:1px solid color-mix(in srgb,var(--accent-color) 24%,var(--border));border-radius:16px;padding:12px 14px}
         .fm-note .bi{color:var(--accent-color);margin-top:2px}
@@ -1653,8 +1653,8 @@
             background: var(--surface-2);
             color: var(--text);
         }
-        .admin-icon-btn.del { background: rgba(231,76,60,0.15); color: var(--c-bad); }
-        .admin-icon-btn.add { background: rgba(39,174,96,0.15); color: var(--c-ok2); }
+        .admin-icon-btn.del { background: color-mix(in srgb,var(--c-bad) 15%,transparent); color: var(--c-bad); }
+        .admin-icon-btn.add { background: color-mix(in srgb,var(--c-ok2) 15%,transparent); color: var(--c-ok2); }
         .admin-empty {
             text-align: center;
             color: var(--muted);
@@ -1711,7 +1711,7 @@
         .info-label{color:var(--muted);font-size:calc(13px * var(--font-scale));letter-spacing:1px}
         .info-value{color:var(--accent-color);font-weight:800;font-size:calc(17px * var(--font-scale));font-variant-numeric:tabular-nums}
         .contact-button svg{flex-shrink:0}
-        .privacy-box{background:rgba(46,204,113,.12);background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 24%,var(--surface)),color-mix(in srgb,var(--accent-color) 8%,var(--surface)));border-color:color-mix(in srgb,var(--accent-color) 55%,var(--border))}
+        .privacy-box{background:color-mix(in srgb,var(--c-ok) 12%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 24%,var(--surface)),color-mix(in srgb,var(--accent-color) 8%,var(--surface)));border-color:color-mix(in srgb,var(--accent-color) 55%,var(--border))}
         .pp-intro{white-space:pre-line}
     
         .field-error-msg{font-size:11px;color:var(--c-bad);text-align:left;margin-top:-2px;margin-bottom:6px;display:none}
@@ -1804,7 +1804,7 @@
         .rev-list{background:var(--surface);border:1px solid var(--border);border-radius:14px;margin-bottom:12px}
         .rev-row{padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;gap:8px}
         .rev-row:last-child{border-bottom:none}
-        .rev-row.refunded,.dev-row.refunded{background:rgba(231,76,60,.10);border-left:3px solid var(--c-bad)}
+        .rev-row.refunded,.dev-row.refunded{background:color-mix(in srgb,var(--c-bad) 10%,transparent);border-left:3px solid var(--c-bad)}
         .rev-row.refunded b,.dev-row.refunded b{color:var(--c-bad);text-decoration:line-through}
         .rev-row .rf-tag,.dev-row .rf-tag{display:block;color:var(--c-bad);font-weight:800;font-size:11px;margin-top:2px}
         .rf-btn{margin-left:8px;height:26px;padding:0 9px;border-radius:8px;border:1px solid var(--c-bad);background:transparent;color:var(--c-bad);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
@@ -1902,7 +1902,7 @@
         .prof-hero-badges{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:2px 0 4px}
         .prof-badge{font-size:11px;font-weight:800;letter-spacing:.5px;padding:4px 11px;border-radius:999px;text-transform:uppercase;border:1px solid var(--border);color:var(--muted);background:rgba(153,153,153,.1)}
         .prof-badge.gold{color:#111;border-color:transparent;background:linear-gradient(135deg,#f7e08a,var(--gold) 55%,#b8902a);box-shadow:0 2px 10px rgba(212,175,55,.35)}
-        .prof-badge.ok{color:var(--c-ok);border-color:rgba(46,204,113,.35);background:rgba(46,204,113,.12)}
+        .prof-badge.ok{color:var(--c-ok);border-color:color-mix(in srgb,var(--c-ok) 35%,transparent);background:color-mix(in srgb,var(--c-ok) 12%,transparent)}
         .prof-badge.warn{color:#e67e22;border-color:rgba(230,126,34,.35);background:rgba(230,126,34,.12)}
         #profile-view .settings-section-title{display:flex;align-items:center;gap:8px;color:var(--gold);letter-spacing:2px}
         #profile-view .settings-section-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,color-mix(in srgb,var(--gold) 45%,transparent),transparent)}
@@ -1912,7 +1912,7 @@
         #profile-view .settings-box input:focus{outline:none;border-color:var(--gold) !important;box-shadow:0 0 0 3px rgba(212,175,55,.18)}
         #profile-view #profSaveBtn,#profile-view #emSaveBtn,#profile-view #pwSaveBtn{background:linear-gradient(135deg,#f7e08a,var(--gold) 55%,#b8902a) !important;color:#111 !important;box-shadow:0 6px 18px rgba(212,175,55,.3);letter-spacing:.3px}
         #profile-view #emSaveBtn:disabled,#profile-view #pwSaveBtn:disabled{opacity:.5;box-shadow:none}
-        #profile-view .logout-btn{background:transparent !important;color:var(--c-bad) !important;border:1.5px solid rgba(231,76,60,.55) !important}
+        #profile-view .logout-btn{background:transparent !important;color:var(--c-bad) !important;border:1.5px solid color-mix(in srgb,var(--c-bad) 55%,transparent) !important}
         .uh-box{display:flex;flex-direction:column;gap:8px}
         .uh-empty{text-align:center;color:var(--muted);font-size:13px;padding:12px 6px}
         .uh-sum{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -1931,7 +1931,7 @@
         .uh-it time{color:var(--muted);font-variant-numeric:tabular-nums;flex-shrink:0}
         .uh-it span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .ab-list{display:flex;flex-direction:column;gap:8px}
-        .ab-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid rgba(231,76,60,.3)}
+        .ab-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:var(--surface);border:1px solid color-mix(in srgb,var(--c-bad) 30%,transparent)}
         .ab-item .ab-meta{flex:1;min-width:0}
         .ab-item b{display:block;font-size:13.5px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .ab-item small{display:block;font-size:11.5px;color:var(--muted);margin-top:2px}
@@ -1954,14 +1954,14 @@
         .em-hint::before{content:"ℹ";flex:0 0 20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#111;background:linear-gradient(135deg,#f7e08a,var(--gold))}
         .em-note{display:none;align-items:flex-start;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:14px;font-size:13px;font-weight:600;line-height:1.45;animation:pwOpen .25s ease}
         .em-note::before{flex:0 0 22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff}
-        .em-note.ok{display:flex;color:var(--c-ok);background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.35)}
+        .em-note.ok{display:flex;color:var(--c-ok);background:color-mix(in srgb,var(--c-ok) 10%,transparent);border:1px solid color-mix(in srgb,var(--c-ok) 35%,transparent)}
         .em-note.ok::before{content:"✓";background:var(--c-ok)}
-        .em-note.err{display:flex;color:#ff6b5b;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.4)}
+        .em-note.err{display:flex;color:#ff6b5b;background:color-mix(in srgb,var(--c-bad) 10%,transparent);border:1px solid color-mix(in srgb,var(--c-bad) 40%,transparent)}
         .em-note.err::before{content:"!";background:var(--c-bad)}
         .em-note.wait{display:flex;color:var(--muted);background:var(--surface-2);border:1px solid var(--border)}
         .em-note.wait::before{content:"";width:16px;height:16px;flex:0 0 16px;margin:3px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:emSpin .8s linear infinite}
         @keyframes emSpin{to{transform:rotate(360deg)}}
-        #emForm .pw-input.bad{border-color:var(--c-bad) !important;box-shadow:0 0 0 3px rgba(231,76,60,.15)}
+        #emForm .pw-input.bad{border-color:var(--c-bad) !important;box-shadow:0 0 0 3px color-mix(in srgb,var(--c-bad) 15%,transparent)}
         #settings-view,#notif-view,#privacy-view,#admin-view{overscroll-behavior-y:contain}
         .notif-item.link{cursor:pointer}
         .notif-item.link::after{content:"›";float:right;color:var(--accent-color);font-size:18px;line-height:1}
@@ -2006,7 +2006,7 @@
         .notif-item.link::after{display:none}
         .notif-item .ngo{color:var(--accent-color);font-size:18px;line-height:1;align-self:center}
         .ndel{flex-shrink:0;width:32px;height:32px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;align-self:center}
-        .ndel:active{background:rgba(231,76,60,.15);color:var(--c-bad)}
+        .ndel:active{background:color-mix(in srgb,var(--c-bad) 15%,transparent);color:var(--c-bad)}
         .ndel svg{width:18px;height:18px}
         .nchk{flex-shrink:0;width:22px;height:22px;border-radius:7px;border:2px solid var(--border);align-self:center;display:flex;align-items:center;justify-content:center;color:transparent;font-size:13px;font-weight:900}
         .notif-item.sel .nchk{background:var(--accent-color);border-color:var(--accent-color);color:#111}
@@ -2149,11 +2149,11 @@
         #pt-progress.inline .pt-prog-card{box-shadow:none}
     
 /* Yeniləmə tarixçəsi — açılan slayd */
-.cl-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;border:1.5px solid var(--accent-color);border-radius:999px;padding:8px 14px 8px 8px;box-shadow:0 0 12px rgba(46,204,113,.18);transition:box-shadow .25s,background .25s}
-.cl-toggle:active{background:rgba(46,204,113,.08)}
+.cl-toggle{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;border:1.5px solid var(--accent-color);border-radius:999px;padding:8px 14px 8px 8px;box-shadow:0 0 12px color-mix(in srgb,var(--c-ok) 18%,transparent);transition:box-shadow .25s,background .25s}
+.cl-toggle:active{background:color-mix(in srgb,var(--c-ok) 8%,transparent)}
 .cl-toggle .cl-chev{width:16px;height:16px;margin-left:auto;flex:none;fill:none;stroke:var(--accent-color);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
 .cl-toggle[aria-expanded="true"] .cl-chev{transform:rotate(180deg)}
-.cl-toggle[aria-expanded="true"]{box-shadow:0 0 16px rgba(46,204,113,.32)}
+.cl-toggle[aria-expanded="true"]{box-shadow:0 0 16px color-mix(in srgb,var(--c-ok) 32%,transparent)}
 .cl-wrap{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .35s ease,opacity .3s ease,margin .35s}
 .cl-wrap>.settings-box{overflow:hidden;min-height:0}
 .cl-wrap.open{grid-template-rows:1fr;opacity:1;margin-top:12px}
@@ -2238,11 +2238,11 @@ html.is-admin #ptChatBtn{display:flex}
   filter:drop-shadow(0 0 4px color-mix(in srgb,var(--accent-color) 45%,transparent))}
 .hi-bell{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.27 21a2 2 0 0 0 3.46 0'/%3E%3Cpath d='M3.26 15.33A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.67C19.41 13.96 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.41 5.96-2.74 7.33'/%3E%3C/svg%3E");transform-origin:50% 8%;animation:ptBellRing 5s ease-in-out infinite}
 .hi-chat{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.9 20A9 9 0 1 0 4 16.1L2 22Z'/%3E%3Cpath d='M8 12h.01'/%3E%3Cpath d='M12 12h.01'/%3E%3Cpath d='M16 12h.01'/%3E%3C/svg%3E");animation:ptChatBob 4.5s ease-in-out infinite}
-.hi-admin{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Ccircle cx='12' cy='11.5' r='2.6'/%3E%3Cpath d='M12 7.4v1.5M12 14.1v1.5M8 11.5h1.4M14.6 11.5H16'/%3E%3C/svg%3E");background:radial-gradient(ellipse 70% 40% at 35% 25%,rgba(255,255,255,.55),transparent 70%),linear-gradient(135deg,#FFB08A 0%,var(--c-bad) 55%,#8e1d12 100%);filter:drop-shadow(0 0 4px rgba(231,76,60,.5));animation:ptAdminGlow 3.2s ease-in-out infinite}
+.hi-admin{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Ccircle cx='12' cy='11.5' r='2.6'/%3E%3Cpath d='M12 7.4v1.5M12 14.1v1.5M8 11.5h1.4M14.6 11.5H16'/%3E%3C/svg%3E");background:radial-gradient(ellipse 70% 40% at 35% 25%,rgba(255,255,255,.55),transparent 70%),linear-gradient(135deg,#FFB08A 0%,var(--c-bad) 55%,#8e1d12 100%);filter:drop-shadow(0 0 4px color-mix(in srgb,var(--c-bad) 50%,transparent));animation:ptAdminGlow 3.2s ease-in-out infinite}
 .hi-menu{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16'/%3E%3Cpath d='M4 12h16'/%3E%3Cpath d='M4 18h11'/%3E%3C/svg%3E");width:24px;height:24px}
 @keyframes ptBellRing{0%,58%,100%{transform:rotate(0)}62%{transform:rotate(16deg)}66%{transform:rotate(-14deg)}70%{transform:rotate(10deg)}74%{transform:rotate(-7deg)}78%{transform:rotate(3deg)}82%{transform:rotate(0)}}
 @keyframes ptChatBob{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(1px,-2.5px) rotate(-5deg)}50%{transform:translate(0,.5px) rotate(2deg)}75%{transform:translate(-1px,-1.5px) rotate(-2deg)}}
-@keyframes ptAdminGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 3px rgba(231,76,60,.4))}50%{transform:scale(1.07);filter:drop-shadow(0 0 8px rgba(231,76,60,.75))}}
+@keyframes ptAdminGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 3px color-mix(in srgb,var(--c-bad) 40%,transparent))}50%{transform:scale(1.07);filter:drop-shadow(0 0 8px color-mix(in srgb,var(--c-bad) 75%,transparent))}}
 .notif-badge.has-new + .hi,.hb.has-new .hi-bell,.hb.has-new .hi-chat{animation-duration:2.2s}
 /* Geri düyməsi məzmunun üstünə düşməsin: başlıqlar yuxarıda sabit qalır */
 .settings-header,.admin-header{position:sticky;top:0;z-index:70;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
@@ -2268,6 +2268,8 @@ body:has(#settings-view.active,#admin-view.active,.sub-view.active,#notif-view.a
 <!-- Əlçatanlıq: rəng korluğu + həssas rejim (bütün səhifələrdə, açılışda dərhal) -->
 <style>
 html.cb-protan,html.cb-deutan{--c-ok:#1e88e5;--c-ok2:#1565c0;--c-warn:#f0e442;--c-warn-t:#b8a800;--c-bad:#d55e00;--c-bad2:#a34700}
+html.cb-protan,html.cb-deutan{--accent-color:#1e88e5 !important;--accent-dark:#0d47a1 !important}
+html.cb-tritan{--accent-color:#00a3a3 !important;--accent-dark:#005f5f !important}
 html.cb-tritan{--c-ok:#00a3a3;--c-ok2:#007f7f;--c-warn:#ff79c6;--c-warn-t:#d63b97;--c-bad:#c00000;--c-bad2:#8f0000}
 html[class*="cb-"] .status-dot::after{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:900 11px/1 -apple-system,Roboto,Arial,sans-serif;color:#000}
 html[class*="cb-"] .status-dot.green::after{content:"✓";color:#fff}
@@ -2367,6 +2369,9 @@ html.sensitive .ripple-ring{display:none !important}
     th = localStorage.getItem("antiudar_theme") || "system";
     acc = localStorage.getItem("antiudar_accent") || acc;
     accD = localStorage.getItem("antiudar_accent_dark") || accD;
+    var cbm = localStorage.getItem("pt_cb") || "";
+    if (cbm === "protan" || cbm === "deutan") { acc = "#1e88e5"; accD = "#0d47a1"; }
+    else if (cbm === "tritan") { acc = "#00a3a3"; accD = "#005f5f"; }
   } catch (e) {}
   if (th === "system") th = (window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
   else if (th === "auto") { var h = new Date().getHours(); th = (h >= 20 || h < 8) ? "dark" : "light"; }
@@ -3148,7 +3153,7 @@ html.sensitive .ripple-ring{display:none !important}
                     <div class="settings-row">
                         <div class="row-ic"><span class="e3d ic3d" style="--a:#C29BFF;--b:#7B3FE4" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg></span><span data-i18n="soundTypeLbl">Səs Tembri</span></div>
                         <div class="sel-wrap"><button type="button" class="snd-test" onclick="playSoundEffect(true)" aria-label="test">▶</button><select id="soundTypeSelect" class="set-select" onchange="changeSoundType(this)">
-                            <option value="bip" data-i18n="sndBip">Bip (Standart)</option>
+                            <option value="bip" data-i18n="sndBip">Standart</option>
                             <option value="click" data-i18n="sndClick">Yumşaq Klik</option>
                             <option value="pop" data-i18n="sndPop">Pop Səsi</option>
                         </select></div>
@@ -10094,52 +10099,59 @@ function setAccentColor(accent, dark, save = true) {
     });
 }
 
+let ptAudio = null;
+function ptAudioCtx() {
+    try {
+        if (!ptAudio) ptAudio = new (window.AudioContext || window.webkitAudioContext)();
+        if (ptAudio.state === "suspended") ptAudio.resume();
+    } catch (e) { ptAudio = null; }
+    return ptAudio;
+}
+/* bir ton: tezlik, başlanğıc, müddət, səs gücü, dalğa, sonda tezlik */
+function ptTone(ctx, f, t0, dur, vol, type, f2) {
+    const o = ctx.createOscillator(), g = ctx.createGain(), T = ctx.currentTime + t0;
+    o.type = type || "sine";
+    o.frequency.setValueAtTime(f, T);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, T + dur * 0.8);
+    g.gain.setValueAtTime(0.0001, T);
+    g.gain.exponentialRampToValueAtTime(vol, T + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, T + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(T); o.stop(T + dur + 0.02);
+}
+function ptClick(ctx, vol) {
+    const len = Math.floor(ctx.sampleRate * 0.03), buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 4);
+    const src = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain();
+    bp.type = "bandpass"; bp.frequency.value = 2400; bp.Q.value = 1.2;
+    g.gain.value = vol;
+    src.buffer = buf; src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+    src.start();
+}
 function playSoundEffect() {
     if (!soundEnabled) return;
+    const ctx = ptAudioCtx(); if (!ctx) return;
     try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
         if (soundType === "click") {
-            osc.type = "triangle";
-            osc.frequency.setValueAtTime(320, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+            ptClick(ctx, 0.9);
+            ptTone(ctx, 1800, 0, 0.03, 0.12, "triangle");
         } else if (soundType === "pop") {
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.08);
-            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            ptTone(ctx, 320, 0, 0.11, 0.45, "sine", 980);
         } else {
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(580, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            /* Standart: yumşaq, aydın «dinq» */
+            ptTone(ctx, 1046.5, 0, 0.18, 0.32, "sine");
+            ptTone(ctx, 2093, 0, 0.12, 0.06, "sine");
         }
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
     } catch (e) {}
 }
 
 function playSuccessSound() {
     if (!soundEnabled) return;
+    const ctx = ptAudioCtx(); if (!ctx) return;
     try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
-        osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.35);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+        ptTone(ctx, 784, 0, 0.16, 0.3, "sine");
+        ptTone(ctx, 1046.5, 0.11, 0.26, 0.3, "sine");
+        ptTone(ctx, 2093, 0.11, 0.18, 0.05, "sine");
     } catch (e) {}
 }
 
@@ -10150,17 +10162,15 @@ function changeSoundType(el) {
 }
 
 function triggerHaptic(customDuration = null) {
-    if (hapticEnabled && navigator.vibrate) {
-        try {
-            let duration = customDuration;
-            if (!duration) {
-                if (hapticIntensity === "light") duration = 15;
-                else if (hapticIntensity === "heavy") duration = 65;
-                else duration = 35;
-            }
-            navigator.vibrate(duration);
-        } catch (e) {}
-    }
+    if (!hapticEnabled) return;
+    try {
+        /* Yüngül = əvvəlki normal; Normal və Güclü artırıldı */
+        const P = { light: [35, 150], medium: [60, 210], heavy: [110, 255] };
+        const lv = P[hapticIntensity] || P.medium;
+        let ms = customDuration ? Math.round(customDuration * 1.6) : lv[0];
+        if (window.PTAndroid && typeof PTAndroid.vibrate === "function") PTAndroid.vibrate(ms, lv[1]);
+        else if (navigator.vibrate) navigator.vibrate(ms);
+    } catch (e) {}
 }
 
 function changeHapticIntensity(el) {
@@ -10845,7 +10855,7 @@ const I18N_A11Y = {
 };
 Object.keys(I18N_A11Y).forEach(function (l) { Object.assign(I18N[l], I18N_A11Y[l]); });
 
-const I18N_MORE = {"az": {"mEmail": "E-poçt və parol", "mEmailSub": "Giriş və ya yeni qeydiyyat (mağaza profili ilə)", "mGoogle": "Google hesabı", "mGoogleSub": "Bir toxunuşla giriş və qeydiyyat", "mAnon": "Anonim davam et", "mAnonSub": "Cəmi 5 əlavə axtarış. Bitdikdən sonra qeydiyyat tələb olunur.", "loginEmailPh": "E-poçt ünvanınız", "loginPassPh": "Parol", "forgotTitle": "Parolu Bərpa Et", "forgotPh": "Qeydiyyat e-poçtunuz", "forgotBtn": "Bərpa Linki Göndər", "backToLogin": "Girişə qayıt", "profSmall": "İDARƏETMƏ", "profTitle": "Mağaza Profili", "profSection": "ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI", "profNick": "Ləqəb", "profPhone": "Telefon Nömrəsi", "profSaveBtn": "Dəyişiklikləri Yadda Saxla", "logoutBtn": "Hesabdan Çıxış Et", "confirmTitle": "Təsdiq", "confirmYes": "Bəli, Sil", "confirmNo": "İmtina", "installText": "Tətbiqi quraşdır", "installBtn": "Quraşdır", "sndBip": "Bip (Standart)", "sndClick": "Yumşaq Klik", "sndPop": "Pop Səsi", "hapLight": "Zəif", "hapMedium": "Orta", "hapHeavy": "Güclü", "modelNamePrompt": "Model adı:", "modelReportFail": "Bildiriş göndərilmədi. İnterneti yoxlayın və ya daxil olub yenidən cəhd edin."}, "ru": {"mEmail": "Email и пароль", "mEmailSub": "Вход или новая регистрация (с профилем магазина)", "mGoogle": "Аккаунт Google", "mGoogleSub": "Вход и регистрация в одно касание", "mAnon": "Продолжить анонимно", "mAnonSub": "Всего 5 дополнительных поисков. Затем нужна регистрация.", "loginEmailPh": "Ваш email", "loginPassPh": "Пароль", "forgotTitle": "Восстановление пароля", "forgotPh": "Email, указанный при регистрации", "forgotBtn": "Отправить ссылку", "backToLogin": "Вернуться ко входу", "profSmall": "УПРАВЛЕНИЕ", "profTitle": "Профиль магазина", "profSection": "ЛИЧНЫЕ ДАННЫЕ И МАГАЗИН", "profNick": "Псевдоним", "profPhone": "Номер телефона", "profSaveBtn": "Сохранить изменения", "logoutBtn": "Выйти из аккаунта", "confirmTitle": "Подтверждение", "confirmYes": "Да, удалить", "confirmNo": "Отмена", "installText": "Установить приложение", "installBtn": "Установить", "sndBip": "Бип (стандарт)", "sndClick": "Мягкий клик", "sndPop": "Звук «Поп»", "hapLight": "Слабая", "hapMedium": "Средняя", "hapHeavy": "Сильная", "modelNamePrompt": "Название модели:", "modelReportFail": "Не удалось отправить. Проверьте интернет или войдите и попробуйте снова."}, "tr": {"mEmail": "E-posta ve şifre", "mEmailSub": "Giriş veya yeni kayıt (mağaza profiliyle)", "mGoogle": "Google hesabı", "mGoogleSub": "Tek dokunuşla giriş ve kayıt", "mAnon": "Anonim devam et", "mAnonSub": "Sadece 5 ek arama. Bittikten sonra kayıt gerekir.", "loginEmailPh": "E-posta adresiniz", "loginPassPh": "Şifre", "forgotTitle": "Şifreyi Sıfırla", "forgotPh": "Kayıtlı e-postanız", "forgotBtn": "Sıfırlama Bağlantısı Gönder", "backToLogin": "Girişe dön", "profSmall": "YÖNETİM", "profTitle": "Mağaza Profili", "profSection": "KİŞİSEL VE MAĞAZA BİLGİLERİ", "profNick": "Takma ad", "profPhone": "Telefon Numarası", "profSaveBtn": "Değişiklikleri Kaydet", "logoutBtn": "Hesaptan Çıkış Yap", "confirmTitle": "Onay", "confirmYes": "Evet, Sil", "confirmNo": "İptal", "installText": "Uygulamayı yükle", "installBtn": "Yükle", "sndBip": "Bip (Standart)", "sndClick": "Yumuşak Tık", "sndPop": "Pop Sesi", "hapLight": "Zayıf", "hapMedium": "Orta", "hapHeavy": "Güçlü", "modelNamePrompt": "Model adı:", "modelReportFail": "Bildirim gönderilemedi. İnterneti kontrol edin veya giriş yapıp tekrar deneyin."}, "en": {"mEmail": "Email and password", "mEmailSub": "Sign in or register (with store profile)", "mGoogle": "Google account", "mGoogleSub": "One-tap sign in and registration", "mAnon": "Continue anonymously", "mAnonSub": "Only 5 extra searches. Registration is required afterwards.", "loginEmailPh": "Your email", "loginPassPh": "Password", "forgotTitle": "Reset Password", "forgotPh": "Your registration email", "forgotBtn": "Send Reset Link", "backToLogin": "Back to sign in", "profSmall": "MANAGEMENT", "profTitle": "Store Profile", "profSection": "PERSONAL & STORE DETAILS", "profNick": "Nickname", "profPhone": "Phone Number", "profSaveBtn": "Save Changes", "logoutBtn": "Sign Out", "confirmTitle": "Confirm", "confirmYes": "Yes, Delete", "confirmNo": "Cancel", "installText": "Install the app", "installBtn": "Install", "sndBip": "Beep (Standard)", "sndClick": "Soft Click", "sndPop": "Pop Sound", "hapLight": "Light", "hapMedium": "Medium", "hapHeavy": "Strong", "modelNamePrompt": "Model name:", "modelReportFail": "Couldn't send. Check your internet or sign in and try again."}};
+const I18N_MORE = {"az": {"mEmail": "E-poçt və parol", "mEmailSub": "Giriş və ya yeni qeydiyyat (mağaza profili ilə)", "mGoogle": "Google hesabı", "mGoogleSub": "Bir toxunuşla giriş və qeydiyyat", "mAnon": "Anonim davam et", "mAnonSub": "Cəmi 5 əlavə axtarış. Bitdikdən sonra qeydiyyat tələb olunur.", "loginEmailPh": "E-poçt ünvanınız", "loginPassPh": "Parol", "forgotTitle": "Parolu Bərpa Et", "forgotPh": "Qeydiyyat e-poçtunuz", "forgotBtn": "Bərpa Linki Göndər", "backToLogin": "Girişə qayıt", "profSmall": "İDARƏETMƏ", "profTitle": "Mağaza Profili", "profSection": "ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI", "profNick": "Ləqəb", "profPhone": "Telefon Nömrəsi", "profSaveBtn": "Dəyişiklikləri Yadda Saxla", "logoutBtn": "Hesabdan Çıxış Et", "confirmTitle": "Təsdiq", "confirmYes": "Bəli, Sil", "confirmNo": "İmtina", "installText": "Tətbiqi quraşdır", "installBtn": "Quraşdır", "sndBip": "Standart", "sndClick": "Yumşaq Klik", "sndPop": "Pop Səsi", "hapLight": "Zəif", "hapMedium": "Orta", "hapHeavy": "Güclü", "modelNamePrompt": "Model adı:", "modelReportFail": "Bildiriş göndərilmədi. İnterneti yoxlayın və ya daxil olub yenidən cəhd edin."}, "ru": {"mEmail": "Email и пароль", "mEmailSub": "Вход или новая регистрация (с профилем магазина)", "mGoogle": "Аккаунт Google", "mGoogleSub": "Вход и регистрация в одно касание", "mAnon": "Продолжить анонимно", "mAnonSub": "Всего 5 дополнительных поисков. Затем нужна регистрация.", "loginEmailPh": "Ваш email", "loginPassPh": "Пароль", "forgotTitle": "Восстановление пароля", "forgotPh": "Email, указанный при регистрации", "forgotBtn": "Отправить ссылку", "backToLogin": "Вернуться ко входу", "profSmall": "УПРАВЛЕНИЕ", "profTitle": "Профиль магазина", "profSection": "ЛИЧНЫЕ ДАННЫЕ И МАГАЗИН", "profNick": "Псевдоним", "profPhone": "Номер телефона", "profSaveBtn": "Сохранить изменения", "logoutBtn": "Выйти из аккаунта", "confirmTitle": "Подтверждение", "confirmYes": "Да, удалить", "confirmNo": "Отмена", "installText": "Установить приложение", "installBtn": "Установить", "sndBip": "Стандартный", "sndClick": "Мягкий клик", "sndPop": "Звук «Поп»", "hapLight": "Слабая", "hapMedium": "Средняя", "hapHeavy": "Сильная", "modelNamePrompt": "Название модели:", "modelReportFail": "Не удалось отправить. Проверьте интернет или войдите и попробуйте снова."}, "tr": {"mEmail": "E-posta ve şifre", "mEmailSub": "Giriş veya yeni kayıt (mağaza profiliyle)", "mGoogle": "Google hesabı", "mGoogleSub": "Tek dokunuşla giriş ve kayıt", "mAnon": "Anonim devam et", "mAnonSub": "Sadece 5 ek arama. Bittikten sonra kayıt gerekir.", "loginEmailPh": "E-posta adresiniz", "loginPassPh": "Şifre", "forgotTitle": "Şifreyi Sıfırla", "forgotPh": "Kayıtlı e-postanız", "forgotBtn": "Sıfırlama Bağlantısı Gönder", "backToLogin": "Girişe dön", "profSmall": "YÖNETİM", "profTitle": "Mağaza Profili", "profSection": "KİŞİSEL VE MAĞAZA BİLGİLERİ", "profNick": "Takma ad", "profPhone": "Telefon Numarası", "profSaveBtn": "Değişiklikleri Kaydet", "logoutBtn": "Hesaptan Çıkış Yap", "confirmTitle": "Onay", "confirmYes": "Evet, Sil", "confirmNo": "İptal", "installText": "Uygulamayı yükle", "installBtn": "Yükle", "sndBip": "Standart", "sndClick": "Yumuşak Tık", "sndPop": "Pop Sesi", "hapLight": "Zayıf", "hapMedium": "Orta", "hapHeavy": "Güçlü", "modelNamePrompt": "Model adı:", "modelReportFail": "Bildirim gönderilemedi. İnterneti kontrol edin veya giriş yapıp tekrar deneyin."}, "en": {"mEmail": "Email and password", "mEmailSub": "Sign in or register (with store profile)", "mGoogle": "Google account", "mGoogleSub": "One-tap sign in and registration", "mAnon": "Continue anonymously", "mAnonSub": "Only 5 extra searches. Registration is required afterwards.", "loginEmailPh": "Your email", "loginPassPh": "Password", "forgotTitle": "Reset Password", "forgotPh": "Your registration email", "forgotBtn": "Send Reset Link", "backToLogin": "Back to sign in", "profSmall": "MANAGEMENT", "profTitle": "Store Profile", "profSection": "PERSONAL & STORE DETAILS", "profNick": "Nickname", "profPhone": "Phone Number", "profSaveBtn": "Save Changes", "logoutBtn": "Sign Out", "confirmTitle": "Confirm", "confirmYes": "Yes, Delete", "confirmNo": "Cancel", "installText": "Install the app", "installBtn": "Install", "sndBip": "Standard", "sndClick": "Soft Click", "sndPop": "Pop Sound", "hapLight": "Light", "hapMedium": "Medium", "hapHeavy": "Strong", "modelNamePrompt": "Model name:", "modelReportFail": "Couldn't send. Check your internet or sign in and try again."}};
 Object.keys(I18N_MORE).forEach(function (l) { Object.assign(I18N[l], I18N_MORE[l]); });
 const I18N_NOTES = {"az": {"note_sizes": "Antiudar ölçüləri dəqiqləşdirildi", "note_refreshed": "Baza aktual hala gətirildi", "note_checked": "Model uyğunluqları yoxlanıldı", "lastCheck": "✓ Baza aktual hala gətirildi"}, "ru": {"note_sizes": "Размеры защитных стёкол уточнены", "note_refreshed": "База актуализирована", "note_checked": "Совместимость моделей проверена", "lastCheck": "✓ База актуализирована"}, "tr": {"note_sizes": "Koruyucu cam ölçüleri netleştirildi", "note_refreshed": "Veritabanı güncel hale getirildi", "note_checked": "Model uyumlulukları kontrol edildi", "lastCheck": "✓ Veritabanı güncel hale getirildi"}, "en": {"note_sizes": "Screen protector sizes refined", "note_refreshed": "Database brought up to date", "note_checked": "Model compatibility checked", "lastCheck": "✓ Database brought up to date"}};
 Object.keys(I18N_NOTES).forEach(function (l) { Object.assign(I18N[l], I18N_NOTES[l]); });
@@ -11026,7 +11036,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.08";
+const APP_VERSION = "3.1.3.09";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -12188,7 +12198,7 @@ setInterval(checkBlockStatus, 60 * 1000);
 .pt-blk-box button{margin-top:18px;min-height:46px;padding:0 22px;border-radius:14px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);font-family:inherit;font-weight:700;cursor:pointer}
 /* uyğun gəldi / yoxlanılıb */
 #pt-fit{display:flex;flex-direction:column;align-items:center;gap:8px;margin:10px 16px 4px}
-.pt-fit-badge{font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:14px;background:rgba(46,204,113,.14);color:var(--c-ok)}
+.pt-fit-badge{font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:14px;background:color-mix(in srgb,var(--c-ok) 14%,transparent);color:var(--c-ok)}
 .pt-fit-badge.top{background:rgba(212,175,55,.16);color:var(--gold)}
 .pt-fit-badge.low{background:var(--surface-2);color:var(--muted);font-weight:600}
 .pt-fit-btn{min-height:42px;padding:0 20px;border-radius:14px;border:1px solid var(--c-ok);background:transparent;color:var(--c-ok);font-weight:700;font-family:inherit;cursor:pointer}
@@ -12207,11 +12217,11 @@ body.pt-oh .settings-back,body.pt-oh .detail-back,body.pt-oh .profile-back,body.
 /* istifadəçi səhifəsi (Gəlir səhifəsi kimi daxil olur) */
 #pt-user-page{z-index:690}
 #pt-user-page .settings-content{padding:16px 14px 28px}
-.pt-up-hero{position:relative;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,rgba(46,204,113,.12) 0%,var(--card-bg) 55%);border:1px solid var(--border);padding:20px 18px 16px;margin-bottom:14px}
-.pt-up-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at top right,rgba(46,204,113,.18),transparent 60%);pointer-events:none}
+.pt-up-hero{position:relative;border-radius:20px;overflow:hidden;background:linear-gradient(145deg,color-mix(in srgb,var(--c-ok) 12%,transparent) 0%,var(--card-bg) 55%);border:1px solid var(--border);padding:20px 18px 16px;margin-bottom:14px}
+.pt-up-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at top right,color-mix(in srgb,var(--c-ok) 18%,transparent),transparent 60%);pointer-events:none}
 .pt-up-top{display:flex;align-items:center;gap:14px;position:relative}
-.pt-up-av{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent-color),var(--accent-dark,#145a32));color:#0a0a0a;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px rgba(46,204,113,.25)}
-.pt-up-av.blk{background:linear-gradient(135deg,var(--c-bad),#922b21);box-shadow:0 4px 14px rgba(231,76,60,.25);color:#fff}
+.pt-up-av{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent-color),var(--accent-dark,#145a32));color:#0a0a0a;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px color-mix(in srgb,var(--c-ok) 25%,transparent)}
+.pt-up-av.blk{background:linear-gradient(135deg,var(--c-bad),#922b21);box-shadow:0 4px 14px color-mix(in srgb,var(--c-bad) 25%,transparent);color:#fff}
 .pt-up-meta{flex:1;min-width:0}
 .pt-up-meta b{display:block;font-size:18px;font-weight:800;color:var(--text);line-height:1.25;letter-spacing:-.3px}
 .pt-up-meta small{display:block;font-size:12.5px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -12219,8 +12229,8 @@ body.pt-oh .settings-back,body.pt-oh .detail-back,body.pt-oh .profile-back,body.
 .pt-up-badge{font-size:11px;font-weight:800;letter-spacing:.4px;padding:4px 10px;border-radius:999px;text-transform:uppercase}
 .pt-up-badge.pro{background:rgba(212,175,55,.18);color:var(--gold);border:1px solid rgba(212,175,55,.35)}
 .pt-up-badge.free{background:rgba(153,153,153,.12);color:var(--muted);border:1px solid var(--border)}
-.pt-up-badge.blk{background:rgba(231,76,60,.15);color:var(--c-bad);border:1px solid rgba(231,76,60,.35)}
-.pt-up-badge.ok{background:rgba(46,204,113,.12);color:var(--accent-color);border:1px solid rgba(46,204,113,.3)}
+.pt-up-badge.blk{background:color-mix(in srgb,var(--c-bad) 15%,transparent);color:var(--c-bad);border:1px solid color-mix(in srgb,var(--c-bad) 35%,transparent)}
+.pt-up-badge.ok{background:color-mix(in srgb,var(--c-ok) 12%,transparent);color:var(--accent-color);border:1px solid color-mix(in srgb,var(--c-ok) 30%,transparent)}
 .pt-up-rows{margin-top:14px;position:relative;display:flex;flex-direction:column;gap:0}
 .pt-up-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.04)}
 .pt-up-row:first-child{border-top:0;padding-top:4px}
@@ -12236,12 +12246,12 @@ body.pt-oh .settings-back,body.pt-oh .detail-back,body.pt-oh .profile-back,body.
 .pt-up-act .pt-up-al{flex:1}
 .pt-up-act .pt-up-ar{color:var(--muted);font-size:16px;opacity:.5}
 .pt-up-act.pro .pt-up-aic{background:rgba(212,175,55,.15)}
-.pt-up-act.gift .pt-up-aic{background:rgba(46,204,113,.12)}
-.pt-up-act.warn .pt-up-aic{background:rgba(255,131,0,.12)}
+.pt-up-act.gift .pt-up-aic{background:color-mix(in srgb,var(--c-ok) 12%,transparent)}
+.pt-up-act.warn .pt-up-aic{background:color-mix(in srgb,var(--c-warn) 12%,transparent)}
 .pt-up-act.danger{color:var(--c-bad)}
-.pt-up-act.danger .pt-up-aic{background:rgba(231,76,60,.12)}
+.pt-up-act.danger .pt-up-aic{background:color-mix(in srgb,var(--c-bad) 12%,transparent)}
 .pt-up-act.ok{color:var(--c-ok)}
-.pt-up-act.ok .pt-up-aic{background:rgba(46,204,113,.12)}
+.pt-up-act.ok .pt-up-aic{background:color-mix(in srgb,var(--c-ok) 12%,transparent)}
 .pt-up-act.soft{color:var(--muted)}
 .pt-up-note{margin:0 0 14px;padding:12px 14px;border-radius:14px;background:rgba(212,175,55,.1);border:1px dashed rgba(212,175,55,.4);font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.45}
 .pt-up-note b{display:block;font-size:11px;letter-spacing:1px;color:var(--gold);margin-bottom:4px;text-transform:uppercase}
@@ -14635,7 +14645,7 @@ applyTexts();
 #ptVerSheet .pv-sub{font-size:12px;color:var(--muted,#999);margin-bottom:10px}
 #ptVerSheet .pv-list{overflow:auto;-webkit-overflow-scrolling:touch}
 #ptVerSheet .pv-row{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--border-color,rgba(255,255,255,.1));border-radius:14px;margin-bottom:8px}
-#ptVerSheet .pv-row.cur{border-color:var(--c-ok);background:rgba(46,204,113,.08)}
+#ptVerSheet .pv-row.cur{border-color:var(--c-ok);background:color-mix(in srgb,var(--c-ok) 8%,transparent)}
 #ptVerSheet .pv-i{flex:1;min-width:0;font-size:13px}
 #ptVerSheet .pv-i small{display:block;color:var(--muted,#999);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #ptVerSheet .pv-tag{font-size:11px;font-weight:800;color:var(--c-ok);white-space:nowrap}
