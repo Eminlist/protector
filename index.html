@@ -2237,6 +2237,8 @@
 .notif-badge.has-new + .hi,.hb.has-new .hi-bell,.hb.has-new .hi-chat{animation-duration:2.2s}
 /* Geri düyməsi məzmunun üstünə düşməsin: başlıqlar yuxarıda sabit qalır */
 .settings-header,.admin-header{position:sticky;top:0;z-index:70;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+/* Status nöqtəsi yalnız ana ekranda görünsün */
+body:has(#settings-view.active,#admin-view.active,.sub-view.active,#notif-view.active,#profile-view.active,#detail-view.active,#about-view.active,#privacy-view.active) .status-dot{display:none !important}
 @media (max-width:560px){
   .top-header{height:auto;min-height:88px;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px 16px}
   .header-small{letter-spacing:3px;font-size:calc(11px * var(--font-scale))}
