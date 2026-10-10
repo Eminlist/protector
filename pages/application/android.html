@@ -45,30 +45,10 @@
       <div class="btns"><a class="btn" href="/application/download"><span>⬇</span> <span data-t="dl"></span></a></div>
     </div>
 
-    <section class="card">
-      <h2 data-t="toc"></h2>
-      <div class="toc" id="toc"></div>
-    </section>
 
-    <section class="card doc" id="guide" data-sections="g"></section>
+    <div id="guide" data-sections="g" style="margin-top:20px"></div>
   </div>
 </main>
-<script>
-document.addEventListener("pt:rendered", function () {
-  var toc = document.getElementById("toc");
-  var hs = document.querySelectorAll("#guide h2");
-  toc.innerHTML = "";
-  hs.forEach(function (h, i) {
-    h.id = "s" + (i + 1);
-    h.style.scrollMarginTop = "76px";
-    var a = document.createElement("a");
-    a.href = "#" + h.id;
-    a.textContent = h.textContent.replace(/^\d+\.\s*/, "");
-    toc.appendChild(a);
-  });
-  if (location.hash) { var t = document.querySelector(location.hash); if (t) t.scrollIntoView(); }
-});
-</script>
 <footer>
   <div class="wrap">
     <span>© <span id="year"></span> ProTechtor™</span>
