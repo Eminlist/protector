@@ -5002,7 +5002,7 @@ function openAi() {
     if (!box.children.length) aiAddMsg(t("aiHello"), "bot");
     renderAiLeft();
     p.classList.add("open");
-    aiGetChat().catch(function () { aiChat = null; });
+    Promise.resolve().then(aiGetChat).catch(function () { aiChat = null; });
     if (window.matchMedia("(min-width: 561px)").matches) setTimeout(function () { document.getElementById("aiInput").focus(); }, 60);
 }
 
@@ -5049,6 +5049,9 @@ function aiFindCompatible(query) {
     return { found: out.length > 0, groups: out };
 }
 
+const FB_CDN = "https://www.gstatic.com/firebasejs/12.19.0/";
+const RECAPTCHA_SITE_KEY = "6Le-_-EtAAAAABzopqfpR0pI3_tNPLd4tHD0qChF";
+const AI_TIMEOUT_MS = 45000;
 let aiAppCheck = null;
 let aiLibP = null;
 let aiNoThink = true;
@@ -5151,7 +5154,11 @@ function sendAi() {
         typing.textContent = fmt(acc);
         box.scrollTop = box.scrollHeight;
     };
-    const go = function () { return aiGetChat().then(function (chat) { return aiRun(chat, text, 0, onChunk); }); };
+    const go = function () {
+        const work = Promise.resolve().then(aiGetChat).then(function (chat) { return aiRun(chat, text, 0, onChunk); });
+        const to = new Promise(function (_, rej) { setTimeout(function () { rej(new Error("timeout")); }, AI_TIMEOUT_MS); });
+        return Promise.race([work, to]);
+    };
     go().catch(function (e) {
         const s = String((e && (e.message || e.code)) || e || "").toLowerCase();
         if (aiNoThink && s.indexOf("think") >= 0) { aiNoThink = false; aiChat = null; return go(); }
@@ -10519,7 +10526,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.1.4";
+const APP_VERSION = "3.1.3.1.5";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
