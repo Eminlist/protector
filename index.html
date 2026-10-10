@@ -13189,42 +13189,49 @@ function esc(x) { return String(x == null ? "" : x).replace(/[&<>"']/g, function
 
 var TX = {
     secNotif: { az: "BİLDİRİŞLƏR", ru: "УВЕДОМЛЕНИЯ", tr: "BİLDİRİMLER", en: "NOTIFICATIONS" },
-    push: { az: "Bildirişlər", ru: "Уведомления", tr: "Bildirimler", en: "Notifications" },
-    pushSub: { az: "yeniliklərdən ilk sən xəbərdar ol", ru: "узнавай о новинках первым", tr: "yeniliklerden ilk sen haberdar ol", en: "be the first to know about updates" },
-    news: { az: "Admin xəbərləri", ru: "Новости от администрации", tr: "Yönetici haberleri", en: "Admin news" },
-    models: { az: "Bazaya yeni modellər", ru: "Новые модели в базе", tr: "Veritabanına yeni modeller", en: "New models in the database" },
-    reply: { az: "Müraciətlərə cavab", ru: "Ответы на обращения", tr: "Taleplere yanıt", en: "Replies to your requests" },
-    bulk: { az: "Toplu mesajlar", ru: "Массовые сообщения", tr: "Toplu mesajlar", en: "Bulk messages" },
-    premium: { az: "Premium müddəti", ru: "Срок Premium", tr: "Premium süresi", en: "Premium period" },
-    general: { az: "Admindən mesajlar", ru: "Сообщения от администрации", tr: "Yöneticiden mesajlar", en: "Messages from admin" },
-    update: { az: "Proqram yeniləməsi", ru: "Обновление приложения", tr: "Uygulama güncellemesi", en: "App updates" },
-    warnNote: { az: "Admin xəbərdarlıqları həmişə gəlir.", ru: "Предупреждения администрации приходят всегда.", tr: "Yönetici uyarıları her zaman gelir.", en: "Admin warnings are always delivered." },
+    notifSet: { az: "Bildiriş tənzimləmələri", ru: "Настройки уведомлений", tr: "Bildirim ayarları", en: "Notification settings" },
+    notifSetSub: { az: "Bildirişləri idarə edin", ru: "Управление уведомлениями", tr: "Bildirimleri yönetin", en: "Manage notifications" },
+    push: { az: "Bütün bildirişlər", ru: "Все уведомления", tr: "Tüm bildirimler", en: "All notifications" },
+    pushSub: { az: "Yeniliklərdən ilk siz xəbərdar olun", ru: "Узнавайте о новинках первыми", tr: "Yeniliklerden ilk siz haberdar olun", en: "Be the first to know about updates" },
+    news: { az: "Admin xəbərləri", ru: "Новости администрации", tr: "Yönetici duyuruları", en: "Admin news" },
+    newsSub: { az: "Rəsmi xəbər və elanlar", ru: "Официальные новости и объявления", tr: "Resmî haber ve duyurular", en: "Official news and announcements" },
+    models: { az: "Baza yenilənmələri", ru: "Обновления базы", tr: "Veritabanı güncellemeleri", en: "Database updates" },
+    modelsSub: { az: "Bazaya yeni telefon modelləri əlavə edildikdə", ru: "Когда в базу добавлены новые модели телефонов", tr: "Veritabanına yeni telefon modelleri eklendiğinde", en: "When new phone models are added to the database" },
+    reply: { az: "Müraciət bildirişləri", ru: "Уведомления по обращениям", tr: "Talep bildirimleri", en: "Request notifications" },
+    replySub: { az: "Müraciətlərinizə cavab verildikdə", ru: "Когда на ваши обращения дан ответ", tr: "Taleplerinize yanıt verildiğinde", en: "When your requests receive a reply" },
+    bulk: { az: "Toplu mesajlar", ru: "Общие сообщения", tr: "Toplu mesajlar", en: "Bulk messages" },
+    bulkSub: { az: "Bütün istifadəçilərə göndərilən məlumatlar", ru: "Информация для всех пользователей", tr: "Tüm kullanıcılara gönderilen bilgiler", en: "Information sent to all users" },
+    premium: { az: "Premium bildirişləri", ru: "Уведомления Premium", tr: "Premium bildirimleri", en: "Premium notifications" },
+    premiumSub: { az: "Abunəliyin aktivləşməsi, uzadılması və bitmə vaxtı", ru: "Активация, продление и окончание подписки", tr: "Aboneliğin etkinleşmesi, uzatılması ve bitiş süresi", en: "Subscription activation, renewal and expiry" },
+    update: { az: "Yeniləmə xəbərdarlığı", ru: "Уведомления об обновлениях", tr: "Güncelleme uyarısı", en: "Update alerts" },
+    updateSub: { az: "Tətbiqin yeni versiyası buraxıldıqda", ru: "Когда выходит новая версия приложения", tr: "Uygulamanın yeni sürümü yayınlandığında", en: "When a new version of the app is released" },
+    warnNote: { az: "Admindən gələn şəxsi mesajlar və xəbərdarlıqlar həmişə çatdırılır.", ru: "Личные сообщения и предупреждения администрации доставляются всегда.", tr: "Yöneticiden gelen kişisel mesajlar ve uyarılar her zaman iletilir.", en: "Personal messages and warnings from the admin are always delivered." },
     quiet: { az: "Səssiz rejim", ru: "Тихий режим", tr: "Sessiz mod", en: "Quiet mode" },
-    quietSub: { az: "{a}–{b} arası bildirişlər səssiz gəlir", ru: "С {a} до {b} уведомления приходят без звука", tr: "{a}–{b} arası bildirimler sessiz gelir", en: "Notifications are silent from {a} to {b}" },
-    permOff: { az: "⚠ Telefonda bildiriş icazəsi bağlıdır — açmaq üçün toxunun", ru: "⚠ Уведомления запрещены в телефоне — нажмите, чтобы разрешить", tr: "⚠ Telefonda bildirim izni kapalı — açmak için dokunun", en: "⚠ Notifications are blocked on this phone — tap to allow" },
-    secApp: { az: "PROQRAM", ru: "ПРИЛОЖЕНИЕ", tr: "UYGULAMA", en: "APP" },
-    autoUpd: { az: "Avtomatik yeniləmə", ru: "Автообновление", tr: "Otomatik güncelleme", en: "Auto update" },
-    autoUpdSub: { az: "Yeni versiya çıxanda özü xəbər verir", ru: "Сообщает о выходе новой версии", tr: "Yeni sürüm çıkınca haber verir", en: "Tells you when a new version is out" },
-    updNet: { az: "Yeniləmə şəbəkəsi", ru: "Сеть для обновления", tr: "Güncelleme ağı", en: "Update network" },
-    netAny: { az: "Mobil və Wi-Fi", ru: "Мобильный и Wi-Fi", tr: "Mobil ve Wi-Fi", en: "Mobile & Wi-Fi" },
-    notifSet: { az: "Bildiriş ayarları", ru: "Настройки уведомлений", tr: "Bildirim ayarları", en: "Notification settings" },
-    on: { az: "Açıq", ru: "Вкл.", tr: "Açık", en: "On" },
-    off: { az: "Bağlı", ru: "Выкл.", tr: "Kapalı", en: "Off" },
+    quietSub: { az: "{a}–{b} arasında bildirişlər səssiz çatdırılır", ru: "С {a} до {b} уведомления приходят без звука", tr: "{a}–{b} arasında bildirimler sessiz iletilir", en: "From {a} to {b} notifications arrive silently" },
+    permOff: { az: "Telefonda bildiriş icazəsi verilməyib. Aktivləşdirmək üçün toxunun.", ru: "Уведомления не разрешены в настройках телефона. Нажмите, чтобы разрешить.", tr: "Telefonda bildirim izni verilmemiş. Etkinleştirmek için dokunun.", en: "Notifications are not allowed on this phone. Tap to enable." },
+    on: { az: "Aktiv", ru: "Вкл.", tr: "Açık", en: "On" },
+    off: { az: "Deaktiv", ru: "Выкл.", tr: "Kapalı", en: "Off" },
+    secApp: { az: "TƏTBİQ", ru: "ПРИЛОЖЕНИЕ", tr: "UYGULAMA", en: "APP" },
+    autoUpd: { az: "Avtomatik yeniləmə", ru: "Автообновление", tr: "Otomatik güncelleme", en: "Automatic updates" },
+    autoUpdSub: { az: "Yeni versiya buraxıldıqda bildiriş göstərilir", ru: "При выходе новой версии появится уведомление", tr: "Yeni sürüm yayınlandığında bildirim gösterilir", en: "You will be notified when a new version is released" },
+    updNet: { az: "Yeniləmə şəbəkəsi", ru: "Сеть для обновлений", tr: "Güncelleme ağı", en: "Update network" },
+    netAny: { az: "Mobil və Wi-Fi", ru: "Мобильная и Wi-Fi", tr: "Mobil ve Wi-Fi", en: "Mobile & Wi-Fi" },
     netWifi: { az: "Yalnız Wi-Fi", ru: "Только Wi-Fi", tr: "Yalnızca Wi-Fi", en: "Wi-Fi only" },
-    check: { az: "Yeniləmələri yoxla", ru: "Проверить обновления", tr: "Güncellemeleri kontrol et", en: "Check for updates" },
+    check: { az: "Yeniləmələri yoxla", ru: "Проверить обновления", tr: "Güncellemeleri denetle", en: "Check for updates" },
     curVer: { az: "Cari versiya", ru: "Текущая версия", tr: "Mevcut sürüm", en: "Current version" },
-    keepOn: { az: "Ekran həmişə açıq", ru: "Экран всегда включён", tr: "Ekran hep açık", en: "Keep screen on" },
-    keepOnSub: { az: "Proqram açıq olanda ekran sönmür", ru: "Пока приложение открыто, экран не гаснет", tr: "Uygulama açıkken ekran kapanmaz", en: "The screen stays on while the app is open" },
+    keepOn: { az: "Ekranı aktiv saxla", ru: "Не выключать экран", tr: "Ekranı açık tut", en: "Keep screen on" },
+    keepOnSub: { az: "Tətbiq açıq olduqda ekran sönmür", ru: "Экран не гаснет, пока приложение открыто", tr: "Uygulama açıkken ekran kapanmaz", en: "The screen stays on while the app is open" },
     cache: { az: "Keşi təmizlə", ru: "Очистить кэш", tr: "Önbelleği temizle", en: "Clear cache" },
-    cacheSub: { az: "Köhnə məlumat görünəndə kömək edir (baza və ayarlar silinmir)", ru: "Помогает, если видны старые данные (база и настройки не удаляются)", tr: "Eski veriler görünürse yardımcı olur (veritabanı ve ayarlar silinmez)", en: "Helps if old data shows up (database and settings are kept)" },
-    tg: { az: "Telegram ilə əlaqə", ru: "Связаться в Telegram", tr: "Telegram ile iletişim", en: "Contact on Telegram" },
-    msgApp: { az: "Salam! ProTechtor™ Android proqramından yazıram.", ru: "Здравствуйте! Пишу из Android-приложения ProTechtor™.", tr: "Merhaba! ProTechtor™ Android uygulamasından yazıyorum.", en: "Hello! I'm writing from the ProTechtor™ Android app." },
-    msgWeb: { az: "Salam! ProTechtor™ saytından yazıram.", ru: "Здравствуйте! Пишу с сайта ProTechtor™.", tr: "Merhaba! ProTechtor™ sitesinden yazıyorum.", en: "Hello! I'm writing from the ProTechtor™ website." },
+    cacheSub: { az: "Köhnə məlumatlar göstərildikdə istifadə edin. Baza və tənzimləmələr silinmir.", ru: "Используйте, если отображаются устаревшие данные. База и настройки сохраняются.", tr: "Eski veriler görüntülendiğinde kullanın. Veritabanı ve ayarlar silinmez.", en: "Use this if outdated data is shown. Database and settings are kept." },
+    tg: { az: "Telegram ilə əlaqə", ru: "Связаться в Telegram", tr: "Telegram ile iletişim", en: "Contact via Telegram" },
+    msgApp: { az: "Salam! ProTechtor™ Android tətbiqindən müraciət edirəm.", ru: "Здравствуйте! Обращаюсь из Android-приложения ProTechtor™.", tr: "Merhaba! ProTechtor™ Android uygulamasından yazıyorum.", en: "Hello! I am contacting you from the ProTechtor™ Android app." },
+    msgWeb: { az: "Salam! ProTechtor™ saytından müraciət edirəm.", ru: "Здравствуйте! Обращаюсь с сайта ProTechtor™.", tr: "Merhaba! ProTechtor™ web sitesinden yazıyorum.", en: "Hello! I am contacting you from the ProTechtor™ website." },
     acc: { az: "Hesab", ru: "Аккаунт", tr: "Hesap", en: "Account" },
     ver: { az: "Versiya", ru: "Версия", tr: "Sürüm", en: "Version" }
 };
 function tx(k) { var o = TX[k]; return o ? (o[L()] || o.az) : k; }
-var TYPES = ["news", "models", "reply", "bulk", "premium", "general", "update"];
+// «general» (admindən şəxsi mesaj) bağlanmır — siyahıda yoxdur
+var TYPES = ["news", "models", "reply", "bulk", "premium", "update"];
 
 function prefs() { try { return JSON.parse(PTAndroid.getPrefs() || "{}") || {}; } catch (e) { return {}; } }
 function sw(id, on, onch, dis) {
@@ -13261,7 +13268,7 @@ function renderNotif() {
     h += '<div class="settings-box pt-as-box">';
     h += row('<b>' + esc(tx("push")) + '</b>', esc(tx("pushSub")), sw("ptPushOn", on, "ptAppPref('push',this.checked)"));
     TYPES.forEach(function (k) {
-        h += row(esc(tx(k)), "", sw("ptN_" + k, on && ty[k] !== false, "ptAppPref('n_" + k + "',this.checked)", !on), on ? "" : "pt-as-dim");
+        h += row(esc(tx(k)), esc(tx(k + "Sub")), sw("ptN_" + k, ty[k] !== false, "ptAppPref('n_" + k + "',this.checked)", !on), "pt-n-row" + (on ? "" : " pt-as-dim"));
     });
     h += '</div><div class="pt-as-sub" style="margin:6px 4px 10px">' + esc(tx("warnNote")) + '</div>';
     h += '<div class="settings-box pt-as-box">' + row(esc(tx("quiet")), esc(tx("quietSub").replace("{a}", hh(p.quietFrom != null ? p.quietFrom : 23)).replace("{b}", hh(p.quietTo != null ? p.quietTo : 9))), sw("ptQuiet", !!p.quiet, "ptAppPref('quiet',this.checked)")) + '</div>';
@@ -13286,7 +13293,7 @@ function render() {
     // ---- BİLDİRİŞLƏR (menyu) ----
     h += '<div class="settings-section">' + secTitle(tx("secNotif"), "#7FD4FF", "#1C7FD6", '<path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />');
     if (p.perm === false) h += '<button type="button" class="pt-as-warn" onclick="ptAppNotifSettings()">' + esc(tx("permOff")) + '</button>';
-    h += '<div class="settings-box privacy-box" onclick="ptOpenNotifSet()" style="cursor:pointer"><div class="settings-row"><div style="min-width:0;padding-right:10px"><div>' + esc(tx("notifSet")) + ' <small style="opacity:.75;font-weight:500">' + esc(tx(on ? "on" : "off")) + (on && p.quiet ? " · 🌙" : "") + '</small></div><div class="pt-as-sub">' + esc(tx("pushSub")) + '</div></div><span style="color:var(--accent-color);font-size:18px;line-height:14px">›</span></div></div>';
+    h += '<div class="settings-box privacy-box" onclick="ptOpenNotifSet()" style="cursor:pointer"><div class="settings-row"><div style="min-width:0;padding-right:10px"><div>' + esc(tx("notifSet")) + ' <small id="ptNotifState" style="opacity:.75;font-weight:500">' + esc(tx(on ? "on" : "off")) + (on && p.quiet ? " · 🌙" : "") + '</small></div><div class="pt-as-sub">' + esc(tx("notifSetSub")) + '</div></div><span style="color:var(--accent-color);font-size:18px;line-height:14px">›</span></div></div>';
     h += '</div>';
     // ---- PROQRAM ----
     var net = p.updNet === "wifi" ? "wifi" : "any";
@@ -13294,7 +13301,7 @@ function render() {
     h += '<div class="settings-box pt-as-box">';
     h += row(esc(tx("autoUpd")), esc(tx("autoUpdSub")), sw("ptAutoUpd", p.autoUpd !== false, "ptAppPref('autoUpd',this.checked)"));
     h += '<div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px"><div>' + esc(tx("updNet")) + '</div><div class="pt-as-seg"><button type="button" style="flex:1" class="' + (net === "any" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'any\')">' + esc(tx("netAny")) + '</button><button type="button" style="flex:1" class="' + (net === "wifi" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'wifi\')">' + esc(tx("netWifi")) + '</button></div></div>';
-    h += row(esc(tx("curVer")), "", '<b>' + esc((p.ver || "") + (p.code ? " (" + p.code + ")" : "")) + '</b>');
+    h += row(esc(tx("curVer")), "", '<b>' + esc(p.ver || "") + '</b>');
     h += '</div>';
     h += '<button type="button" class="pt-as-btn" onclick="ptAppCheckUpdate()">⟳ ' + esc(tx("check")) + '</button>';
     h += '<div class="settings-box pt-as-box" style="margin-top:10px">' + row(esc(tx("keepOn")), esc(tx("keepOnSub")), sw("ptKeepOn", !!p.keepOn, "ptAppPref('keepOn',this.checked)")) + '</div>';
@@ -13308,7 +13315,17 @@ function render() {
 window.ptAppPref = function (k, v) {
     try { PTAndroid.setPref(k, v === true ? "1" : v === false ? "0" : String(v)); } catch (e) {}
     try { if (typeof triggerHaptic === "function") triggerHaptic(15); } catch (e) {}
-    render();
+    // Açarlar yerində sürüşsün deyə səhifə yenidən çəkilmir — yalnız asılı hissələr yenilənir
+    if (k === "updNet") { render(); return; }
+    var p = prefs(), on = p.push !== false;
+    if (k === "push") {
+        document.querySelectorAll("#ptNotifSetBox .pt-n-row").forEach(function (r) {
+            r.classList.toggle("pt-as-dim", !on);
+            var i = r.querySelector("input"); if (i) i.disabled = !on;
+        });
+    }
+    var st = document.getElementById("ptNotifState");
+    if (st) st.textContent = tx(on ? "on" : "off") + (on && p.quiet ? " · 🌙" : "");
 };
 window.ptAppPrefsChanged = render;
 window.ptAppNotifSettings = function () { try { PTAndroid.openNotifSettings(); } catch (e) {} };
@@ -13323,7 +13340,7 @@ function contactText() {
         if (u && !u.isAnonymous && u.email) t += "\n" + tx("acc") + ": " + u.email;
     } catch (e) {}
     var v = "";
-    try { if (inApp()) { var p = prefs(); v = (p.ver || "") + (p.code ? " (" + p.code + ")" : ""); } else if (typeof APP_VERSION !== "undefined") v = APP_VERSION; } catch (e) {}
+    try { if (inApp()) { var p = prefs(); v = (p.ver || "") + " (Android)"; } else if (typeof APP_VERSION !== "undefined") v = APP_VERSION; } catch (e) {}
     if (v) t += "\n" + tx("ver") + ": " + v;
     return t + "\n\n";
 }
@@ -13404,7 +13421,7 @@ var TITLE = {
     general: { az: "Admindən mesaj", ru: "Сообщение от администрации", tr: "Yöneticiden mesaj", en: "Message from admin" },
     reply: { az: "Müraciətinizə cavab", ru: "Ответ на ваше обращение", tr: "Talebinize yanıt", en: "Reply to your request" },
     premium: { az: "ProTechtor™ Premium", ru: "ProTechtor™ Premium", tr: "ProTechtor™ Premium", en: "ProTechtor™ Premium" },
-    models: { az: "Bazaya yeni modellər əlavə olundu", ru: "В базу добавлены новые модели", tr: "Veritabanına yeni modeller eklendi", en: "New models added to the database" }
+    models: { az: "Baza yeniləndi", ru: "База обновлена", tr: "Veritabanı güncellendi", en: "Database updated" }
 };
 function inLangs(fn) {
     var out = {}, save = currentLang;
@@ -13449,18 +13466,42 @@ function pushFromNotif(uid, x) {
 (function hookPublish() {
     if (typeof adminPublishDatabase !== "function") return;
     var orig = adminPublishDatabase;
+    var PT = {
+        add: { az: "Bazaya {n} yeni telefon modeli əlavə edildi", ru: "В базу добавлено новых моделей телефонов: {n}", tr: "Veritabanına {n} yeni telefon modeli eklendi", en: "{n} new phone models have been added to the database" },
+        more: { az: "və daha {n} model", ru: "и ещё {n}", tr: "ve {n} model daha", en: "and {n} more" },
+        edit: { az: "{n} modelin məlumatları yeniləndi.", ru: "Обновлены данные {n} моделей.", tr: "{n} modelin bilgileri güncellendi.", en: "Details of {n} models have been updated." },
+        title: { az: "Baza yeniləndi", ru: "База обновлена", tr: "Veritabanı güncellendi", en: "Database updated" }
+    };
+    var allNames = function () {
+        var out = [];
+        (database || []).forEach(function (g) { (Array.isArray(g) ? g : []).forEach(function (m) { out.push(String(m).trim()); }); });
+        return out;
+    };
     adminPublishDatabase = async function () {
-        var before = 0;
+        var before = 0, oldSet = {};
         try { before = +((getChangelogList() || [])[0] || {}).ts || 0; } catch (e) {}
+        try { allNames().forEach(function (m) { oldSet[m.toLowerCase()] = 1; }); } catch (e) {}
         var r = await orig.apply(this, arguments);
         try {
             var c = (getChangelogList() || [])[0];
-            if (c && (+c.ts || 0) > before && +c.a > 0) {
-                var b = inLangs(function () { return t("clAdded").replace("{n}", c.a); });
-                pushSend({ to: "all", t: "models", ti: TITLE.models, b: b, o: "notif" })
-                    .then(function () { showAppToast("📲 Push: " + c.a + " yeni model"); })
-                    .catch(function (e) { console.warn("push", e && e.message); });
-            }
+            if (!c || (+c.ts || 0) <= before || c.first) return r;
+            var added = allNames().filter(function (m) { return !oldSet[m.toLowerCase()]; });
+            var nA = added.length, nE = +c.e || 0;
+            if (!nA && !nE) return r;
+            var b = {};
+            LS.forEach(function (l) {
+                var parts = [];
+                if (nA) {
+                    var list = added.slice(0, 5).join(", ");
+                    if (nA > 5) list += " " + PT.more[l].replace("{n}", nA - 5);
+                    parts.push(PT.add[l].replace("{n}", nA) + ": " + list + ".");
+                }
+                if (nE) parts.push(PT.edit[l].replace("{n}", nE));
+                b[l] = parts.join(" ");
+            });
+            pushSend({ to: "all", t: "models", ti: PT.title, b: b, o: "notif" })
+                .then(function () { showAppToast("📲 Push göndərildi: " + b.az, 5000); })
+                .catch(function (e) { console.warn("push", e && e.message); });
         } catch (e) {}
         return r;
     };
@@ -13499,20 +13540,21 @@ window.ptAdminPushSend = function () {
 
 // ---- Proqram yeniləməsi: saytın öz dizaynında pəncərə və gediş ----
 var UTX = {
-    title: { az: "Yeni versiya mövcuddur", ru: "Доступна новая версия", tr: "Yeni sürüm mevcut", en: "New version available" },
+    title: { az: "Yeniləmə mövcuddur", ru: "Доступно обновление", tr: "Güncelleme mevcut", en: "Update available" },
     nw: { az: "Yeni versiya", ru: "Новая версия", tr: "Yeni sürüm", en: "New version" },
-    cur: { az: "Hazırkı versiya", ru: "Текущая версия", tr: "Mevcut sürüm", en: "Current version" },
+    cur: { az: "Cari versiya", ru: "Текущая версия", tr: "Mevcut sürüm", en: "Current version" },
+    def: { az: "Tətbiqin işində təkmilləşdirmələr və texniki düzəlişlər aparılmışdır.", ru: "Внесены улучшения в работу приложения и технические исправления.", tr: "Uygulamanın çalışmasında iyileştirmeler ve teknik düzeltmeler yapılmıştır.", en: "Performance improvements and technical fixes." },
     ok: { az: "Yenilə", ru: "Обновить", tr: "Güncelle", en: "Update" },
     later: { az: "Sonra", ru: "Позже", tr: "Sonra", en: "Later" },
     dl: { az: "Yeniləmə yüklənir…", ru: "Загрузка обновления…", tr: "Güncelleme indiriliyor…", en: "Downloading update…" },
     inst: { az: "Quraşdırılır…", ru: "Установка…", tr: "Kuruluyor…", en: "Installing…" },
-    keep: { az: "Zəhmət olmasa, proqramı bağlamayın", ru: "Пожалуйста, не закрывайте приложение", tr: "Lütfen uygulamayı kapatmayın", en: "Please keep the app open" }
+    keep: { az: "Zəhmət olmasa, tətbiqi bağlamayın", ru: "Пожалуйста, не закрывайте приложение", tr: "Lütfen uygulamayı kapatmayın", en: "Please do not close the app" }
 };
 function utx(k) { var o = UTX[k]; return o[L()] || o.az; }
 window.ptShowUpdate = function (o) {
     o = o || {};
-    var txt = utx("nw") + ": " + o.name + " (" + o.build + ")\n" + utx("cur") + ": " + o.cur + " (" + o.curBuild + ")";
-    if (o.notes) txt += "\n\n" + o.notes;
+    var txt = o.notes || utx("def");
+    if (o.name && o.cur && o.name !== o.cur) txt += "\n\n" + utx("nw") + ": " + o.name + "\n" + utx("cur") + ": " + o.cur;
     appDialog({ mode: "confirm", icon: "🛡️", title: utx("title"), text: txt, ok: utx("ok"), cancel: utx("later") }).then(function (yes) {
         if (yes) try { PTAndroid.startUpdate(); } catch (e) {}
     });
