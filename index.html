@@ -13206,7 +13206,10 @@ var TX = {
     autoUpd: { az: "Avtomatik yeniləmə", ru: "Автообновление", tr: "Otomatik güncelleme", en: "Auto update" },
     autoUpdSub: { az: "Yeni versiya çıxanda özü xəbər verir", ru: "Сообщает о выходе новой версии", tr: "Yeni sürüm çıkınca haber verir", en: "Tells you when a new version is out" },
     updNet: { az: "Yeniləmə şəbəkəsi", ru: "Сеть для обновления", tr: "Güncelleme ağı", en: "Update network" },
-    netAny: { az: "Hər biri", ru: "Любая", tr: "Hepsi", en: "Any" },
+    netAny: { az: "Mobil və Wi-Fi", ru: "Мобильный и Wi-Fi", tr: "Mobil ve Wi-Fi", en: "Mobile & Wi-Fi" },
+    notifSet: { az: "Bildiriş ayarları", ru: "Настройки уведомлений", tr: "Bildirim ayarları", en: "Notification settings" },
+    on: { az: "Açıq", ru: "Вкл.", tr: "Açık", en: "On" },
+    off: { az: "Bağlı", ru: "Выкл.", tr: "Kapalı", en: "Off" },
     netWifi: { az: "Yalnız Wi-Fi", ru: "Только Wi-Fi", tr: "Yalnızca Wi-Fi", en: "Wi-Fi only" },
     check: { az: "Yeniləmələri yoxla", ru: "Проверить обновления", tr: "Güncellemeleri kontrol et", en: "Check for updates" },
     curVer: { az: "Cari versiya", ru: "Текущая версия", tr: "Mevcut sürüm", en: "Current version" },
@@ -13235,14 +13238,25 @@ function secTitle(txt, a, b, svg) {
     return '<div class="settings-section-title"><span class="e3d ic3d" style="--a:' + a + ';--b:' + b + '" aria-hidden="true"><svg viewBox="0 0 24 24">' + svg + '</svg></span><span>' + txt + '</span></div>';
 }
 
-function render() {
-    var box = document.getElementById("ptAppSettings");
-    if (!box) return;
-    if (!inApp()) { box.innerHTML = ""; return; }
-    var p = prefs(), ty = p.types || {}, h = "";
-    var on = p.push !== false;
-    // ---- BİLDİRİŞLƏR ----
-    h += '<div class="settings-section">' + secTitle(tx("secNotif"), "#7FD4FF", "#1C7FD6", '<path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />');
+function subView() {
+    var v = document.getElementById("pt-notif-view");
+    if (v) return v;
+    v = document.createElement("div");
+    v.id = "pt-notif-view";
+    v.className = "sub-view";
+    v.innerHTML = '<header class="settings-header"><button class="settings-back" onclick="history.back()">‹</button><div class="settings-heading"><div class="settings-small">©By Emin</div><div class="settings-title" id="ptNotifSetTitle"></div></div></header><div class="settings-content" id="ptNotifSetBox"></div>';
+    var ref = document.getElementById("appearance-view");
+    if (ref && ref.parentNode) ref.parentNode.insertBefore(v, ref); else document.body.appendChild(v);
+    return v;
+}
+
+function renderNotif() {
+    var box = document.getElementById("ptNotifSetBox");
+    if (!box || !inApp()) return;
+    var p = prefs(), ty = p.types || {}, on = p.push !== false, h = "";
+    var tt = document.getElementById("ptNotifSetTitle");
+    if (tt) tt.textContent = tx("notifSet");
+    h += '<div class="settings-section">';
     if (p.perm === false) h += '<button type="button" class="pt-as-warn" onclick="ptAppNotifSettings()">' + esc(tx("permOff")) + '</button>';
     h += '<div class="settings-box pt-as-box">';
     h += row('<b>' + esc(tx("push")) + '</b>', esc(tx("pushSub")), sw("ptPushOn", on, "ptAppPref('push',this.checked)"));
@@ -13252,12 +13266,34 @@ function render() {
     h += '</div><div class="pt-as-sub" style="margin:6px 4px 10px">' + esc(tx("warnNote")) + '</div>';
     h += '<div class="settings-box pt-as-box">' + row(esc(tx("quiet")), esc(tx("quietSub").replace("{a}", hh(p.quietFrom != null ? p.quietFrom : 23)).replace("{b}", hh(p.quietTo != null ? p.quietTo : 9))), sw("ptQuiet", !!p.quiet, "ptAppPref('quiet',this.checked)")) + '</div>';
     h += '</div>';
+    box.innerHTML = h;
+}
+
+window.ptOpenNotifSet = function () {
+    subView();
+    renderNotif();
+    if (typeof openSubView === "function") openSubView("pt-notif-view");
+};
+
+function render() {
+    var box = document.getElementById("ptAppSettings");
+    if (!box) return;
+    var av = document.getElementById("appVersion");
+    if (av && av.parentNode) av.parentNode.style.display = inApp() ? "none" : "";
+    if (!inApp()) { box.innerHTML = ""; return; }
+    var p = prefs(), h = "";
+    var on = p.push !== false;
+    // ---- BİLDİRİŞLƏR (menyu) ----
+    h += '<div class="settings-section">' + secTitle(tx("secNotif"), "#7FD4FF", "#1C7FD6", '<path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />');
+    if (p.perm === false) h += '<button type="button" class="pt-as-warn" onclick="ptAppNotifSettings()">' + esc(tx("permOff")) + '</button>';
+    h += '<div class="settings-box privacy-box" onclick="ptOpenNotifSet()" style="cursor:pointer"><div class="settings-row"><div style="min-width:0;padding-right:10px"><div>' + esc(tx("notifSet")) + ' <small style="opacity:.75;font-weight:500">' + esc(tx(on ? "on" : "off")) + (on && p.quiet ? " · 🌙" : "") + '</small></div><div class="pt-as-sub">' + esc(tx("pushSub")) + '</div></div><span style="color:var(--accent-color);font-size:18px;line-height:14px">›</span></div></div>';
+    h += '</div>';
     // ---- PROQRAM ----
     var net = p.updNet === "wifi" ? "wifi" : "any";
     h += '<div class="settings-section">' + secTitle(tx("secApp"), "#B9A6FF", "#6A4BE0", '<rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" />');
     h += '<div class="settings-box pt-as-box">';
     h += row(esc(tx("autoUpd")), esc(tx("autoUpdSub")), sw("ptAutoUpd", p.autoUpd !== false, "ptAppPref('autoUpd',this.checked)"));
-    h += row(esc(tx("updNet")), "", '<div class="pt-as-seg"><button type="button" class="' + (net === "any" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'any\')">' + esc(tx("netAny")) + '</button><button type="button" class="' + (net === "wifi" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'wifi\')">' + esc(tx("netWifi")) + '</button></div>');
+    h += '<div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px"><div>' + esc(tx("updNet")) + '</div><div class="pt-as-seg"><button type="button" style="flex:1" class="' + (net === "any" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'any\')">' + esc(tx("netAny")) + '</button><button type="button" style="flex:1" class="' + (net === "wifi" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'wifi\')">' + esc(tx("netWifi")) + '</button></div></div>';
     h += row(esc(tx("curVer")), "", '<b>' + esc((p.ver || "") + (p.code ? " (" + p.code + ")" : "")) + '</b>');
     h += '</div>';
     h += '<button type="button" class="pt-as-btn" onclick="ptAppCheckUpdate()">⟳ ' + esc(tx("check")) + '</button>';
@@ -13266,6 +13302,7 @@ function render() {
     h += '<div class="pt-as-sub" style="margin:6px 4px 0">' + esc(tx("cacheSub")) + '</div>';
     h += '</div>';
     box.innerHTML = h;
+    renderNotif();
 }
 
 window.ptAppPref = function (k, v) {
