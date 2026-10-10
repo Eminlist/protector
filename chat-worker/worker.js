@@ -53,6 +53,7 @@ async function verify(tok) {
 
 // ---------- Cədvəllər ----------
 let READY = false;
+let ADMIN_UID = "";
 async function init(db) {
   if (READY) return;
   await db.batch([
@@ -166,7 +167,24 @@ async function sendMsg(env, ctx, me, body, authHeader) {
       headers: { "Authorization": authHeader, "Content-Type": "application/json" },
       body: JSON.stringify({ to: [uid], t: "reply", ti: PUSH_TI, b, o: "chat" })
     }).catch(() => {}));
-  } else if (env.TG_TOKEN && env.TG_CHAT) {
+  } else {
+    const who = (body.name || me.email || uid);
+    // Admin telefonuna push (protector-push, X-Push-Key ilə)
+    if (env.PUSH_KEY) {
+      ctx.waitUntil((async () => {
+        const a = await db.prepare("SELECT v FROM chat_cfg WHERE k='admin_uid'").first();
+        if (!a || !a.v) return;
+        const ti = { az: "💬 Yeni mesaj", ru: "💬 Новое сообщение", tr: "💬 Yeni mesaj", en: "💬 New message" };
+        const bt = String(who).slice(0, 60) + ": " + (txt ? txt.slice(0, 200) : "📷");
+        await fetch(PUSH_URL + "/send", {
+          method: "POST",
+          headers: { "X-Push-Key": env.PUSH_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ to: [a.v], t: "general", ti, b: { az: bt, ru: bt, tr: bt, en: bt }, o: "chat" })
+        });
+      })().catch(() => {}));
+    }
+  }
+  if (!me.admin && env.TG_TOKEN && env.TG_CHAT) {
     const who = (body.name || me.email || uid);
     ctx.waitUntil(fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -218,10 +236,15 @@ export default {
     const authH = req.headers.get("Authorization") || "";
     const me = await verify(authH.replace(/^Bearer\s+/i, ""));
     if (!me) return E("auth", 401);
+    // Admin push-u üçün admin hesabının uid-i yadda saxlanılır
+    if (me.admin && ADMIN_UID !== me.uid) {
+      ADMIN_UID = me.uid;
+      ctx.waitUntil(db.prepare("INSERT INTO chat_cfg (k, v) VALUES ('admin_uid', ?) ON CONFLICT(k) DO UPDATE SET v=excluded.v").bind(me.uid).run().catch(() => {}));
+    }
 
     if (path === "/cfg" && req.method === "GET") {
       const c = await cfg(db);
-      return J({ img: c.img, ws: !!env.HUB, keepDays: 30, admin: me.admin });
+      return J({ img: c.img, ws: !!env.HUB, keepDays: 30, admin: me.admin, push: !!env.PUSH_KEY });
     }
 
     if (path === "/unread" && req.method === "GET") {

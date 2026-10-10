@@ -12,6 +12,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PUSH_KEY: ${{ secrets.PUSH_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,3 +32,9 @@ jobs:
       - name: Deploy
         working-directory: chat-worker
         run: npx -y wrangler@4 deploy
+      - name: Sync PUSH_KEY (protector-chat + protector-push)
+        if: ${{ env.PUSH_KEY != '' }}
+        working-directory: chat-worker
+        run: |
+          printf '%s' "$PUSH_KEY" | npx -y wrangler@4 secret put PUSH_KEY --name protector-chat
+          printf '%s' "$PUSH_KEY" | npx -y wrangler@4 secret put PUSH_KEY --name protector-push

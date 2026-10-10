@@ -13257,6 +13257,7 @@ var TX = {
     warnNote: { az: "Admindən gələn şəxsi mesajlar və xəbərdarlıqlar həmişə çatdırılır.", ru: "Личные сообщения и предупреждения администрации доставляются всегда.", tr: "Yöneticiden gelen kişisel mesajlar ve uyarılar her zaman iletilir.", en: "Personal messages and warnings from the admin are always delivered." },
     quiet: { az: "Səssiz rejim", ru: "Тихий режим", tr: "Sessiz mod", en: "Quiet mode" },
     quietSub: { az: "{a}–{b} arasında bildirişlər səssiz çatdırılır", ru: "С {a} до {b} уведомления приходят без звука", tr: "{a}–{b} arasında bildirimler sessiz iletilir", en: "From {a} to {b} notifications arrive silently" },
+    battOff: { az: "Batareya qənaəti tətbiqi məhdudlaşdırır, bildirişlər gecikə bilər. Məhdudiyyəti aradan qaldırmaq üçün toxunun.", ru: "Режим экономии батареи ограничивает приложение, уведомления могут задерживаться. Нажмите, чтобы снять ограничение.", tr: "Pil tasarrufu uygulamayı kısıtlıyor, bildirimler gecikebilir. Kısıtlamayı kaldırmak için dokunun.", en: "Battery saving restricts the app, so notifications may be delayed. Tap to remove the restriction." },
     permOff: { az: "Telefonda bildiriş icazəsi verilməyib. Aktivləşdirmək üçün toxunun.", ru: "Уведомления не разрешены в настройках телефона. Нажмите, чтобы разрешить.", tr: "Telefonda bildirim izni verilmemiş. Etkinleştirmek için dokunun.", en: "Notifications are not allowed on this phone. Tap to enable." },
     on: { az: "Aktiv", ru: "Вкл.", tr: "Açık", en: "On" },
     off: { az: "Deaktiv", ru: "Выкл.", tr: "Kapalı", en: "Off" },
@@ -13314,6 +13315,7 @@ function renderNotif() {
     if (tt) tt.textContent = tx("notifSet");
     h += '<div class="settings-section">';
     if (p.perm === false) h += '<button type="button" class="pt-as-warn" onclick="ptAppNotifSettings()">' + esc(tx("permOff")) + '</button>';
+    if (p.batt === false) h += '<button type="button" class="pt-as-warn" onclick="try{PTAndroid.askBattery()}catch(e){}">' + esc(tx("battOff")) + '</button>';
     h += '<div class="settings-box pt-as-box">';
     h += row('<b>' + esc(tx("push")) + '</b>', esc(tx("pushSub")), sw("ptPushOn", on, "ptAppPref('push',this.checked)"));
     TYPES.forEach(function (k) {
@@ -13342,6 +13344,7 @@ function render() {
     // ---- BİLDİRİŞLƏR (menyu) ----
     h += '<div class="settings-section">' + secTitle(tx("secNotif"), "#7FD4FF", "#1C7FD6", '<path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />');
     if (p.perm === false) h += '<button type="button" class="pt-as-warn" onclick="ptAppNotifSettings()">' + esc(tx("permOff")) + '</button>';
+    if (p.batt === false) h += '<button type="button" class="pt-as-warn" onclick="try{PTAndroid.askBattery()}catch(e){}">' + esc(tx("battOff")) + '</button>';
     h += '<div class="settings-box privacy-box" onclick="ptOpenNotifSet()" style="cursor:pointer"><div class="settings-row"><div style="min-width:0;padding-right:10px"><div>' + esc(tx("notifSet")) + ' <small id="ptNotifState" style="opacity:.75;font-weight:500">' + esc(tx(on ? "on" : "off")) + (on && p.quiet ? " · 🌙" : "") + '</small></div><div class="pt-as-sub">' + esc(tx("notifSetSub")) + '</div></div><span style="color:var(--accent-color);font-size:18px;line-height:14px">›</span></div></div>';
     h += '</div>';
     // ---- PROQRAM ----
@@ -14024,7 +14027,7 @@ function refreshUnread() {
     if (!regUser()) { setUnread(0); return Promise.resolve(); }
     return api("/unread").then(function (d) {
         var was = setUnread(d.n);
-        if (!adm() && d.n > was && !isOpen("pt-chat-view")) toast("💬 " + tx("newMsg"), 4000);
+        if (d.n > was && !isOpen("pt-chat-view")) toast("💬 " + (adm() ? "Yeni mesaj gəldi" : tx("newMsg")), 4000);
     }).catch(function () {});
 }
 
