@@ -1,12 +1,27 @@
 {
  "az": {
   "page": {
-   "title": "Yükləmə",
+   "title": "Proqramı yüklə",
    "desc": "ProTechtor™ Android proqramının ən son versiyasını rəsmi serverdən yükləyin. Cari versiya, quraşdırma qaydası və təhlükəsizlik məlumatı."
   },
   "hero": {
    "h": "ProTechtor™ proqramını yükləyin",
    "p": "Android proqramının ən son versiyası rəsmi serverimizdən birbaşa təqdim olunur."
+  },
+  "dl": {
+   "btn": "APK faylını yüklə",
+   "ver": "Cari versiya:",
+   "note": "Proqram hazırda yalnız bu səhifə vasitəsilə yayımlanır. Təhlükəsizlik baxımından faylı başqa mənbələrdən yükləməyiniz tövsiyə edilmir."
+  },
+  "chips": [
+   "Pulsuz yükləmə",
+   "4 dil: AZ · RU · TR · EN",
+   "Avtomatik yenilənmə"
+  ],
+  "cap": "Klassik və qatlanan telefonlar — bütün brendlər vahid bazada",
+  "up": {
+   "h": "Yenilənmələr",
+   "p": "Quraşdırılmış proqram yeni versiyanı avtomatik yoxlayır və yenilənməni proqramın daxilində təklif edir. Yenilənmə ayarlarını «Tənzimləmələr» bölməsində dəyişə bilərsiniz."
   },
   "req": {
    "h": "Tələblər",
@@ -23,42 +38,59 @@
     "Başqa saytlarda, mesajlaşma qruplarında və ya fayl paylaşma xidmətlərində yayılan nüsxələr rəsmi deyil və dəyişdirilmiş ola bilər."
    ]
   },
-  "more": {
-   "h": "Əlavə məlumat",
-   "p": "Proqramdan istifadə qaydaları [İstifadə təlimatı](/application/android) səhifəsində verilmişdir. Suallarınız olarsa, [Əlaqə](/contact) bölməsi vasitəsilə bizə müraciət edə bilərsiniz."
-  },
-  "dl": {
-   "h": "Yükləmə",
-   "p": "Proqramın ən son versiyasını aşağıdakı düymə vasitəsilə yükləyə bilərsiniz. Fayl birbaşa rəsmi serverimizdən təqdim olunur.",
-   "btn": "APK faylını yüklə",
-   "ver": "Cari versiya:",
-   "note": "Proqram hazırda yalnız bu səhifə vasitəsilə yayımlanır. Təhlükəsizlik baxımından faylı başqa mənbələrdən yükləməyiniz tövsiyə edilmir."
-  },
-  "up": {
-   "h": "Yenilənmələr",
-   "p": "Quraşdırılmış proqram yeni versiyanı avtomatik yoxlayır və yenilənməni proqramın daxilində təklif edir. Yenilənmə ayarlarını «Tənzimləmələr» bölməsində dəyişə bilərsiniz."
-  },
-  "ins": {
-   "h": "Quraşdırma təlimatı",
-   "steps": [
-    "Yuxarıdakı **«APK faylını yüklə»** düyməsini sıxın və yükləmənin başa çatmasını gözləyin.",
-    "Yüklənmiş **ProTechtor.apk** faylını açın.",
-    "Cihaz icazə tələb edərsə, brauzer və ya fayl menecerinə **«Naməlum mənbələrdən quraşdırma»** icazəsini verin.",
-    "**«Quraşdır»** düyməsini sıxın və quraşdırmanın tamamlanmasını gözləyin.",
-    "Proqramı açın, hesabınıza daxil olun və ya yeni hesab yaradın.",
-    "Bildirişlərin vaxtında çatması üçün proqramın təklif etdiyi **batareya optimallaşdırmasının söndürülməsi** icazəsini təsdiqləyin."
-   ],
-   "note": "Quraşdırma zamanı Google Play Protect xəbərdarlıq göstərə bilər. Bu, proqramın Google Play mağazasından deyil, birbaşa yükləndiyini bildirir."
+  "next": {
+   "h": "Növbəti addımlar",
+   "links": [
+    {
+     "id": "install",
+     "t": "Quraşdırma təlimatı",
+     "d": "APK faylının addım-addım quraşdırılması",
+     "u": "/application/install"
+    },
+    {
+     "id": "account",
+     "t": "Qeydiyyat",
+     "d": "Hesabın yaradılması",
+     "u": "/account/register"
+    },
+    {
+     "id": "guide",
+     "t": "İstifadə təlimatları",
+     "d": "Axtarış və nəticələr",
+     "u": "/application/guide"
+    },
+    {
+     "id": "help",
+     "t": "Yardım mərkəzi",
+     "d": "Sualların cavabları",
+     "u": "/help"
+    }
+   ]
   }
  },
  "ru": {
   "page": {
-   "title": "Загрузка",
+   "title": "Скачать приложение",
    "desc": "Загрузите последнюю версию приложения ProTechtor™ для Android с официального сервера. Текущая версия, порядок установки и сведения о безопасности."
   },
   "hero": {
    "h": "Загрузите приложение ProTechtor™",
    "p": "Последняя версия приложения для Android предоставляется напрямую с нашего официального сервера."
+  },
+  "dl": {
+   "btn": "Загрузить APK-файл",
+   "ver": "Текущая версия:",
+   "note": "В настоящее время приложение распространяется только через эту страницу. В целях безопасности не рекомендуется загружать файл из других источников."
+  },
+  "chips": [
+   "Бесплатная загрузка",
+   "4 языка: AZ · RU · TR · EN",
+   "Автоматическое обновление"
+  ],
+  "cap": "Классические и складные телефоны — все бренды в единой базе",
+  "up": {
+   "h": "Обновления",
+   "p": "Установленное приложение автоматически проверяет наличие новой версии и предлагает обновление внутри приложения. Параметры обновления можно изменить в разделе «Настройки»."
   },
   "req": {
    "h": "Требования",
@@ -75,42 +107,59 @@
     "Копии, распространяемые на других сайтах, в группах мессенджеров или файлообменных сервисах, не являются официальными и могут быть изменены."
    ]
   },
-  "more": {
-   "h": "Дополнительная информация",
-   "p": "Правила использования приложения приведены на странице [Руководство пользователя](/application/android). При возникновении вопросов вы можете обратиться к нам через раздел [Контакты](/contact)."
-  },
-  "dl": {
-   "h": "Загрузка",
-   "p": "Последнюю версию приложения можно загрузить с помощью кнопки ниже. Файл предоставляется напрямую с нашего официального сервера.",
-   "btn": "Загрузить APK-файл",
-   "ver": "Текущая версия:",
-   "note": "В настоящее время приложение распространяется только через эту страницу. В целях безопасности не рекомендуется загружать файл из других источников."
-  },
-  "up": {
-   "h": "Обновления",
-   "p": "Установленное приложение автоматически проверяет наличие новой версии и предлагает обновление внутри приложения. Параметры обновления можно изменить в разделе «Настройки»."
-  },
-  "ins": {
-   "h": "Инструкция по установке",
-   "steps": [
-    "Нажмите кнопку **«Загрузить APK-файл»** выше и дождитесь завершения загрузки.",
-    "Откройте загруженный файл **ProTechtor.apk**.",
-    "Если устройство запросит разрешение, предоставьте браузеру или файловому менеджеру разрешение **«Установка из неизвестных источников»**.",
-    "Нажмите **«Установить»** и дождитесь завершения установки.",
-    "Откройте приложение, войдите в свою учётную запись или создайте новую.",
-    "Для своевременной доставки уведомлений подтвердите предлагаемое приложением **отключение оптимизации батареи**."
-   ],
-   "note": "Во время установки Google Play Protect может показать предупреждение. Это означает, что приложение загружено напрямую, а не из Google Play."
+  "next": {
+   "h": "Следующие шаги",
+   "links": [
+    {
+     "id": "install",
+     "t": "Инструкция по установке",
+     "d": "Пошаговая установка APK-файла",
+     "u": "/application/install"
+    },
+    {
+     "id": "account",
+     "t": "Регистрация",
+     "d": "Создание учётной записи",
+     "u": "/account/register"
+    },
+    {
+     "id": "guide",
+     "t": "Инструкции по использованию",
+     "d": "Поиск и результаты",
+     "u": "/application/guide"
+    },
+    {
+     "id": "help",
+     "t": "Справочный центр",
+     "d": "Ответы на вопросы",
+     "u": "/help"
+    }
+   ]
   }
  },
  "tr": {
   "page": {
-   "title": "İndirme",
+   "title": "Uygulamayı indir",
    "desc": "ProTechtor™ Android uygulamasının en son sürümünü resmî sunucudan indirin. Güncel sürüm, kurulum adımları ve güvenlik bilgileri."
   },
   "hero": {
    "h": "ProTechtor™ uygulamasını indirin",
    "p": "Android uygulamasının en son sürümü doğrudan resmî sunucumuzdan sunulmaktadır."
+  },
+  "dl": {
+   "btn": "APK dosyasını indir",
+   "ver": "Güncel sürüm:",
+   "note": "Uygulama şu anda yalnızca bu sayfa üzerinden dağıtılmaktadır. Güvenlik açısından dosyanın başka kaynaklardan indirilmesi önerilmez."
+  },
+  "chips": [
+   "Ücretsiz indirme",
+   "4 dil: AZ · RU · TR · EN",
+   "Otomatik güncelleme"
+  ],
+  "cap": "Klasik ve katlanabilir telefonlar — tüm markalar tek veritabanında",
+  "up": {
+   "h": "Güncellemeler",
+   "p": "Yüklü uygulama yeni sürümü otomatik olarak kontrol eder ve güncellemeyi uygulama içinde sunar. Güncelleme ayarlarını «Ayarlar» bölümünden değiştirebilirsiniz."
   },
   "req": {
    "h": "Gereksinimler",
@@ -127,42 +176,59 @@
     "Başka sitelerde, mesajlaşma gruplarında veya dosya paylaşım hizmetlerinde yayılan kopyalar resmî değildir ve değiştirilmiş olabilir."
    ]
   },
-  "more": {
-   "h": "Ek bilgi",
-   "p": "Uygulamanın kullanım kuralları [Kullanım kılavuzu](/application/android) sayfasında yer almaktadır. Sorularınız için [İletişim](/contact) bölümü aracılığıyla bize başvurabilirsiniz."
-  },
-  "dl": {
-   "h": "İndirme",
-   "p": "Uygulamanın en son sürümünü aşağıdaki düğme aracılığıyla indirebilirsiniz. Dosya doğrudan resmî sunucumuzdan sunulmaktadır.",
-   "btn": "APK dosyasını indir",
-   "ver": "Güncel sürüm:",
-   "note": "Uygulama şu anda yalnızca bu sayfa üzerinden dağıtılmaktadır. Güvenlik açısından dosyanın başka kaynaklardan indirilmesi önerilmez."
-  },
-  "up": {
-   "h": "Güncellemeler",
-   "p": "Yüklü uygulama yeni sürümü otomatik olarak kontrol eder ve güncellemeyi uygulama içinde sunar. Güncelleme ayarlarını «Ayarlar» bölümünden değiştirebilirsiniz."
-  },
-  "ins": {
-   "h": "Kurulum talimatı",
-   "steps": [
-    "Yukarıdaki **«APK dosyasını indir»** düğmesine basın ve indirmenin tamamlanmasını bekleyin.",
-    "İndirilen **ProTechtor.apk** dosyasını açın.",
-    "Cihaz izin isterse, tarayıcıya veya dosya yöneticisine **«Bilinmeyen kaynaklardan yükleme»** izni verin.",
-    "**«Yükle»** düğmesine basın ve kurulumun tamamlanmasını bekleyin.",
-    "Uygulamayı açın, hesabınıza giriş yapın veya yeni bir hesap oluşturun.",
-    "Bildirimlerin zamanında ulaşması için uygulamanın önerdiği **pil optimizasyonunun kapatılması** iznini onaylayın."
-   ],
-   "note": "Kurulum sırasında Google Play Protect bir uyarı gösterebilir. Bu, uygulamanın Google Play'den değil, doğrudan indirildiğini belirtir."
+  "next": {
+   "h": "Sonraki adımlar",
+   "links": [
+    {
+     "id": "install",
+     "t": "Kurulum kılavuzu",
+     "d": "APK dosyasının adım adım kurulumu",
+     "u": "/application/install"
+    },
+    {
+     "id": "account",
+     "t": "Kayıt ol",
+     "d": "Hesap oluşturma",
+     "u": "/account/register"
+    },
+    {
+     "id": "guide",
+     "t": "Kullanım kılavuzu",
+     "d": "Arama ve sonuçlar",
+     "u": "/application/guide"
+    },
+    {
+     "id": "help",
+     "t": "Yardım merkezi",
+     "d": "Soruların yanıtları",
+     "u": "/help"
+    }
+   ]
   }
  },
  "en": {
   "page": {
-   "title": "Download",
+   "title": "Download the app",
    "desc": "Download the latest version of the ProTechtor™ Android app from the official server. Current version, installation steps and security information."
   },
   "hero": {
    "h": "Download ProTechtor™",
    "p": "The latest version of the Android app is provided directly from our official server."
+  },
+  "dl": {
+   "btn": "Download APK",
+   "ver": "Current version:",
+   "note": "The application is currently distributed only through this page. For security reasons, downloading the file from other sources is not recommended."
+  },
+  "chips": [
+   "Free download",
+   "4 languages: AZ · RU · TR · EN",
+   "Automatic updates"
+  ],
+  "cap": "Classic and foldable phones — every brand in one database",
+  "up": {
+   "h": "Updates",
+   "p": "The installed application checks for new versions automatically and offers the update within the app. Update options can be changed in the «Settings» section."
   },
   "req": {
    "h": "Requirements",
@@ -179,32 +245,34 @@
     "Copies distributed on other websites, in messaging groups or on file-sharing services are not official and may have been modified."
    ]
   },
-  "more": {
-   "h": "More information",
-   "p": "Instructions for using the app are available on the [User guide](/application/android) page. If you have any questions, you can contact us through the [Contact](/contact) section."
-  },
-  "dl": {
-   "h": "Download",
-   "p": "You can download the latest version of the application using the button below. The file is provided directly from our official server.",
-   "btn": "Download APK",
-   "ver": "Current version:",
-   "note": "The application is currently distributed only through this page. For security reasons, downloading the file from other sources is not recommended."
-  },
-  "up": {
-   "h": "Updates",
-   "p": "The installed application checks for new versions automatically and offers the update within the app. Update options can be changed in the «Settings» section."
-  },
-  "ins": {
-   "h": "Installation instructions",
-   "steps": [
-    "Tap the **«Download APK»** button above and wait for the download to complete.",
-    "Open the downloaded **ProTechtor.apk** file.",
-    "If the device asks for permission, allow your browser or file manager to **«Install unknown apps»**.",
-    "Tap **«Install»** and wait for the installation to complete.",
-    "Open the application, sign in to your account or create a new one.",
-    "To ensure timely delivery of notifications, confirm the **battery optimization exemption** offered by the app."
-   ],
-   "note": "Google Play Protect may display a warning during installation. This indicates that the application was downloaded directly rather than from Google Play."
+  "next": {
+   "h": "Next steps",
+   "links": [
+    {
+     "id": "install",
+     "t": "Installation guide",
+     "d": "Step-by-step APK installation",
+     "u": "/application/install"
+    },
+    {
+     "id": "account",
+     "t": "Sign up",
+     "d": "Creating an account",
+     "u": "/account/register"
+    },
+    {
+     "id": "guide",
+     "t": "User guide",
+     "d": "Search and results",
+     "u": "/application/guide"
+    },
+    {
+     "id": "help",
+     "t": "Help Centre",
+     "d": "Answers to questions",
+     "u": "/help"
+    }
+   ]
   }
  }
 }

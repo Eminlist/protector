@@ -22,5 +22,8 @@ jobs:
           mkdir dist
           cp index.html sw.js manifest.json *.png *.ico dist/
           cp -r pages/. dist/
+          rm -f dist/README.md
+      - name: Build single-file help for the app
+        run: node tools/build-help-app.mjs dist/help/app.html
       - name: Deploy
         run: npx -y wrangler@4 deploy

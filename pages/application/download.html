@@ -1,15 +1,16 @@
 <!doctype html>
 <html lang="az">
 <head>
+<!-- Səhifə: /application/download  |  Mətnlər: /texts/download.json  |  Menyu: /texts/common.json -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Yükləmə — ProTechtor™</title>
+<title>Proqramı yüklə — ProTechtor™</title>
 <meta name="description" content="ProTechtor™ Android proqramının ən son versiyasını rəsmi serverdən yükləyin. Cari versiya, quraşdırma qaydası və təhlükəsizlik məlumatı.">
 <meta name="theme-color" content="#0a0a0a">
 <link rel="canonical" href="https://protechtor.app/application/download">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ProTechtor™">
-<meta property="og:title" content="Yükləmə — ProTechtor™">
+<meta property="og:title" content="Proqramı yüklə — ProTechtor™">
 <meta property="og:description" content="ProTechtor™ Android proqramının ən son versiyasını rəsmi serverdən yükləyin. Cari versiya, quraşdırma qaydası və təhlükəsizlik məlumatı.">
 <meta property="og:url" content="https://protechtor.app/application/download">
 <meta property="og:image" content="https://protechtor.app/assets/og.png">
@@ -22,89 +23,68 @@
 <script src="/assets/site.js" defer></script>
 </head>
 <body data-page="download">
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="/"><img src="/icon-192.png" alt="">ProTechtor™</a>
-    <nav class="nav" id="nav">
-      <a href="/" data-t="nav.home"></a>
-      <a href="/application" data-t="nav.app"></a>
-      <a href="/contact" data-t="nav.contact"></a>
-      <a href="/privacy" data-t="nav.privacy"></a>
-    </nav>
-    <button class="menu-btn" id="menu-btn" aria-label="Menu">☰</button>
-    <select class="lang" id="lang" aria-label="Language">
-      <option value="az">AZ</option><option value="ru">RU</option><option value="tr">TR</option><option value="en">EN</option>
-    </select>
-  </div>
-</header>
+<header id="top"></header>
 <main>
   <div class="wrap">
-    <div class="hero">
-      <h1 data-t="hero.h"></h1>
-      <p data-t="hero.p"></p>
-    </div>
-
-    <section class="card" id="download">
-      <h2 data-t="dl.h"></h2>
-      <p data-t="dl.p"></p>
-      <div class="dl">
-        <a class="btn" href="/apk/ProTechtor.apk" id="dl-btn"><span>⬇</span> <span data-t="dl.btn"></span></a>
-        <div class="meta"><span data-t="dl.ver"></span> <b id="ver">—</b></div>
+    <div class="dl-hero">
+      <div>
+        <h1 data-t="hero.h"></h1>
+        <p class="lead" data-t="hero.p"></p>
+        <div class="dl-box">
+          <a class="btn" href="/apk/ProTechtor.apk" id="dl-btn"><span>⬇</span> <span data-t="dl.btn"></span></a>
+          <div class="meta"><span data-t="dl.ver"></span> <b id="ver">—</b></div>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="note" data-t="dl.note"></div>
       </div>
-      <div class="note" data-t="dl.note"></div>
-    </section>
+      <div>
+        <div class="stage" aria-hidden="true">
+          <span class="ph p-book"><img src="/assets/phones/phone-fold-book.svg" alt="" loading="eager" decoding="async"></span>
+          <span class="ph p-sq"><img src="/assets/phones/phone-back-square.svg" alt="" loading="eager" decoding="async"></span>
+          <span class="ph p-vert"><img src="/assets/phones/phone-back-vertical.svg" alt="" loading="eager" decoding="async"></span>
+          <span class="ph p-front"><img src="/assets/phones/phone-front.svg" alt="" loading="eager" decoding="async"></span>
+          <span class="ph p-isl"><img src="/assets/phones/phone-back-island.svg" alt="" loading="eager" decoding="async"></span>
+          <span class="ph p-flip"><img src="/assets/phones/phone-fold-flip.svg" alt="" loading="eager" decoding="async"></span>
+        </div>
+        <p class="stage-cap" data-t="cap"></p>
+      </div>
+    </div>
 
     <section class="card" id="updates" data-acc="🔄">
       <h2 data-t="up.h"></h2>
       <p id="notes"></p>
       <p data-t="up.p"></p>
     </section>
-
-    <section class="card" id="install" data-acc="📲" data-acc-open>
-      <h2 data-t="ins.h"></h2>
-      <ol class="steps" data-list="ins.steps"></ol>
-      <div class="note" data-t="ins.note"></div>
-    </section>
-
     <section class="card" id="req" data-acc="📋">
       <h2 data-t="req.h"></h2>
       <ul data-list="req.ul"></ul>
     </section>
-
     <section class="card" id="safe" data-acc="🛡️">
       <h2 data-t="safe.h"></h2>
       <div data-list="safe.p"></div>
     </section>
 
-    <section class="card" id="more" data-acc="ℹ️">
-      <h2 data-t="more.h"></h2>
-      <p data-t="more.p"></p>
-    </section>
+    <h2 class="sec-h" data-t="next.h"></h2>
+    <div class="tiles" data-links="next.links"></div>
+    <script>
+    (function () {
+      var vj = null;
+      function show() {
+        var c = document.getElementById("chips");
+        c.innerHTML = (PT.t("chips") || []).map(function (x) { return "<span>" + PT.esc(x) + "</span>"; }).join("");
+        if (!vj) return;
+        var l = PT.lang();
+        var n = l === "az" ? vj.notes : (vj["notes_" + l] || vj.notes);
+        document.getElementById("ver").textContent = vj.versionName || "—";
+        document.getElementById("notes").textContent = n || "";
+        if (vj.url) document.getElementById("dl-btn").href = vj.url.replace(/^https:\/\/protechtor\.app/, "");
+      }
+      fetch("/apk/version.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { vj = j; if (window.PT && PT.t("chips")) show(); }).catch(function () {});
+      document.addEventListener("pt:rendered", show);
+    })();
+    </script>
   </div>
 </main>
-<script>
-(function () {
-  var vj = null;
-  function show() {
-    if (!vj) return;
-    var l = window.PT ? PT.lang() : "az";
-    var n = l === "az" ? vj.notes : (vj["notes_" + l] || vj.notes);
-    document.getElementById("ver").textContent = vj.versionName || "—";
-    document.getElementById("notes").textContent = n || "";
-    if (vj.url) document.getElementById("dl-btn").href = vj.url.replace(/^https:\/\/protechtor\.app/, "");
-  }
-  fetch("/apk/version.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { vj = j; show(); }).catch(function () {});
-  document.addEventListener("pt:rendered", show);
-})();
-</script>
-<footer>
-  <div class="wrap">
-    <span>© <span id="year"></span> ProTechtor™</span>
-    <a href="/application" data-t="nav.app"></a>
-    <a href="/contact" data-t="nav.contact"></a>
-    <a href="/privacy" data-t="nav.privacy"></a>
-    <span class="sp" data-t="foot.rights"></span>
-  </div>
-</footer>
+<footer id="foot"></footer>
 </body>
 </html>

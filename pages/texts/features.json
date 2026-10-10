@@ -1,0 +1,286 @@
+{
+ "az": {
+  "page": {
+   "title": "Proqramın üstünlükləri",
+   "desc": "ProTechtor™ proqramının əsas imkanları və mağazalar üçün üstünlükləri."
+  },
+  "hero": {
+   "h": "Proqramın üstünlükləri",
+   "p": "ProTechtor™ mobil aksesuar mağazaları və ustalar üçün hazırlanmış peşəkar vasitədir. Model adını və ya kodunu daxil edin, eyni qoruyucu şüşəyə uyğun gələn bütün modelləri dərhal görün.",
+   "b1": "Android proqramını yüklə"
+  },
+  "stats": [
+   [
+    "6000+",
+    "model bazada"
+   ],
+   [
+    "4",
+    "dil: AZ, RU, TR, EN"
+   ],
+   [
+    "Həftədə 2 dəfə",
+    "baza yenilənməsi"
+   ]
+  ],
+  "f": {
+   "h": "İmkanlar",
+   "c": [
+    {
+     "i": "🔎",
+     "h": "Ad və kod ilə axtarış",
+     "p": "Model adı və ya model kodu (məsələn, **A556B**) ilə dəqiq axtarış."
+    },
+    {
+     "i": "🧩",
+     "h": "Uyğunluq qrupları",
+     "p": "Eyni şüşəyə uyğun gələn modellər bir qrupda göstərilir."
+    },
+    {
+     "i": "📐",
+     "h": "Ekran və kamera məlumatı",
+     "p": "Hər qrup üçün ekran ölçüsü və kamera kəsiyinin növü."
+    },
+    {
+     "i": "🔄",
+     "h": "Daim yenilənən baza",
+     "p": "Yeni buraxılan cihazlar bazaya mütəmadi olaraq əlavə olunur."
+    },
+    {
+     "i": "🔔",
+     "h": "Bildirişlər",
+     "p": "Yeni modellər və vacib elanlar barədə vaxtında məlumat."
+    },
+    {
+     "i": "🤖",
+     "h": "ProTechtor™ Köməkçi",
+     "p": "Premium istifadəçilər üçün süni intellekt əsaslı köməkçi."
+    }
+   ]
+  },
+  "shops": {
+   "h": "Mağazalar üçün",
+   "p": [
+    "ProTechtor™ satış nöqtəsində vaxta qənaət etməyə və səhv seçimlərin qarşısını almağa kömək edir. Bir şüşənin hansı modellərə uyğun olduğunu bilmək anbar qalığından daha səmərəli istifadə etməyə imkan verir.",
+    "Əməkdaşlıq və təkliflər üçün [Əlaqə](/contact) səhifəsi vasitəsilə bizə müraciət edin."
+   ]
+  },
+  "cta": {
+   "h": "İndi başlayın",
+   "p": "Android proqramının ən son versiyası rəsmi serverimizdən təqdim olunur."
+  }
+ },
+ "ru": {
+  "page": {
+   "title": "Преимущества приложения",
+   "desc": "Основные возможности ProTechtor™ и преимущества для магазинов."
+  },
+  "hero": {
+   "h": "Преимущества приложения",
+   "p": "ProTechtor™ — профессиональный инструмент для магазинов мобильных аксессуаров и мастеров. Введите название или код модели и сразу увидите все модели, к которым подходит то же защитное стекло.",
+   "b1": "Загрузить приложение для Android"
+  },
+  "stats": [
+   [
+    "6000+",
+    "моделей в базе"
+   ],
+   [
+    "4",
+    "языка: AZ, RU, TR, EN"
+   ],
+   [
+    "2 раза в неделю",
+    "обновление базы"
+   ]
+  ],
+  "f": {
+   "h": "Возможности",
+   "c": [
+    {
+     "i": "🔎",
+     "h": "Поиск по названию и коду",
+     "p": "Точный поиск по названию или коду модели (например, **A556B**)."
+    },
+    {
+     "i": "🧩",
+     "h": "Группы совместимости",
+     "p": "Модели, к которым подходит одно стекло, показаны одной группой."
+    },
+    {
+     "i": "📐",
+     "h": "Экран и камера",
+     "p": "Размер экрана и тип выреза камеры для каждой группы."
+    },
+    {
+     "i": "🔄",
+     "h": "Постоянно обновляемая база",
+     "p": "Новые устройства регулярно добавляются в базу."
+    },
+    {
+     "i": "🔔",
+     "h": "Уведомления",
+     "p": "Своевременная информация о новых моделях и важных объявлениях."
+    },
+    {
+     "i": "🤖",
+     "h": "ProTechtor™ Помощник",
+     "p": "Помощник на основе искусственного интеллекта для пользователей Premium."
+    }
+   ]
+  },
+  "shops": {
+   "h": "Для магазинов",
+   "p": [
+    "ProTechtor™ помогает экономить время в точке продаж и избегать ошибок при подборе. Зная, к каким моделям подходит стекло, можно эффективнее использовать складские остатки.",
+    "По вопросам сотрудничества и предложений обращайтесь через страницу [Контакты](/contact)."
+   ]
+  },
+  "cta": {
+   "h": "Начните сейчас",
+   "p": "Последняя версия приложения для Android предоставляется с нашего официального сервера."
+  }
+ },
+ "tr": {
+  "page": {
+   "title": "Uygulamanın avantajları",
+   "desc": "ProTechtor™ uygulamasının temel özellikleri ve mağazalar için avantajları."
+  },
+  "hero": {
+   "h": "Uygulamanın avantajları",
+   "p": "ProTechtor™, mobil aksesuar mağazaları ve ustalar için geliştirilmiş profesyonel bir araçtır. Model adını veya kodunu girin, aynı koruyucu cama uyan tüm modelleri anında görün.",
+   "b1": "Android uygulamasını indir"
+  },
+  "stats": [
+   [
+    "6000+",
+    "model veritabanında"
+   ],
+   [
+    "4",
+    "dil: AZ, RU, TR, EN"
+   ],
+   [
+    "Haftada 2 kez",
+    "veritabanı güncellemesi"
+   ]
+  ],
+  "f": {
+   "h": "Özellikler",
+   "c": [
+    {
+     "i": "🔎",
+     "h": "Ad ve kod ile arama",
+     "p": "Model adı veya model kodu (örneğin **A556B**) ile doğru arama."
+    },
+    {
+     "i": "🧩",
+     "h": "Uyumluluk grupları",
+     "p": "Aynı cama uyan modeller tek grupta gösterilir."
+    },
+    {
+     "i": "📐",
+     "h": "Ekran ve kamera bilgisi",
+     "p": "Her grup için ekran boyutu ve kamera kesiğinin türü."
+    },
+    {
+     "i": "🔄",
+     "h": "Sürekli güncellenen veritabanı",
+     "p": "Yeni çıkan cihazlar düzenli olarak eklenir."
+    },
+    {
+     "i": "🔔",
+     "h": "Bildirimler",
+     "p": "Yeni modeller ve önemli duyurular hakkında zamanında bilgi."
+    },
+    {
+     "i": "🤖",
+     "h": "ProTechtor™ Asistan",
+     "p": "Premium kullanıcılar için yapay zekâ tabanlı asistan."
+    }
+   ]
+  },
+  "shops": {
+   "h": "Mağazalar için",
+   "p": [
+    "ProTechtor™ satış noktasında zaman kazandırır ve hatalı seçimlerin önüne geçer. Bir camın hangi modellere uyduğunu bilmek stoktan daha verimli yararlanmayı sağlar.",
+    "İş birliği ve öneriler için [İletişim](/contact) sayfası aracılığıyla bize başvurun."
+   ]
+  },
+  "cta": {
+   "h": "Hemen başlayın",
+   "p": "Android uygulamasının en son sürümü resmî sunucumuzdan sunulmaktadır."
+  }
+ },
+ "en": {
+  "page": {
+   "title": "App features",
+   "desc": "Key capabilities of ProTechtor™ and its benefits for shops."
+  },
+  "hero": {
+   "h": "App features",
+   "p": "ProTechtor™ is a professional tool for mobile accessory shops and technicians. Enter a model name or code and instantly see every model that fits the same protective glass.",
+   "b1": "Download the Android app"
+  },
+  "stats": [
+   [
+    "6000+",
+    "models in the database"
+   ],
+   [
+    "4",
+    "languages: AZ, RU, TR, EN"
+   ],
+   [
+    "Twice a week",
+    "database updates"
+   ]
+  ],
+  "f": {
+   "h": "Features",
+   "c": [
+    {
+     "i": "🔎",
+     "h": "Search by name and code",
+     "p": "Accurate search by model name or model code (for example, **A556B**)."
+    },
+    {
+     "i": "🧩",
+     "h": "Compatibility groups",
+     "p": "Models that fit the same glass are shown as one group."
+    },
+    {
+     "i": "📐",
+     "h": "Screen and camera details",
+     "p": "Screen size and camera cutout type for every group."
+    },
+    {
+     "i": "🔄",
+     "h": "Continuously updated database",
+     "p": "Newly released devices are added regularly."
+    },
+    {
+     "i": "🔔",
+     "h": "Notifications",
+     "p": "Timely information about new models and important announcements."
+    },
+    {
+     "i": "🤖",
+     "h": "ProTechtor™ Assistant",
+     "p": "An AI-based assistant for Premium users."
+    }
+   ]
+  },
+  "shops": {
+   "h": "For shops",
+   "p": [
+    "ProTechtor™ saves time at the point of sale and helps prevent wrong choices. Knowing which models a glass fits lets you make better use of your stock.",
+    "For partnerships and proposals, contact us through the [Contact](/contact) page."
+   ]
+  },
+  "cta": {
+   "h": "Get started",
+   "p": "The latest version of the Android app is provided from our official server."
+  }
+ }
+}

@@ -1,18 +1,317 @@
 {
-  "az": {
-    "nav": { "home": "Ana səhifə", "app": "Proqram", "contact": "Əlaqə", "privacy": "Məxfilik" },
-    "foot": { "rights": "Bütün hüquqlar qorunur." }
-  },
-  "ru": {
-    "nav": { "home": "Главная", "app": "Приложение", "contact": "Контакты", "privacy": "Конфиденциальность" },
-    "foot": { "rights": "Все права защищены." }
-  },
-  "tr": {
-    "nav": { "home": "Ana sayfa", "app": "Uygulama", "contact": "İletişim", "privacy": "Gizlilik" },
-    "foot": { "rights": "Tüm hakları saklıdır." }
-  },
-  "en": {
-    "nav": { "home": "Home", "app": "App", "contact": "Contact", "privacy": "Privacy" },
-    "foot": { "rights": "All rights reserved." }
+ "_": {
+  "appUrl": "/"
+ },
+ "az": {
+  "menu": [
+   {
+    "h": "Qeydiyyat",
+    "items": [
+     {
+      "t": "Qeydiyyat",
+      "d": "Yeni hesab yaradılması",
+      "u": "/account/register"
+     },
+     {
+      "t": "Giriş",
+      "d": "Mövcud hesaba daxil olmaq",
+      "u": "/account/login"
+     }
+    ]
+   },
+   {
+    "h": "Proqram",
+    "items": [
+     {
+      "t": "Proqram haqqında",
+      "d": "ProTechtor™ nədir və necə işləyir",
+      "u": "/application"
+     },
+     {
+      "t": "Proqram üstünlükləri",
+      "d": "Əsas imkanlar",
+      "u": "/application/features"
+     },
+     {
+      "t": "İstifadə təlimatları",
+      "d": "Axtarış, nəticələr və tənzimləmələr",
+      "u": "/application/guide"
+     },
+     {
+      "t": "Quraşdırma təlimatı",
+      "d": "APK faylının quraşdırılması",
+      "u": "/application/install"
+     },
+     {
+      "t": "Proqram yüklə",
+      "d": "Ən son versiya",
+      "u": "/application/download"
+     }
+    ]
+   },
+   {
+    "h": "Məxfilik",
+    "items": [
+     {
+      "t": "Məxfilik siyasəti",
+      "d": "Məlumatların qorunması",
+      "u": "/privacy"
+     }
+    ]
+   },
+   {
+    "h": "Bizə yaz",
+    "items": [
+     {
+      "t": "Yardım mərkəzi",
+      "d": "Təlimatlar və sualların cavabları",
+      "u": "/help"
+     },
+     {
+      "t": "Əlaqə",
+      "d": "Telegram, e-poçt, Adminlə əlaqə",
+      "u": "/contact"
+     }
+    ]
+   }
+  ],
+  "cta": "Yüklə",
+  "foot": {
+   "rights": "Bütün hüquqlar qorunur."
   }
+ },
+ "ru": {
+  "menu": [
+   {
+    "h": "Регистрация",
+    "items": [
+     {
+      "t": "Регистрация",
+      "d": "Создание новой учётной записи",
+      "u": "/account/register"
+     },
+     {
+      "t": "Вход",
+      "d": "Вход в существующую учётную запись",
+      "u": "/account/login"
+     }
+    ]
+   },
+   {
+    "h": "Приложение",
+    "items": [
+     {
+      "t": "О приложении",
+      "d": "Что такое ProTechtor™ и как он работает",
+      "u": "/application"
+     },
+     {
+      "t": "Преимущества",
+      "d": "Основные возможности",
+      "u": "/application/features"
+     },
+     {
+      "t": "Инструкции по использованию",
+      "d": "Поиск, результаты и настройки",
+      "u": "/application/guide"
+     },
+     {
+      "t": "Инструкция по установке",
+      "d": "Установка APK-файла",
+      "u": "/application/install"
+     },
+     {
+      "t": "Скачать приложение",
+      "d": "Последняя версия",
+      "u": "/application/download"
+     }
+    ]
+   },
+   {
+    "h": "Конфиденциальность",
+    "items": [
+     {
+      "t": "Политика конфиденциальности",
+      "d": "Защита данных",
+      "u": "/privacy"
+     }
+    ]
+   },
+   {
+    "h": "Напишите нам",
+    "items": [
+     {
+      "t": "Справочный центр",
+      "d": "Инструкции и ответы на вопросы",
+      "u": "/help"
+     },
+     {
+      "t": "Контакты",
+      "d": "Telegram, e-mail, связь с администратором",
+      "u": "/contact"
+     }
+    ]
+   }
+  ],
+  "cta": "Скачать",
+  "foot": {
+   "rights": "Все права защищены."
+  }
+ },
+ "tr": {
+  "menu": [
+   {
+    "h": "Kayıt",
+    "items": [
+     {
+      "t": "Kayıt ol",
+      "d": "Yeni hesap oluşturma",
+      "u": "/account/register"
+     },
+     {
+      "t": "Giriş",
+      "d": "Mevcut hesaba giriş",
+      "u": "/account/login"
+     }
+    ]
+   },
+   {
+    "h": "Uygulama",
+    "items": [
+     {
+      "t": "Uygulama hakkında",
+      "d": "ProTechtor™ nedir ve nasıl çalışır",
+      "u": "/application"
+     },
+     {
+      "t": "Uygulamanın avantajları",
+      "d": "Temel özellikler",
+      "u": "/application/features"
+     },
+     {
+      "t": "Kullanım kılavuzu",
+      "d": "Arama, sonuçlar ve ayarlar",
+      "u": "/application/guide"
+     },
+     {
+      "t": "Kurulum kılavuzu",
+      "d": "APK dosyasının kurulumu",
+      "u": "/application/install"
+     },
+     {
+      "t": "Uygulamayı indir",
+      "d": "En son sürüm",
+      "u": "/application/download"
+     }
+    ]
+   },
+   {
+    "h": "Gizlilik",
+    "items": [
+     {
+      "t": "Gizlilik politikası",
+      "d": "Verilerin korunması",
+      "u": "/privacy"
+     }
+    ]
+   },
+   {
+    "h": "Bize yazın",
+    "items": [
+     {
+      "t": "Yardım merkezi",
+      "d": "Kılavuzlar ve soruların yanıtları",
+      "u": "/help"
+     },
+     {
+      "t": "İletişim",
+      "d": "Telegram, e-posta, Yönetici ile iletişim",
+      "u": "/contact"
+     }
+    ]
+   }
+  ],
+  "cta": "İndir",
+  "foot": {
+   "rights": "Tüm hakları saklıdır."
+  }
+ },
+ "en": {
+  "menu": [
+   {
+    "h": "Account",
+    "items": [
+     {
+      "t": "Sign up",
+      "d": "Create a new account",
+      "u": "/account/register"
+     },
+     {
+      "t": "Sign in",
+      "d": "Access an existing account",
+      "u": "/account/login"
+     }
+    ]
+   },
+   {
+    "h": "App",
+    "items": [
+     {
+      "t": "About the app",
+      "d": "What ProTechtor™ is and how it works",
+      "u": "/application"
+     },
+     {
+      "t": "Features",
+      "d": "Key capabilities",
+      "u": "/application/features"
+     },
+     {
+      "t": "User guide",
+      "d": "Search, results and settings",
+      "u": "/application/guide"
+     },
+     {
+      "t": "Installation guide",
+      "d": "Installing the APK file",
+      "u": "/application/install"
+     },
+     {
+      "t": "Download the app",
+      "d": "Latest version",
+      "u": "/application/download"
+     }
+    ]
+   },
+   {
+    "h": "Privacy",
+    "items": [
+     {
+      "t": "Privacy policy",
+      "d": "Data protection",
+      "u": "/privacy"
+     }
+    ]
+   },
+   {
+    "h": "Contact us",
+    "items": [
+     {
+      "t": "Help Centre",
+      "d": "Guides and answers to questions",
+      "u": "/help"
+     },
+     {
+      "t": "Contact",
+      "d": "Telegram, e-mail, contact the administrator",
+      "u": "/contact"
+     }
+    ]
+   }
+  ],
+  "cta": "Download",
+  "foot": {
+   "rights": "All rights reserved."
+  }
+ }
 }

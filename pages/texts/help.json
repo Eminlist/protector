@@ -1,0 +1,1450 @@
+{
+ "az": {
+  "page": {
+   "title": "Yardım mərkəzi",
+   "desc": "ProTechtor™ Yardım mərkəzi: istifadə və quraşdırma təlimatları, rənglərin mənası, interfeys bələdçisi, bildirişlər, hesab və problemlərin həlli."
+  },
+  "hub": {
+   "h": "Sizə necə kömək edə bilərik?",
+   "search": "Yardım məqalələrində axtarış…",
+   "topics": "Əsas mövzular",
+   "popular": "Populyar məqalələr",
+   "none": "Heç bir nəticə tapılmadı. Sorğunu fərqli sözlərlə yoxlayın.",
+   "back": "Yardım mərkəzi",
+   "more": "Digər mövzular",
+   "still": "Cavabı tapmadınız?",
+   "stillP": "Bizə yazın — müraciətinizə mümkün qədər tez cavab veririk.",
+   "contact": "Bizə yazın"
+  },
+  "tiles": [
+   {
+    "id": "guide",
+    "t": "İstifadə təlimatları",
+    "u": "/application/guide"
+   },
+   {
+    "id": "install",
+    "t": "Quraşdırma",
+    "u": "/application/install"
+   },
+   {
+    "id": "colors",
+    "t": "Rənglər nəyi bildirir",
+    "u": "/help/colors"
+   },
+   {
+    "id": "where",
+    "t": "Harada nə var",
+    "u": "/help/where"
+   },
+   {
+    "id": "notifications",
+    "t": "Bildirişlər",
+    "u": "/help/notifications"
+   },
+   {
+    "id": "account",
+    "t": "Hesab və Premium",
+    "u": "/help/account"
+   },
+   {
+    "id": "troubleshooting",
+    "t": "Problemlərin həlli",
+    "u": "/help/troubleshooting"
+   },
+   {
+    "id": "contact",
+    "t": "Bizimlə əlaqə",
+    "u": "/contact"
+   }
+  ],
+  "pop": [
+   {
+    "t": "Sol aşağı küncdəki rəngli nöqtə nəyi bildirir?",
+    "u": "/help/colors#s1"
+   },
+   {
+    "t": "Siyahıdakı yaşıl, sarı və qırmızı zolaqlar",
+    "u": "/help/colors#s2"
+   },
+   {
+    "t": "Model kodunu harada tapmaq olar?",
+    "u": "/application/guide#s2"
+   },
+   {
+    "t": "Bildirişlər gecikir və ya gəlmir",
+    "u": "/help/troubleshooting#s1"
+   },
+   {
+    "t": "Şifrəni unutmuşam",
+    "u": "/help/account#s2"
+   },
+   {
+    "t": "Proqram quraşdırılmır",
+    "u": "/help/troubleshooting#s2"
+   }
+  ],
+  "topics": {
+   "colors": {
+    "t": "Rənglər nəyi bildirir",
+    "p": "Proqramda rənglər vəziyyəti və uyğunluq dərəcəsini bir baxışda göstərir. Aşağıda hər rəngin mənası izah olunur.",
+    "s": [
+     {
+      "i": "🟢",
+      "h": "Status nöqtəsi (əsas ekran, sol aşağı künc)",
+      "p": [
+       "Nöqtə model bazasının vəziyyətini göstərir. Üzərinə toxunduqda qısa izah çıxır."
+      ],
+      "ul": [
+       "{dot:green} **Yaşıl** — baza yenidir, məlumatlar aktualdır.",
+       "{dot:yellow} **Sarı** — baza 3 gündən çoxdur yenilənməyib. İnternetə qoşulun, baza avtomatik yenilənəcək.",
+       "{dot:red} **Qırmızı** — internet bağlantısı yoxdur, proqram cihazın yaddaşındakı baza ilə işləyir.",
+       "{dot:gray} **Boz** — vəziyyət yoxlanılır."
+      ]
+     },
+     {
+      "i": "📏",
+      "h": "Uyğunluq siyahısındakı rəngli zolaqlar",
+      "p": [
+       "Model seçildikdən sonra qrupdakı digər modellərin ekran ölçüsü seçilmiş modellə müqayisə edilir və kartın sol kənarında rəngli zolaq göstərilir."
+      ],
+      "ul": [
+       "{bar:green} **Yaşıl zolaq** — ölçü fərqi 0,3 mm-ə qədərdir, şüşə tam uyğundur.",
+       "{bar:yellow} **Sarı zolaq** — ölçü fərqi 0,3–1 mm arasındadır, şüşə adətən uyğun gəlir.",
+       "{bar:red} **Qırmızı zolaq və «±» nişanı** — ölçü fərqi 1 mm-dən çoxdur, uyğunluq qismən ola bilər. Şüşəni taxmazdan əvvəl ölçünü və kamera kəsiyini yoxlayın.",
+       "**«✓» nişanı** — axtardığınız (seçilmiş) model."
+      ]
+     },
+     {
+      "i": "📐",
+      "h": "Ölçünün yanındakı nöqtə",
+      "p": [
+       "Ekran ölçüsünün (mm) yanındakı kiçik nöqtə ölçünün mənbəyini göstərir."
+      ],
+      "ul": [
+       "{dot:green} **Yaşıl** — rəsmi ölçü (istehsalçının məlumatı).",
+       "{dot:blue} **Mavi** — ölçü real cihaz və ya şüşə üzərində ölçülüb.",
+       "{dot:gray} **Boz** — təxmini ölçü."
+      ]
+     },
+     {
+      "i": "📷",
+      "h": "Kamera kəsiyi ikonu",
+      "ul": [
+       "{dot:red} **Qırmızı ikon** — ön kameranın ekrandakı yeri və forması (çentik, damla, dəlik və s.). Şüşə seçərkən kəsiyin uyğunluğuna diqqət yetirin.",
+       "{dot:yellow} **Sarı ikon və sarı ölçü yazısı** — bu modelin ekran ölçüsü seçilmiş modeldən 1 mm-dən çox fərqlənir."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "Sarı xəbərdarlıq zolağı və sarı başlıqlar",
+      "ul": [
+       "**Model səhifəsinin yuxarısındakı sarı zolaq** — qrupdakı modellərin ölçüləri arasında 1 mm-dən çox fərq var. Şüşəni seçməzdən əvvəl ölçüləri müqayisə edin.",
+       "**«1–2 mm kiçik şüşələr» bölməsi** — bu şüşələr ekranınızdan bir qədər kiçikdir: taxmaq mümkündür, lakin kənarlarda azca boşluq qalır. Kamera kəsiyini mütləq yoxlayın."
+      ]
+     },
+     {
+      "i": "🎨",
+      "h": "Digər rənglər",
+      "ul": [
+       "{dot:gold} **Qızılı** — Premium hesab (profil nişanı və tac).",
+       "{dot:red} **Qırmızı rəqəm** — oxunmamış bildirişlərin və ya mesajların sayı.",
+       "{dot:orange} **Narıncı «Uyğun gəlmədi?» düyməsi** — şüşə uyğun gəlmədikdə bizə məlumat vermək üçündür.",
+       "{dot:green} **Yaşıl** — aktiv, seçilmiş və ya təsdiqlənmiş vəziyyət.",
+       "{dot:red} **Qırmızı düymələr** — hesabdan çıxış və silmə kimi geri qaytarılmayan əməliyyatlar."
+      ]
+     },
+     {
+      "i": "💬",
+      "h": "«Adminlə əlaqə» yazışmasında işarələr",
+      "ul": [
+       "{tick:1} **Boz bir işarə** — mesajınız göndərilib.",
+       "{tick:2} **İki yaşıl işarə** — admin yazışmaya cavab verib."
+      ]
+     }
+    ]
+   },
+   "where": {
+    "t": "Harada nə var",
+    "p": "Proqramın əsas bölmələri və onların yerləşdiyi yerlər.",
+    "s": [
+     {
+      "i": "📱",
+      "h": "Yuxarı panel",
+      "p": [
+       "Əsas ekranın yuxarı sağ hissəsindəki düymələr:"
+      ],
+      "ul": [
+       "🔔 **Bildirişlər** — bütün bildirişlər; oxunmamışların sayı qırmızı rəqəmlə göstərilir.",
+       "👤 **Profil** — ad, e-poçt, şifrə, Premium statusu və hesabdan çıxış. Premium hesabda tac nişanı görünür.",
+       "☰ **Menyu** — «Tənzimləmələr» bölməsini açır."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "Axtarış",
+      "ul": [
+       "Axtarış sahəsi əsas ekranın yuxarısındadır: model adını və ya kodunu daxil edin.",
+       "Sahənin altında **«Son axtarışlar»** siyahısı göstərilir.",
+       "Nəticəyə toxunduqda modelin səhifəsi açılır."
+      ]
+     },
+     {
+      "i": "🧩",
+      "h": "Model səhifəsi",
+      "ul": [
+       "Eyni şüşəyə uyğun gələn modellərin siyahısı, ekran ölçüsü və kamera kəsiyi.",
+       "Ölçü fərqi olduqda yuxarıda sarı xəbərdarlıq zolağı göstərilir.",
+       "Səhifənin aşağısında **«Uyğun gəlmədi?»** düyməsi yerləşir."
+      ]
+     },
+     {
+      "i": "⚙️",
+      "h": "Tənzimləmələr (☰ Menyu)",
+      "ul": [
+       "**Mövzu, şrift ölçüsü və dil** — görünüş parametrləri.",
+       "**Bildiriş və yenilənmə ayarları** — yalnız Android proqramında göstərilir.",
+       "**Məxfilik** — məxfilik siyasəti.",
+       "**Əlaqə** — «Adminlə əlaqə», Telegram və e-poçt.",
+       "**Proqram haqqında** — versiya və yeniliklər."
+      ]
+     },
+     {
+      "i": "🟢",
+      "h": "Status nöqtəsi",
+      "p": [
+       "Əsas ekranın sol aşağı küncündə yerləşir və yalnız əsas ekranda görünür. Rənglərin mənası [Rənglər nəyi bildirir](/help/colors#s1) səhifəsində izah olunur."
+      ]
+     },
+     {
+      "h": "Adminlə əlaqə",
+      "p": [
+       "«Tənzimləmələr → Əlaqə» bölməsində **«Adminlə əlaqə»** funksiyası vasitəsilə birbaşa yazışma aparmaq mümkündür. Cavab daxil olduqda bildiriş göndərilir.",
+       "Yazışmalar və şəkillər 30 gün sonra avtomatik silinir."
+      ],
+      "i": "💬"
+     }
+    ]
+   },
+   "notifications": {
+    "t": "Bildirişlər",
+    "p": "Bildiriş növləri, sakit rejim və bildirişlərin vaxtında çatması üçün tövsiyələr.",
+    "s": [
+     {
+      "h": "Bildirişlər",
+      "p": [
+       "Proqram yeni modellər, elanlar və vacib xəbərdarlıqlar barədə bildirişlər göndərir."
+      ],
+      "ul": [
+       "Bildiriş növləri «Tənzimləmələr» bölməsində ayrıca söndürülə bilər.",
+       "Sakit rejim aktiv olduqda 23:00–09:00 arasında bildirişlər səssiz çatdırılır.",
+       "Xəbərdarlıq və «Vacib» növlü bildirişlər söndürülə bilməz.",
+       "Bildirişlərin gecikməməsi üçün proqramın batareya optimallaşdırmasından çıxarılması tövsiyə olunur. Məhdudiyyət qalarsa, «Tənzimləmələr» bölməsində xəbərdarlıq göstərilir."
+      ],
+      "i": "🔔"
+     },
+     {
+      "i": "✅",
+      "h": "Bildirişlərə icazə",
+      "ul": [
+       "Android 13 və daha yeni versiyalarda proqram ilk açılışda bildiriş icazəsi istəyir — **«İcazə ver»** seçin.",
+       "İcazəni sonradan cihazın «Parametrlər → Proqramlar → ProTechtor → Bildirişlər» bölməsində aktivləşdirmək olar."
+      ]
+     },
+     {
+      "i": "📨",
+      "h": "Müraciətə cavab",
+      "p": [
+       "«Adminlə əlaqə» yazışmasına cavab daxil olduqda sizə bildiriş göndərilir."
+      ]
+     }
+    ]
+   },
+   "account": {
+    "t": "Hesab və Premium",
+    "p": "Qeydiyyat, giriş, şifrənin bərpası, Premium və hesabın silinməsi.",
+    "s": [
+     {
+      "i": "📝",
+      "h": "Qeydiyyat",
+      "p": [
+       "Qeydiyyat iki üsulla mümkündür: e-poçt və şifrə ilə və ya Google hesabı ilə. Telefon nömrəsi bütün hesablar üçün məcburidir.",
+       "Ətraflı: [Qeydiyyat](/account/register)."
+      ]
+     },
+     {
+      "i": "🔑",
+      "h": "Şifrəni unutmuşam",
+      "ul": [
+       "Giriş ekranında **«Parolumu unutmuşam»** seçin və qeydiyyatda istifadə etdiyiniz e-poçt ünvanını daxil edin.",
+       "Bərpa məktubu bir neçə dəqiqə ərzində göndərilir. Məktub görünmürsə, «Spam» qovluğunu yoxlayın.",
+       "Google hesabı ilə daxil olursunuzsa, şifrə Google hesabınızda idarə olunur."
+      ]
+     },
+     {
+      "i": "👤",
+      "h": "Profil məlumatlarının dəyişdirilməsi",
+      "p": [
+       "Yuxarı paneldəki 👤 **Profil** düyməsi ilə ad, e-poçt və şifrəni dəyişmək mümkündür."
+      ]
+     },
+     {
+      "h": "Premium və ProTechtor™ Köməkçi",
+      "p": [
+       "Premium hesab genişləndirilmiş imkanlar, o cümlədən süni intellekt əsaslı **ProTechtor™ Köməkçi** xidmətini təqdim edir. Yeni hesablar üçün Premium sınaq müddəti nəzərdə tutulub."
+      ],
+      "i": "⭐"
+     },
+     {
+      "i": "🗑️",
+      "h": "Hesabın silinməsi",
+      "p": [
+       "Hesabınızın və bütün şəxsi məlumatlarınızın silinməsi üçün [Əlaqə](/contact) səhifəsində göstərilən vasitələrlə müraciət edin. Müraciətdə qeydiyyat e-poçtunu qeyd edin."
+      ]
+     }
+    ]
+   },
+   "troubleshooting": {
+    "t": "Problemlərin həlli",
+    "p": "Ən çox rast gəlinən problemlər və onların həlli yolları.",
+    "s": [
+     {
+      "i": "🔔",
+      "h": "Bildirişlər gecikir və ya gəlmir",
+      "ul": [
+       "Bildirişlərə icazə verildiyini yoxlayın.",
+       "Proqramı batareya optimallaşdırmasından çıxarın — məhdudiyyət qalarsa, «Tənzimləmələr» bölməsində xəbərdarlıq göstərilir.",
+       "Sakit rejimin (23:00–09:00) aktiv olub-olmadığını yoxlayın."
+      ]
+     },
+     {
+      "i": "📲",
+      "h": "Proqram quraşdırılmır",
+      "ul": [
+       "Cihazda kifayət qədər boş yer olduğunu yoxlayın.",
+       "Faylın tam yükləndiyinə əmin olun; lazım gələrsə, faylı [yenidən yükləyin](/application/download).",
+       "«Naməlum mənbələrdən quraşdırma» icazəsinin verildiyini yoxlayın.",
+       "Ətraflı: [Quraşdırma təlimatı](/application/install)."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "Model tapılmır",
+      "ul": [
+       "Model kodunu qısaldılmış formada (məsələn, **A556B**) yoxlayın.",
+       "Adı fərqli yazılışla yoxlayın: məsələn, **Galaxy A55** əvəzinə **Samsung A55**.",
+       "Model bazada yoxdursa, [bizə məlumat verin](/contact) — baza mütəmadi olaraq yenilənir."
+      ]
+     },
+     {
+      "i": "🟡",
+      "h": "Status nöqtəsi sarıdır",
+      "p": [
+       "Baza 3 gündən çoxdur yenilənməyib. İnternetə qoşulub proqramı yenidən açın — baza avtomatik yenilənəcək."
+      ]
+     },
+     {
+      "i": "⛔",
+      "h": "Axtarış məhdudlaşdırılıb",
+      "p": [
+       "Qeydiyyatsız istifadədə axtarışların sayı məhduddur. Limit bitdikdə davam etmək üçün daxil olun və ya [qeydiyyatdan keçin](/account/register)."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "Şüşə uyğun gəlmədi",
+      "p": [
+       "Model səhifəsindəki **«Uyğun gəlmədi?»** düyməsi ilə bizə məlumat verin. Bildirişlər yoxlanılır və baza müvafiq qaydada düzəldilir."
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "ru": {
+  "page": {
+   "title": "Справочный центр",
+   "desc": "Справочный центр ProTechtor™: инструкции по использованию и установке, значение цветов, путеводитель по интерфейсу, уведомления, учётная запись и решение проблем."
+  },
+  "hub": {
+   "h": "Чем мы можем помочь?",
+   "search": "Поиск по справочным статьям…",
+   "topics": "Основные темы",
+   "popular": "Популярные статьи",
+   "none": "Ничего не найдено. Попробуйте изменить запрос.",
+   "back": "Справочный центр",
+   "more": "Другие темы",
+   "still": "Не нашли ответ?",
+   "stillP": "Напишите нам — мы ответим на ваше обращение в кратчайший срок.",
+   "contact": "Написать нам"
+  },
+  "tiles": [
+   {
+    "id": "guide",
+    "t": "Инструкции по использованию",
+    "u": "/application/guide"
+   },
+   {
+    "id": "install",
+    "t": "Установка",
+    "u": "/application/install"
+   },
+   {
+    "id": "colors",
+    "t": "Что означают цвета",
+    "u": "/help/colors"
+   },
+   {
+    "id": "where",
+    "t": "Где что находится",
+    "u": "/help/where"
+   },
+   {
+    "id": "notifications",
+    "t": "Уведомления",
+    "u": "/help/notifications"
+   },
+   {
+    "id": "account",
+    "t": "Учётная запись и Premium",
+    "u": "/help/account"
+   },
+   {
+    "id": "troubleshooting",
+    "t": "Решение проблем",
+    "u": "/help/troubleshooting"
+   },
+   {
+    "id": "contact",
+    "t": "Связаться с нами",
+    "u": "/contact"
+   }
+  ],
+  "pop": [
+   {
+    "t": "Что означает цветная точка в левом нижнем углу?",
+    "u": "/help/colors#s1"
+   },
+   {
+    "t": "Зелёные, жёлтые и красные полосы в списке",
+    "u": "/help/colors#s2"
+   },
+   {
+    "t": "Где найти код модели?",
+    "u": "/application/guide#s2"
+   },
+   {
+    "t": "Уведомления задерживаются или не приходят",
+    "u": "/help/troubleshooting#s1"
+   },
+   {
+    "t": "Я забыл пароль",
+    "u": "/help/account#s2"
+   },
+   {
+    "t": "Приложение не устанавливается",
+    "u": "/help/troubleshooting#s2"
+   }
+  ],
+  "topics": {
+   "colors": {
+    "t": "Что означают цвета",
+    "p": "Цвета в приложении позволяют с первого взгляда оценить состояние и степень совместимости. Ниже приведено значение каждого цвета.",
+    "s": [
+     {
+      "i": "🟢",
+      "h": "Индикатор состояния (главный экран, левый нижний угол)",
+      "p": [
+       "Индикатор показывает состояние базы моделей. При нажатии отображается краткое пояснение."
+      ],
+      "ul": [
+       "{dot:green} **Зелёный** — база актуальна.",
+       "{dot:yellow} **Жёлтый** — база не обновлялась более 3 дней. Подключитесь к интернету, и база обновится автоматически.",
+       "{dot:red} **Красный** — нет подключения к интернету, приложение работает с сохранённой базой.",
+       "{dot:gray} **Серый** — выполняется проверка состояния."
+      ]
+     },
+     {
+      "i": "📏",
+      "h": "Цветные полосы в списке совместимости",
+      "p": [
+       "После выбора модели размеры экранов остальных моделей группы сравниваются с выбранной, и у левого края карточки отображается цветная полоса."
+      ],
+      "ul": [
+       "{bar:green} **Зелёная полоса** — разница в размере до 0,3 мм, стекло полностью совместимо.",
+       "{bar:yellow} **Жёлтая полоса** — разница 0,3–1 мм, стекло, как правило, подходит.",
+       "{bar:red} **Красная полоса и знак «±»** — разница более 1 мм, совместимость может быть частичной. Перед установкой проверьте размер и вырез камеры.",
+       "**Знак «✓»** — искомая (выбранная) модель."
+      ]
+     },
+     {
+      "i": "📐",
+      "h": "Точка рядом с размером",
+      "p": [
+       "Небольшая точка рядом с размером экрана (мм) указывает на источник размера."
+      ],
+      "ul": [
+       "{dot:green} **Зелёная** — официальный размер (данные производителя).",
+       "{dot:blue} **Синяя** — размер измерен на реальном устройстве или стекле.",
+       "{dot:gray} **Серая** — приблизительный размер."
+      ]
+     },
+     {
+      "i": "📷",
+      "h": "Значок выреза камеры",
+      "ul": [
+       "{dot:red} **Красный значок** — расположение и форма фронтальной камеры (вырез, капля, отверстие и т. д.). При выборе стекла учитывайте соответствие выреза.",
+       "{dot:yellow} **Жёлтый значок и жёлтый размер** — размер экрана этой модели отличается от выбранной более чем на 1 мм."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "Жёлтая полоса предупреждения и жёлтые заголовки",
+      "ul": [
+       "**Жёлтая полоса вверху страницы модели** — размеры моделей в группе различаются более чем на 1 мм. Сравните размеры перед выбором стекла.",
+       "**Раздел «Стёкла меньше на 1–2 мм»** — эти стёкла немного меньше экрана: установка возможна, но по краям остаётся небольшой зазор. Обязательно проверьте вырез камеры."
+      ]
+     },
+     {
+      "i": "🎨",
+      "h": "Другие цвета",
+      "ul": [
+       "{dot:gold} **Золотой** — учётная запись Premium (значок профиля и корона).",
+       "{dot:red} **Красная цифра** — количество непрочитанных уведомлений или сообщений.",
+       "{dot:orange} **Оранжевая кнопка «Не подошло?»** — для сообщения о том, что стекло не подошло.",
+       "{dot:green} **Зелёный** — активное, выбранное или подтверждённое состояние.",
+       "{dot:red} **Красные кнопки** — необратимые действия, например выход из учётной записи или удаление."
+      ]
+     },
+     {
+      "i": "💬",
+      "h": "Отметки в переписке «Связь с администратором»",
+      "ul": [
+       "{tick:1} **Одна серая отметка** — сообщение отправлено.",
+       "{tick:2} **Две зелёные отметки** — администратор ответил в переписке."
+      ]
+     }
+    ]
+   },
+   "where": {
+    "t": "Где что находится",
+    "p": "Основные разделы приложения и их расположение.",
+    "s": [
+     {
+      "i": "📱",
+      "h": "Верхняя панель",
+      "p": [
+       "Кнопки в правой верхней части главного экрана:"
+      ],
+      "ul": [
+       "🔔 **Уведомления** — все уведомления; количество непрочитанных отображается красной цифрой.",
+       "👤 **Профиль** — имя, e-mail, пароль, статус Premium и выход. Для Premium отображается корона.",
+       "☰ **Меню** — открывает раздел «Настройки»."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "Поиск",
+      "ul": [
+       "Поле поиска расположено вверху главного экрана: введите название или код модели.",
+       "Под полем отображается список **«Последние поиски»**.",
+       "Нажатие на результат открывает страницу модели."
+      ]
+     },
+     {
+      "i": "🧩",
+      "h": "Страница модели",
+      "ul": [
+       "Список моделей с одинаковым стеклом, размер экрана и вырез камеры.",
+       "При различии размеров вверху отображается жёлтая полоса предупреждения.",
+       "Внизу страницы находится кнопка **«Не подошло?»**."
+      ]
+     },
+     {
+      "i": "⚙️",
+      "h": "Настройки (☰ Меню)",
+      "ul": [
+       "**Тема, размер шрифта и язык** — параметры отображения.",
+       "**Настройки уведомлений и обновлений** — только в Android-приложении.",
+       "**Конфиденциальность** — политика конфиденциальности.",
+       "**Контакты** — «Связь с администратором», Telegram и e-mail.",
+       "**О приложении** — версия и нововведения."
+      ]
+     },
+     {
+      "i": "🟢",
+      "h": "Индикатор состояния",
+      "p": [
+       "Расположен в левом нижнем углу и отображается только на главном экране. Значение цветов: [Что означают цвета](/help/colors#s1)."
+      ]
+     },
+     {
+      "h": "Связь с администратором",
+      "p": [
+       "В разделе «Настройки → Контакты» с помощью функции **«Связь с администратором»** можно вести прямую переписку. При поступлении ответа отправляется уведомление.",
+       "Переписка и изображения автоматически удаляются через 30 дней."
+      ],
+      "i": "💬"
+     }
+    ]
+   },
+   "notifications": {
+    "t": "Уведомления",
+    "p": "Виды уведомлений, тихий режим и рекомендации для своевременной доставки.",
+    "s": [
+     {
+      "h": "Уведомления",
+      "p": [
+       "Приложение отправляет уведомления о новых моделях, объявлениях и важных предупреждениях."
+      ],
+      "ul": [
+       "Отдельные типы уведомлений можно отключить в разделе «Настройки».",
+       "При включённом тихом режиме уведомления с 23:00 до 09:00 доставляются без звука.",
+       "Предупреждения и уведомления типа «Важно» отключить нельзя.",
+       "Чтобы уведомления не задерживались, рекомендуется исключить приложение из оптимизации батареи. Если ограничение сохраняется, в разделе «Настройки» отображается предупреждение."
+      ],
+      "i": "🔔"
+     },
+     {
+      "i": "✅",
+      "h": "Разрешение на уведомления",
+      "ul": [
+       "В Android 13 и новее приложение запрашивает разрешение при первом запуске — выберите **«Разрешить»**.",
+       "Разрешение можно включить позже в разделе устройства «Настройки → Приложения → ProTechtor → Уведомления»."
+      ]
+     },
+     {
+      "i": "📨",
+      "h": "Ответ на обращение",
+      "p": [
+       "При поступлении ответа в переписке «Связь с администратором» вам отправляется уведомление."
+      ]
+     }
+    ]
+   },
+   "account": {
+    "t": "Учётная запись и Premium",
+    "p": "Регистрация, вход, восстановление пароля, Premium и удаление учётной записи.",
+    "s": [
+     {
+      "i": "📝",
+      "h": "Регистрация",
+      "p": [
+       "Регистрация возможна двумя способами: с помощью e-mail и пароля или через аккаунт Google. Номер телефона обязателен для всех учётных записей.",
+       "Подробнее: [Регистрация](/account/register)."
+      ]
+     },
+     {
+      "i": "🔑",
+      "h": "Я забыл пароль",
+      "ul": [
+       "На экране входа выберите **«Забыли пароль?»** и укажите e-mail, использованный при регистрации.",
+       "Письмо для восстановления приходит в течение нескольких минут. Если письма нет, проверьте папку «Спам».",
+       "При входе через Google пароль управляется в вашем аккаунте Google."
+      ]
+     },
+     {
+      "i": "👤",
+      "h": "Изменение данных профиля",
+      "p": [
+       "Кнопка 👤 **Профиль** на верхней панели позволяет изменить имя, e-mail и пароль."
+      ]
+     },
+     {
+      "h": "Premium и ProTechtor™ Помощник",
+      "p": [
+       "Учётная запись Premium предоставляет расширенные возможности, в том числе сервис **ProTechtor™ Помощник** на основе искусственного интеллекта. Для новых учётных записей предусмотрен пробный период Premium."
+      ],
+      "i": "⭐"
+     },
+     {
+      "i": "🗑️",
+      "h": "Удаление учётной записи",
+      "p": [
+       "Для удаления учётной записи и всех персональных данных обратитесь через каналы, указанные на странице [Контакты](/contact). Укажите в обращении e-mail, использованный при регистрации."
+      ]
+     }
+    ]
+   },
+   "troubleshooting": {
+    "t": "Решение проблем",
+    "p": "Наиболее распространённые проблемы и способы их решения.",
+    "s": [
+     {
+      "i": "🔔",
+      "h": "Уведомления задерживаются или не приходят",
+      "ul": [
+       "Убедитесь, что уведомления разрешены.",
+       "Исключите приложение из оптимизации батареи — если ограничение сохраняется, в «Настройках» отображается предупреждение.",
+       "Проверьте, не включён ли тихий режим (23:00–09:00)."
+      ]
+     },
+     {
+      "i": "📲",
+      "h": "Приложение не устанавливается",
+      "ul": [
+       "Убедитесь, что на устройстве достаточно свободного места.",
+       "Убедитесь, что файл загружен полностью; при необходимости [загрузите его повторно](/application/download).",
+       "Проверьте, выдано ли разрешение «Установка из неизвестных источников».",
+       "Подробнее: [Инструкция по установке](/application/install)."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "Модель не найдена",
+      "ul": [
+       "Попробуйте сокращённый код модели (например, **A556B**).",
+       "Попробуйте другое написание: например, **Samsung A55** вместо **Galaxy A55**.",
+       "Если модели нет в базе, [сообщите нам](/contact) — база регулярно обновляется."
+      ]
+     },
+     {
+      "i": "🟡",
+      "h": "Индикатор состояния жёлтый",
+      "p": [
+       "База не обновлялась более 3 дней. Подключитесь к интернету и перезапустите приложение — база обновится автоматически."
+      ]
+     },
+     {
+      "i": "⛔",
+      "h": "Поиск ограничен",
+      "p": [
+       "Без регистрации количество поисков ограничено. Чтобы продолжить после исчерпания лимита, войдите или [зарегистрируйтесь](/account/register)."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "Стекло не подошло",
+      "p": [
+       "Сообщите нам с помощью кнопки **«Не подошло?»** на странице модели. Сообщения проверяются, и база исправляется."
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "tr": {
+  "page": {
+   "title": "Yardım merkezi",
+   "desc": "ProTechtor™ Yardım merkezi: kullanım ve kurulum kılavuzları, renklerin anlamı, arayüz rehberi, bildirimler, hesap ve sorun giderme."
+  },
+  "hub": {
+   "h": "Size nasıl yardımcı olabiliriz?",
+   "search": "Yardım makalelerinde ara…",
+   "topics": "Ana konular",
+   "popular": "Popüler makaleler",
+   "none": "Sonuç bulunamadı. Aramayı farklı kelimelerle deneyin.",
+   "back": "Yardım merkezi",
+   "more": "Diğer konular",
+   "still": "Yanıtı bulamadınız mı?",
+   "stillP": "Bize yazın — başvurunuza en kısa sürede yanıt veriyoruz.",
+   "contact": "Bize yazın"
+  },
+  "tiles": [
+   {
+    "id": "guide",
+    "t": "Kullanım kılavuzu",
+    "u": "/application/guide"
+   },
+   {
+    "id": "install",
+    "t": "Kurulum",
+    "u": "/application/install"
+   },
+   {
+    "id": "colors",
+    "t": "Renkler ne anlama gelir",
+    "u": "/help/colors"
+   },
+   {
+    "id": "where",
+    "t": "Ne nerede",
+    "u": "/help/where"
+   },
+   {
+    "id": "notifications",
+    "t": "Bildirimler",
+    "u": "/help/notifications"
+   },
+   {
+    "id": "account",
+    "t": "Hesap ve Premium",
+    "u": "/help/account"
+   },
+   {
+    "id": "troubleshooting",
+    "t": "Sorun giderme",
+    "u": "/help/troubleshooting"
+   },
+   {
+    "id": "contact",
+    "t": "Bize ulaşın",
+    "u": "/contact"
+   }
+  ],
+  "pop": [
+   {
+    "t": "Sol alt köşedeki renkli nokta ne anlama gelir?",
+    "u": "/help/colors#s1"
+   },
+   {
+    "t": "Listedeki yeşil, sarı ve kırmızı şeritler",
+    "u": "/help/colors#s2"
+   },
+   {
+    "t": "Model kodu nerede bulunur?",
+    "u": "/application/guide#s2"
+   },
+   {
+    "t": "Bildirimler gecikiyor veya gelmiyor",
+    "u": "/help/troubleshooting#s1"
+   },
+   {
+    "t": "Şifremi unuttum",
+    "u": "/help/account#s2"
+   },
+   {
+    "t": "Uygulama yüklenmiyor",
+    "u": "/help/troubleshooting#s2"
+   }
+  ],
+  "topics": {
+   "colors": {
+    "t": "Renkler ne anlama gelir",
+    "p": "Uygulamadaki renkler durumu ve uyumluluk derecesini tek bakışta gösterir. Aşağıda her rengin anlamı açıklanmıştır.",
+    "s": [
+     {
+      "i": "🟢",
+      "h": "Durum noktası (ana ekran, sol alt köşe)",
+      "p": [
+       "Nokta, model veritabanının durumunu gösterir. Üzerine dokunulduğunda kısa bir açıklama görüntülenir."
+      ],
+      "ul": [
+       "{dot:green} **Yeşil** — veritabanı günceldir.",
+       "{dot:yellow} **Sarı** — veritabanı 3 günden uzun süredir güncellenmedi. İnternete bağlanın, veritabanı otomatik olarak güncellenecektir.",
+       "{dot:red} **Kırmızı** — internet bağlantısı yok, uygulama cihazdaki veritabanıyla çalışır.",
+       "{dot:gray} **Gri** — durum kontrol ediliyor."
+      ]
+     },
+     {
+      "i": "📏",
+      "h": "Uyumluluk listesindeki renkli şeritler",
+      "p": [
+       "Model seçildikten sonra gruptaki diğer modellerin ekran ölçüsü seçilen modelle karşılaştırılır ve kartın sol kenarında renkli bir şerit gösterilir."
+      ],
+      "ul": [
+       "{bar:green} **Yeşil şerit** — ölçü farkı 0,3 mm'ye kadardır, cam tamamen uyumludur.",
+       "{bar:yellow} **Sarı şerit** — ölçü farkı 0,3–1 mm arasındadır, cam genellikle uyar.",
+       "{bar:red} **Kırmızı şerit ve «±» işareti** — ölçü farkı 1 mm'den fazladır, uyumluluk kısmi olabilir. Takmadan önce ölçüyü ve kamera kesimini kontrol edin.",
+       "**«✓» işareti** — aradığınız (seçilen) model."
+      ]
+     },
+     {
+      "i": "📐",
+      "h": "Ölçünün yanındaki nokta",
+      "p": [
+       "Ekran ölçüsünün (mm) yanındaki küçük nokta, ölçünün kaynağını gösterir."
+      ],
+      "ul": [
+       "{dot:green} **Yeşil** — resmi ölçü (üretici bilgisi).",
+       "{dot:blue} **Mavi** — ölçü gerçek cihaz veya cam üzerinde ölçülmüştür.",
+       "{dot:gray} **Gri** — yaklaşık ölçü."
+      ]
+     },
+     {
+      "i": "📷",
+      "h": "Kamera kesimi simgesi",
+      "ul": [
+       "{dot:red} **Kırmızı simge** — ön kameranın ekrandaki yeri ve şekli (çentik, damla, delik vb.). Cam seçerken kesimin uyumuna dikkat edin.",
+       "{dot:yellow} **Sarı simge ve sarı ölçü yazısı** — bu modelin ekran ölçüsü seçilen modelden 1 mm'den fazla farklıdır."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "Sarı uyarı şeridi ve sarı başlıklar",
+      "ul": [
+       "**Model sayfasının üstündeki sarı şerit** — gruptaki modellerin ölçüleri arasında 1 mm'den fazla fark vardır. Cam seçmeden önce ölçüleri karşılaştırın.",
+       "**«1–2 mm küçük camlar» bölümü** — bu camlar ekranınızdan biraz küçüktür: takılabilir, ancak kenarlarda küçük bir boşluk kalır. Kamera kesimini mutlaka kontrol edin."
+      ]
+     },
+     {
+      "i": "🎨",
+      "h": "Diğer renkler",
+      "ul": [
+       "{dot:gold} **Altın** — Premium hesap (profil rozeti ve taç).",
+       "{dot:red} **Kırmızı sayı** — okunmamış bildirim veya mesaj sayısı.",
+       "{dot:orange} **Turuncu «Uymadı mı?» düğmesi** — cam uymadığında bize bildirmek içindir.",
+       "{dot:green} **Yeşil** — etkin, seçili veya onaylanmış durum.",
+       "{dot:red} **Kırmızı düğmeler** — hesaptan çıkış ve silme gibi geri alınamayan işlemler."
+      ]
+     },
+     {
+      "i": "💬",
+      "h": "«Yönetici ile iletişim» yazışmasındaki işaretler",
+      "ul": [
+       "{tick:1} **Tek gri işaret** — mesajınız gönderildi.",
+       "{tick:2} **İki yeşil işaret** — yönetici yazışmaya yanıt verdi."
+      ]
+     }
+    ]
+   },
+   "where": {
+    "t": "Ne nerede",
+    "p": "Uygulamanın ana bölümleri ve bulundukları yerler.",
+    "s": [
+     {
+      "i": "📱",
+      "h": "Üst panel",
+      "p": [
+       "Ana ekranın sağ üst kısmındaki düğmeler:"
+      ],
+      "ul": [
+       "🔔 **Bildirimler** — tüm bildirimler; okunmamışların sayısı kırmızı rakamla gösterilir.",
+       "👤 **Profil** — ad, e-posta, şifre, Premium durumu ve çıkış. Premium hesapta taç görünür.",
+       "☰ **Menü** — «Ayarlar» bölümünü açar."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "Arama",
+      "ul": [
+       "Arama alanı ana ekranın üstündedir: model adını veya kodunu girin.",
+       "Alanın altında **«Son aramalar»** listesi gösterilir.",
+       "Bir sonuca dokunulduğunda model sayfası açılır."
+      ]
+     },
+     {
+      "i": "🧩",
+      "h": "Model sayfası",
+      "ul": [
+       "Aynı cama uyan modellerin listesi, ekran ölçüsü ve kamera kesimi.",
+       "Ölçü farkı olduğunda üstte sarı uyarı şeridi gösterilir.",
+       "Sayfanın altında **«Uymadı mı?»** düğmesi bulunur."
+      ]
+     },
+     {
+      "i": "⚙️",
+      "h": "Ayarlar (☰ Menü)",
+      "ul": [
+       "**Tema, yazı boyutu ve dil** — görünüm ayarları.",
+       "**Bildirim ve güncelleme ayarları** — yalnızca Android uygulamasında gösterilir.",
+       "**Gizlilik** — gizlilik politikası.",
+       "**İletişim** — «Yönetici ile iletişim», Telegram ve e-posta.",
+       "**Uygulama hakkında** — sürüm ve yenilikler."
+      ]
+     },
+     {
+      "i": "🟢",
+      "h": "Durum noktası",
+      "p": [
+       "Ana ekranın sol alt köşesinde bulunur ve yalnızca ana ekranda görünür. Renklerin anlamı: [Renkler ne anlama gelir](/help/colors#s1)."
+      ]
+     },
+     {
+      "h": "Yönetici ile iletişim",
+      "p": [
+       "«Ayarlar → İletişim» bölümündeki **«Yönetici ile iletişim»** işlevi aracılığıyla doğrudan yazışabilirsiniz. Yanıt geldiğinde bildirim gönderilir.",
+       "Yazışmalar ve görseller 30 gün sonra otomatik olarak silinir."
+      ],
+      "i": "💬"
+     }
+    ]
+   },
+   "notifications": {
+    "t": "Bildirimler",
+    "p": "Bildirim türleri, sessiz mod ve bildirimlerin zamanında ulaşması için öneriler.",
+    "s": [
+     {
+      "h": "Bildirimler",
+      "p": [
+       "Uygulama yeni modeller, duyurular ve önemli uyarılar hakkında bildirim gönderir."
+      ],
+      "ul": [
+       "Bildirim türleri «Ayarlar» bölümünden ayrı ayrı kapatılabilir.",
+       "Sessiz mod etkinken 23:00–09:00 arasında bildirimler sessiz iletilir.",
+       "Uyarı ve «Önemli» türündeki bildirimler kapatılamaz.",
+       "Bildirimlerin gecikmemesi için uygulamanın pil optimizasyonundan çıkarılması önerilir. Kısıtlama devam ederse «Ayarlar» bölümünde uyarı gösterilir."
+      ],
+      "i": "🔔"
+     },
+     {
+      "i": "✅",
+      "h": "Bildirim izni",
+      "ul": [
+       "Android 13 ve sonraki sürümlerde uygulama ilk açılışta bildirim izni ister — **«İzin ver»** seçeneğini seçin.",
+       "İzni daha sonra cihazın «Ayarlar → Uygulamalar → ProTechtor → Bildirimler» bölümünden etkinleştirebilirsiniz."
+      ]
+     },
+     {
+      "i": "📨",
+      "h": "Başvuruya yanıt",
+      "p": [
+       "«Yönetici ile iletişim» yazışmasına yanıt geldiğinde size bildirim gönderilir."
+      ]
+     }
+    ]
+   },
+   "account": {
+    "t": "Hesap ve Premium",
+    "p": "Kayıt, giriş, şifre kurtarma, Premium ve hesabın silinmesi.",
+    "s": [
+     {
+      "i": "📝",
+      "h": "Kayıt",
+      "p": [
+       "Kayıt iki şekilde yapılabilir: e-posta ve şifre ile veya Google hesabı ile. Telefon numarası tüm hesaplar için zorunludur.",
+       "Ayrıntılar: [Kayıt](/account/register)."
+      ]
+     },
+     {
+      "i": "🔑",
+      "h": "Şifremi unuttum",
+      "ul": [
+       "Giriş ekranında **«Şifremi unuttum»** seçeneğini seçin ve kayıtta kullandığınız e-posta adresini girin.",
+       "Kurtarma e-postası birkaç dakika içinde gönderilir. E-posta görünmüyorsa «Spam» klasörünü kontrol edin.",
+       "Google hesabıyla giriş yapıyorsanız şifre Google hesabınızda yönetilir."
+      ]
+     },
+     {
+      "i": "👤",
+      "h": "Profil bilgilerinin değiştirilmesi",
+      "p": [
+       "Üst paneldeki 👤 **Profil** düğmesiyle ad, e-posta ve şifre değiştirilebilir."
+      ]
+     },
+     {
+      "h": "Premium ve ProTechtor™ Asistan",
+      "p": [
+       "Premium hesap, yapay zekâ tabanlı **ProTechtor™ Asistan** hizmeti dahil olmak üzere gelişmiş özellikler sunar. Yeni hesaplar için Premium deneme süresi öngörülmüştür."
+      ],
+      "i": "⭐"
+     },
+     {
+      "i": "🗑️",
+      "h": "Hesabın silinmesi",
+      "p": [
+       "Hesabınızın ve tüm kişisel verilerinizin silinmesi için [İletişim](/contact) sayfasında belirtilen kanallar aracılığıyla başvurun. Başvuruda kayıt e-postanızı belirtin."
+      ]
+     }
+    ]
+   },
+   "troubleshooting": {
+    "t": "Sorun giderme",
+    "p": "En sık karşılaşılan sorunlar ve çözüm yolları.",
+    "s": [
+     {
+      "i": "🔔",
+      "h": "Bildirimler gecikiyor veya gelmiyor",
+      "ul": [
+       "Bildirim izninin verildiğini kontrol edin.",
+       "Uygulamayı pil optimizasyonundan çıkarın — kısıtlama devam ederse «Ayarlar» bölümünde uyarı gösterilir.",
+       "Sessiz modun (23:00–09:00) etkin olup olmadığını kontrol edin."
+      ]
+     },
+     {
+      "i": "📲",
+      "h": "Uygulama yüklenmiyor",
+      "ul": [
+       "Cihazda yeterli boş alan olduğunu kontrol edin.",
+       "Dosyanın tamamen indirildiğinden emin olun; gerekirse dosyayı [yeniden indirin](/application/download).",
+       "«Bilinmeyen kaynaklardan yükleme» izninin verildiğini kontrol edin.",
+       "Ayrıntılar: [Kurulum kılavuzu](/application/install)."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "Model bulunamıyor",
+      "ul": [
+       "Model kodunu kısaltılmış biçimde (örneğin **A556B**) deneyin.",
+       "Farklı bir yazımla deneyin: örneğin **Galaxy A55** yerine **Samsung A55**.",
+       "Model veritabanında yoksa [bize bildirin](/contact) — veritabanı düzenli olarak güncellenir."
+      ]
+     },
+     {
+      "i": "🟡",
+      "h": "Durum noktası sarı",
+      "p": [
+       "Veritabanı 3 günden uzun süredir güncellenmedi. İnternete bağlanıp uygulamayı yeniden açın — veritabanı otomatik olarak güncellenecektir."
+      ]
+     },
+     {
+      "i": "⛔",
+      "h": "Arama sınırlandı",
+      "p": [
+       "Kayıtsız kullanımda arama sayısı sınırlıdır. Sınır dolduğunda devam etmek için giriş yapın veya [kayıt olun](/account/register)."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "Cam uymadı",
+      "p": [
+       "Model sayfasındaki **«Uymadı mı?»** düğmesiyle bize bildirin. Bildirimler incelenir ve veritabanı düzeltilir."
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "en": {
+  "page": {
+   "title": "Help Centre",
+   "desc": "ProTechtor™ Help Centre: user and installation guides, colour meanings, interface guide, notifications, account and troubleshooting."
+  },
+  "hub": {
+   "h": "How can we help you?",
+   "search": "Search help articles…",
+   "topics": "Popular topics",
+   "popular": "Popular articles",
+   "none": "No results found. Try different words.",
+   "back": "Help Centre",
+   "more": "Other topics",
+   "still": "Didn't find an answer?",
+   "stillP": "Write to us — we reply to every request as soon as possible.",
+   "contact": "Contact us"
+  },
+  "tiles": [
+   {
+    "id": "guide",
+    "t": "User guide",
+    "u": "/application/guide"
+   },
+   {
+    "id": "install",
+    "t": "Installation",
+    "u": "/application/install"
+   },
+   {
+    "id": "colors",
+    "t": "What the colours mean",
+    "u": "/help/colors"
+   },
+   {
+    "id": "where",
+    "t": "Where to find things",
+    "u": "/help/where"
+   },
+   {
+    "id": "notifications",
+    "t": "Notifications",
+    "u": "/help/notifications"
+   },
+   {
+    "id": "account",
+    "t": "Account and Premium",
+    "u": "/help/account"
+   },
+   {
+    "id": "troubleshooting",
+    "t": "Troubleshooting",
+    "u": "/help/troubleshooting"
+   },
+   {
+    "id": "contact",
+    "t": "Contact us",
+    "u": "/contact"
+   }
+  ],
+  "pop": [
+   {
+    "t": "What does the coloured dot in the bottom-left corner mean?",
+    "u": "/help/colors#s1"
+   },
+   {
+    "t": "Green, yellow and red strips in the list",
+    "u": "/help/colors#s2"
+   },
+   {
+    "t": "Where can I find the model code?",
+    "u": "/application/guide#s2"
+   },
+   {
+    "t": "Notifications are delayed or missing",
+    "u": "/help/troubleshooting#s1"
+   },
+   {
+    "t": "I forgot my password",
+    "u": "/help/account#s2"
+   },
+   {
+    "t": "The app will not install",
+    "u": "/help/troubleshooting#s2"
+   }
+  ],
+  "topics": {
+   "colors": {
+    "t": "What the colours mean",
+    "p": "Colours in the app show status and the degree of compatibility at a glance. The meaning of each colour is explained below.",
+    "s": [
+     {
+      "i": "🟢",
+      "h": "Status dot (main screen, bottom-left corner)",
+      "p": [
+       "The dot shows the state of the model database. Tap it to see a short explanation."
+      ],
+      "ul": [
+       "{dot:green} **Green** — the database is up to date.",
+       "{dot:yellow} **Yellow** — the database has not been updated for more than 3 days. Connect to the internet and it will update automatically.",
+       "{dot:red} **Red** — no internet connection; the app is using the database stored on the device.",
+       "{dot:gray} **Grey** — the status is being checked."
+      ]
+     },
+     {
+      "i": "📏",
+      "h": "Coloured strips in the compatibility list",
+      "p": [
+       "Once a model is selected, the screen size of every other model in the group is compared with it and a coloured strip is shown on the left edge of the card."
+      ],
+      "ul": [
+       "{bar:green} **Green strip** — size difference up to 0.3 mm; the glass is fully compatible.",
+       "{bar:yellow} **Yellow strip** — difference of 0.3–1 mm; the glass usually fits.",
+       "{bar:red} **Red strip and «±» sign** — difference over 1 mm; compatibility may be partial. Check the size and camera cutout before fitting.",
+       "**«✓» sign** — the model you searched for (selected)."
+      ]
+     },
+     {
+      "i": "📐",
+      "h": "Dot next to the size",
+      "p": [
+       "The small dot next to the screen size (mm) shows where the size comes from."
+      ],
+      "ul": [
+       "{dot:green} **Green** — official size (manufacturer data).",
+       "{dot:blue} **Blue** — measured on a real device or glass.",
+       "{dot:gray} **Grey** — approximate size."
+      ]
+     },
+     {
+      "i": "📷",
+      "h": "Camera cutout icon",
+      "ul": [
+       "{dot:red} **Red icon** — position and shape of the front camera (notch, drop, hole, etc.). Check that the cutout matches when choosing a glass.",
+       "{dot:yellow} **Yellow icon and yellow size** — this model's screen size differs from the selected model by more than 1 mm."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "Yellow warning bar and yellow headings",
+      "ul": [
+       "**Yellow bar at the top of a model page** — sizes within the group differ by more than 1 mm. Compare the sizes before choosing a glass.",
+       "**«Glasses 1–2 mm smaller» section** — these glasses are slightly smaller than your screen: they can be fitted, but a small gap remains at the edges. Always check the camera cutout."
+      ]
+     },
+     {
+      "i": "🎨",
+      "h": "Other colours",
+      "ul": [
+       "{dot:gold} **Gold** — Premium account (profile badge and crown).",
+       "{dot:red} **Red number** — number of unread notifications or messages.",
+       "{dot:orange} **Orange «Didn't fit?» button** — to tell us that a glass did not fit.",
+       "{dot:green} **Green** — active, selected or confirmed state.",
+       "{dot:red} **Red buttons** — irreversible actions such as signing out or deleting."
+      ]
+     },
+     {
+      "i": "💬",
+      "h": "Ticks in «Contact the administrator»",
+      "ul": [
+       "{tick:1} **One grey tick** — your message has been sent.",
+       "{tick:2} **Two green ticks** — the administrator has replied."
+      ]
+     }
+    ]
+   },
+   "where": {
+    "t": "Where to find things",
+    "p": "The main sections of the app and where they are located.",
+    "s": [
+     {
+      "i": "📱",
+      "h": "Top bar",
+      "p": [
+       "Buttons in the top-right corner of the main screen:"
+      ],
+      "ul": [
+       "🔔 **Notifications** — all notifications; the number of unread ones is shown in red.",
+       "👤 **Profile** — name, e-mail, password, Premium status and sign-out. A crown is shown for Premium accounts.",
+       "☰ **Menu** — opens «Settings»."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "Search",
+      "ul": [
+       "The search field is at the top of the main screen: enter a model name or code.",
+       "The **«Recent searches»** list is shown below the field.",
+       "Tap a result to open the model page."
+      ]
+     },
+     {
+      "i": "🧩",
+      "h": "Model page",
+      "ul": [
+       "List of models that share the same glass, screen size and camera cutout.",
+       "If sizes differ, a yellow warning bar appears at the top.",
+       "The **«Didn't fit?»** button is at the bottom of the page."
+      ]
+     },
+     {
+      "i": "⚙️",
+      "h": "Settings (☰ Menu)",
+      "ul": [
+       "**Theme, font size and language** — display options.",
+       "**Notification and update settings** — shown only in the Android app.",
+       "**Privacy** — privacy policy.",
+       "**Contact** — «Contact the administrator», Telegram and e-mail.",
+       "**About the app** — version and what's new."
+      ]
+     },
+     {
+      "i": "🟢",
+      "h": "Status dot",
+      "p": [
+       "Located in the bottom-left corner and shown only on the main screen. Colour meanings: [What the colours mean](/help/colors#s1)."
+      ]
+     },
+     {
+      "h": "Contacting the administrator",
+      "p": [
+       "In «Settings → Contact», the **«Contact the administrator»** option lets you message us directly. You are notified when a reply arrives.",
+       "Messages and images are deleted automatically after 30 days."
+      ],
+      "i": "💬"
+     }
+    ]
+   },
+   "notifications": {
+    "t": "Notifications",
+    "p": "Notification types, quiet mode and tips for timely delivery.",
+    "s": [
+     {
+      "h": "Notifications",
+      "p": [
+       "The app sends notifications about new models, announcements and important warnings."
+      ],
+      "ul": [
+       "Individual notification types can be turned off in «Settings».",
+       "When quiet mode is on, notifications between 23:00 and 09:00 are delivered silently.",
+       "Warnings and «Important» notifications cannot be turned off.",
+       "To avoid delayed notifications, it is recommended to exempt the app from battery optimization. If the restriction remains, a warning is shown in «Settings»."
+      ],
+      "i": "🔔"
+     },
+     {
+      "i": "✅",
+      "h": "Notification permission",
+      "ul": [
+       "On Android 13 and newer, the app asks for permission at first launch — choose **«Allow»**.",
+       "You can enable it later in the device «Settings → Apps → ProTechtor → Notifications»."
+      ]
+     },
+     {
+      "i": "📨",
+      "h": "Replies to your requests",
+      "p": [
+       "You receive a notification when a reply arrives in «Contact the administrator»."
+      ]
+     }
+    ]
+   },
+   "account": {
+    "t": "Account and Premium",
+    "p": "Registration, sign-in, password recovery, Premium and account deletion.",
+    "s": [
+     {
+      "i": "📝",
+      "h": "Registration",
+      "p": [
+       "You can register with an e-mail and password or with a Google account. A phone number is required for all accounts.",
+       "Details: [Sign up](/account/register)."
+      ]
+     },
+     {
+      "i": "🔑",
+      "h": "I forgot my password",
+      "ul": [
+       "On the sign-in screen choose **«Forgot password?»** and enter the e-mail address used at registration.",
+       "The recovery e-mail arrives within a few minutes. If you cannot see it, check the «Spam» folder.",
+       "If you sign in with Google, the password is managed in your Google account."
+      ]
+     },
+     {
+      "i": "👤",
+      "h": "Changing profile details",
+      "p": [
+       "Use the 👤 **Profile** button in the top bar to change your name, e-mail and password."
+      ]
+     },
+     {
+      "h": "Premium and ProTechtor™ Assistant",
+      "p": [
+       "A Premium account provides extended features, including the AI-based **ProTechtor™ Assistant**. New accounts are offered a Premium trial period."
+      ],
+      "i": "⭐"
+     },
+     {
+      "i": "🗑️",
+      "h": "Deleting your account",
+      "p": [
+       "To delete your account and all personal data, contact us through the channels listed on the [Contact](/contact) page. Please include your registration e-mail."
+      ]
+     }
+    ]
+   },
+   "troubleshooting": {
+    "t": "Troubleshooting",
+    "p": "The most common problems and how to solve them.",
+    "s": [
+     {
+      "i": "🔔",
+      "h": "Notifications are delayed or missing",
+      "ul": [
+       "Make sure notifications are allowed.",
+       "Exclude the app from battery optimisation — if the restriction remains, a warning is shown in «Settings».",
+       "Check whether quiet mode (23:00–09:00) is on."
+      ]
+     },
+     {
+      "i": "📲",
+      "h": "The app will not install",
+      "ul": [
+       "Make sure the device has enough free space.",
+       "Make sure the file downloaded completely; if necessary, [download it again](/application/download).",
+       "Check that «Install unknown apps» permission is granted.",
+       "Details: [Installation guide](/application/install)."
+      ]
+     },
+     {
+      "i": "🔎",
+      "h": "A model cannot be found",
+      "ul": [
+       "Try the short model code (e.g. **A556B**).",
+       "Try a different spelling: e.g. **Samsung A55** instead of **Galaxy A55**.",
+       "If the model is not in the database, [let us know](/contact) — the database is updated regularly."
+      ]
+     },
+     {
+      "i": "🟡",
+      "h": "The status dot is yellow",
+      "p": [
+       "The database has not been updated for more than 3 days. Connect to the internet and reopen the app — it will update automatically."
+      ]
+     },
+     {
+      "i": "⛔",
+      "h": "Search is limited",
+      "p": [
+       "Without an account the number of searches is limited. When the limit is reached, sign in or [sign up](/account/register) to continue."
+      ]
+     },
+     {
+      "i": "⚠️",
+      "h": "A glass did not fit",
+      "p": [
+       "Tell us with the **«Didn't fit?»** button on the model page. Reports are reviewed and the database is corrected."
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

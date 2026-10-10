@@ -12,6 +12,11 @@ export default {
       return Response.redirect(url.toString(), 301);
     }
 
+    // Köhnə ünvanlar → yeni səhifələr
+    const MOVED = { "/application/android": "/application/guide", "/register": "/account/register", "/login": "/account/login" };
+    const moved = MOVED[url.pathname.replace(/\.html$/, "").replace(/\/$/, "")];
+    if (moved) return Response.redirect("https://protechtor.app" + moved + url.search + url.hash, 301);
+
     if (url.pathname === "/apk/version.json") {
       const r = await fetch(VERSION_SRC + "?t=" + Date.now(), { cf: { cacheTtl: 0 } });
       if (!r.ok) return new Response("{}", { status: 502, headers: { "content-type": "application/json" } });

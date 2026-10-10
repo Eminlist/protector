@@ -1,0 +1,210 @@
+{
+ "az": {
+  "page": {
+   "title": "Qeydiyyat",
+   "desc": "ProTechtor™ hesabının yaradılması: tələb olunan məlumatlar və qeydiyyat qaydası."
+  },
+  "hero": {
+   "h": "Qeydiyyat",
+   "p": "ProTechtor™ hesabı proqramın bütün imkanlarından istifadə etməyə və Premium sınaq müddətini aktivləşdirməyə imkan verir."
+  },
+  "btn": {
+   "open": "Qeydiyyatdan keç",
+   "dl": "Android proqramını yüklə",
+   "alt": "Hesabınız var? Daxil olun"
+  },
+  "s": [
+   {
+    "i": "🧭",
+    "h": "Qeydiyyat qaydası",
+    "ol": [
+     "Proqramı açın və **«E-poçt və parol»** və ya **«Google hesabı»** üsulunu seçin.",
+     "E-poçt üsulunda **«Hesabınız yoxdur? Qeydiyyat»** keçidinə toxunun.",
+     "Formu doldurun və **«Qeydiyyatı Tamamla»** düyməsini sıxın.",
+     "Google üsulunda hesabı seçdikdən sonra telefon nömrənizi daxil edin."
+    ]
+   },
+   {
+    "i": "📋",
+    "h": "Tələb olunan məlumatlar",
+    "ul": [
+     "**Ad və soyad** — ən azı 3 hərf.",
+     "**E-poçt ünvanı** — giriş və şifrənin bərpası üçün.",
+     "**Şifrə** — ən azı 8 simvol, 1 rəqəm, 1 böyük və 1 kiçik hərf.",
+     "**Telefon nömrəsi** — 9 rəqəm (məsələn, 50 123 45 67).",
+     "**Mağaza adı və ünvanı** — istəyə bağlı."
+    ]
+   },
+   {
+    "i": "📱",
+    "h": "Telefon nömrəsi nə üçün tələb olunur?",
+    "p": [
+     "Telefon nömrəsi Premium sınaq müddətindən təkrar və sui-istifadənin qarşısını almaq məqsədilə tələb olunur. Nömrə reklam məqsədilə istifadə edilmir və üçüncü şəxslərə ötürülmür. Ətraflı: [Məxfilik siyasəti](/privacy)."
+    ]
+   },
+   {
+    "i": "⭐",
+    "h": "Premium sınaq müddəti",
+    "p": [
+     "Yeni hesablar üçün Premium sınaq müddəti nəzərdə tutulub. Ətraflı: [Hesab və Premium](/help/account#s4)."
+    ]
+   }
+  ]
+ },
+ "ru": {
+  "page": {
+   "title": "Регистрация",
+   "desc": "Создание учётной записи ProTechtor™: необходимые данные и порядок регистрации."
+  },
+  "hero": {
+   "h": "Регистрация",
+   "p": "Учётная запись ProTechtor™ даёт доступ ко всем возможностям приложения и позволяет активировать пробный период Premium."
+  },
+  "btn": {
+   "open": "Зарегистрироваться",
+   "dl": "Скачать Android-приложение",
+   "alt": "Уже есть учётная запись? Войдите"
+  },
+  "s": [
+   {
+    "i": "🧭",
+    "h": "Порядок регистрации",
+    "ol": [
+     "Откройте приложение и выберите способ **«Email и пароль»** или **«Аккаунт Google»**.",
+     "При выборе e-mail нажмите **«Нет аккаунта? Регистрация»**.",
+     "Заполните форму и нажмите **«Завершить регистрацию»**.",
+     "При входе через Google после выбора аккаунта укажите номер телефона."
+    ]
+   },
+   {
+    "i": "📋",
+    "h": "Необходимые данные",
+    "ul": [
+     "**Имя и фамилия** — не менее 3 букв.",
+     "**Адрес e-mail** — для входа и восстановления пароля.",
+     "**Пароль** — не менее 8 символов, 1 цифра, 1 заглавная и 1 строчная буква.",
+     "**Номер телефона** — 9 цифр (например, 50 123 45 67).",
+     "**Название и адрес магазина** — по желанию."
+    ]
+   },
+   {
+    "i": "📱",
+    "h": "Зачем нужен номер телефона?",
+    "p": [
+     "Номер телефона требуется для предотвращения повторного использования пробного периода Premium и злоупотреблений. Номер не используется в рекламных целях и не передаётся третьим лицам. Подробнее: [Политика конфиденциальности](/privacy)."
+    ]
+   },
+   {
+    "i": "⭐",
+    "h": "Пробный период Premium",
+    "p": [
+     "Для новых учётных записей предусмотрен пробный период Premium. Подробнее: [Учётная запись и Premium](/help/account#s4)."
+    ]
+   }
+  ]
+ },
+ "tr": {
+  "page": {
+   "title": "Kayıt",
+   "desc": "ProTechtor™ hesabı oluşturma: gerekli bilgiler ve kayıt yöntemi."
+  },
+  "hero": {
+   "h": "Kayıt ol",
+   "p": "ProTechtor™ hesabı, uygulamanın tüm özelliklerinden yararlanmanızı ve Premium deneme süresini etkinleştirmenizi sağlar."
+  },
+  "btn": {
+   "open": "Kayıt ol",
+   "dl": "Android uygulamasını indir",
+   "alt": "Hesabınız var mı? Giriş yapın"
+  },
+  "s": [
+   {
+    "i": "🧭",
+    "h": "Kayıt yöntemi",
+    "ol": [
+     "Uygulamayı açın ve **«E-posta ve şifre»** veya **«Google hesabı»** yöntemini seçin.",
+     "E-posta yönteminde **«Hesabınız yok mu? Kayıt ol»** bağlantısına dokunun.",
+     "Formu doldurun ve **«Kaydı Tamamla»** düğmesine basın.",
+     "Google yönteminde hesabı seçtikten sonra telefon numaranızı girin."
+    ]
+   },
+   {
+    "i": "📋",
+    "h": "Gerekli bilgiler",
+    "ul": [
+     "**Ad ve soyad** — en az 3 harf.",
+     "**E-posta adresi** — giriş ve şifre kurtarma için.",
+     "**Şifre** — en az 8 karakter, 1 rakam, 1 büyük ve 1 küçük harf.",
+     "**Telefon numarası** — 9 rakam (örneğin 50 123 45 67).",
+     "**Mağaza adı ve adresi** — isteğe bağlı."
+    ]
+   },
+   {
+    "i": "📱",
+    "h": "Telefon numarası neden gereklidir?",
+    "p": [
+     "Telefon numarası, Premium deneme süresinin tekrar kullanılmasını ve kötüye kullanımı önlemek amacıyla istenir. Numara reklam amacıyla kullanılmaz ve üçüncü kişilerle paylaşılmaz. Ayrıntılar: [Gizlilik politikası](/privacy)."
+    ]
+   },
+   {
+    "i": "⭐",
+    "h": "Premium deneme süresi",
+    "p": [
+     "Yeni hesaplar için Premium deneme süresi sunulmaktadır. Ayrıntılar: [Hesap ve Premium](/help/account#s4)."
+    ]
+   }
+  ]
+ },
+ "en": {
+  "page": {
+   "title": "Sign up",
+   "desc": "Creating a ProTechtor™ account: required information and registration steps."
+  },
+  "hero": {
+   "h": "Sign up",
+   "p": "A ProTechtor™ account gives access to all features of the app and lets you activate the Premium trial."
+  },
+  "btn": {
+   "open": "Sign up",
+   "dl": "Download the Android app",
+   "alt": "Already have an account? Sign in"
+  },
+  "s": [
+   {
+    "i": "🧭",
+    "h": "How to register",
+    "ol": [
+     "Open the app and choose **«E-mail and password»** or **«Google account»**.",
+     "For e-mail, tap **«Don't have an account? Register»**.",
+     "Fill in the form and tap **«Complete Registration»**.",
+     "With Google, enter your phone number after choosing the account."
+    ]
+   },
+   {
+    "i": "📋",
+    "h": "Required information",
+    "ul": [
+     "**First and last name** — at least 3 letters.",
+     "**E-mail address** — for signing in and password recovery.",
+     "**Password** — at least 8 characters, 1 digit, 1 upper-case and 1 lower-case letter.",
+     "**Phone number** — 9 digits (e.g. 50 123 45 67).",
+     "**Shop name and address** — optional."
+    ]
+   },
+   {
+    "i": "📱",
+    "h": "Why is a phone number required?",
+    "p": [
+     "The phone number is required to prevent repeated use and abuse of the Premium trial. It is not used for advertising and is not shared with third parties. Details: [Privacy policy](/privacy)."
+    ]
+   },
+   {
+    "i": "⭐",
+    "h": "Premium trial",
+    "p": [
+     "New accounts are offered a Premium trial period. Details: [Account and Premium](/help/account#s4)."
+    ]
+   }
+  ]
+ }
+}

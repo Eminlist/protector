@@ -1,0 +1,262 @@
+{
+ "az": {
+  "page": {
+   "title": "İstifadə təlimatları",
+   "desc": "ProTechtor™ Android proqramından istifadə qaydaları: giriş, model axtarışı, nəticələr, bildirişlər, yenilənmələr və tənzimləmələr."
+  },
+  "hero": {
+   "h": "İstifadə təlimatları",
+   "p": "Bu bölmədə ProTechtor™ Android proqramının əsas imkanları və onlardan istifadə qaydası izah olunur."
+  },
+  "dl": "Proqramı yüklə",
+  "g": [
+   {
+    "h": "Hesaba giriş",
+    "p": [
+     "Proqramı ilk dəfə açdıqda e-poçt ünvanınız ilə daxil olun və ya yeni hesab yaradın."
+    ],
+    "ul": [
+     "Qeydiyyat zamanı telefon nömrəsinin göstərilməsi məcburidir. Bu tələb Premium sınaq müddətindən təkrar və sui-istifadənin qarşısını almaq məqsədi daşıyır.",
+     "Şifrənizi unutduqda giriş ekranındakı bərpa funksiyasından istifadə edin."
+    ],
+    "i": "🔐"
+   },
+   {
+    "h": "Model axtarışı",
+    "p": [
+     "Axtarış sahəsinə cihazın model adını və ya model kodunu daxil edin."
+    ],
+    "ul": [
+     "Model adı ilə: məsələn, **Samsung A55**.",
+     "Model kodu ilə: məsələn, **SM-A556B** və ya qısaca **A556B**.",
+     "Kodu cihazın «Parametrlər → Telefon haqqında» bölməsində, qutusunda və ya arxa qapağındakı etiketdə tapmaq olar."
+    ],
+    "i": "🔎"
+   },
+   {
+    "h": "Nəticələrin oxunması",
+    "p": [
+     "Nəticədə eyni qoruyucu şüşəyə uyğun gələn modellər bir qrup şəklində göstərilir. Qrupdakı istənilən modelin şüşəsi digərlərinə də uyğundur."
+    ],
+    "ul": [
+     "Modelin adı və bütün kodları göstərilir.",
+     "Ekran ölçüsü və kamera kəsiyinin növü göstərilir.",
+     "Modelin üzərinə toxunduqda ətraflı məlumat açılır."
+    ],
+    "i": "🧩"
+   },
+   {
+    "h": "Uyğunsuzluq barədə bildiriş",
+    "p": [
+     "Göstərilən şüşə praktikada uyğun gəlmədikdə, modelin səhifəsindəki **«Uyğun gəlmədi»** funksiyası vasitəsilə bizə məlumat verin. Bildirişlər yoxlanılır və baza müvafiq qaydada düzəldilir."
+    ],
+    "i": "⚠️"
+   },
+   {
+    "h": "Tənzimləmələr",
+    "ul": [
+     "Proqramın dilini seçmək (AZ, RU, TR, EN).",
+     "Ekranın sönməsinin qarşısını almaq.",
+     "Proqramın keşini təmizləmək.",
+     "Bildiriş və yenilənmə parametrlərini idarə etmək."
+    ],
+    "i": "⚙️"
+   }
+  ]
+ },
+ "ru": {
+  "page": {
+   "title": "Инструкции по использованию",
+   "desc": "Правила использования приложения ProTechtor™ для Android: вход, поиск моделей, результаты, уведомления, обновления и настройки."
+  },
+  "hero": {
+   "h": "Инструкции по использованию",
+   "p": "В этом разделе описаны основные возможности приложения ProTechtor™ для Android и порядок их использования."
+  },
+  "dl": "Загрузить приложение",
+  "g": [
+   {
+    "h": "Вход в учётную запись",
+    "p": [
+     "При первом запуске приложения войдите с помощью адреса электронной почты или создайте новую учётную запись."
+    ],
+    "ul": [
+     "При регистрации указание номера телефона обязательно. Это требование направлено на предотвращение повторного использования пробного периода Premium и злоупотреблений.",
+     "Если вы забыли пароль, воспользуйтесь функцией восстановления на экране входа."
+    ],
+    "i": "🔐"
+   },
+   {
+    "h": "Поиск моделей",
+    "p": [
+     "Введите в поле поиска название или код модели устройства."
+    ],
+    "ul": [
+     "По названию: например, **Samsung A55**.",
+     "По коду: например, **SM-A556B** или кратко **A556B**.",
+     "Код можно найти в разделе «Настройки → О телефоне», на коробке или на наклейке на задней крышке устройства."
+    ],
+    "i": "🔎"
+   },
+   {
+    "h": "Чтение результатов",
+    "p": [
+     "Модели, к которым подходит одно и то же защитное стекло, отображаются одной группой. Стекло любой модели группы подходит и к остальным."
+    ],
+    "ul": [
+     "Отображаются название модели и все её коды.",
+     "Отображаются размер экрана и тип выреза камеры.",
+     "При нажатии на модель открываются подробные сведения."
+    ],
+    "i": "🧩"
+   },
+   {
+    "h": "Сообщение о несоответствии",
+    "p": [
+     "Если указанное стекло на практике не подошло, сообщите нам об этом с помощью функции **«Не подошло»** на странице модели. Сообщения проверяются, и база данных исправляется соответствующим образом."
+    ],
+    "i": "⚠️"
+   },
+   {
+    "h": "Настройки",
+    "ul": [
+     "Выбор языка приложения (AZ, RU, TR, EN).",
+     "Запрет отключения экрана.",
+     "Очистка кэша приложения.",
+     "Управление параметрами уведомлений и обновлений."
+    ],
+    "i": "⚙️"
+   }
+  ]
+ },
+ "tr": {
+  "page": {
+   "title": "Kullanım kılavuzu",
+   "desc": "ProTechtor™ Android uygulamasının kullanım kuralları: giriş, model arama, sonuçlar, bildirimler, güncellemeler ve ayarlar."
+  },
+  "hero": {
+   "h": "Kullanım kılavuzu",
+   "p": "Bu bölümde ProTechtor™ Android uygulamasının temel özellikleri ve kullanım şekli açıklanmaktadır."
+  },
+  "dl": "Uygulamayı indir",
+  "g": [
+   {
+    "h": "Hesaba giriş",
+    "p": [
+     "Uygulamayı ilk kez açtığınızda e-posta adresinizle giriş yapın veya yeni bir hesap oluşturun."
+    ],
+    "ul": [
+     "Kayıt sırasında telefon numarası belirtilmesi zorunludur. Bu gereklilik, Premium deneme süresinin tekrar kullanılmasını ve kötüye kullanımı önlemeye yöneliktir.",
+     "Şifrenizi unuttuysanız giriş ekranındaki kurtarma işlevini kullanın."
+    ],
+    "i": "🔐"
+   },
+   {
+    "h": "Model arama",
+    "p": [
+     "Arama alanına cihazın model adını veya model kodunu girin."
+    ],
+    "ul": [
+     "Model adıyla: örneğin **Samsung A55**.",
+     "Model koduyla: örneğin **SM-A556B** veya kısaca **A556B**.",
+     "Kodu cihazın «Ayarlar → Telefon hakkında» bölümünde, kutusunda veya arka kapağındaki etikette bulabilirsiniz."
+    ],
+    "i": "🔎"
+   },
+   {
+    "h": "Sonuçların okunması",
+    "p": [
+     "Aynı koruyucu cama uyan modeller tek bir grup olarak gösterilir. Gruptaki herhangi bir modelin camı diğerlerine de uyar."
+    ],
+    "ul": [
+     "Modelin adı ve tüm kodları gösterilir.",
+     "Ekran boyutu ve kamera kesiğinin türü gösterilir.",
+     "Modele dokunulduğunda ayrıntılı bilgiler açılır."
+    ],
+    "i": "🧩"
+   },
+   {
+    "h": "Uyumsuzluk bildirimi",
+    "p": [
+     "Belirtilen cam uygulamada uymadıysa, model sayfasındaki **«Uymadı»** işlevi aracılığıyla bize bildirin. Bildirimler incelenir ve veritabanı buna göre düzeltilir."
+    ],
+    "i": "⚠️"
+   },
+   {
+    "h": "Ayarlar",
+    "ul": [
+     "Uygulama dilinin seçilmesi (AZ, RU, TR, EN).",
+     "Ekranın kapanmasının önlenmesi.",
+     "Uygulama önbelleğinin temizlenmesi.",
+     "Bildirim ve güncelleme ayarlarının yönetilmesi."
+    ],
+    "i": "⚙️"
+   }
+  ]
+ },
+ "en": {
+  "page": {
+   "title": "User guide",
+   "desc": "How to use the ProTechtor™ Android app: sign-in, model search, results, notifications, updates and settings."
+  },
+  "hero": {
+   "h": "User guide",
+   "p": "This section describes the main features of the ProTechtor™ Android app and how to use them."
+  },
+  "dl": "Download the app",
+  "g": [
+   {
+    "h": "Signing in",
+    "p": [
+     "When you open the app for the first time, sign in with your e-mail address or create a new account."
+    ],
+    "ul": [
+     "A phone number is required during registration. This requirement serves to prevent repeated use of the Premium trial period and abuse.",
+     "If you have forgotten your password, use the recovery option on the sign-in screen."
+    ],
+    "i": "🔐"
+   },
+   {
+    "h": "Searching for models",
+    "p": [
+     "Enter the device's model name or model code in the search field."
+    ],
+    "ul": [
+     "By name: for example, **Samsung A55**.",
+     "By code: for example, **SM-A556B** or simply **A556B**.",
+     "The code can be found under «Settings → About phone», on the box or on the label on the back cover of the device."
+    ],
+    "i": "🔎"
+   },
+   {
+    "h": "Reading the results",
+    "p": [
+     "Models that fit the same protective glass are shown as one group. The glass of any model in the group fits the others as well."
+    ],
+    "ul": [
+     "The model name and all of its codes are shown.",
+     "The screen size and camera cutout type are shown.",
+     "Tapping a model opens detailed information."
+    ],
+    "i": "🧩"
+   },
+   {
+    "h": "Reporting a mismatch",
+    "p": [
+     "If the indicated glass does not fit in practice, let us know using the **«Did not fit»** option on the model's page. Reports are reviewed and the database is corrected accordingly."
+    ],
+    "i": "⚠️"
+   },
+   {
+    "h": "Settings",
+    "ul": [
+     "Choosing the app language (AZ, RU, TR, EN).",
+     "Keeping the screen on.",
+     "Clearing the app cache.",
+     "Managing notification and update options."
+    ],
+    "i": "⚙️"
+   }
+  ]
+ }
+}

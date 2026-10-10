@@ -1,0 +1,178 @@
+{
+ "az": {
+  "page": {
+   "title": "Giriş",
+   "desc": "ProTechtor™ hesabına giriş qaydası və şifrənin bərpası."
+  },
+  "hero": {
+   "h": "Giriş",
+   "p": "Mövcud hesabınızla proqrama daxil olun."
+  },
+  "btn": {
+   "open": "Daxil ol",
+   "dl": "Android proqramını yüklə",
+   "alt": "Hesabınız yoxdur? Qeydiyyatdan keçin"
+  },
+  "s": [
+   {
+    "i": "🔐",
+    "h": "Giriş qaydası",
+    "ol": [
+     "Proqramı açın və giriş üsulunu seçin: **«E-poçt və parol»** və ya **«Google hesabı»**.",
+     "E-poçt ünvanınızı və şifrənizi daxil edib **«Daxil Ol»** düyməsini sıxın.",
+     "Google üsulunda qeydiyyatda istifadə etdiyiniz Google hesabını seçin."
+    ]
+   },
+   {
+    "i": "🔑",
+    "h": "Şifrəni unutmuşam",
+    "ul": [
+     "Giriş ekranında **«Parolumu unutmuşam»** seçin və qeydiyyatda istifadə etdiyiniz e-poçt ünvanını daxil edin.",
+     "Bərpa məktubu bir neçə dəqiqə ərzində göndərilir. Məktub görünmürsə, «Spam» qovluğunu yoxlayın.",
+     "Google hesabı ilə daxil olursunuzsa, şifrə Google hesabınızda idarə olunur."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Hesabın təhlükəsizliyi",
+    "ul": [
+     "Şifrənizi və təsdiq kodlarını heç kimə göndərməyin — administrasiya onları heç vaxt tələb etmir.",
+     "Başqa saytlarda istifadə etdiyiniz şifrədən istifadə etməyin.",
+     "Ümumi istifadədə olan cihazlarda işi bitirdikdən sonra hesabdan çıxın."
+    ]
+   }
+  ]
+ },
+ "ru": {
+  "page": {
+   "title": "Вход",
+   "desc": "Порядок входа в учётную запись ProTechtor™ и восстановление пароля."
+  },
+  "hero": {
+   "h": "Вход",
+   "p": "Войдите в приложение с помощью существующей учётной записи."
+  },
+  "btn": {
+   "open": "Войти",
+   "dl": "Скачать Android-приложение",
+   "alt": "Нет учётной записи? Зарегистрируйтесь"
+  },
+  "s": [
+   {
+    "i": "🔐",
+    "h": "Порядок входа",
+    "ol": [
+     "Откройте приложение и выберите способ входа: **«Email и пароль»** или **«Аккаунт Google»**.",
+     "Введите e-mail и пароль и нажмите **«Войти»**.",
+     "При входе через Google выберите аккаунт, использованный при регистрации."
+    ]
+   },
+   {
+    "i": "🔑",
+    "h": "Я забыл пароль",
+    "ul": [
+     "На экране входа выберите **«Забыли пароль?»** и укажите e-mail, использованный при регистрации.",
+     "Письмо для восстановления приходит в течение нескольких минут. Если письма нет, проверьте папку «Спам».",
+     "При входе через Google пароль управляется в вашем аккаунте Google."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Безопасность учётной записи",
+    "ul": [
+     "Никому не сообщайте пароль и коды подтверждения — администрация никогда их не запрашивает.",
+     "Не используйте пароль, который применяете на других сайтах.",
+     "На общедоступных устройствах выходите из учётной записи после завершения работы."
+    ]
+   }
+  ]
+ },
+ "tr": {
+  "page": {
+   "title": "Giriş",
+   "desc": "ProTechtor™ hesabına giriş yöntemi ve şifre kurtarma."
+  },
+  "hero": {
+   "h": "Giriş",
+   "p": "Mevcut hesabınızla uygulamaya giriş yapın."
+  },
+  "btn": {
+   "open": "Giriş yap",
+   "dl": "Android uygulamasını indir",
+   "alt": "Hesabınız yok mu? Kayıt olun"
+  },
+  "s": [
+   {
+    "i": "🔐",
+    "h": "Giriş yöntemi",
+    "ol": [
+     "Uygulamayı açın ve giriş yöntemini seçin: **«E-posta ve şifre»** veya **«Google hesabı»**.",
+     "E-posta adresinizi ve şifrenizi girip **«Giriş Yap»** düğmesine basın.",
+     "Google yönteminde kayıtta kullandığınız Google hesabını seçin."
+    ]
+   },
+   {
+    "i": "🔑",
+    "h": "Şifremi unuttum",
+    "ul": [
+     "Giriş ekranında **«Şifremi unuttum»** seçeneğini seçin ve kayıtta kullandığınız e-posta adresini girin.",
+     "Kurtarma e-postası birkaç dakika içinde gönderilir. E-posta görünmüyorsa «Spam» klasörünü kontrol edin.",
+     "Google hesabıyla giriş yapıyorsanız şifre Google hesabınızda yönetilir."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Hesap güvenliği",
+    "ul": [
+     "Şifrenizi ve doğrulama kodlarını kimseyle paylaşmayın — yönetim bunları asla istemez.",
+     "Başka sitelerde kullandığınız şifreyi kullanmayın.",
+     "Ortak kullanılan cihazlarda işiniz bittikten sonra hesaptan çıkış yapın."
+    ]
+   }
+  ]
+ },
+ "en": {
+  "page": {
+   "title": "Sign in",
+   "desc": "How to sign in to a ProTechtor™ account and recover your password."
+  },
+  "hero": {
+   "h": "Sign in",
+   "p": "Sign in to the app with your existing account."
+  },
+  "btn": {
+   "open": "Sign in",
+   "dl": "Download the Android app",
+   "alt": "No account? Sign up"
+  },
+  "s": [
+   {
+    "i": "🔐",
+    "h": "How to sign in",
+    "ol": [
+     "Open the app and choose a sign-in method: **«E-mail and password»** or **«Google account»**.",
+     "Enter your e-mail and password and tap **«Sign In»**.",
+     "With Google, choose the account you used at registration."
+    ]
+   },
+   {
+    "i": "🔑",
+    "h": "I forgot my password",
+    "ul": [
+     "On the sign-in screen choose **«Forgot password?»** and enter the e-mail address used at registration.",
+     "The recovery e-mail arrives within a few minutes. If you cannot see it, check the «Spam» folder.",
+     "If you sign in with Google, the password is managed in your Google account."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Account security",
+    "ul": [
+     "Never share your password or confirmation codes — the administration never asks for them.",
+     "Do not reuse a password you use on other websites.",
+     "On shared devices, sign out when you have finished."
+    ]
+   }
+  ]
+ }
+}

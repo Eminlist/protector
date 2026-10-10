@@ -1,0 +1,202 @@
+{
+ "az": {
+  "page": {
+   "title": "Quraşdırma təlimatı",
+   "desc": "ProTechtor™ Android proqramının quraşdırılması: addımlar, icazələr, Google Play Protect və yenilənmələr."
+  },
+  "hero": {
+   "h": "Quraşdırma təlimatı",
+   "p": "ProTechtor™ Android proqramının cihazınıza quraşdırılması qaydası."
+  },
+  "go": "Yükləmə səhifəsinə keç",
+  "s": [
+   {
+    "i": "📲",
+    "h": "Quraşdırma addımları",
+    "ol": [
+     "[Yükləmə səhifəsində](/application/download) **«APK faylını yüklə»** düyməsini sıxın və yükləmənin başa çatmasını gözləyin.",
+     "Yüklənmiş **ProTechtor.apk** faylını açın.",
+     "Cihaz icazə tələb edərsə, brauzer və ya fayl menecerinə **«Naməlum mənbələrdən quraşdırma»** icazəsini verin.",
+     "**«Quraşdır»** düyməsini sıxın və quraşdırmanın tamamlanmasını gözləyin.",
+     "Proqramı açın, hesabınıza daxil olun və ya yeni hesab yaradın.",
+     "Bildirişlərin vaxtında çatması üçün proqramın təklif etdiyi **batareya optimallaşdırmasının söndürülməsi** icazəsini təsdiqləyin."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Google Play Protect xəbərdarlığı",
+    "p": [
+     "Quraşdırma zamanı Google Play Protect xəbərdarlıq göstərə bilər. Bu, proqramın Google Play mağazasından deyil, birbaşa yükləndiyini bildirir.",
+     "Belə xəbərdarlıq göründükdə **«Ətraflı məlumat»** bölməsini açın və **«Yenə də quraşdır»** seçimini təsdiqləyin."
+    ]
+   },
+   {
+    "i": "🔐",
+    "h": "Proqramın istədiyi icazələr",
+    "ul": [
+     "**Bildirişlər** — xəbərlərin və müraciətlərə cavabların çatdırılması üçün.",
+     "**Batareya optimallaşdırmasından azad edilmə** — bildirişlərin gecikmədən çatması üçün (istəyə bağlı).",
+     "**Proqram quraşdırma** — proqramın yeni versiyalarının quraşdırılması üçün.",
+     "**Şəkillərə giriş** — yalnız «Adminlə əlaqə» bölməsində şəkil göndərdiyiniz zaman."
+    ]
+   },
+   {
+    "i": "🔄",
+    "h": "Yenilənmələr",
+    "p": [
+     "Quraşdırılmış proqram yeni versiyanı avtomatik yoxlayır və yenilənməni proqramın daxilində təklif edir. Yenilənmə ayarlarını «Tənzimləmələr» bölməsində dəyişə bilərsiniz."
+    ]
+   }
+  ]
+ },
+ "ru": {
+  "page": {
+   "title": "Инструкция по установке",
+   "desc": "Установка Android-приложения ProTechtor™: шаги, разрешения, Google Play Protect и обновления."
+  },
+  "hero": {
+   "h": "Инструкция по установке",
+   "p": "Порядок установки Android-приложения ProTechtor™ на ваше устройство."
+  },
+  "go": "Перейти на страницу загрузки",
+  "s": [
+   {
+    "i": "📲",
+    "h": "Шаги установки",
+    "ol": [
+     "На [странице загрузки](/application/download) нажмите кнопку **«Загрузить APK-файл»** и дождитесь завершения загрузки.",
+     "Откройте загруженный файл **ProTechtor.apk**.",
+     "Если устройство запросит разрешение, предоставьте браузеру или файловому менеджеру разрешение **«Установка из неизвестных источников»**.",
+     "Нажмите **«Установить»** и дождитесь завершения установки.",
+     "Откройте приложение, войдите в свою учётную запись или создайте новую.",
+     "Для своевременной доставки уведомлений подтвердите предлагаемое приложением **отключение оптимизации батареи**."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Предупреждение Google Play Protect",
+    "p": [
+     "Во время установки Google Play Protect может показать предупреждение. Это означает, что приложение загружено напрямую, а не из Google Play.",
+     "При появлении такого предупреждения откройте раздел **«Подробнее»** и подтвердите вариант **«Всё равно установить»**."
+    ]
+   },
+   {
+    "i": "🔐",
+    "h": "Разрешения, запрашиваемые приложением",
+    "ul": [
+     "**Уведомления** — для доставки новостей и ответов на обращения.",
+     "**Исключение из оптимизации батареи** — для доставки уведомлений без задержек (по желанию).",
+     "**Установка приложений** — для установки новых версий приложения.",
+     "**Доступ к изображениям** — только при отправке изображения в разделе «Связь с администратором»."
+    ]
+   },
+   {
+    "i": "🔄",
+    "h": "Обновления",
+    "p": [
+     "Установленное приложение автоматически проверяет наличие новой версии и предлагает обновление внутри приложения. Параметры обновления можно изменить в разделе «Настройки»."
+    ]
+   }
+  ]
+ },
+ "tr": {
+  "page": {
+   "title": "Kurulum kılavuzu",
+   "desc": "ProTechtor™ Android uygulamasının kurulumu: adımlar, izinler, Google Play Protect ve güncellemeler."
+  },
+  "hero": {
+   "h": "Kurulum kılavuzu",
+   "p": "ProTechtor™ Android uygulamasının cihazınıza kurulma yöntemi."
+  },
+  "go": "İndirme sayfasına git",
+  "s": [
+   {
+    "i": "📲",
+    "h": "Kurulum adımları",
+    "ol": [
+     "[İndirme sayfasında](/application/download) **«APK dosyasını indir»** düğmesine basın ve indirmenin tamamlanmasını bekleyin.",
+     "İndirilen **ProTechtor.apk** dosyasını açın.",
+     "Cihaz izin isterse, tarayıcıya veya dosya yöneticisine **«Bilinmeyen kaynaklardan yükleme»** izni verin.",
+     "**«Yükle»** düğmesine basın ve kurulumun tamamlanmasını bekleyin.",
+     "Uygulamayı açın, hesabınıza giriş yapın veya yeni bir hesap oluşturun.",
+     "Bildirimlerin zamanında ulaşması için uygulamanın önerdiği **pil optimizasyonunun kapatılması** iznini onaylayın."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Google Play Protect uyarısı",
+    "p": [
+     "Kurulum sırasında Google Play Protect bir uyarı gösterebilir. Bu, uygulamanın Google Play'den değil, doğrudan indirildiğini belirtir.",
+     "Böyle bir uyarı görüntülendiğinde **«Diğer ayrıntılar»** bölümünü açın ve **«Yine de yükle»** seçeneğini onaylayın."
+    ]
+   },
+   {
+    "i": "🔐",
+    "h": "Uygulamanın istediği izinler",
+    "ul": [
+     "**Bildirimler** — haberlerin ve başvurulara verilen yanıtların iletilmesi için.",
+     "**Pil optimizasyonundan muafiyet** — bildirimlerin gecikmeden ulaşması için (isteğe bağlı).",
+     "**Uygulama yükleme** — uygulamanın yeni sürümlerinin yüklenmesi için.",
+     "**Görsellere erişim** — yalnızca «Yöneticiyle iletişim» bölümünde görsel gönderdiğinizde."
+    ]
+   },
+   {
+    "i": "🔄",
+    "h": "Güncellemeler",
+    "p": [
+     "Yüklü uygulama yeni sürümü otomatik olarak kontrol eder ve güncellemeyi uygulama içinde sunar. Güncelleme ayarlarını «Ayarlar» bölümünden değiştirebilirsiniz."
+    ]
+   }
+  ]
+ },
+ "en": {
+  "page": {
+   "title": "Installation guide",
+   "desc": "Installing the ProTechtor™ Android app: steps, permissions, Google Play Protect and updates."
+  },
+  "hero": {
+   "h": "Installation guide",
+   "p": "How to install the ProTechtor™ Android app on your device."
+  },
+  "go": "Go to the download page",
+  "s": [
+   {
+    "i": "📲",
+    "h": "Installation steps",
+    "ol": [
+     "On the [download page](/application/download), tap **«Download APK»** and wait for the download to complete.",
+     "Open the downloaded **ProTechtor.apk** file.",
+     "If the device asks for permission, allow your browser or file manager to **«Install unknown apps»**.",
+     "Tap **«Install»** and wait for the installation to complete.",
+     "Open the application, sign in to your account or create a new one.",
+     "To ensure timely delivery of notifications, confirm the **battery optimization exemption** offered by the app."
+    ]
+   },
+   {
+    "i": "🛡️",
+    "h": "Google Play Protect warning",
+    "p": [
+     "Google Play Protect may display a warning during installation. This indicates that the application was downloaded directly rather than from Google Play.",
+     "If such a warning appears, open **«More details»** and confirm **«Install anyway»**."
+    ]
+   },
+   {
+    "i": "🔐",
+    "h": "Permissions requested by the app",
+    "ul": [
+     "**Notifications** — to deliver news and replies to your requests.",
+     "**Battery optimization exemption** — to deliver notifications without delay (optional).",
+     "**Install packages** — to install new versions of the application.",
+     "**Access to images** — only when you send an image in the «Contact admin» section."
+    ]
+   },
+   {
+    "i": "🔄",
+    "h": "Updates",
+    "p": [
+     "The installed application checks for new versions automatically and offers the update within the app. Update options can be changed in the «Settings» section."
+    ]
+   }
+  ]
+ }
+}

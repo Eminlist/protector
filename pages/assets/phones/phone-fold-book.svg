@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 400"><defs>
+<linearGradient id="frL" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2c2f36"/><stop offset="1" stop-color="#5d626c"/></linearGradient>
+<linearGradient id="frR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5d626c"/><stop offset="1" stop-color="#2c2f36"/></linearGradient>
+<linearGradient id="sc" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#123a24"/><stop offset=".55" stop-color="#0a1a10"/><stop offset="1" stop-color="#050806"/></linearGradient>
+<linearGradient id="crease" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+<linearGradient id="gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".4" stop-color="#fff" stop-opacity="0"/></linearGradient>
+</defs>
+<path d="M190 14 L22 30 Q6 32 6 48 L6 352 Q6 368 22 370 L190 386 Z" fill="url(#frL)"/>
+<path d="M190 14 L358 30 Q374 32 374 48 L374 352 Q374 368 358 370 L190 386 Z" fill="url(#frR)"/>
+<path d="M190 22 L26 37 Q14 38 14 50 L14 350 Q14 362 26 363 L190 378 Z" fill="url(#sc)"/>
+<path d="M190 22 L354 37 Q366 38 366 50 L366 350 Q366 362 354 363 L190 378 Z" fill="url(#sc)"/>
+<rect x="178" y="18" width="24" height="364" fill="url(#crease)"/>
+<circle cx="300" cy="52" r="4.5" fill="#000" stroke="#1d2a22"/>
+<g font-family="Arial">
+<text x="34" y="74" font-size="11" fill="#9aa69e" letter-spacing="1">ANTIUDAR</text>
+<text x="34" y="94" font-size="16" font-weight="700" fill="#eef2ef">Qoruyucu şüşə</text>
+<rect x="34" y="110" width="136" height="28" rx="14" fill="#161a17" stroke="#2ecc71" stroke-opacity=".6"/>
+<text x="52" y="128" font-size="11" fill="#eef2ef">Galaxy Z Fold</text>
+<rect x="34" y="150" width="136" height="40" rx="10" fill="#161a17" stroke="#2ecc71" stroke-opacity=".6"/><rect x="34" y="158" width="3" height="24" fill="#2ecc71"/>
+<rect x="34" y="198" width="136" height="40" rx="10" fill="#161a17" stroke="#26302a"/><rect x="34" y="206" width="3" height="24" fill="#2ecc71"/>
+<rect x="34" y="246" width="136" height="40" rx="10" fill="#161a17" stroke="#26302a"/><rect x="34" y="254" width="3" height="24" fill="#f1c40f"/>
+<rect x="34" y="294" width="136" height="40" rx="10" fill="#161a17" stroke="#26302a"/><rect x="34" y="302" width="3" height="24" fill="#2ecc71"/>
+<text x="46" y="174" font-size="10" font-weight="700" fill="#eef2ef">Model 1</text><text x="46" y="222" font-size="10" font-weight="700" fill="#eef2ef">Model 2</text>
+<text x="46" y="270" font-size="10" font-weight="700" fill="#eef2ef">Model 3</text><text x="46" y="318" font-size="10" font-weight="700" fill="#eef2ef">Model 4</text>
+<rect x="212" y="74" width="134" height="120" rx="14" fill="#161a17" stroke="#26302a"/>
+<rect x="250" y="88" width="58" height="92" rx="9" fill="none" stroke="#2ecc71" stroke-width="2"/><circle cx="279" cy="96" r="2.5" fill="#e74c3c"/>
+<text x="279" y="214" text-anchor="middle" font-size="13" font-weight="700" fill="#eef2ef">155.1 × 67.1</text>
+<text x="279" y="230" text-anchor="middle" font-size="9" fill="#9aa69e">mm</text>
+<rect x="212" y="300" width="134" height="34" rx="12" fill="#2ecc71"/><text x="279" y="321" text-anchor="middle" font-size="11" font-weight="700" fill="#04140a">Uyğun ✓</text>
+</g>
+<path d="M190 22 L26 37 Q14 38 14 50 L14 200 Z" fill="url(#gl)"/>
+</svg>

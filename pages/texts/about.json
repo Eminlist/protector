@@ -1,0 +1,222 @@
+{
+ "az": {
+  "page": {
+   "title": "Proqram haqqında",
+   "desc": "ProTechtor™ proqramı haqqında ümumi məlumat: təyinatı, iş prinsipi və model bazası."
+  },
+  "hero": {
+   "h": "Proqram haqqında",
+   "p": "Mobil cihazlar üçün qoruyucu şüşələrin uyğunluğunu model adı və ya model kodu ilə tez və dəqiq müəyyən etməyə imkan verən proqram."
+  },
+  "about": {
+   "h": "ProTechtor™ nədir",
+   "p": [
+    "ProTechtor™ mobil telefon aksesuarları ilə işləyən mütəxəssislər və mağazalar üçün nəzərdə tutulmuş peşəkar köməkçi vasitədir.",
+    "Proqram eyni qoruyucu şüşəyə uyğun gələn modelləri qruplaşdırılmış şəkildə göstərir və axtarışı həm model adı, həm də model kodu (məsələn, **SM-A556B**) ilə həyata keçirməyə imkan verir.",
+    "Model bazası mütəmadi olaraq yenilənir və yeni buraxılan cihazlarla genişləndirilir."
+   ]
+  },
+  "how": {
+   "h": "Necə işləyir",
+   "steps": [
+    "Proqramı [yükləyin](/application/download) və hesab yaradın.",
+    "Müştərinin cihazının model adını və ya kodunu daxil edin.",
+    "Uyğun şüşəni və eyni şüşəyə uyğun gələn digər modelləri görün."
+   ]
+  },
+  "more": {
+   "h": "Ətraflı",
+   "links": [
+    {
+     "id": "features",
+     "t": "Proqram üstünlükləri",
+     "d": "Əsas imkanlar",
+     "u": "/application/features"
+    },
+    {
+     "id": "guide",
+     "t": "İstifadə təlimatları",
+     "d": "Axtarış, nəticələr və tənzimləmələr",
+     "u": "/application/guide"
+    },
+    {
+     "id": "install",
+     "t": "Quraşdırma təlimatı",
+     "d": "APK faylının quraşdırılması",
+     "u": "/application/install"
+    },
+    {
+     "id": "download",
+     "t": "Proqram yüklə",
+     "d": "Ən son versiya",
+     "u": "/application/download"
+    }
+   ]
+  }
+ },
+ "ru": {
+  "page": {
+   "title": "О приложении",
+   "desc": "Общие сведения о приложении ProTechtor™: назначение, принцип работы и база моделей."
+  },
+  "hero": {
+   "h": "О приложении",
+   "p": "Приложение, позволяющее быстро и точно определить совместимость защитных стёкол для мобильных устройств по названию или коду модели."
+  },
+  "about": {
+   "h": "Что такое ProTechtor™",
+   "p": [
+    "ProTechtor™ — профессиональный инструмент, предназначенный для специалистов и магазинов, работающих с аксессуарами для мобильных телефонов.",
+    "Приложение показывает модели, совместимые с одним и тем же защитным стеклом, в сгруппированном виде и позволяет выполнять поиск как по названию, так и по коду модели (например, **SM-A556B**).",
+    "База моделей регулярно обновляется и пополняется новыми устройствами."
+   ]
+  },
+  "how": {
+   "h": "Как это работает",
+   "steps": [
+    "[Загрузите](/application/download) приложение и создайте учётную запись.",
+    "Введите название или код модели устройства клиента.",
+    "Получите подходящее стекло и другие модели, к которым оно подходит."
+   ]
+  },
+  "more": {
+   "h": "Подробнее",
+   "links": [
+    {
+     "id": "features",
+     "t": "Преимущества",
+     "d": "Основные возможности",
+     "u": "/application/features"
+    },
+    {
+     "id": "guide",
+     "t": "Инструкции по использованию",
+     "d": "Поиск, результаты и настройки",
+     "u": "/application/guide"
+    },
+    {
+     "id": "install",
+     "t": "Инструкция по установке",
+     "d": "Установка APK-файла",
+     "u": "/application/install"
+    },
+    {
+     "id": "download",
+     "t": "Скачать приложение",
+     "d": "Последняя версия",
+     "u": "/application/download"
+    }
+   ]
+  }
+ },
+ "tr": {
+  "page": {
+   "title": "Uygulama hakkında",
+   "desc": "ProTechtor™ uygulaması hakkında genel bilgi: amacı, çalışma prensibi ve model veritabanı."
+  },
+  "hero": {
+   "h": "Uygulama hakkında",
+   "p": "Mobil cihazlar için koruyucu camların uyumluluğunu model adı veya model kodu ile hızlı ve doğru şekilde belirlemenizi sağlayan uygulama."
+  },
+  "about": {
+   "h": "ProTechtor™ nedir",
+   "p": [
+    "ProTechtor™, mobil telefon aksesuarlarıyla çalışan uzmanlar ve mağazalar için tasarlanmış profesyonel bir yardımcı araçtır.",
+    "Uygulama, aynı koruyucu cama uyan modelleri gruplandırılmış şekilde gösterir ve aramayı hem model adı hem de model kodu (örneğin **SM-A556B**) ile yapmanıza olanak tanır.",
+    "Model veritabanı düzenli olarak güncellenir ve yeni çıkan cihazlarla genişletilir."
+   ]
+  },
+  "how": {
+   "h": "Nasıl çalışır",
+   "steps": [
+    "Uygulamayı [indirin](/application/download) ve hesap oluşturun.",
+    "Müşterinin cihazının model adını veya kodunu girin.",
+    "Uygun camı ve aynı cama uyan diğer modelleri görün."
+   ]
+  },
+  "more": {
+   "h": "Ayrıntılar",
+   "links": [
+    {
+     "id": "features",
+     "t": "Uygulamanın avantajları",
+     "d": "Temel özellikler",
+     "u": "/application/features"
+    },
+    {
+     "id": "guide",
+     "t": "Kullanım kılavuzu",
+     "d": "Arama, sonuçlar ve ayarlar",
+     "u": "/application/guide"
+    },
+    {
+     "id": "install",
+     "t": "Kurulum kılavuzu",
+     "d": "APK dosyasının kurulumu",
+     "u": "/application/install"
+    },
+    {
+     "id": "download",
+     "t": "Uygulamayı indir",
+     "d": "En son sürüm",
+     "u": "/application/download"
+    }
+   ]
+  }
+ },
+ "en": {
+  "page": {
+   "title": "About the app",
+   "desc": "General information about the ProTechtor™ app: purpose, how it works and the model database."
+  },
+  "hero": {
+   "h": "About the app",
+   "p": "An application that quickly and accurately determines the compatibility of protective glass for mobile devices by model name or model code."
+  },
+  "about": {
+   "h": "What is ProTechtor™",
+   "p": [
+    "ProTechtor™ is a professional tool designed for specialists and stores working with mobile phone accessories.",
+    "The application displays models compatible with the same protective glass in grouped form and supports searching by both model name and model code (for example, **SM-A556B**).",
+    "The model database is updated regularly and expanded with newly released devices."
+   ]
+  },
+  "how": {
+   "h": "How it works",
+   "steps": [
+    "[Download](/application/download) the app and create an account.",
+    "Enter the model name or code of the customer's device.",
+    "See the matching glass and the other models it fits."
+   ]
+  },
+  "more": {
+   "h": "Learn more",
+   "links": [
+    {
+     "id": "features",
+     "t": "Features",
+     "d": "Key capabilities",
+     "u": "/application/features"
+    },
+    {
+     "id": "guide",
+     "t": "User guide",
+     "d": "Search, results and settings",
+     "u": "/application/guide"
+    },
+    {
+     "id": "install",
+     "t": "Installation guide",
+     "d": "Installing the APK file",
+     "u": "/application/install"
+    },
+    {
+     "id": "download",
+     "t": "Download the app",
+     "d": "Latest version",
+     "u": "/application/download"
+    }
+   ]
+  }
+ }
+}

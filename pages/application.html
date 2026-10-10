@@ -1,16 +1,17 @@
 <!doctype html>
 <html lang="az">
 <head>
+<!-- Səhifə: /application  |  Mətnlər: /texts/about.json  |  Menyu: /texts/common.json -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ProTechtor™</title>
-<meta name="description" content="ProTechtor™ Android proqramının yüklənməsi, yenilənmələri, quraşdırma təlimatı və proqram haqqında məlumat.">
+<title>Proqram haqqında — ProTechtor™</title>
+<meta name="description" content="ProTechtor™ proqramı haqqında ümumi məlumat: təyinatı, iş prinsipi və model bazası.">
 <meta name="theme-color" content="#0a0a0a">
 <link rel="canonical" href="https://protechtor.app/application">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ProTechtor™">
-<meta property="og:title" content="Android proqramı — ProTechtor™">
-<meta property="og:description" content="ProTechtor™ Android proqramının yüklənməsi, yenilənmələri, quraşdırma təlimatı və proqram haqqında məlumat.">
+<meta property="og:title" content="Proqram haqqında — ProTechtor™">
+<meta property="og:description" content="ProTechtor™ proqramı haqqında ümumi məlumat: təyinatı, iş prinsipi və model bazası.">
 <meta property="og:url" content="https://protechtor.app/application">
 <meta property="og:image" content="https://protechtor.app/assets/og.png">
 <meta property="og:image:width" content="1200">
@@ -21,86 +22,27 @@
 <link rel="stylesheet" href="/assets/site.css">
 <script src="/assets/site.js" defer></script>
 </head>
-<body data-page="application">
-<header class="top">
-  <div class="wrap">
-    <a class="brand" href="/"><img src="/icon-192.png" alt="">ProTechtor™</a>
-    <nav class="nav" id="nav">
-      <a href="/" data-t="nav.home"></a>
-      <a href="/application" data-t="nav.app"></a>
-      <a href="/contact" data-t="nav.contact"></a>
-      <a href="/privacy" data-t="nav.privacy"></a>
-    </nav>
-    <button class="menu-btn" id="menu-btn" aria-label="Menu">☰</button>
-    <select class="lang" id="lang" aria-label="Language">
-      <option value="az">AZ</option><option value="ru">RU</option><option value="tr">TR</option><option value="en">EN</option>
-    </select>
-  </div>
-</header>
+<body data-page="about">
+<header id="top"></header>
 <main>
   <div class="wrap">
     <div class="hero">
       <h1 data-t="hero.h"></h1>
       <p data-t="hero.p"></p>
-      <div class="btns">
-        <a class="btn" href="/application/download"><span>⬇</span> <span data-t="hub.dl"></span></a>
-        <a class="btn ghost" href="/application/android" data-t="hub.guide"></a>
-      </div>
+      <div class="btns"><a class="btn" href="/application/download"><span>⬇</span> <span data-t="cta"></span></a></div>
     </div>
-
-    <section class="card" id="download">
-      <h2 data-t="dl.h"></h2>
-      <p data-t="dl.p"></p>
-      <div class="dl">
-        <a class="btn" href="/apk/ProTechtor.apk" id="dl-btn"><span>⬇</span> <span data-t="dl.btn"></span></a>
-        <div class="meta"><span data-t="dl.ver"></span> <b id="ver">—</b></div>
-      </div>
-      <div class="note" data-t="dl.note"></div>
-    </section>
-
-    <section class="card" id="updates" data-acc="🔄">
-      <h2 data-t="up.h"></h2>
-      <p class="meta"><span data-t="dl.ver"></span> <b id="ver2">—</b></p>
-      <p id="notes"></p>
-      <p data-t="up.p"></p>
-    </section>
-
-    <section class="card" id="install" data-acc="📲">
-      <h2 data-t="ins.h"></h2>
-      <ol class="steps" data-list="ins.steps"></ol>
-      <div class="note" data-t="ins.note"></div>
-    </section>
-
-    <section class="card" id="about" data-acc="ℹ️">
+    <section class="card" id="about" data-acc="ℹ️" data-acc-open>
       <h2 data-t="about.h"></h2>
       <div data-list="about.p"></div>
     </section>
+    <section class="card" id="how" data-acc="🧭">
+      <h2 data-t="how.h"></h2>
+      <ol class="steps" data-list="how.steps"></ol>
+    </section>
+    <h2 class="sec-h" data-t="more.h"></h2>
+    <div class="tiles" data-links="more.links"></div>
   </div>
 </main>
-<script>
-(function () {
-  var vj = null;
-  function show() {
-    if (!vj) return;
-    var l = window.PT ? PT.lang() : "az";
-    var n = l === "az" ? vj.notes : (vj["notes_" + l] || vj.notes);
-    document.getElementById("ver").textContent = vj.versionName || "—";
-    document.getElementById("ver2").textContent = vj.versionName || "—";
-    document.getElementById("notes").textContent = n || "";
-    if (vj.url) document.getElementById("dl-btn").href = vj.url.replace(/^https:\/\/protechtor\.app/, "");
-  }
-  fetch("/apk/version.json", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) { vj = j; show(); }).catch(function () {});
-  document.addEventListener("pt:rendered", show);
-})();
-</script>
-<footer>
-  <div class="wrap">
-    <span>© <span id="year"></span> ProTechtor™</span>
-    <a href="/application" data-t="nav.app"></a>
-    <a href="/contact" data-t="nav.contact"></a>
-    <a href="/privacy" data-t="nav.privacy"></a>
-    <span class="sp" data-t="foot.rights"></span>
-  </div>
-</footer>
+<footer id="foot"></footer>
 </body>
 </html>
