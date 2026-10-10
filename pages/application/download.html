@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ProTechtor™</title>
-<meta name="description" content="ProTechtor™ Android proqramının yüklənməsi, yenilənmələri, quraşdırma təlimatı və proqram haqqında məlumat.">
+<title>Yükləmə — ProTechtor™</title>
+<meta name="description" content="ProTechtor™ Android proqramının ən son versiyasını rəsmi serverdən yükləyin. Cari versiya, quraşdırma qaydası və təhlükəsizlik məlumatı.">
 <meta name="theme-color" content="#0a0a0a">
-<link rel="canonical" href="https://protechtor.app/application">
+<link rel="canonical" href="https://protechtor.app/application/download">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ProTechtor™">
-<meta property="og:title" content="Android proqramı — ProTechtor™">
-<meta property="og:description" content="ProTechtor™ Android proqramının yüklənməsi, yenilənmələri, quraşdırma təlimatı və proqram haqqında məlumat.">
-<meta property="og:url" content="https://protechtor.app/application">
+<meta property="og:title" content="Yükləmə — ProTechtor™">
+<meta property="og:description" content="ProTechtor™ Android proqramının ən son versiyasını rəsmi serverdən yükləyin. Cari versiya, quraşdırma qaydası və təhlükəsizlik məlumatı.">
+<meta property="og:url" content="https://protechtor.app/application/download">
 <meta property="og:image" content="https://protechtor.app/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="/assets/site.css">
 <script src="/assets/site.js" defer></script>
 </head>
-<body data-page="application">
+<body data-page="download">
 <header class="top">
   <div class="wrap">
     <a class="brand" href="/"><img src="/icon-192.png" alt="">ProTechtor™</a>
@@ -42,10 +42,6 @@
     <div class="hero">
       <h1 data-t="hero.h"></h1>
       <p data-t="hero.p"></p>
-      <div class="btns">
-        <a class="btn" href="/application/download"><span>⬇</span> <span data-t="hub.dl"></span></a>
-        <a class="btn ghost" href="/application/android" data-t="hub.guide"></a>
-      </div>
     </div>
 
     <section class="card" id="download">
@@ -60,7 +56,6 @@
 
     <section class="card" id="updates">
       <h2 data-t="up.h"></h2>
-      <p class="meta"><span data-t="dl.ver"></span> <b id="ver2">—</b></p>
       <p id="notes"></p>
       <p data-t="up.p"></p>
     </section>
@@ -71,9 +66,20 @@
       <div class="note" data-t="ins.note"></div>
     </section>
 
-    <section class="card" id="about">
-      <h2 data-t="about.h"></h2>
-      <div data-list="about.p"></div>
+    <div class="grid">
+      <section class="card">
+        <h2 data-t="req.h"></h2>
+        <ol class="steps" data-list="req.ul"></ol>
+      </section>
+      <section class="card">
+        <h2 data-t="safe.h"></h2>
+        <div data-list="safe.p"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2 data-t="more.h"></h2>
+      <p data-t="more.p"></p>
     </section>
   </div>
 </main>
@@ -85,7 +91,6 @@
     var l = window.PT ? PT.lang() : "az";
     var n = l === "az" ? vj.notes : (vj["notes_" + l] || vj.notes);
     document.getElementById("ver").textContent = vj.versionName || "—";
-    document.getElementById("ver2").textContent = vj.versionName || "—";
     document.getElementById("notes").textContent = n || "";
     if (vj.url) document.getElementById("dl-btn").href = vj.url.replace(/^https:\/\/protechtor\.app/, "");
   }

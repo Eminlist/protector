@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ProTechtor™</title>
-<meta name="description" content="ProTechtor™ ilə əlaqə: Telegram, e-poçt və proqramdaxili «Adminlə əlaqə» bölməsi.">
+<title>Qoruyucu şüşə uyğunluğu — ProTechtor™</title>
+<meta name="description" content="ProTechtor™ — mobil cihazlar üçün qoruyucu şüşələrin uyğunluğunu model adı və ya model kodu ilə müəyyən edən peşəkar vasitə.">
+<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0a0a0a">
-<link rel="canonical" href="https://protechtor.app/contact">
+<link rel="canonical" href="https://protechtor.app/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ProTechtor™">
-<meta property="og:title" content="Əlaqə — ProTechtor™">
-<meta property="og:description" content="ProTechtor™ ilə əlaqə: Telegram, e-poçt və proqramdaxili «Adminlə əlaqə» bölməsi.">
-<meta property="og:url" content="https://protechtor.app/contact">
+<meta property="og:title" content="Qoruyucu şüşə uyğunluğu — ProTechtor™">
+<meta property="og:description" content="ProTechtor™ — mobil cihazlar üçün qoruyucu şüşələrin uyğunluğunu model adı və ya model kodu ilə müəyyən edən peşəkar vasitə.">
+<meta property="og:url" content="https://protechtor.app/">
 <meta property="og:image" content="https://protechtor.app/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +22,7 @@
 <link rel="stylesheet" href="/assets/site.css">
 <script src="/assets/site.js" defer></script>
 </head>
-<body data-page="contact">
+<body data-page="home">
 <header class="top">
   <div class="wrap">
     <a class="brand" href="/"><img src="/icon-192.png" alt="">ProTechtor™</a>
@@ -42,27 +43,42 @@
     <div class="hero">
       <h1 data-t="hero.h"></h1>
       <p data-t="hero.p"></p>
-    </div>
-    <div class="grid">
-      <div class="card contact">
-        <div class="ic">✈️</div>
-        <div><h3 data-t="tg.h"></h3><a href="https://t.me/protechtor_app" target="_blank" rel="noopener">@protechtor_app</a></div>
-      </div>
-      <div class="card contact">
-        <div class="ic">✉️</div>
-        <div><h3 data-t="mail.h"></h3><a href="mailto:app.protechtor@gmail.com">app.protechtor@gmail.com</a></div>
-      </div>
-      <div class="card contact">
-        <div class="ic">💬</div>
-        <div><h3 data-t="chat.h"></h3><span class="meta" data-t="chat.p"></span></div>
+      <div class="btns">
+        <a class="btn" href="/application/download"><span>⬇</span> <span data-t="hero.b1"></span></a>
+        <a class="btn ghost" href="/application/android" data-t="hero.b2"></a>
       </div>
     </div>
+
+    <section class="card"><div class="stats" id="stats"></div></section>
+
+    <h2 style="margin-top:40px" data-t="f.h"></h2>
+    <div class="grid" data-cards="f.c" style="margin-top:12px"></div>
+
+    <section class="card" style="margin-top:40px">
+      <h2 data-t="how.h"></h2>
+      <ol class="steps" data-list="how.steps"></ol>
+    </section>
+
     <section class="card">
-      <h2 data-t="info.h"></h2>
-      <div data-list="info.p"></div>
+      <h2 data-t="shops.h"></h2>
+      <div data-list="shops.p"></div>
+    </section>
+
+    <section class="card">
+      <h2 data-t="cta.h"></h2>
+      <p data-t="cta.p"></p>
+      <div class="btns"><a class="btn" href="/application/download"><span>⬇</span> <span data-t="hero.b1"></span></a></div>
     </section>
   </div>
 </main>
+<script>
+document.addEventListener("pt:rendered", function () {
+  var s = PT.t("stats") || [];
+  document.getElementById("stats").innerHTML = s.map(function (x) {
+    return "<div><b>" + PT.fmt(x[0]) + "</b><span>" + PT.fmt(x[1]) + "</span></div>";
+  }).join("");
+});
+</script>
 <footer>
   <div class="wrap">
     <span>© <span id="year"></span> ProTechtor™</span>

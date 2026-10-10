@@ -65,7 +65,17 @@
         var p = (s.p || []).map(function (x) { return "<p>" + fmt(x) + "</p>"; }).join("");
         var ul = s.ul ? "<ul>" + s.ul.map(function (x) { return "<li>" + fmt(x) + "</li>"; }).join("") + "</ul>" : "";
         var p2 = (s.p2 || []).map(function (x) { return "<p>" + fmt(x) + "</p>"; }).join("");
-        return h + p + ul + p2;
+        var img = s.img ? '<img class="shot" loading="lazy" src="' + esc(s.img) + '" alt="' + esc(s.h || "") + '">' : "";
+        return h + p + ul + p2 + img;
+      }).join("");
+    });
+    // Kartlar: data-cards="açar" → [{i, h, p}]
+    document.querySelectorAll("[data-cards]").forEach(function (el) {
+      var arr = get(T, el.getAttribute("data-cards"));
+      if (!Array.isArray(arr)) return;
+      el.innerHTML = arr.map(function (c) {
+        return '<div class="card feat">' + (c.i ? '<div class="ic">' + esc(c.i) + "</div>" : "") +
+          (c.h ? "<h3>" + fmt(c.h) + "</h3>" : "") + (c.p ? "<p>" + fmt(c.p) + "</p>" : "") + "</div>";
       }).join("");
     });
     var title = get(T, "page.title");

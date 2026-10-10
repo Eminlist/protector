@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ProTechtor™</title>
-<meta name="description" content="ProTechtor™ ilə əlaqə: Telegram, e-poçt və proqramdaxili «Adminlə əlaqə» bölməsi.">
+<title>İstifadə təlimatı — ProTechtor™</title>
+<meta name="description" content="ProTechtor™ Android proqramından istifadə qaydaları: giriş, model axtarışı, nəticələr, bildirişlər, yenilənmələr və tənzimləmələr.">
 <meta name="theme-color" content="#0a0a0a">
-<link rel="canonical" href="https://protechtor.app/contact">
+<link rel="canonical" href="https://protechtor.app/application/android">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="ProTechtor™">
-<meta property="og:title" content="Əlaqə — ProTechtor™">
-<meta property="og:description" content="ProTechtor™ ilə əlaqə: Telegram, e-poçt və proqramdaxili «Adminlə əlaqə» bölməsi.">
-<meta property="og:url" content="https://protechtor.app/contact">
+<meta property="og:title" content="İstifadə təlimatı — ProTechtor™">
+<meta property="og:description" content="ProTechtor™ Android proqramından istifadə qaydaları: giriş, model axtarışı, nəticələr, bildirişlər, yenilənmələr və tənzimləmələr.">
+<meta property="og:url" content="https://protechtor.app/application/android">
 <meta property="og:image" content="https://protechtor.app/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="/assets/site.css">
 <script src="/assets/site.js" defer></script>
 </head>
-<body data-page="contact">
+<body data-page="android">
 <header class="top">
   <div class="wrap">
     <a class="brand" href="/"><img src="/icon-192.png" alt="">ProTechtor™</a>
@@ -42,27 +42,33 @@
     <div class="hero">
       <h1 data-t="hero.h"></h1>
       <p data-t="hero.p"></p>
+      <div class="btns"><a class="btn" href="/application/download"><span>⬇</span> <span data-t="dl"></span></a></div>
     </div>
-    <div class="grid">
-      <div class="card contact">
-        <div class="ic">✈️</div>
-        <div><h3 data-t="tg.h"></h3><a href="https://t.me/protechtor_app" target="_blank" rel="noopener">@protechtor_app</a></div>
-      </div>
-      <div class="card contact">
-        <div class="ic">✉️</div>
-        <div><h3 data-t="mail.h"></h3><a href="mailto:app.protechtor@gmail.com">app.protechtor@gmail.com</a></div>
-      </div>
-      <div class="card contact">
-        <div class="ic">💬</div>
-        <div><h3 data-t="chat.h"></h3><span class="meta" data-t="chat.p"></span></div>
-      </div>
-    </div>
+
     <section class="card">
-      <h2 data-t="info.h"></h2>
-      <div data-list="info.p"></div>
+      <h2 data-t="toc"></h2>
+      <div class="toc" id="toc"></div>
     </section>
+
+    <section class="card doc" id="guide" data-sections="g"></section>
   </div>
 </main>
+<script>
+document.addEventListener("pt:rendered", function () {
+  var toc = document.getElementById("toc");
+  var hs = document.querySelectorAll("#guide h2");
+  toc.innerHTML = "";
+  hs.forEach(function (h, i) {
+    h.id = "s" + (i + 1);
+    h.style.scrollMarginTop = "76px";
+    var a = document.createElement("a");
+    a.href = "#" + h.id;
+    a.textContent = h.textContent.replace(/^\d+\.\s*/, "");
+    toc.appendChild(a);
+  });
+  if (location.hash) { var t = document.querySelector(location.hash); if (t) t.scrollIntoView(); }
+});
+</script>
 <footer>
   <div class="wrap">
     <span>© <span id="year"></span> ProTechtor™</span>

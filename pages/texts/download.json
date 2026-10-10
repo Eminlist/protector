@@ -1,12 +1,31 @@
 {
  "az": {
   "page": {
-   "title": "Android proqramı",
-   "desc": "ProTechtor™ Android proqramının yüklənməsi, yenilənmələri, quraşdırma təlimatı və proqram haqqında məlumat."
+   "title": "Yükləmə",
+   "desc": "ProTechtor™ Android proqramının ən son versiyasını rəsmi serverdən yükləyin. Cari versiya, quraşdırma qaydası və təhlükəsizlik məlumatı."
   },
   "hero": {
-   "h": "ProTechtor™ Android proqramı",
-   "p": "Mobil cihazlar üçün qoruyucu şüşələrin uyğunluğunu model adı və ya model kodu ilə tez və dəqiq müəyyən etməyə imkan verən proqram."
+   "h": "ProTechtor™ proqramını yükləyin",
+   "p": "Android proqramının ən son versiyası rəsmi serverimizdən birbaşa təqdim olunur."
+  },
+  "req": {
+   "h": "Tələblər",
+   "ul": [
+    "Android əməliyyat sistemi ilə işləyən smartfon və ya planşet.",
+    "İnternet bağlantısı (giriş, axtarış və yenilənmələr üçün).",
+    "ProTechtor™ hesabı — proqramın daxilində yaradılır."
+   ]
+  },
+  "safe": {
+   "h": "Faylın həqiqiliyi",
+   "p": [
+    "Rəsmi proqram yalnız **protechtor.app** ünvanından yayımlanır. Proqramın paket adı **az.protechtor.app**-dır.",
+    "Başqa saytlarda, mesajlaşma qruplarında və ya fayl paylaşma xidmətlərində yayılan nüsxələr rəsmi deyil və dəyişdirilmiş ola bilər."
+   ]
+  },
+  "more": {
+   "h": "Əlavə məlumat",
+   "p": "Proqramdan istifadə qaydaları [İstifadə təlimatı](/application/android) səhifəsində verilmişdir. Suallarınız olarsa, [Əlaqə](/contact) bölməsi vasitəsilə bizə müraciət edə bilərsiniz."
   },
   "dl": {
    "h": "Yükləmə",
@@ -30,28 +49,35 @@
     "Bildirişlərin vaxtında çatması üçün proqramın təklif etdiyi **batareya optimallaşdırmasının söndürülməsi** icazəsini təsdiqləyin."
    ],
    "note": "Quraşdırma zamanı Google Play Protect xəbərdarlıq göstərə bilər. Bu, proqramın Google Play mağazasından deyil, birbaşa yükləndiyini bildirir."
-  },
-  "about": {
-   "h": "Proqram haqqında",
-   "p": [
-    "ProTechtor™ mobil telefon aksesuarları ilə işləyən mütəxəssislər və mağazalar üçün nəzərdə tutulmuş peşəkar köməkçi vasitədir.",
-    "Proqram eyni qoruyucu şüşəyə uyğun gələn modelləri qruplaşdırılmış şəkildə göstərir və axtarışı həm model adı, həm də model kodu (məsələn, **SM-A556B**) ilə həyata keçirməyə imkan verir.",
-    "Model bazası mütəmadi olaraq yenilənir və yeni buraxılan cihazlarla genişləndirilir."
-   ]
-  },
-  "hub": {
-   "dl": "Yükləmə səhifəsi",
-   "guide": "İstifadə təlimatı"
   }
  },
  "ru": {
   "page": {
-   "title": "Приложение для Android",
-   "desc": "Загрузка приложения ProTechtor™ для Android, обновления, инструкция по установке и информация о приложении."
+   "title": "Загрузка",
+   "desc": "Загрузите последнюю версию приложения ProTechtor™ для Android с официального сервера. Текущая версия, порядок установки и сведения о безопасности."
   },
   "hero": {
-   "h": "Приложение ProTechtor™ для Android",
-   "p": "Приложение, позволяющее быстро и точно определить совместимость защитных стёкол для мобильных устройств по названию или коду модели."
+   "h": "Загрузите приложение ProTechtor™",
+   "p": "Последняя версия приложения для Android предоставляется напрямую с нашего официального сервера."
+  },
+  "req": {
+   "h": "Требования",
+   "ul": [
+    "Смартфон или планшет под управлением операционной системы Android.",
+    "Подключение к интернету (для входа, поиска и обновлений).",
+    "Учётная запись ProTechtor™ — создаётся внутри приложения."
+   ]
+  },
+  "safe": {
+   "h": "Подлинность файла",
+   "p": [
+    "Официальное приложение распространяется только с адреса **protechtor.app**. Имя пакета приложения — **az.protechtor.app**.",
+    "Копии, распространяемые на других сайтах, в группах мессенджеров или файлообменных сервисах, не являются официальными и могут быть изменены."
+   ]
+  },
+  "more": {
+   "h": "Дополнительная информация",
+   "p": "Правила использования приложения приведены на странице [Руководство пользователя](/application/android). При возникновении вопросов вы можете обратиться к нам через раздел [Контакты](/contact)."
   },
   "dl": {
    "h": "Загрузка",
@@ -75,28 +101,35 @@
     "Для своевременной доставки уведомлений подтвердите предлагаемое приложением **отключение оптимизации батареи**."
    ],
    "note": "Во время установки Google Play Protect может показать предупреждение. Это означает, что приложение загружено напрямую, а не из Google Play."
-  },
-  "about": {
-   "h": "О приложении",
-   "p": [
-    "ProTechtor™ — профессиональный инструмент, предназначенный для специалистов и магазинов, работающих с аксессуарами для мобильных телефонов.",
-    "Приложение показывает модели, совместимые с одним и тем же защитным стеклом, в сгруппированном виде и позволяет выполнять поиск как по названию, так и по коду модели (например, **SM-A556B**).",
-    "База моделей регулярно обновляется и пополняется новыми устройствами."
-   ]
-  },
-  "hub": {
-   "dl": "Страница загрузки",
-   "guide": "Руководство пользователя"
   }
  },
  "tr": {
   "page": {
-   "title": "Android uygulaması",
-   "desc": "ProTechtor™ Android uygulamasının indirilmesi, güncellemeler, kurulum talimatı ve uygulama hakkında bilgi."
+   "title": "İndirme",
+   "desc": "ProTechtor™ Android uygulamasının en son sürümünü resmî sunucudan indirin. Güncel sürüm, kurulum adımları ve güvenlik bilgileri."
   },
   "hero": {
-   "h": "ProTechtor™ Android uygulaması",
-   "p": "Mobil cihazlar için koruyucu camların uyumluluğunu model adı veya model kodu ile hızlı ve doğru şekilde belirlemenizi sağlayan uygulama."
+   "h": "ProTechtor™ uygulamasını indirin",
+   "p": "Android uygulamasının en son sürümü doğrudan resmî sunucumuzdan sunulmaktadır."
+  },
+  "req": {
+   "h": "Gereksinimler",
+   "ul": [
+    "Android işletim sistemiyle çalışan akıllı telefon veya tablet.",
+    "İnternet bağlantısı (giriş, arama ve güncellemeler için).",
+    "ProTechtor™ hesabı — uygulama içinde oluşturulur."
+   ]
+  },
+  "safe": {
+   "h": "Dosyanın orijinalliği",
+   "p": [
+    "Resmî uygulama yalnızca **protechtor.app** adresinden dağıtılır. Uygulamanın paket adı **az.protechtor.app**'tır.",
+    "Başka sitelerde, mesajlaşma gruplarında veya dosya paylaşım hizmetlerinde yayılan kopyalar resmî değildir ve değiştirilmiş olabilir."
+   ]
+  },
+  "more": {
+   "h": "Ek bilgi",
+   "p": "Uygulamanın kullanım kuralları [Kullanım kılavuzu](/application/android) sayfasında yer almaktadır. Sorularınız için [İletişim](/contact) bölümü aracılığıyla bize başvurabilirsiniz."
   },
   "dl": {
    "h": "İndirme",
@@ -120,28 +153,35 @@
     "Bildirimlerin zamanında ulaşması için uygulamanın önerdiği **pil optimizasyonunun kapatılması** iznini onaylayın."
    ],
    "note": "Kurulum sırasında Google Play Protect bir uyarı gösterebilir. Bu, uygulamanın Google Play'den değil, doğrudan indirildiğini belirtir."
-  },
-  "about": {
-   "h": "Uygulama hakkında",
-   "p": [
-    "ProTechtor™, mobil telefon aksesuarlarıyla çalışan uzmanlar ve mağazalar için tasarlanmış profesyonel bir yardımcı araçtır.",
-    "Uygulama, aynı koruyucu cama uyan modelleri gruplandırılmış şekilde gösterir ve aramayı hem model adı hem de model kodu (örneğin **SM-A556B**) ile yapmanıza olanak tanır.",
-    "Model veritabanı düzenli olarak güncellenir ve yeni çıkan cihazlarla genişletilir."
-   ]
-  },
-  "hub": {
-   "dl": "İndirme sayfası",
-   "guide": "Kullanım kılavuzu"
   }
  },
  "en": {
   "page": {
-   "title": "Android app",
-   "desc": "Download the ProTechtor™ Android app, see updates, installation instructions and information about the app."
+   "title": "Download",
+   "desc": "Download the latest version of the ProTechtor™ Android app from the official server. Current version, installation steps and security information."
   },
   "hero": {
-   "h": "ProTechtor™ for Android",
-   "p": "An application that quickly and accurately determines the compatibility of protective glass for mobile devices by model name or model code."
+   "h": "Download ProTechtor™",
+   "p": "The latest version of the Android app is provided directly from our official server."
+  },
+  "req": {
+   "h": "Requirements",
+   "ul": [
+    "A smartphone or tablet running the Android operating system.",
+    "An internet connection (for sign-in, search and updates).",
+    "A ProTechtor™ account — created within the app."
+   ]
+  },
+  "safe": {
+   "h": "File authenticity",
+   "p": [
+    "The official app is distributed only from **protechtor.app**. The app's package name is **az.protechtor.app**.",
+    "Copies distributed on other websites, in messaging groups or on file-sharing services are not official and may have been modified."
+   ]
+  },
+  "more": {
+   "h": "More information",
+   "p": "Instructions for using the app are available on the [User guide](/application/android) page. If you have any questions, you can contact us through the [Contact](/contact) section."
   },
   "dl": {
    "h": "Download",
@@ -165,18 +205,6 @@
     "To ensure timely delivery of notifications, confirm the **battery optimization exemption** offered by the app."
    ],
    "note": "Google Play Protect may display a warning during installation. This indicates that the application was downloaded directly rather than from Google Play."
-  },
-  "about": {
-   "h": "About the app",
-   "p": [
-    "ProTechtor™ is a professional tool designed for specialists and stores working with mobile phone accessories.",
-    "The application displays models compatible with the same protective glass in grouped form and supports searching by both model name and model code (for example, **SM-A556B**).",
-    "The model database is updated regularly and expanded with newly released devices."
-   ]
-  },
-  "hub": {
-   "dl": "Download page",
-   "guide": "User guide"
   }
  }
 }
