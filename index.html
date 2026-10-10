@@ -10603,7 +10603,7 @@ function renderAbout() {
     info.appendChild(infoSum);
     const infoBody = mk("div", "adm-acc-body");
     const grid = mk("div", "ab-info");
-    [[d.info[0], "v" + APP_VERSION], [d.info[1], String(groups)], [d.info[2], String(models)], [d.info[3], last ? formatDateShort(new Date(last)) : "—"]].forEach(function (r) {
+    [[d.info[0], ptVerLabel(APP_VERSION)], [d.info[1], String(groups)], [d.info[2], String(models)], [d.info[3], last ? formatDateShort(new Date(last)) : "—"]].forEach(function (r) {
         const c = mk("div");
         c.appendChild(mk("small", "", r[0]));
         c.appendChild(mk("b", "", r[1]));
@@ -10649,7 +10649,17 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.03";
+const APP_VERSION = "3.1.3.04";
+/* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Yeniləmə 4" (uzun rəqəmlər göstərilmir) */
+function ptVerLabel(v) {
+    var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
+    if (!m) return String(v || "");
+    var base = m[1] + "." + m[2] + "." + m[3], n = parseInt(m[4] || "0", 10);
+    if (!n) return base;
+    var w = { az: "Yeniləmə", ru: "Обновление", tr: "Güncelleme", en: "Update" };
+    var l = (typeof currentLang !== "undefined" && w[currentLang]) ? currentLang : "az";
+    return base + " · " + w[l] + " " + n;
+}
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
@@ -10702,7 +10712,7 @@ function applyLang() {
     document.querySelectorAll("[data-i18n-aria]").forEach(function (el) { el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria"))); });
     document.querySelectorAll(".lang-option").forEach(function (el) { el.classList.toggle("active", el.id === "lang-" + currentLang); });
     var appVer = document.getElementById("appVersion");
-    if (appVer) appVer.innerText = "v" + APP_VERSION;
+    if (appVer) appVer.innerText = ptVerLabel(APP_VERSION);
     var regSel = document.getElementById("regLangSelect");
     if (regSel) regSel.value = currentLang;
     var strengthEl = document.getElementById("passStrengthLabel");
@@ -11998,7 +12008,7 @@ var _notifText = notifText;
 notifText = function (x) {
   try {
     if (x && x.type === "newmodels") return T("pxNewM").replace("{n}", x.n).replace("{m}", (x.names || []).join(", ") + (x.n > (x.names || []).length ? "…" : ""));
-    if (x && x.type === "upd") return T("pxUpdN").replace("{v}", x.v);
+    if (x && x.type === "upd") return T("pxUpdN").replace("v{v}", "{v}").replace("{v}", ptVerLabel(x.v));
     if (x && x.texts) { var tx = x.texts[L()] || x.texts.az; if (tx) return personalize(tx); }
   } catch (e) {}
   return personalize(_notifText(x));
@@ -12938,7 +12948,7 @@ function showUpd(v) {
     };
   }
   el.setAttribute("data-v", v);
-  $("pt-upd-t").textContent = T("pxUpd").replace("{v}", v); $("pt-upd-b").textContent = T("pxUpdBtn");
+  $("pt-upd-t").textContent = T("pxUpd").replace("v{v}", "{v}").replace("{v}", ptVerLabel(v)); $("pt-upd-b").textContent = T("pxUpdBtn");
   if (jget("pt_x_updx", "") !== v) el.classList.add("show");
   var u = me(); addLocal({ local: "upd_" + v, uid: u ? u.uid : "", type: "upd", v: v, createdAt: Date.now() });
 }
@@ -12957,7 +12967,7 @@ function relabel() {
   var s = function (id, v) { var e = $(id); if (e) e.textContent = v; };
   s("pt-b3", T("pxHol"));
   s("ptOHl", T("pxOH")); s("ptOHd", T("pxOHd"));
-  var u = $("pt-upd"); if (u && u.getAttribute("data-v")) { s("pt-upd-t", T("pxUpd").replace("{v}", u.getAttribute("data-v"))); s("pt-upd-b", T("pxUpdBtn")); }
+  var u = $("pt-upd"); if (u && u.getAttribute("data-v")) { s("pt-upd-t", T("pxUpd").replace("v{v}", "{v}").replace("{v}", ptVerLabel(u.getAttribute("data-v")))); s("pt-upd-b", T("pxUpdBtn")); }
   renderFit();
 }
 var _setLang = setLang;
@@ -13474,6 +13484,7 @@ function render() {
     if (!box) return;
     var av = document.getElementById("appVersion");
     if (av && av.parentNode) av.parentNode.style.display = inApp() ? "none" : "";
+    if (av) av.innerText = ptVerLabel(APP_VERSION);
     if (!inApp()) { box.innerHTML = ""; return; }
     var p = prefs(), h = "";
     var on = p.push !== false;
@@ -13489,7 +13500,7 @@ function render() {
     h += '<div class="settings-box pt-as-box">';
     h += row(esc(tx("autoUpd")), esc(tx("autoUpdSub")), sw("ptAutoUpd", p.autoUpd !== false, "ptAppPref('autoUpd',this.checked)"));
     h += '<div class="settings-row" style="flex-direction:column;align-items:stretch;gap:8px"><div>' + esc(tx("updNet")) + '</div><div class="pt-as-seg"><button type="button" style="flex:1" class="' + (net === "any" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'any\')">' + esc(tx("netAny")) + '</button><button type="button" style="flex:1" class="' + (net === "wifi" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'wifi\')">' + esc(tx("netWifi")) + '</button></div></div>';
-    h += row(esc(tx("curVer")), "", '<b>' + esc(p.ver || "") + '</b>');
+    h += row(esc(tx("curVer")), "", '<b>' + esc(ptVerLabel(APP_VERSION)) + '</b>');
     h += '</div>';
     h += '<button type="button" class="pt-as-btn" onclick="ptAppCheckUpdate()">⟳ ' + esc(tx("check")) + '</button>';
     h += '<div class="settings-box pt-as-box" style="margin-top:10px">' + row(esc(tx("keepOn")), esc(tx("keepOnSub")), sw("ptKeepOn", !!p.keepOn, "ptAppPref('keepOn',this.checked)")) + '</div>';
@@ -13528,7 +13539,7 @@ function contactText() {
         if (u && !u.isAnonymous && u.email) t += "\n" + tx("acc") + ": " + u.email;
     } catch (e) {}
     var v = "";
-    try { if (inApp()) { var p = prefs(); v = (p.ver || "") + " (Android)"; } else if (typeof APP_VERSION !== "undefined") v = APP_VERSION; } catch (e) {}
+    try { if (inApp()) { var p = prefs(); v = ptVerLabel(APP_VERSION) + " (Android)"; } else if (typeof APP_VERSION !== "undefined") v = ptVerLabel(APP_VERSION); } catch (e) {}
     if (v) t += "\n" + tx("ver") + ": " + v;
     return t + "\n\n";
 }
