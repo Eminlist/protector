@@ -121,8 +121,14 @@ details.acc[open] .acc-body>*:nth-child(4){animation-delay:.15s}
 @media (max-width:900px){
   .mnav,.top-r .cta{display:none}
   .burger{display:block}
-  .mpanel{display:block;position:fixed;z-index:29;left:0;right:0;top:62px;bottom:0;background:var(--bg);overflow-y:auto;opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .25s,transform .3s,visibility .25s}
-  .mpanel.open{opacity:1;visibility:visible;transform:none}
+  .mpanel{display:block;position:fixed;z-index:29;left:0;right:0;top:62px;bottom:0;background:var(--bg);overflow-y:auto;visibility:hidden;transform:translateY(-100%);transition:transform .45s cubic-bezier(.32,.72,0,1),visibility 0s linear .45s}
+  .mpanel.open{visibility:visible;transform:none;transition:transform .45s cubic-bezier(.32,.72,0,1),visibility 0s}
+  .mpanel .mx,.mpanel .mx-cta{opacity:0;transform:translateY(-14px);transition:opacity .25s,transform .25s}
+  .mpanel.open .mx,.mpanel.open .mx-cta{opacity:1;transform:none;transition:opacity .4s,transform .45s cubic-bezier(.32,.72,0,1)}
+  .mpanel.open .mx:nth-child(1){transition-delay:.12s}.mpanel.open .mx:nth-child(2){transition-delay:.17s}
+  .mpanel.open .mx:nth-child(3){transition-delay:.22s}.mpanel.open .mx:nth-child(4){transition-delay:.27s}
+  .mpanel.open .mx-cta{transition-delay:.32s}
+  @media (prefers-reduced-motion:reduce){.mpanel,.mpanel .mx,.mpanel .mx-cta{transition:none !important}}
   body.menu-open{overflow:hidden}
 }
 .mpanel-in{padding:8px 16px calc(28px + env(safe-area-inset-bottom,0px))}
