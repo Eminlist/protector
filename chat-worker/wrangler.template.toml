@@ -1,0 +1,23 @@
+name = "protector-chat"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "protector-db"
+database_id = "__D1_ID__"
+
+[[durable_objects.bindings]]
+name = "HUB"
+class_name = "ChatHub"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChatHub"]
+
+[triggers]
+crons = ["17 0 * * *"]
+
+[observability]
+enabled = true

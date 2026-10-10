@@ -2216,6 +2216,41 @@
 </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style>.ts-box{display:flex;justify-content:center;min-height:65px;margin:8px 0}</style>
+<style id="ptHdrChatCss">
+/* ===== Başlıq düymələri: səliqəli ölçü, hərəkətli ikonlar ===== */
+.top-header{gap:12px}
+.header-left{min-width:0;flex:1 1 auto}
+.header-buttons{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.hb{position:relative;width:50px;height:50px;border-radius:16px;padding:0;display:flex;align-items:center;justify-content:center}
+#adminBtn{display:none}
+.hb-admin{border-color:#e74c3c !important;color:#e74c3c}
+.hi{display:block;width:26px;height:26px;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat;
+  background:radial-gradient(ellipse 70% 40% at 35% 25%,rgba(255,255,255,.55),transparent 70%),linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 45%,#fff) 0%,var(--accent-color) 50%,color-mix(in srgb,var(--accent-color) 55%,#000) 100%);
+  filter:drop-shadow(0 0 4px color-mix(in srgb,var(--accent-color) 45%,transparent))}
+.hi-bell{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.27 21a2 2 0 0 0 3.46 0'/%3E%3Cpath d='M3.26 15.33A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.67C19.41 13.96 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.41 5.96-2.74 7.33'/%3E%3C/svg%3E");transform-origin:50% 8%;animation:ptBellRing 5s ease-in-out infinite}
+.hi-chat{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.9 20A9 9 0 1 0 4 16.1L2 22Z'/%3E%3Cpath d='M8 12h.01'/%3E%3Cpath d='M12 12h.01'/%3E%3Cpath d='M16 12h.01'/%3E%3C/svg%3E");animation:ptChatBob 4.5s ease-in-out infinite}
+.hi-admin{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3Ccircle cx='12' cy='11.5' r='2.6'/%3E%3Cpath d='M12 7.4v1.5M12 14.1v1.5M8 11.5h1.4M14.6 11.5H16'/%3E%3C/svg%3E");background:radial-gradient(ellipse 70% 40% at 35% 25%,rgba(255,255,255,.55),transparent 70%),linear-gradient(135deg,#FFB08A 0%,#e74c3c 55%,#8e1d12 100%);filter:drop-shadow(0 0 4px rgba(231,76,60,.5));animation:ptAdminGlow 3.2s ease-in-out infinite}
+.hi-menu{--m:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6h16'/%3E%3Cpath d='M4 12h16'/%3E%3Cpath d='M4 18h11'/%3E%3C/svg%3E");width:24px;height:24px}
+@keyframes ptBellRing{0%,58%,100%{transform:rotate(0)}62%{transform:rotate(16deg)}66%{transform:rotate(-14deg)}70%{transform:rotate(10deg)}74%{transform:rotate(-7deg)}78%{transform:rotate(3deg)}82%{transform:rotate(0)}}
+@keyframes ptChatBob{0%,100%{transform:translate(0,0) rotate(0)}25%{transform:translate(1px,-2.5px) rotate(-5deg)}50%{transform:translate(0,.5px) rotate(2deg)}75%{transform:translate(-1px,-1.5px) rotate(-2deg)}}
+@keyframes ptAdminGlow{0%,100%{transform:scale(1);filter:drop-shadow(0 0 3px rgba(231,76,60,.4))}50%{transform:scale(1.07);filter:drop-shadow(0 0 8px rgba(231,76,60,.75))}}
+.notif-badge.has-new + .hi,.hb.has-new .hi-bell,.hb.has-new .hi-chat{animation-duration:2.2s}
+/* Geri düyməsi məzmunun üstünə düşməsin: başlıqlar yuxarıda sabit qalır */
+.settings-header,.admin-header{position:sticky;top:0;z-index:70;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@media (max-width:560px){
+  .top-header{height:auto;min-height:88px;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 14px 16px}
+  .header-small{letter-spacing:3px;font-size:calc(11px * var(--font-scale))}
+  .header-title{font-size:calc(clamp(15px,4.4vw,21px) * var(--font-scale));letter-spacing:-.8px;line-height:1.08}
+  .header-buttons{gap:6px}
+  .hb{width:42px;height:42px;border-radius:13px}
+  .hi{width:22px;height:22px}
+  .hi-menu{width:21px;height:21px}
+  .hdr-av{width:30px;height:30px;font-size:18px}
+  .crown-badge{top:-10px;right:-10px;width:22px;height:22px}
+}
+@media (max-width:360px){.hb{width:38px;height:38px;border-radius:12px}.header-buttons{gap:5px}.hi{width:20px;height:20px}}
+@media (prefers-reduced-motion: reduce){.hi{animation:none !important}}
+</style>
 </head>
 
 <body>
@@ -2339,14 +2374,12 @@
                 <div class="header-small">Antiudar</div>
                 <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
             </div>
-            <div class="header-buttons" style="display: flex; gap: 10px;">
-                <button id="adminBtn" class="profile-btn" onclick="openAdmin()" title="Admin Panel" style="position: relative; width: 50px; height: 50px; border: 2px solid #e74c3c; background: transparent; color: #e74c3c; font-size: 18px; display: none; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">⚙<span class="admin-badge" id="adminInboxBadge">0</span></button>
-                <button class="profile-btn notif-wrap" id="notifBtn" onclick="openNotifications()" aria-label="Bildirişlər" style="width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    <span class="notif-badge" id="notifBadge">0</span>
-                </button>
-                <button class="profile-btn notif-wrap" id="profileBtn" onclick="openProfile()" title="Profil" style="width: 50px; height: 50px; border: 2px solid var(--accent-color); background: transparent; color: var(--accent-color); font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 16px;"><span class="hdr-av" id="hdrAvatar">👤</span><span class="crown-badge" id="proBadge"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ptCrown"/></svg></span></button>
-                <button class="menu-button" onclick="openSettings()">☰</button>
+            <div class="header-buttons">
+                <button id="adminBtn" class="profile-btn hb hb-admin" onclick="openAdmin()" title="Admin panel" aria-label="Admin panel"><span class="hi hi-admin" aria-hidden="true"></span><span class="admin-badge" id="adminInboxBadge">0</span></button>
+                <button class="profile-btn hb notif-wrap" id="ptChatBtn" onclick="ptChatOpen()" aria-label="Adminlə əlaqə" title="Adminlə əlaqə"><span class="hi hi-chat" aria-hidden="true"></span><span class="notif-badge" id="ptChatBadge">0</span></button>
+                <button class="profile-btn hb notif-wrap" id="notifBtn" onclick="openNotifications()" aria-label="Bildirişlər" title="Bildirişlər"><span class="hi hi-bell" aria-hidden="true"></span><span class="notif-badge" id="notifBadge">0</span></button>
+                <button class="profile-btn hb notif-wrap" id="profileBtn" onclick="openProfile()" title="Profil" aria-label="Profil"><span class="hdr-av" id="hdrAvatar">👤</span><span class="crown-badge" id="proBadge"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#ptCrown"/></svg></span></button>
+                <button class="menu-button hb" onclick="openSettings()" aria-label="Menyu" title="Menyu"><span class="hi hi-menu" aria-hidden="true"></span></button>
             </div>
         </header>
 
@@ -2502,6 +2535,9 @@
             </div>
         </header>
         <div class="adm-menus acc-exclusive">
+        <div class="adm-acc adm-link pt-adm-chat" role="button" tabindex="0" onclick="ptChatAdminOpen()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ptChatAdminOpen()}">
+            <div class="adm-sum"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /><path d="M8 12h.01" /><path d="M12 12h.01" /><path d="M16 12h.01" /></svg></span><span class="adm-ttl">Mesajlar <small id="admNavChatSub" class="adm-cnt"></small></span><span class="chev">›</span></div>
+        </div>
         <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#5AB0FF;--b:#1463E6" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></svg></span><span>Baza idarəsi</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
@@ -2560,7 +2596,7 @@
             <summary><span class="e3d ic3d" style="--a:#7FD4FF;--b:#1C7FD6" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></svg></span><span class="adm-ttl">Push bildiriş (telefona)</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
                 <div class="fm">
-                    <div><span class="fm-lbl">Növ</span><select id="ptPushType" class="fm-in"><option value="news">📰 Admin xəbəri (söndürülə bilər)</option><option value="bulk">📢 Toplu mesaj (söndürülə bilər)</option><option value="warn">⚠️ Xəbərdarlıq (söndürülmür)</option><option value="vip">🔔 Vacib — səsli (söndürülmür, gecə də səslə)</option></select></div>
+                    <div><span class="fm-lbl">Növ</span><input type="hidden" id="ptPushType" value="news"><div class="pt-ptype" role="radiogroup"><button type="button" role="radio" aria-checked="true" class="pt-pt on" data-v="news" onclick="ptPushPick(this)"><span class="pt-pt-e">📰</span><span class="pt-pt-t">Admin xəbəri</span><span class="pt-pt-d">Söndürülə bilər</span></button><button type="button" role="radio" aria-checked="false" class="pt-pt" data-v="bulk" onclick="ptPushPick(this)"><span class="pt-pt-e">📢</span><span class="pt-pt-t">Toplu mesaj</span><span class="pt-pt-d">Söndürülə bilər</span></button><button type="button" role="radio" aria-checked="false" class="pt-pt" data-v="warn" onclick="ptPushPick(this)"><span class="pt-pt-e">⚠️</span><span class="pt-pt-t">Xəbərdarlıq</span><span class="pt-pt-d">Söndürülmür</span></button><button type="button" role="radio" aria-checked="false" class="pt-pt" data-v="vip" onclick="ptPushPick(this)"><span class="pt-pt-e">🔔</span><span class="pt-pt-t">Vacib — səsli</span><span class="pt-pt-d">Söndürülmür, gecə də səsli</span></button></div></div>
                     <div><span class="fm-lbl">Kimə · boş qalsa hamıya</span><input type="text" id="ptPushTo" class="fm-in" placeholder="İstifadəçinin e-poçtu (boş = hamı)"></div>
                     <div class="fm-seg"><button type="button" class="on" onclick="fmSeg(this,'pp','az')">AZ</button><button type="button" onclick="fmSeg(this,'pp','ru')">RU</button><button type="button" onclick="fmSeg(this,'pp','tr')">TR</button><button type="button" onclick="fmSeg(this,'pp','en')">EN</button></div>
                     <div class="fm-pane on" data-pane="pp-az"><input type="text" id="ptPushTiaz" class="fm-in" placeholder="Başlıq (AZ) — boş qalsa «ProTechtor™»" style="margin-bottom:8px"><textarea id="ptPushBaz" class="fm-ta sm" placeholder="Mətn (AZ) *"></textarea></div>
@@ -2849,6 +2885,7 @@
 
             <div class="settings-section">
                 <div class="settings-section-title"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></svg></span><span data-i18n="secContact">ƏLAQƏ</span></div>
+                <button type="button" class="whatsapp-button pt-chat-set-btn" onclick="ptChatOpen()"><span class="hi hi-chat" aria-hidden="true"></span><span id="ptChatSetLbl">Adminlə əlaqə</span><span class="notif-badge" id="ptChatSetBadge" style="position:static;margin-left:4px">0</span></button>
                 <a id="ptWaBtn" href="https://wa.me/994553115544?text=Salam,%20ProTechtor™%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" target="_blank" rel="noopener">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                     <span data-i18n="whatsapp">WhatsApp ilə əlaqə</span>
@@ -8564,6 +8601,7 @@ function gfPickUser(id) {
 
 function giftGrantOne(u, days, r, batch) {
     const now = Date.now();
+    u._giftNotif = null;
     const base = Math.max(now, +u.premiumUntil || 0);
     const until = base + days * DAY_MS;
     const ref = db.collection("users").doc(u._id);
@@ -8575,7 +8613,9 @@ function giftGrantOne(u, days, r, batch) {
             by: (auth.currentUser && auth.currentUser.email) || ""
         });
     }).then(function () {
-        return ref.collection("notifications").add({ type: "premium_gift", days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "", until: until, createdAt: now, read: false });
+        const nx = { type: "premium_gift", days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "", until: until, createdAt: now, read: false };
+        u._giftNotif = nx;
+        return ref.collection("notifications").add(Object.assign({ noPush: true }, nx)).catch(function (e) { console.warn("gift notif", e && e.message); });
     }).then(function () {
         u.premiumUntil = until;
         if (!u.premiumSince) u.premiumSince = now;
@@ -8595,6 +8635,9 @@ function gfGiveOne() {
         if (!ok) return;
         giftGrantOne(u, days, r, "").then(function (nu) {
             showAppToast("🎁 " + gfName(u) + ": " + gfDurText(r.unit, r.gAmount, "az") + " · " + fmtDate(nu) + "-dək");
+            if (window.ptPushNotif && u._giftNotif) ptPushNotif([u._id], u._giftNotif).then(function (d) {
+                showAppToast("📲 Push: " + (d && typeof d.sent === "number" ? (d.sent ? d.sent + " cihaza göndərildi" : "istifadəçinin qeydiyyatlı cihazı yoxdur (APK quraşdırılmayıb)") : "göndərildi"), 5000);
+            }).catch(function (e) { showAppToast("⚠️ Push göndərilmədi: " + ((e && e.message) || ""), 6000); });
             gfSelect("");
             renderAdminUsers();
             triggerHaptic(40);
@@ -8652,6 +8695,10 @@ function gfGiveBulk() {
         step().then(function () {
             if (prog) prog.textContent = "✓ " + done + " istifadəçiyə hədiyyə edildi" + (fail ? " · xəta: " + fail : "");
             showAppToast("🎁 " + done + " istifadəçiyə " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə edildi");
+            const okU = list.filter(function (u) { return u._giftNotif; });
+            if (window.ptPushNotif && okU.length) ptPushNotif(okU.map(function (u) { return u._id; }), okU[0]._giftNotif).then(function (d) {
+                showAppToast("📲 Push: " + (d && typeof d.sent === "number" ? d.sent + " cihaza göndərildi" : "göndərildi"), 5000);
+            }).catch(function (e) { showAppToast("⚠️ Push göndərilmədi: " + ((e && e.message) || ""), 6000); });
             renderAdminUsers();
             gfCount();
             triggerHaptic(50);
@@ -13400,7 +13447,8 @@ window.ptOnPushToken = function () { pushRegister(); };
 window.ptOnPush = function () { try { if (typeof loadNotifications === "function") loadNotifications(); } catch (e) {} };
 window.ptAppOpen = function (x) {
     try {
-        if (x === "profile" && typeof openProfile === "function") openProfile();
+        if (x === "chat" && typeof window.ptChatOpen === "function") ptChatOpen();
+        else if (x === "profile" && typeof openProfile === "function") openProfile();
         else if (typeof openNotifications === "function") openNotifications();
     } catch (e) {}
 };
@@ -13430,18 +13478,25 @@ function inLangs(fn) {
     return out;
 }
 // Admin istifadəçiyə bildiriş yazanda (users/{uid}/notifications) — eyni bildirişi telefona da göndər
-function pushFromNotif(uid, x) {
-    if (!x || x.noPush) return;
+function pushFromNotif(uid, x, force) {
+    if (!x || (x.noPush && !force)) return Promise.resolve(null);
     var ty = x.pushType || (/^premium_/.test(x.type || "") ? "premium" : (x.type === "req_reply" || /^misfit_/.test(x.type || "")) ? "reply" : "general");
     var b = inLangs(function () {
         if (x.type === "req_reply" && x.text) return x.text;
         if (x.type === "misfit_rejected") return (x.model ? x.model + " — " : "") + (x.rejectReason || x.text || "");
         return typeof notifText === "function" ? notifText(x) : (x.text || "");
     });
-    if (!b.az) return;
-    pushSend({ to: [uid], t: ty, ti: TITLE[ty] || TITLE.general, b: b, o: /^premium_/.test(x.type || "") ? "profile" : "notif" })
-        .catch(function (e) { console.warn("push", e && e.message); });
+    if (!b.az) return Promise.resolve(null);
+    var to = Array.isArray(uid) ? uid : [uid];
+    var o = /^premium_/.test(x.type || "") ? "profile" : "notif";
+    var parts = [];
+    for (var i = 0; i < to.length; i += 200) parts.push(to.slice(i, i + 200));
+    var sent = 0;
+    return parts.reduce(function (p, ch) {
+        return p.then(function () { return pushSend({ to: ch, t: ty, ti: TITLE[ty] || TITLE.general, b: b, o: o }).then(function (d) { if (d && typeof d.sent === "number") sent += d.sent; }); });
+    }, Promise.resolve()).then(function () { return { sent: sent }; });
 }
+window.ptPushNotif = function (uids, x) { return pushFromNotif(uids, x, true); };
 (function hookNotifAdd() {
     try {
         var CR = firebase.firestore.CollectionReference;
@@ -13453,7 +13508,7 @@ function pushFromNotif(uid, x) {
                 var m = /^users\/([^/]+)\/notifications$/.exec(this.path || "");
                 if (m && typeof isAdmin !== "undefined" && isAdmin && data) {
                     var uid = m[1], copy = Object.assign({}, data);
-                    pr.then(function () { pushFromNotif(uid, copy); }, function () {});
+                    pr.then(function () { var q = pushFromNotif(uid, copy); if (q && q.catch) q.catch(function (e) { console.warn("push", e && e.message); }); }, function () {});
                 }
             } catch (e) {}
             return pr;
@@ -13609,6 +13664,426 @@ window.ptUpdProgress = function (p) {
     render(); renderContact(); syncApp();
     setTimeout(syncApp, 6000);
 })();
+})();
+</script>
+<style id="ptChatCss">
+/* ===== Adminlə əlaqə: söhbət ===== */
+.pt-chat-set-btn{background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 80%,#fff),var(--accent-color));box-shadow:0 4px 15px color-mix(in srgb,var(--accent-color) 30%,transparent);margin-bottom:10px;border:none;cursor:pointer;font-family:inherit}
+.pt-chat-set-btn .hi{background:#fff;filter:none;width:22px;height:22px}
+.pt-adm-chat{border-color:color-mix(in srgb,var(--accent-color) 45%,var(--border)) !important}
+.pt-ptype{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pt-pt{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:10px 12px;border-radius:14px;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;font-family:inherit;transition:border-color .2s,background .2s,transform .1s}
+.pt-pt:active{transform:scale(.97)}
+.pt-pt.on{border-color:var(--accent-color);background:color-mix(in srgb,var(--accent-color) 12%,var(--bg));box-shadow:0 0 0 1px var(--accent-color) inset}
+.pt-pt-e{font-size:18px;line-height:1}
+.pt-pt-t{font-size:13px;font-weight:800}
+.pt-pt-d{font-size:11px;color:var(--muted);line-height:1.3}
+#pt-chat-view,#pt-chat-list{display:flex;flex-direction:column;overflow:hidden !important}
+#pt-chat-list{z-index:695}
+#pt-chat-view{z-index:700}
+#pt-chat-view .settings-header,#pt-chat-list .settings-header{flex:0 0 auto}
+.ptc-sub{font-size:11px;color:var(--muted);font-weight:600;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:62vw}
+.ptc-note{flex:0 0 auto;margin:0 14px 6px;padding:8px 12px;border-radius:12px;font-size:11.5px;line-height:1.35;color:var(--muted);background:color-mix(in srgb,var(--accent-color) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--accent-color) 22%,var(--border));text-align:center}
+.ptc-list{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:8px 12px 14px;display:flex;flex-direction:column;gap:6px}
+.ptc-empty{margin:auto;max-width:300px;text-align:center;color:var(--muted);font-size:13px;line-height:1.5;padding:20px}
+.ptc-empty .hi{width:44px;height:44px;margin:0 auto 12px}
+.ptc-day{align-self:center;font-size:11px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:3px 10px;border-radius:999px;margin:8px 0 4px}
+.ptc-m{max-width:80%;padding:8px 11px 6px;border-radius:16px;font-size:14px;line-height:1.4;word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap;position:relative;box-shadow:0 1px 2px rgba(0,0,0,.15);animation:ptcIn .22s ease-out}
+.ptc-m.me{align-self:flex-end;background:color-mix(in srgb,var(--accent-color) 22%,var(--surface));border:1px solid color-mix(in srgb,var(--accent-color) 40%,transparent);border-bottom-right-radius:5px;color:var(--text)}
+.ptc-m.them{align-self:flex-start;background:var(--surface);border:1px solid var(--border);border-bottom-left-radius:5px;color:var(--text)}
+.ptc-who{font-size:11px;font-weight:800;color:var(--accent-color);margin-bottom:2px}
+.ptc-img{display:block;max-width:230px;max-height:300px;width:auto;border-radius:11px;margin:2px 0 4px;cursor:zoom-in;background:var(--bg)}
+.ptc-meta{display:flex;justify-content:flex-end;align-items:center;gap:4px;font-size:10.5px;color:var(--muted);margin-top:2px;white-space:nowrap}
+.ptc-tick{display:inline-flex;font-weight:900;letter-spacing:-3px;font-size:12px;color:var(--muted);padding-right:3px}
+.ptc-tick.ok{color:#25D366}
+.ptc-tick.wait{opacity:.6}
+.ptc-bar{flex:0 0 auto;display:flex;align-items:flex-end;gap:8px;padding:8px 10px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border);background:var(--header-bg,var(--bg));backdrop-filter:blur(8px)}
+.ptc-in{flex:1 1 auto;min-height:44px;max-height:130px;resize:none;border-radius:22px;border:1px solid var(--border);background:var(--bg);color:var(--text);padding:11px 16px;font-size:15px;font-family:inherit;line-height:1.35;outline:none}
+.ptc-in:focus{border-color:var(--accent-color)}
+.ptc-ib{flex:0 0 44px;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--accent-color);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.ptc-ib svg{width:22px;height:22px}
+.ptc-send{background:var(--accent-color);border-color:var(--accent-color);color:#fff}
+.ptc-send:disabled{opacity:.5}
+.ptc-ib:active{transform:scale(.92)}
+.ptc-prev{flex:0 0 auto;display:none;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--border);background:var(--surface);font-size:12px;color:var(--muted)}
+.ptc-prev.on{display:flex}
+.ptc-prev img{width:52px;height:52px;object-fit:cover;border-radius:10px}
+.ptc-prev button{margin-left:auto;background:none;border:none;color:#e74c3c;font-size:22px;cursor:pointer}
+.ptc-th{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--border);cursor:pointer;margin-bottom:8px;transition:transform .1s}
+.ptc-th:active{transform:scale(.98)}
+.ptc-th.unread{border-color:var(--accent-color)}
+.ptc-av{flex:0 0 42px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--accent-color) 60%,#fff),var(--accent-color));font-size:16px}
+.ptc-tb{flex:1 1 auto;min-width:0}
+.ptc-tn{font-weight:800;font-size:14px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptc-tl{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}
+.ptc-tr{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:11px;color:var(--muted)}
+.ptc-un{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--accent-color);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:11px}
+.ptc-tools{flex:0 0 auto;padding:0 14px 8px;display:flex;flex-direction:column;gap:8px}
+.ptc-scroll{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 14px 20px}
+.ptc-live{display:inline-block;width:7px;height:7px;border-radius:50%;background:#999;margin-right:5px;vertical-align:middle}
+.ptc-live.on{background:#25D366;box-shadow:0 0 6px #25D366}
+#ptcZoom{position:fixed;inset:0;z-index:3800;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center}
+#ptcZoom img{max-width:96vw;max-height:92vh;border-radius:8px}
+@keyframes ptcIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+
+<div id="pt-chat-list" class="sub-view">
+    <header class="settings-header">
+        <button class="settings-back" onclick="history.back()">‹</button>
+        <div class="settings-heading">
+            <div class="settings-small">ADMIN</div>
+            <div class="settings-title">Mesajlar</div>
+        </div>
+    </header>
+    <div class="ptc-tools">
+        <div class="fm-sw-row"><span>Şəkil göndərmə (istifadəçilər üçün)</span><label class="switch"><input type="checkbox" id="ptcImgOn" onchange="ptChatSetImg(this.checked)"><span class="slider"></span></label></div>
+        <input type="text" id="ptcQ" class="fm-in" placeholder="🔎 Ad və ya e-poçt" oninput="ptChatRenderThreads()">
+    </div>
+    <div class="ptc-scroll" id="ptcThreads"></div>
+</div>
+
+<div id="pt-chat-view" class="sub-view">
+    <header class="settings-header">
+        <button class="settings-back" onclick="history.back()">‹</button>
+        <div class="settings-heading">
+            <div class="settings-small" id="ptcSmall">DƏSTƏK</div>
+            <div class="settings-title" id="ptcTitle">Adminlə əlaqə</div>
+            <div class="ptc-sub" id="ptcSub"></div>
+        </div>
+    </header>
+    <div class="ptc-note" id="ptcNote"></div>
+    <div class="ptc-list" id="ptcList"></div>
+    <div class="ptc-prev" id="ptcPrev"><img id="ptcPrevImg" alt=""><span id="ptcPrevTxt"></span><button type="button" onclick="ptChatClearImg()" aria-label="×">×</button></div>
+    <div class="ptc-bar">
+        <button type="button" class="ptc-ib" id="ptcAttach" onclick="document.getElementById('ptcFile').click()" aria-label="Şəkil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></svg></button>
+        <input type="file" id="ptcFile" accept="image/*" style="display:none" onchange="ptChatPickImg(this)">
+        <textarea id="ptcIn" class="ptc-in" rows="1" maxlength="2000" oninput="ptChatGrow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!('ontouchstart' in window)){event.preventDefault();ptChatSend()}"></textarea>
+        <button type="button" class="ptc-ib ptc-send" id="ptcSendBtn" onclick="ptChatSend()" aria-label="Göndər"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.54 21.69a.5.5 0 0 0 .94-.03l6.5-19a.5.5 0 0 0-.64-.64l-19 6.5a.5.5 0 0 0-.03.94l7.93 3.18a2 2 0 0 1 1.11 1.11z"/><path d="m21.85 2.15-10.94 10.94"/></svg></button>
+    </div>
+</div>
+<div id="ptcZoom" onclick="this.style.display='none'"><img id="ptcZoomImg" alt=""></div>
+
+<script>
+/* ===== ProTechtor™: Adminlə əlaqə (protector-chat Worker) ===== */
+(function () {
+var CHAT_API = "https://protector-chat.o553115544.workers.dev";
+var LS = ["az", "ru", "tr", "en"];
+var TX = {
+    title: { az: "Adminlə əlaqə", ru: "Связь с администрацией", tr: "Yönetici ile iletişim", en: "Contact administration" },
+    small: { az: "DƏSTƏK", ru: "ПОДДЕРЖКА", tr: "DESTEK", en: "SUPPORT" },
+    keep: { az: "Yazışmalar 30 gün saxlanılır, sonra avtomatik olaraq silinir.", ru: "Переписка хранится 30 дней, после чего автоматически удаляется.", tr: "Yazışmalar 30 gün saklanır, ardından otomatik olarak silinir.", en: "Messages are kept for 30 days and are then deleted automatically." },
+    ph: { az: "Mesajınızı yazın…", ru: "Введите сообщение…", tr: "Mesajınızı yazın…", en: "Type your message…" },
+    empty: { az: "Sualınızı və ya müraciətinizi yazın. Administrasiya ən qısa müddətdə cavab verəcəkdir.", ru: "Напишите ваш вопрос или обращение. Администрация ответит в кратчайшие сроки.", tr: "Sorunuzu veya talebinizi yazın. Yönetim en kısa sürede yanıt verecektir.", en: "Write your question or request. The administration will reply as soon as possible." },
+    adm: { az: "Administrasiya", ru: "Администрация", tr: "Yönetim", en: "Administration" },
+    err: { az: "Mesaj göndərilmədi. Bir qədər sonra yenidən cəhd edin.", ru: "Сообщение не отправлено. Повторите попытку позже.", tr: "Mesaj gönderilemedi. Lütfen daha sonra tekrar deneyin.", en: "The message could not be sent. Please try again later." },
+    limit: { az: "Gündəlik mesaj limitinə çatmısınız.", ru: "Достигнут дневной лимит сообщений.", tr: "Günlük mesaj sınırına ulaştınız.", en: "You have reached the daily message limit." },
+    imgOff: { az: "Şəkil göndərmə hazırda deaktivdir.", ru: "Отправка изображений сейчас отключена.", tr: "Görsel gönderimi şu anda devre dışıdır.", en: "Sending images is currently disabled." },
+    imgBad: { az: "Şəkil emal edilə bilmədi.", ru: "Не удалось обработать изображение.", tr: "Görsel işlenemedi.", en: "The image could not be processed." },
+    newMsg: { az: "Administrasiyadan yeni mesaj", ru: "Новое сообщение от администрации", tr: "Yönetimden yeni mesaj", en: "New message from the administration" },
+    today: { az: "Bu gün", ru: "Сегодня", tr: "Bugün", en: "Today" },
+    yest: { az: "Dünən", ru: "Вчера", tr: "Dün", en: "Yesterday" },
+    photo: { az: "Şəkil", ru: "Фото", tr: "Fotoğraf", en: "Photo" },
+    load: { az: "Yüklənir…", ru: "Загрузка…", tr: "Yükleniyor…", en: "Loading…" },
+    netErr: { az: "Bağlantı xətası. Yenidən cəhd edilir…", ru: "Ошибка соединения. Повторная попытка…", tr: "Bağlantı hatası. Yeniden deneniyor…", en: "Connection error. Retrying…" }
+};
+function L() { return (typeof currentLang !== "undefined" && LS.indexOf(currentLang) >= 0) ? currentLang : "az"; }
+function tx(k) { var o = TX[k]; return (o && (o[L()] || o.az)) || k; }
+function esc(x) { return String(x == null ? "" : x).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+function $(id) { return document.getElementById(id); }
+function adm() { return typeof isAdmin !== "undefined" && isAdmin; }
+function regUser() { try { var u = auth.currentUser; return !!(u && !u.isAnonymous); } catch (e) { return false; } }
+function toast(m, d) { try { showAppToast(m, d); } catch (e) {} }
+function hap(n) { try { triggerHaptic(n); } catch (e) {} }
+
+function api(path, opts) {
+    var u = auth.currentUser;
+    if (!u || u.isAnonymous) return Promise.reject(new Error("auth"));
+    return u.getIdToken().then(function (tok) {
+        var o = Object.assign({}, opts || {});
+        o.headers = Object.assign({ "Authorization": "Bearer " + tok }, o.body ? { "Content-Type": "application/json" } : {});
+        return fetch(CHAT_API + path, o);
+    }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) { var e = new Error((d && d.error) || ("http-" + r.status)); e.code = d && d.error; throw e; } return d; });
+    });
+}
+
+var S = { uid: "", msgs: [], cfg: null, img: "", threads: [], busy: false, unread: 0, ws: null, wsOk: false, wsTry: 0, poll: 0 };
+
+// ---------- Görünüş ----------
+function isOpen(id) { var v = $(id); return !!(v && v.classList.contains("active")); }
+function openView(id) {
+    try { history.pushState({ modal: id }, ""); } catch (e) {}
+    $(id).classList.add("active");
+    document.body.style.overflow = "hidden";
+    hap(20);
+}
+function fmtT(ts) { var d = new Date(ts); return ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2); }
+function dayLbl(ts) {
+    var d = new Date(ts), n = new Date();
+    var a = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(), b = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime();
+    if (a === b) return tx("today");
+    if (b - a === 86400000) return tx("yest");
+    return ("0" + d.getDate()).slice(-2) + "." + ("0" + (d.getMonth() + 1)).slice(-2) + "." + d.getFullYear();
+}
+function ticks(m) {
+    if (m.f !== "u") return "";
+    return m.a ? '<span class="ptc-tick ok" title="✓✓">✓✓</span>' : '<span class="ptc-tick">✓</span>';
+}
+function renderMsgs(keepPos) {
+    var box = $("ptcList");
+    if (!box) return;
+    var nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 120;
+    if (!S.msgs.length) {
+        box.innerHTML = '<div class="ptc-empty"><span class="hi hi-chat" aria-hidden="true"></span>' + esc(adm() ? "Bu istifadəçi ilə yazışma yoxdur." : tx("empty")) + "</div>";
+        return;
+    }
+    var mine = adm() ? "a" : "u", last = "", h = "";
+    S.msgs.forEach(function (m) {
+        var dl = dayLbl(m.ts);
+        if (dl !== last) { h += '<div class="ptc-day">' + esc(dl) + "</div>"; last = dl; }
+        var me = m.f === mine;
+        h += '<div class="ptc-m ' + (me ? "me" : "them") + '">';
+        if (!me && m.f === "a") h += '<div class="ptc-who">' + esc(tx("adm")) + "</div>";
+        if (m.i) h += '<img class="ptc-img" loading="lazy" src="' + CHAT_API + "/img/" + esc(m.i) + '" alt="" onclick="ptChatZoom(this.src)">';
+        if (m.t) h += esc(m.t);
+        h += '<div class="ptc-meta">' + fmtT(m.ts) + ticks(m) + "</div></div>";
+    });
+    box.innerHTML = h;
+    if (!keepPos || nearBottom) box.scrollTop = box.scrollHeight;
+}
+function applyTexts() {
+    $("ptcSmall").textContent = adm() ? "ADMIN" : tx("small");
+    $("ptcNote").textContent = tx("keep");
+    $("ptcIn").placeholder = tx("ph");
+    var l = $("ptChatSetLbl"); if (l) l.textContent = tx("title");
+    var b = $("ptChatBtn"); if (b) { b.title = tx("title"); b.setAttribute("aria-label", tx("title")); }
+}
+function setAttach() {
+    var a = $("ptcAttach");
+    if (a) a.style.display = (adm() || !S.cfg || S.cfg.img) ? "" : "none";
+}
+
+// ---------- Söhbət ----------
+function loadThread(keepPos) {
+    var q = adm() ? "?uid=" + encodeURIComponent(S.uid) : "";
+    return api("/thread" + q).then(function (d) {
+        S.msgs = d.msgs || [];
+        if (adm()) {
+            var nm = d.name || "", em = d.email || "";
+            var cu = (typeof adminFindUser === "function") ? adminFindUser(S.uid) : null;
+            if (cu) { nm = nm || cu.storeName || cu.username || ""; em = em || cu.email || ""; }
+            $("ptcTitle").textContent = nm || em || "İstifadəçi";
+            $("ptcSub").textContent = nm && em ? em : "";
+        }
+        renderMsgs(keepPos);
+        refreshUnread();
+    });
+}
+window.ptChatOpen = function (uid) {
+    if (!regUser()) { try { openAuthModal("required"); } catch (e) {} return; }
+    if (adm() && !uid) { window.ptChatAdminOpen(); return; }
+    S.uid = adm() ? uid : auth.currentUser.uid;
+    S.msgs = [];
+    applyTexts();
+    $("ptcTitle").textContent = adm() ? "…" : tx("title");
+    $("ptcSub").textContent = "";
+    $("ptcList").innerHTML = '<div class="ptc-empty">' + esc(tx("load")) + "</div>";
+    ptChatClearImg();
+    openView("pt-chat-view");
+    loadCfg().then(setAttach);
+    loadThread(false).catch(function () { $("ptcList").innerHTML = '<div class="ptc-empty">' + esc(tx("netErr")) + "</div>"; });
+    wsConnect();
+    startPoll();
+};
+window.ptChatGrow = function (el) { el.style.height = "auto"; el.style.height = Math.min(130, el.scrollHeight) + "px"; };
+window.ptChatZoom = function (src) { $("ptcZoomImg").src = src; $("ptcZoom").style.display = "flex"; };
+window.ptChatClearImg = function () { S.img = ""; var p = $("ptcPrev"); if (p) p.classList.remove("on"); var f = $("ptcFile"); if (f) f.value = ""; };
+
+function compress(file) {
+    return new Promise(function (res, rej) {
+        var fr = new FileReader();
+        fr.onerror = rej;
+        fr.onload = function () {
+            var im = new Image();
+            im.onerror = rej;
+            im.onload = function () {
+                var tries = [[1600, .82], [1280, .75], [1024, .68], [800, .6]];
+                for (var i = 0; i < tries.length; i++) {
+                    var mx = tries[i][0], sc = Math.min(1, mx / Math.max(im.width, im.height));
+                    var c = document.createElement("canvas");
+                    c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+                    var g = c.getContext("2d");
+                    g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+                    g.drawImage(im, 0, 0, c.width, c.height);
+                    var d = c.toDataURL("image/jpeg", tries[i][1]);
+                    if (d.length * 0.75 < 850 * 1024) return res(d);
+                }
+                rej(new Error("big"));
+            };
+            im.src = fr.result;
+        };
+        fr.readAsDataURL(file);
+    });
+}
+window.ptChatPickImg = function (inp) {
+    var f = inp.files && inp.files[0];
+    if (!f) return;
+    if (!adm() && S.cfg && !S.cfg.img) { toast(tx("imgOff")); inp.value = ""; return; }
+    compress(f).then(function (d) {
+        S.img = d;
+        $("ptcPrevImg").src = d;
+        $("ptcPrevTxt").textContent = tx("photo") + " · " + Math.round(d.length * 0.75 / 1024) + " KB";
+        $("ptcPrev").classList.add("on");
+    }).catch(function () { toast(tx("imgBad")); inp.value = ""; });
+};
+window.ptChatSend = function () {
+    if (S.busy) return;
+    var inp = $("ptcIn"), txt = inp.value.trim();
+    if (!txt && !S.img) return;
+    S.busy = true;
+    var btn = $("ptcSendBtn"); btn.disabled = true;
+    var body = { text: txt };
+    if (S.img) body.img = S.img;
+    if (adm()) body.uid = S.uid;
+    else {
+        var a = (typeof accountData !== "undefined" && accountData) || {};
+        body.name = a.storeName || a.username || "";
+    }
+    var tmp = { id: 0, f: adm() ? "a" : "u", t: txt, i: "", ts: Date.now(), a: 0 };
+    S.msgs.push(tmp); renderMsgs(false);
+    inp.value = ""; ptChatGrow(inp);
+    var hadImg = S.img; ptChatClearImg();
+    api("/send", { method: "POST", body: JSON.stringify(body) }).then(function () {
+        hap(25);
+        return loadThread(false);
+    }).catch(function (e) {
+        S.msgs = S.msgs.filter(function (m) { return m !== tmp; }); renderMsgs(false);
+        inp.value = txt; if (hadImg) { S.img = hadImg; $("ptcPrevImg").src = hadImg; $("ptcPrev").classList.add("on"); }
+        var c = e && e.code;
+        toast(c === "limit" || c === "img-limit" ? tx("limit") : c === "img-off" ? tx("imgOff") : tx("err"), 4500);
+        if (c === "img-off") { S.cfg = S.cfg || {}; S.cfg.img = false; setAttach(); ptChatClearImg(); }
+    }).then(function () { S.busy = false; btn.disabled = false; });
+};
+
+function loadCfg() {
+    return api("/cfg").then(function (c) { S.cfg = c; var t = $("ptcImgOn"); if (t) t.checked = !!c.img; return c; }).catch(function () { return S.cfg; });
+}
+
+// ---------- Admin: söhbət siyahısı ----------
+window.ptChatAdminOpen = function () {
+    if (!adm()) return;
+    openView("pt-chat-list");
+    $("ptcThreads").innerHTML = '<div class="ptc-empty">Yüklənir…</div>';
+    loadCfg();
+    loadThreads();
+    wsConnect();
+    startPoll();
+};
+function loadThreads() {
+    return api("/admin/threads").then(function (d) { S.threads = d.threads || []; ptChatRenderThreads(); setUnread(S.threads.reduce(function (a, t) { return a + (+t.unread || 0); }, 0)); })
+        .catch(function () { $("ptcThreads").innerHTML = '<div class="ptc-empty">Yüklənmədi. Worker qurulubmu?</div>'; });
+}
+window.ptChatRenderThreads = function () {
+    var box = $("ptcThreads");
+    if (!box) return;
+    var q = String(($("ptcQ") || {}).value || "").trim().toLowerCase();
+    var list = S.threads.filter(function (t) { return !q || (String(t.name || "") + " " + String(t.email || "")).toLowerCase().indexOf(q) >= 0; });
+    if (!list.length) { box.innerHTML = '<div class="ptc-empty">' + (q ? "Nəticə tapılmadı." : "Hələ mesaj yoxdur.") + "</div>"; return; }
+    box.innerHTML = list.map(function (t) {
+        var nm = t.name || "", em = t.email || "";
+        var cu = (typeof adminFindUser === "function") ? adminFindUser(t.uid) : null;
+        if (cu) { nm = nm || cu.storeName || cu.username || ""; em = em || cu.email || ""; }
+        var ini = (nm || em || "?").trim().charAt(0).toUpperCase();
+        var un = +t.unread || 0;
+        return '<div class="ptc-th' + (un ? " unread" : "") + '" onclick="ptChatOpen(\'' + esc(t.uid) + '\')"><div class="ptc-av">' + esc(ini) + '</div><div class="ptc-tb"><div class="ptc-tn">' + esc(nm || em || t.uid) + '</div><div class="ptc-tl">' + (t.last_frm === "a" ? "Siz: " : "") + esc(t.last_txt || "") + '</div></div><div class="ptc-tr"><span>' + esc(dayLbl(t.last_ts) === tx("today") ? fmtT(t.last_ts) : dayLbl(t.last_ts)) + "</span>" + (un ? '<span class="ptc-un">' + un + "</span>" : "") + "</div></div>";
+    }).join("");
+};
+window.ptChatSetImg = function (on) {
+    api("/admin/cfg", { method: "POST", body: JSON.stringify({ img: !!on }) }).then(function () {
+        S.cfg = S.cfg || {}; S.cfg.img = !!on;
+        toast(on ? "📷 Şəkil göndərmə aktivləşdirildi" : "📷 Şəkil göndərmə deaktiv edildi");
+    }).catch(function () { var t = $("ptcImgOn"); if (t) t.checked = !on; toast("Saxlanılmadı"); });
+};
+
+// ---------- Oxunmamışlar ----------
+function setUnread(n) {
+    var was = S.unread;
+    S.unread = n = +n || 0;
+    ["ptChatBadge", "ptChatSetBadge"].forEach(function (id) {
+        var b = $(id); if (!b) return;
+        b.textContent = n > 99 ? "99+" : String(n);
+        b.classList.toggle("show", n > 0);
+    });
+    var hb = $("ptChatBtn"); if (hb) hb.classList.toggle("has-new", n > 0);
+    var a = $("admNavChatSub"); if (a) a.textContent = adm() && n ? String(n) : "";
+    return was;
+}
+function refreshUnread() {
+    if (!regUser()) { setUnread(0); return Promise.resolve(); }
+    return api("/unread").then(function (d) {
+        var was = setUnread(d.n);
+        if (!adm() && d.n > was && !isOpen("pt-chat-view")) toast("💬 " + tx("newMsg"), 4000);
+    }).catch(function () {});
+}
+
+// ---------- Canlı bağlantı ----------
+function onEvent(ev) {
+    if (!ev || !ev.type) return;
+    if (ev.type === "cfg") { loadCfg().then(setAttach); return; }
+    if (isOpen("pt-chat-view") && (!adm() || ev.uid === S.uid)) loadThread(true).catch(function () {});
+    else refreshUnread();
+    if (adm() && isOpen("pt-chat-list")) loadThreads();
+}
+function wsConnect() {
+    if (!regUser() || S.ws || !window.WebSocket || S.wsTry > 6) return;
+    auth.currentUser.getIdToken().then(function (tok) {
+        if (S.ws) return;
+        var ws;
+        try { ws = new WebSocket(CHAT_API.replace(/^http/, "ws") + "/ws?t=" + encodeURIComponent(tok)); } catch (e) { return; }
+        S.ws = ws;
+        var ping = 0;
+        ws.onopen = function () { S.wsOk = true; S.wsTry = 0; ping = setInterval(function () { try { ws.send("ping"); } catch (e) {} }, 25000); refreshUnread(); };
+        ws.onmessage = function (e) { if (e.data === "pong") return; try { onEvent(JSON.parse(e.data)); } catch (x) {} };
+        ws.onclose = function () {
+            clearInterval(ping); S.ws = null; S.wsOk = false; S.wsTry++;
+            if (regUser()) setTimeout(wsConnect, Math.min(30000, 1500 * Math.pow(2, S.wsTry)));
+        };
+        ws.onerror = function () { try { ws.close(); } catch (e) {} };
+    }).catch(function () {});
+}
+function wsClose() { S.wsTry = 99; if (S.ws) try { S.ws.close(); } catch (e) {} S.ws = null; setTimeout(function () { S.wsTry = 0; }, 100); }
+// Canlı bağlantı yoxdursa, söhbət açıq olanda qısa fasilələrlə yoxla
+function startPoll() {
+    if (S.poll) return;
+    S.poll = setInterval(function () {
+        var a = isOpen("pt-chat-view"), b = isOpen("pt-chat-list");
+        if (!a && !b) { clearInterval(S.poll); S.poll = 0; if (!S.ws) wsConnect(); return; }
+        if (S.wsOk || document.hidden) return;
+        if (a) loadThread(true).catch(function () {});
+        if (b) loadThreads();
+    }, 5000);
+}
+
+// ---------- Bağlantılar ----------
+try {
+    auth.onAuthStateChanged(function (u) {
+        if (u && !u.isAnonymous) { setTimeout(function () { applyTexts(); refreshUnread(); wsConnect(); }, 1800); }
+        else { wsClose(); setUnread(0); }
+    });
+} catch (e) {}
+if (typeof applyLang === "function") {
+    var al = applyLang;
+    applyLang = function () { var r = al.apply(this, arguments); try { applyTexts(); if (isOpen("pt-chat-view")) renderMsgs(true); } catch (e) {} return r; };
+}
+document.addEventListener("visibilitychange", function () { if (!document.hidden && regUser()) { refreshUnread(); if (!S.ws) { S.wsTry = 0; wsConnect(); } } });
+setInterval(function () { if (!S.wsOk && !document.hidden) refreshUnread(); }, 60000);
+window.ptPushPick = function (el) {
+    var box = el.parentNode;
+    [].forEach.call(box.children, function (b) { b.classList.toggle("on", b === el); b.setAttribute("aria-checked", b === el ? "true" : "false"); });
+    var h = $("ptPushType"); if (h) h.value = el.getAttribute("data-v");
+    hap(15);
+};
+applyTexts();
 })();
 </script>
 </body>
