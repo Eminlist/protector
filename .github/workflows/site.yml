@@ -3,7 +3,7 @@ name: Deploy site (protechtor.app)
 on:
   push:
     branches: [main]
-    paths-ignore: ["chat-worker/**", ".github/workflows/chat-worker.yml", "README.md", "SECURITY.md"]
+    paths-ignore: ["chat-worker/**", ".github/workflows/chat-worker.yml", "data-worker/**", ".github/workflows/data-worker.yml", "README.md", "SECURITY.md"]
   workflow_dispatch:
 
 jobs:
@@ -19,10 +19,14 @@ jobs:
           node-version: 22
       - name: Collect site files
         run: |
-          mkdir dist
-          cp index.html sw.js manifest.json *.png *.ico dist/
+          mkdir -p dist/application/eminapp
+          # Proqram (veb tətbiq): protechtor.app/application/eminapp/
+          cp index.html sw.js manifest.json *.png *.ico dist/application/eminapp/
+          # Sayt səhifələri (ana səhifə = pages/index.html) və ümumi ikonlar
+          cp *.png *.ico dist/
           cp -r pages/. dist/
           rm -f dist/README.md
+          test -f dist/index.html || { echo "::error::pages/index.html (ana səhifə) yoxdur"; exit 1; }
       - name: Build single-file help for the app
         run: node tools/build-help-app.mjs dist/help/app.html
       - name: Deploy

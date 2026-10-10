@@ -3,6 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+    /* Köhnə ünvan (eminlist.github.io/protector) → protechtor.app/application/eminapp/.
+       Köhnə Android proqramı (UA: ProTechtorApp) yalnız github.io-nu "daxili" sayır — ona görə ona toxunulmur. */
+    (function () { try { if (location.hostname === "eminlist.github.io" && !/ProTechtorApp/.test(navigator.userAgent)) location.replace("https://protechtor.app/application/eminapp/" + location.search + location.hash); } catch (e) {} })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2640,7 +2645,7 @@ body:has(#settings-view.active,#admin-view.active,.sub-view.active,#notif-view.a
                         <option value="refreshed">Baza aktual hala gətirildi</option>
                         <option value="checked">Model uyğunluqları yoxlanıldı</option>
                     </select>
-                    <button type="button" class="adm-publish" onclick="adminPublishDatabase()"><span class="e3d ic3d" style="--a:#FFB866;--b:#F06A1D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 13v8" /><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="m8 17 4-4 4 4" /></svg></span><span>Dərc et</span></button>
+                    <button type="button" class="adm-publish" onclick="adminPublishDatabase()"><span class="e3d ic3d" style="--a:#FFB866;--b:#F06A1D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 13v8" /><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="m8 17 4-4 4 4" /></svg></span><span>Dərc et</span></button><button type="button" class="adm-vers" onclick="ptVerOpen()" title="Baza versiyaları və geri qaytarma"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><span>Versiyalar</span></button>
                 </div>
                 <div class="adm-grp">FAYLLAR</div>
                 <div class="adm-tiles four"><button type="button" class="adm-tile " onclick="adminImportFromGitHub()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>Əsas baza</span></button><button type="button" class="adm-tile " onclick="adminExportCSV()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></svg></span><span>İstifadəçilər (CSV)</span></button><button type="button" class="adm-tile " onclick="adminBackupJSON()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>JSON yüklə</span><input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)"></label></div>
@@ -2926,6 +2931,10 @@ body:has(#settings-view.active,#admin-view.active,.sub-view.active,#notif-view.a
                     <div class="settings-row">
                         <span style="color:var(--muted)" data-i18n="lastUpd">SON YENİLƏNMƏ</span>
                         <span id="lastUpdateText">Bilinmir</span>
+                    </div>
+                    <div class="settings-row">
+                        <span style="color:var(--muted)" data-i18n="totalModels">ÜMUMİ MODEL SAYI</span>
+                        <span id="setModelTotal" style="font-weight:700">—</span>
                     </div>
                 </div>
                 <button id="updateButton" class="update-button" onclick="forceUpdate()">
@@ -3344,6 +3353,184 @@ async function apiFetch(path, opts) {
     }
     return d;
 }
+// ---------- D1 (protector-data Worker): bildirişlər, «Uyğun gəlmədi» hesabatları, əsas baza versiyaları ----------
+const DATA_API = "https://protector-data.o553115544.workers.dev";
+const CATALOG_CDN = "https://protechtor.app/api/catalog";
+async function dataFetch(path, opts) {
+    const u = auth.currentUser;
+    if (!u || u.isAnonymous) { const e = new Error("auth"); e.code = "unauthenticated"; throw e; }
+    const tok = await u.getIdToken();
+    const o = Object.assign({}, opts || {});
+    o.headers = Object.assign({ "Authorization": "Bearer " + tok }, o.body ? { "Content-Type": "application/json" } : {}, o.headers || {});
+    const r = await fetch(DATA_API + path, o);
+    let d = null;
+    try { d = await r.json(); } catch (e) { d = null; }
+    if (!r.ok) {
+        const e = new Error((d && d.error) || ("http-" + r.status));
+        e.code = r.status === 401 ? "unauthenticated" : ((d && d.error) || ("http-" + r.status));
+        throw e;
+    }
+    return d || {};
+}
+const dataPost = function (path, b) { return dataFetch(path, { method: "POST", body: JSON.stringify(b || {}) }); };
+// Firestore sorğusuna bənzər cavab (mövcud kod dəyişmədən işləsin)
+function ptSnap(items, changes) {
+    const docs = (items || []).map(function (x) { return { id: x.id, exists: true, data: function () { return Object.assign({}, x.d); } }; });
+    return {
+        docs: docs, size: docs.length, empty: !docs.length,
+        forEach: function (fn) { docs.forEach(fn); },
+        docChanges: function () { return changes || []; }
+    };
+}
+// Silmə və «oxundu» əməliyyatları bir sorğuda toplanır
+const ptNQ = { del: {}, read: {}, t: 0 };
+function ptNFlush() {
+    ptNQ.t = 0;
+    Object.keys(ptNQ.del).forEach(function (uid) {
+        const q = ptNQ.del[uid]; delete ptNQ.del[uid];
+        dataPost("/n/del", { uid: uid, ids: q.ids }).then(function () { q.ok.forEach(function (f) { f(); }); }, function (e) { q.no.forEach(function (f) { f(e); }); });
+    });
+    const rd = ptNQ.read; ptNQ.read = {};
+    Object.keys(rd).forEach(function (uid) {
+        const q = rd[uid];
+        dataPost("/n/read", { ids: q.ids }).then(function () { q.ok.forEach(function (f) { f(); }); }, function (e) { q.no.forEach(function (f) { f(e); }); });
+    });
+}
+function ptNQueue(kind, uid, id) {
+    return new Promise(function (ok, no) {
+        const m = ptNQ[kind];
+        const q = m[uid] || (m[uid] = { ids: [], ok: [], no: [] });
+        q.ids.push(id); q.ok.push(ok); q.no.push(no);
+        if (!ptNQ.t) ptNQ.t = setTimeout(ptNFlush, 30);
+    });
+}
+// users/{uid}/notifications əvəzi
+function ptNotifCol(uid) {
+    const me = function () { return auth.currentUser && auth.currentUser.uid; };
+    const col = {
+        _n: 50,
+        add: function (d) {
+            return dataPost("/n/add", { uid: uid, d: d }).then(function (r) {
+                try { if (typeof isAdmin !== "undefined" && isAdmin && typeof window.ptAutoPush === "function") { const q = window.ptAutoPush(uid, Object.assign({}, d)); if (q && q.catch) q.catch(function (e) { console.warn("push", e && e.message); }); } } catch (e) {}
+                return { id: r.id };
+            });
+        },
+        doc: function (id) {
+            return {
+                id: id,
+                delete: function () { return ptNQueue("del", uid, id); },
+                update: function (o) {
+                    const ks = Object.keys(o || {});
+                    if (ks.length === 1 && ks[0] === "read" && o.read && uid === me()) return ptNQueue("read", uid, id);
+                    return dataPost("/n/upd", { uid: uid, id: id, o: o });
+                },
+                set: function (o) { return dataPost("/n/upd", { uid: uid, id: id, o: o }); }
+            };
+        },
+        orderBy: function () { return col; },
+        limit: function (n) { col._n = n; return col; },
+        get: function () {
+            return dataFetch("/n/list?n=" + col._n + (uid !== me() ? "&uid=" + encodeURIComponent(uid) : "")).then(function (r) {
+                if (uid === me() && !r.mig) ptNotifMigrate(uid);
+                return ptSnap(r.items);
+            });
+        }
+    };
+    return col;
+}
+// Firestore-dakı köhnə bildirişlər bir dəfə D1-ə köçürülür
+let ptNMigBusy = false;
+function ptNotifMigrate(uid) {
+    if (ptNMigBusy) return;
+    try { if (localStorage.getItem("pt_nmig_" + uid)) return; } catch (e) {}
+    ptNMigBusy = true;
+    db.collection("users/" + uid + "/notifications").orderBy("createdAt", "desc").limit(100).get().then(function (snap) {
+        const items = [];
+        snap.forEach(function (d) {
+            const x = Object.assign({}, d.data() || {});
+            Object.keys(x).forEach(function (k) { const v = x[k]; if (v && typeof v.toMillis === "function") x[k] = v.toMillis(); });
+            items.push({ id: d.id, d: x });
+        });
+        return dataPost("/n/import", { items: items }).then(function (r) {
+            try { localStorage.setItem("pt_nmig_" + uid, "1"); } catch (e) {}
+            if (r && !r.skipped && items.length && typeof loadNotifications === "function") setTimeout(loadNotifications, 300);
+        });
+    }).catch(function (e) { console.warn("nmig", e && (e.code || e.message)); }).then(function () { ptNMigBusy = false; });
+}
+// misfit_reports əvəzi (admin üçün «canlı» izləmə 45 saniyədən bir yoxlamadır)
+function ptReportsCol() {
+    const col = {
+        _n: 100,
+        add: function (d) { return dataPost("/r/add", { d: d }).then(function (r) { return { id: r.id }; }); },
+        doc: function (id) {
+            return {
+                id: id,
+                set: function (o) { return dataPost("/r/upd", { id: id, o: o }); },
+                update: function (o) { return dataPost("/r/upd", { id: id, o: o }); },
+                delete: function () { return dataPost("/r/del", { ids: [id] }); }
+            };
+        },
+        orderBy: function () { return col; },
+        limit: function (n) { col._n = n; return col; },
+        get: function () {
+            ptReportsMigrate();
+            return dataFetch("/r/list?n=" + col._n).then(function (r) { return ptSnap(r.items); });
+        },
+        onSnapshot: function (cb, err) {
+            let known = null, stop = false;
+            const tick = function () {
+                if (stop) return;
+                col.get().then(function (snap) {
+                    const changes = [];
+                    if (known) snap.docs.forEach(function (d) { if (!known[d.id]) changes.push({ type: "added", doc: d }); });
+                    known = {};
+                    snap.docs.forEach(function (d) { known[d.id] = 1; });
+                    snap.docChanges = function () { return changes; };
+                    // Nişan yalnız gözləyən hesabatları sayır
+                    snap.size = snap.docs.filter(function (d) { return (d.data().status || "pending") === "pending"; }).length;
+                    cb(snap);
+                }).catch(function (e) { if (err) err(e); });
+            };
+            tick();
+            const iv = setInterval(function () { if (!document.hidden) tick(); }, 45000);
+            return function () { stop = true; clearInterval(iv); };
+        }
+    };
+    return col;
+}
+let ptRMigDone = false;
+function ptReportsMigrate() {
+    if (ptRMigDone || typeof isAdmin === "undefined" || !isAdmin) return;
+    ptRMigDone = true;
+    try { if (localStorage.getItem("pt_rmig")) return; } catch (e) {}
+    db.collection("misfit_reports").orderBy("createdAt", "desc").limit(500).get().then(function (snap) {
+        const items = [];
+        snap.forEach(function (d) { items.push({ id: d.id, d: Object.assign({}, d.data() || {}) }); });
+        return dataPost("/r/import", { items: items });
+    }).then(function () { try { localStorage.setItem("pt_rmig", "1"); } catch (e) {} })
+      .catch(function (e) { ptRMigDone = false; console.warn("rmig", e && (e.code || e.message)); });
+}
+// Əsas baza (admin): D1-də versiyalı saxlanılır; köhnə Firestore sənədi yalnız ilk köçürmə üçün oxunur
+async function ptBaseRead() {
+    let cur = null, d1ok = false;
+    try { cur = (await dataFetch("/base/cur")).cur; d1ok = true; } catch (e) { cur = null; if (e && e.code === "unauthenticated") throw e; }
+    if (cur && cur.data && typeof cur.data.dataJson === "string") { window.ptBaseCur = { id: cur.id, ts: cur.ts }; return cur.data; }
+    const snap = await db.doc(FS_DB_DOC).get();
+    const data = snap.exists ? (snap.data() || {}) : {};
+    const groups = groupsFromFirestore(data);
+    if (groups.length && d1ok) {
+        // Bir dəfəlik köçürmə: Firestore-dakı baza D1-də ilk versiya olur
+        const seed = { dataJson: JSON.stringify(groups), codes: data.codes || {}, changelog: data.changelog || [], groupCount: groups.length };
+        dataPost("/base/publish", { data: seed, note: "Firestore-dan köçürüldü", models: namesFromGroups(groups).length }).catch(function (e) { console.warn("base seed", e && e.code); });
+    }
+    return data;
+}
+async function ptBasePublish(doc, note) {
+    const r = await dataPost("/base/publish", { data: doc, note: note || "", models: namesFromGroups(JSON.parse(doc.dataJson || "[]")).length });
+    window.ptBaseCur = { id: r.id, ts: r.ts };
+    return r;
+}
+
 // ---------- Turnstile (bot qoruması) ----------
 const TS_SITEKEY = "0x4AAAAAAFSWDremRZy4kQth";
 const TS_MSG = {
@@ -3732,7 +3919,7 @@ function adminAutoUnblock(btn) {
     apiFetch("/admin/autoblock", { method: "POST", body: JSON.stringify({ unblock: [uid] }) }).then(function () {
         showAppToast("Blokdan çıxarıldı ✓");
         try {
-            db.collection("users").doc(uid).collection("notifications").add({
+            ptNotifCol(uid).add({
                 type: "msg", text: "✓ Hesabınız blokdan çıxarıldı. Axtarışa davam edə bilərsiniz.", createdAt: Date.now(), read: false
             }).catch(function () {});
         } catch (e) {}
@@ -5577,7 +5764,7 @@ function replyModelRequest(i, kind) {
             const d = (doc && doc.exists && doc.data()) || {};
             const lang = d.lang || d.language || "az";
             const text = replyTplText(kind, lang);
-            return db.collection("users").doc(uid).collection("notifications").add({
+            return ptNotifCol(uid).add({
                 type: "req_reply",
                 reply: kind,
                 model: r.text,
@@ -5586,7 +5773,7 @@ function replyModelRequest(i, kind) {
                 read: false
             });
         }).catch(function () {
-            return db.collection("users").doc(uid).collection("notifications").add({
+            return ptNotifCol(uid).add({
                 type: "req_reply", reply: kind, model: r.text,
                 text: replyTplText(kind, "az"), createdAt: now, read: false
             }).catch(function () {});
@@ -5768,6 +5955,12 @@ function groupsFromFirestore(data) {
     return [];
 }
 
+function ptPubNote(note, cl) {
+    if (window._ptRollbackNote) { const n = window._ptRollbackNote; window._ptRollbackNote = ""; return n; }
+    const L = { sizes: "Antiudar ölçüləri dəqiqləşdirildi", refreshed: "Baza aktual hala gətirildi", checked: "Model uyğunluqları yoxlanıldı" };
+    return L[note] || (cl ? formatChangelogEntry(cl) : "Dərc edildi");
+}
+
 async function adminPublishDatabase() {
     if (!isAdmin) return;
     if (dbMode !== "full") {
@@ -5800,8 +5993,7 @@ async function adminPublishDatabase() {
         saveChangelog(changelogMsg);
         const changelogList = getChangelogList();
 
-        await db.doc(FS_DB_DOC).set({
-            groups: groupsToFirestore(cleaned),
+        await ptBasePublish({
             dataJson: JSON.stringify(cleaned),
             codes: codesFor(cleaned),
             changelog: changelogList.map(function (x) {
@@ -5811,10 +6003,10 @@ async function adminPublishDatabase() {
                 }
                 return o;
             }),
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            updatedAt: Date.now(),
             updatedBy: (auth.currentUser && auth.currentUser.email) || ADMIN_EMAIL,
             groupCount: cleaned.length
-        });
+        }, ptPubNote(note, changelogMsg));
         database = JSON.parse(JSON.stringify(cleaned));
         cacheCatalog(database);
         localStorage.setItem(UPDATE_KEY, Date.now().toString());
@@ -6043,9 +6235,8 @@ async function fetchModelGroup(model) {
 
 async function readDbFromFirestore() {
     if (isAdmin) {
-        const snap = await db.doc(FS_DB_DOC).get();
-        // Sənəd yoxdursa da admin paneli açılsın — «Əsas baza» → «Dərc et» ilə yenidən yaradılır
-        const data = snap.exists ? (snap.data() || {}) : {};
+        // D1 (versiyalı baza); boşdursa köhnə Firestore sənədi oxunur və D1-ə köçürülür
+        const data = await ptBaseRead();
         const groups = data ? groupsFromFirestore(data) : [];
         if (data) applyCodes(data.codes, true);
         catalogMeta = { groupCount: groups.length, modelCount: namesFromGroups(groups).length, ver: 0 };
@@ -6053,7 +6244,7 @@ async function readDbFromFirestore() {
     }
     let cat = null;
     const haveVer = catalogMeta && +catalogMeta.ver && (database || []).length > 0;
-    try { cat = await apiFetch("/catalog" + (haveVer ? "?ver=" + encodeURIComponent(catalogMeta.ver) : ""), { anon: true }); } catch (e) { cat = null; }
+    try { cat = await ptCatalog(haveVer ? catalogMeta.ver : 0); } catch (e) { cat = null; }
     if (cat && cat.same) return { groups: database, data: null, mode: "catalog", same: true };
     if (!cat) {
         try { const sn = await db.doc(FS_CATALOG_DOC).get(); if (sn.exists) cat = sn.data() || null; } catch (e) { cat = null; }
@@ -6070,6 +6261,18 @@ async function readDbFromFirestore() {
     const data = old.exists ? (old.data() || {}) : null;
     if (data) applyCodes(data.codes, false);
     return { groups: data ? groupsFromFirestore(data) : [], data: data, mode: "full-legacy" };
+}
+
+// /catalog: əvvəl protechtor.app/api/catalog (Cloudflare keşi), alınmasa birbaşa API
+async function ptCatalog(ver) {
+    const q = ver ? "?ver=" + encodeURIComponent(ver) : "";
+    try {
+        const u = auth.currentUser;
+        const tok = u ? await u.getIdToken() : "";
+        const r = await fetch(CATALOG_CDN + q, { headers: tok ? { "Authorization": "Bearer " + tok } : {} });
+        if (r.ok) { const d = await r.json(); if (d && (d.same || Array.isArray(d.names))) return d; }
+    } catch (e) {}
+    return apiFetch("/catalog" + q, { anon: true });
 }
 
 let catalogChecked = false;
@@ -6488,7 +6691,7 @@ function adminSendMessage(id) {
     const u = adminFindUser(id) || {};
     appPrompt("✉ Mesaj", (u.username || u.email || id), "", true, "Mesaj mətni...").then(function (text) {
         if (!text || !text.trim()) return;
-        db.collection("users").doc(id).collection("notifications").add({
+        ptNotifCol(id).add({
             type: "msg", text: text.trim().slice(0, 500), createdAt: Date.now(), read: false
         }).then(function () { showAppToast("Mesaj göndərildi"); })
           .catch(function (e) { showAppToast("Xəta: " + ((e && (e.code || e.message)) || "")); });
@@ -6577,7 +6780,7 @@ function reportMisfit() {
 function submitMisfit(reason, comment) {
     const u = auth.currentUser;
     if (!u) return;
-    db.collection("misfit_reports").add({
+    ptReportsCol().add({
         uid: u.uid,
         model: String(selectedModel || "").slice(0, 100),
         group: (Array.isArray(selectedGroup) ? selectedGroup.join(", ") : "").slice(0, 500),
@@ -6593,7 +6796,7 @@ function submitMisfit(reason, comment) {
 function loadMisfits() {
     const box = document.getElementById("adminMisfitList");
     if (!box) return;
-    db.collection("misfit_reports").orderBy("createdAt", "desc").limit(100).get().then(function (snap) {
+    ptReportsCol().orderBy("createdAt", "desc").limit(100).get().then(function (snap) {
         adminMisfits = [];
         snap.forEach(function (d) { adminMisfits.push(Object.assign({ id: d.id }, d.data() || {})); });
         if (!adminMisfits.length) { box.textContent = "Bildiriş yoxdur"; return; }
@@ -6636,10 +6839,10 @@ function resolveMisfit(i, status) {
         if (status === "added") payload.linkModel = x.model || "";
         if (status === "rejected") payload.rejectReason = rejectReason || "";
         const notify = x.uid
-            ? db.collection("users").doc(x.uid).collection("notifications").add(payload).catch(function () {})
+            ? ptNotifCol(x.uid).add(payload).catch(function () {})
             : Promise.resolve();
         notify.then(function () {
-            return db.collection("misfit_reports").doc(x.id).set({
+            return ptReportsCol().doc(x.id).set({
                 status: status,
                 resolvedAt: Date.now(),
                 rejectReason: rejectReason || ""
@@ -6675,7 +6878,7 @@ function startAdminInbox() {
         if (rs) { rs.textContent = n > 0 ? (n > 99 ? "99+" : String(n)) : ""; rs.classList.toggle("warn", n > 0); }
     };
     ["model_requests", "misfit_reports"].forEach(function (col) {
-        const q = db.collection(col).orderBy("createdAt", "desc").limit(50);
+        const q = (col === "misfit_reports" ? ptReportsCol() : db.collection(col)).orderBy("createdAt", "desc").limit(50);
         if (typeof q.onSnapshot !== "function") return;
         let first = true;
         q.onSnapshot(function (snap) {
@@ -8266,7 +8469,7 @@ function changePassword() {
 }
 
 function notifRef(uid) {
-    return db.collection("users").doc(uid).collection("notifications");
+    return ptNotifCol(uid);
 }
 
 function getSeenLocal() {
@@ -8692,7 +8895,7 @@ function giftGrantOne(u, days, r, batch) {
     }).then(function () {
         const nx = { type: "premium_gift", days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "", until: until, createdAt: now, read: false };
         u._giftNotif = nx;
-        return ref.collection("notifications").add(Object.assign({ noPush: true }, nx)).catch(function (e) { console.warn("gift notif", e && e.message); });
+        return ptNotifCol(ref.id).add(Object.assign({ noPush: true }, nx)).catch(function (e) { console.warn("gift notif", e && e.message); });
     }).then(function () {
         u.premiumUntil = until;
         if (!u.premiumSince) u.premiumSince = now;
@@ -8951,7 +9154,7 @@ function adminGrantPlan(id, i) {
             by: (auth.currentUser && auth.currentUser.email) || ""
         });
     }).then(function () {
-        return ref.collection("notifications").add({ type: "premium_on", until: until, createdAt: now, read: false });
+        return ptNotifCol(ref.id).add({ type: "premium_on", until: until, createdAt: now, read: false });
     }).then(function () {
         u.premiumUntil = until;
         showAppToast("Premium (" + pl.m + " ay, " + pl.a + " AZN) aktivləşdirildi: " + fmtDate(until) + "-dək");
@@ -8966,7 +9169,7 @@ function adminRevokePremium(id) {
     confirmAction((u.username || u.email || id) + " üçün Premium ləğv edilsin?", function () {
         const ref = db.collection("users").doc(id);
         ref.set({ premiumUntil: 0 }, { merge: true }).then(function () {
-            return ref.collection("notifications").add({ type: "premium_off", createdAt: Date.now(), read: false });
+            return ptNotifCol(ref.id).add({ type: "premium_off", createdAt: Date.now(), read: false });
         }).then(function () {
             u.premiumUntil = 0;
             renderAdminUsers();
@@ -9023,7 +9226,7 @@ function adminRefundPayment(pid) {
                         refundBy: (auth.currentUser && auth.currentUser.email) || "", untilBeforeRefund: cur, untilAfterRefund: nu
                     });
                 }).then(function () {
-                    return ref.collection("notifications").add({ type: "premium_refund", amount: p.amount || 0, until: nu, createdAt: now, read: false });
+                    return ptNotifCol(ref.id).add({ type: "premium_refund", amount: p.amount || 0, until: nu, createdAt: now, read: false });
                 }).then(function () {
                     const u = adminFindUser(p.uid);
                     if (u) u.premiumUntil = nu;
@@ -9650,7 +9853,7 @@ function adminVerifyEmail(id) {
             u.emailVerifiedByAdmin = on;
             apiFetch("/admin/verified", { method: "POST", body: JSON.stringify(on ? { set: [id] } : { del: [id] }) }).catch(function () {});
             if (on) {
-                db.collection("users").doc(id).collection("notifications").add({
+                ptNotifCol(id).add({
                     type: "msg", text: "✓ E-poçtunuz admin tərəfindən təsdiqləndi. Artıq axtarış edə bilərsiniz.", createdAt: Date.now(), read: false
                 }).catch(function () {});
             }
@@ -10543,10 +10746,10 @@ function renderChangelogHistory() {
 }
 
 const I18N = {
- az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung, Mi, iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Bütün animasiya və effektləri söndürür",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur",fontSmall:"KİÇİK",fontNormal:"NORMAL",fontLarge:"BÖYÜK",secChangelog:"YENİLƏMƏ TARİXÇƏSİ",compatNote:"Ölçülər tam dəqiq olmaya bilər",regTitle:"Mağaza Qeydiyyatı",regLang:"Dil:",regNamePh:"Ad və Soyad *",regNameErr:"Ad və soyad ən az 3 hərf olmalıdır (təsadüfi hərflərlə doldurmaq qadağandır)",regEmailPh:"E-poçt (şifrə bərpası üçün) *",regPassPh:"Parol (məs: Baku1234) *",passReqTitle:"Parol tələbləri",passStrength:"Güc: ",passReqLen:"Ən az 8 simvol",passReqNum:"Ən az 1 rəqəm",passReqUpper:"Ən az 1 böyük hərf (A–Z)",passReqLower:"Ən az 1 kiçik hərf (a–z)",passReqHint:"Başqa saytlarda istifadə etdiyiniz və ya asan təxmin olunan paroldan çəkinin.",regPassErr:"Parol tələblərə uyğun deyil",regPassOk:"Parol uyğundur ✓",regStorePh:"Mağaza adı",regAddressPh:"Mağaza ünvanı",regPhoneErr:"Nömrə yanlışdır, 9 rəqəm olmalı və doğru prefiks ilə başlamalıdır (10,50,51,55,60,70,77,99,12)",regBtn:"Qeydiyyatı Tamamla",regHaveAccount:"Artıq qeydiyyatdan keçmisiniz? Giriş et",loginTitle:"E-poçt ilə Giriş",loginBtn:"Daxil Ol",forgotLink:"Parolumu unutmuşam",noAccount:"Hesabınız yoxdur? Qeydiyyat",backMethods:"‹ Üsulları göstər",authTitle:"Giriş və Qeydiyyat",modelReportOk:"\"{m}\" modeli haqqında bildiriş qəbul olundu",noChangelog:"Hələ yeniləmə yoxdur",clFirst:"{n} model əlavə edildi",clAdded:"{n} model əlavə edildi",clRemoved:"{n} model çıxarıldı",clBoth:"{a} model əlavə olundu, {r} model çıxarıldı",clUpdated:"yeniləndi...",blockedMsg:"Hesabınız bloklanıb.",blockedReason:"Səbəb:"},
- ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЛЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Отключает все анимации и эффекты",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета",fontSmall:"МАЛЕНЬКИЙ",fontNormal:"ОБЫЧНЫЙ",fontLarge:"БОЛЬШОЙ",secChangelog:"ИСТОРИЯ ОБНОВЛЕНИЙ",compatNote:"Размеры могут быть не полностью точными",regTitle:"Регистрация магазина",regLang:"Язык:",regNamePh:"Имя и Фамилия *",regNameErr:"Имя и фамилия — не менее 3 букв (случайный набор запрещён)",regEmailPh:"Email (для восстановления пароля) *",regPassPh:"Пароль (напр.: Baku1234) *",passReqTitle:"Требования к паролю",passStrength:"Надёжность: ",passReqLen:"Не менее 8 символов",passReqNum:"Не менее 1 цифры",passReqUpper:"Не менее 1 заглавной буквы (A–Z)",passReqLower:"Не менее 1 строчной буквы (a–z)",passReqHint:"Не используйте пароль с других сайтов и легко угадываемые комбинации.",regPassErr:"Пароль не соответствует требованиям",regPassOk:"Пароль подходит ✓",regStorePh:"Название магазина",regAddressPh:"Адрес магазина",regPhoneErr:"Неверный номер: 9 цифр и правильный префикс (10,50,51,55,60,70,77,99,12)",regBtn:"Завершить регистрацию",regHaveAccount:"Уже зарегистрированы? Войти",loginTitle:"Вход по email",loginBtn:"Войти",forgotLink:"Забыли пароль?",noAccount:"Нет аккаунта? Регистрация",backMethods:"‹ Показать способы",authTitle:"Вход и регистрация",modelReportOk:"Уведомление о модели \"{m}\" принято",noChangelog:"Обновлений пока нет",clFirst:"Добавлено моделей: {n}",clAdded:"Добавлено моделей: {n}",clRemoved:"Удалено моделей: {n}",clBoth:"Добавлено: {a}, удалено: {r}",clUpdated:"обновлено...",blockedMsg:"Ваш аккаунт заблокирован.",blockedReason:"Причина:"},
- en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Tone",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Turns off all animations and effects",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet",fontSmall:"SMALL",fontNormal:"NORMAL",fontLarge:"LARGE",secChangelog:"UPDATE HISTORY",compatNote:"Dimensions may not be exact",regTitle:"Store Registration",regLang:"Language:",regNamePh:"First & Last Name *",regNameErr:"Name must be at least 3 letters (random filling is not allowed)",regEmailPh:"Email (for password recovery) *",regPassPh:"Password (e.g. Baku1234) *",passReqTitle:"Password requirements",passStrength:"Strength: ",passReqLen:"At least 8 characters",passReqNum:"At least 1 number",passReqUpper:"At least 1 uppercase letter (A–Z)",passReqLower:"At least 1 lowercase letter (a–z)",passReqHint:"Avoid passwords used on other sites or ones that are easy to guess.",regPassErr:"Password does not meet the requirements",regPassOk:"Password is valid ✓",regStorePh:"Store name",regAddressPh:"Store address",regPhoneErr:"Invalid number: 9 digits with a valid prefix (10,50,51,55,60,70,77,99,12)",regBtn:"Complete Registration",regHaveAccount:"Already registered? Sign in",loginTitle:"Sign in with email",loginBtn:"Sign In",forgotLink:"Forgot password?",noAccount:"Don't have an account? Register",backMethods:"‹ Show methods",authTitle:"Sign in & Register",modelReportOk:"Notification about model \"{m}\" has been received",noChangelog:"No updates yet",clFirst:"{n} models added",clAdded:"{n} models added",clRemoved:"{n} models removed",clBoth:"{a} models added, {r} models removed",clUpdated:"updated...",blockedMsg:"Your account has been blocked.",blockedReason:"Reason:"},
- tr:{title:"Koruyucu cam uyumluluğu",search:"Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN KORUYUCU CAMLARI BİRBİRİNE UYGUNDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Tüm animasyon ve efektleri kapatır",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok",fontSmall:"KÜÇÜK",fontNormal:"NORMAL",fontLarge:"BÜYÜK",secChangelog:"GÜNCELLEME GEÇMİŞİ",compatNote:"Ölçüler tam olarak doğru olmayabilir",regTitle:"Mağaza Kaydı",regLang:"Dil:",regNamePh:"Ad ve Soyad *",regNameErr:"Ad ve soyad en az 3 harf olmalıdır (rastgele doldurma yasaktır)",regEmailPh:"E-posta (şifre sıfırlama için) *",regPassPh:"Şifre (örn: Baku1234) *",passReqTitle:"Şifre gereksinimleri",passStrength:"Güç: ",passReqLen:"En az 8 karakter",passReqNum:"En az 1 rakam",passReqUpper:"En az 1 büyük harf (A–Z)",passReqLower:"En az 1 küçük harf (a–z)",passReqHint:"Başka sitelerde kullandığınız veya kolay tahmin edilen şifrelerden kaçının.",regPassErr:"Şifre gereksinimleri karşılamıyor",regPassOk:"Şifre uygun ✓",regStorePh:"Mağaza adı",regAddressPh:"Mağaza adresi",regPhoneErr:"Geçersiz numara: 9 hane ve doğru önek (10,50,51,55,60,70,77,99,12)",regBtn:"Kaydı Tamamla",regHaveAccount:"Zaten kayıtlı mısınız? Giriş yap",loginTitle:"E-posta ile Giriş",loginBtn:"Giriş Yap",forgotLink:"Şifremi unuttum",noAccount:"Hesabınız yok mu? Kayıt ol",backMethods:"‹ Yöntemleri göster",authTitle:"Giriş ve Kayıt",modelReportOk:"\"{m}\" modeli hakkında bildirim alındı",noChangelog:"Henüz güncelleme yok",clFirst:"{n} model eklendi",clAdded:"{n} model eklendi",clRemoved:"{n} model kaldırıldı",clBoth:"{a} model eklendi, {r} model kaldırıldı",clUpdated:"güncellendi...",blockedMsg:"Hesabınız engellendi.",blockedReason:"Sebep:"}
+ az:{title:"Qoruyucu şüşə uyğunluğu",search:"Samsung, Mi, iPhone ...",selected:"SEÇİLƏN MODEL",compat:"BU MODELLƏRİN ANTİUDARLARI BİR-BİRİNƏ UYĞUNDUR",settings:"Tənzimləmələr",privacy:"Məxfilik Siyasəti",secBase:"BAZA",secTheme:"MÖVZU",secFont:"ŞRİFT ÖLÇÜSÜ",secLang:"DİL",secSoundHaptic:"SƏS VƏ HAPTİK",secAccent:"AKSENT RƏNGİ",secPerformance:"PERFORMANS",secPrivacy:"MƏXFİLİK",secContact:"ƏLAQƏ",secInfo:"MƏLUMAT",secApp:"PROQRAM",totalModels:"ÜMUMİ MODEL SAYI",lastUpd:"SON YENİLƏNMƏ",updateNow:"YENİLƏ",updating:"YENİLƏNİR...",system:"SİSTEM",auto:"AVTO",light:"AÇIQ",dark:"TÜND",ruleLbl:"QAYDA",ruleText:"Baza 3 gündən çox yenilənməsə, proqram bloklanır.",version:"VERSİYA",dbSize:"BAZADA QRUP",modelCountLbl:"BAZADA MODEL",blockTitle:"Proqram Bloklanıb",blockText:"Baza 3 gündən çoxdur ki yenilənmir.<br><br>Zəhmət olmasa internetə qoşulun və bazanı yeniləyin.",updateBase:"BAZANI YENİLƏ",unknown:"Bilinmir",found:"NƏTİCƏ",similar:"OXŞAR NƏTİCƏ",none:"NƏTİCƏ TAPILMADI",noneText:"heç nə tapılmadı",noDb:"BAZA YOXDUR — YENİLƏYİN",alertFail:"Baza yenilənə bilmədi!\n\nİnternet bağlantınızı yoxlayın.",recent:"SON AXTARIŞLAR",clear:"TƏMİZLƏ",nfBtn:"Bu modeli bizə bildir",stFresh:"Baza yenidir",stOld:"Yenilənmə lazımdır",stStale:"Baza köhnəlib (3 gündən çox)",soundLbl:"Səs effektləri",soundTypeLbl:"Səs Tembri",hapticLbl:"Haptik Vibrasiya",hapticIntensityLbl:"Vibrasiya Gücü",lowPowerLbl:"Batareya Qənaət Rejimi",lowPowerDesc:"Bütün animasiya və effektləri söndürür",offlineBanner:"İnternet bağlantısı yoxdur — Offline rejimdəsiniz",offlineDot:"İnternet yoxdur",fontSmall:"KİÇİK",fontNormal:"NORMAL",fontLarge:"BÖYÜK",secChangelog:"YENİLƏMƏ TARİXÇƏSİ",compatNote:"Ölçülər tam dəqiq olmaya bilər",regTitle:"Mağaza Qeydiyyatı",regLang:"Dil:",regNamePh:"Ad və Soyad *",regNameErr:"Ad və soyad ən az 3 hərf olmalıdır (təsadüfi hərflərlə doldurmaq qadağandır)",regEmailPh:"E-poçt (şifrə bərpası üçün) *",regPassPh:"Parol (məs: Baku1234) *",passReqTitle:"Parol tələbləri",passStrength:"Güc: ",passReqLen:"Ən az 8 simvol",passReqNum:"Ən az 1 rəqəm",passReqUpper:"Ən az 1 böyük hərf (A–Z)",passReqLower:"Ən az 1 kiçik hərf (a–z)",passReqHint:"Başqa saytlarda istifadə etdiyiniz və ya asan təxmin olunan paroldan çəkinin.",regPassErr:"Parol tələblərə uyğun deyil",regPassOk:"Parol uyğundur ✓",regStorePh:"Mağaza adı",regAddressPh:"Mağaza ünvanı",regPhoneErr:"Nömrə yanlışdır, 9 rəqəm olmalı və doğru prefiks ilə başlamalıdır (10,50,51,55,60,70,77,99,12)",regBtn:"Qeydiyyatı Tamamla",regHaveAccount:"Artıq qeydiyyatdan keçmisiniz? Giriş et",loginTitle:"E-poçt ilə Giriş",loginBtn:"Daxil Ol",forgotLink:"Parolumu unutmuşam",noAccount:"Hesabınız yoxdur? Qeydiyyat",backMethods:"‹ Üsulları göstər",authTitle:"Giriş və Qeydiyyat",modelReportOk:"\"{m}\" modeli haqqında bildiriş qəbul olundu",noChangelog:"Hələ yeniləmə yoxdur",clFirst:"{n} model əlavə edildi",clAdded:"{n} model əlavə edildi",clRemoved:"{n} model çıxarıldı",clBoth:"{a} model əlavə olundu, {r} model çıxarıldı",clUpdated:"yeniləndi...",blockedMsg:"Hesabınız bloklanıb.",blockedReason:"Səbəb:"},
+ ru:{title:"Совместимость защитных стёкол",search:"Поиск: Samsung, Mi, iPhone ...",selected:"ВЫБРАННАЯ МОДЕЛЬ",compat:"ЗАЩИТНЫЕ СТЁКЛА ЭТИХ МОДЕЛЕЙ ВЗАИМОЗАМЕНЯЕМЫ",settings:"Настройки",privacy:"Политика конфиденциальности",secBase:"БАЗА",secTheme:"ТЕМА",secFont:"РАЗМЕР ШРИФТА",secLang:"ЯЗЫК",secSoundHaptic:"ЗВУК И ВИБРАЦИЯ",secAccent:"АКЦЕНТНЫЙ ЦВЕТ",secPerformance:"ПРОИЗВОДИТЕЛЬНОСТЬ",secPrivacy:"КОНФИДЕНЦИАЛЬНОСТЬ",secContact:"СВЯЗЬ",secInfo:"ИНФОРМАЦИЯ",secApp:"ПРИЛОЖЕНИЕ",totalModels:"ВСЕГО МОДЕЛЕЙ",lastUpd:"ПОСЛЕДНЕЕ ОБНОВЛЕНИЕ",updateNow:"ОБНОВИТЬ",updating:"ОБНОВЛЕНИЕ...",system:"СИСТЕМА",auto:"АВТО",light:"СВЕТЛАЯ",dark:"ТЁМНАЯ",ruleLbl:"ПРАВИЛО",ruleText:"Если база не обновлялась более 3 дней, приложение блокируется.",version:"ВЕРСИЯ",dbSize:"ГРУПП В БАЗЕ",modelCountLbl:"МОДЕЛЕЙ В БАЗЕ",blockTitle:"Приложение заблокировано",blockText:"База не обновлялась более 3 дней.<br><br>Подключитесь к интернету и обновите базу.",updateBase:"ОБНОВИТЬ БАЗУ",unknown:"Неизвестно",found:"РЕЗУЛЬТАТОВ",similar:"ПОХОЖИХ",none:"НИЧЕГО НЕ НАЙДЕНО",noneText:"ничего не найдено",noDb:"БАЗЫ НЕТ — ОБНОВИТЕ",alertFail:"Не удалось обновить базу!\n\nПроверьте подключение к интернету.",recent:"ПОСЛЕДНИЕ ПОИСКИ",clear:"ОЧИСТИТЬ",nfBtn:"Сообщить об этой модели",stFresh:"База актуальна",stOld:"Нужно обновление",stStale:"База устарела (более 3 дней)",soundLbl:"Звуковые эффекты",soundTypeLbl:"Тембр звука",hapticLbl:"Виброотклик",hapticIntensityLbl:"Сила вибрации",lowPowerLbl:"Энергосбережение",lowPowerDesc:"Отключает все анимации и эффекты",offlineBanner:"Нет подключения к интернету — Режим офлайн",offlineDot:"Нет интернета",fontSmall:"МАЛЕНЬКИЙ",fontNormal:"ОБЫЧНЫЙ",fontLarge:"БОЛЬШОЙ",secChangelog:"ИСТОРИЯ ОБНОВЛЕНИЙ",compatNote:"Размеры могут быть не полностью точными",regTitle:"Регистрация магазина",regLang:"Язык:",regNamePh:"Имя и Фамилия *",regNameErr:"Имя и фамилия — не менее 3 букв (случайный набор запрещён)",regEmailPh:"Email (для восстановления пароля) *",regPassPh:"Пароль (напр.: Baku1234) *",passReqTitle:"Требования к паролю",passStrength:"Надёжность: ",passReqLen:"Не менее 8 символов",passReqNum:"Не менее 1 цифры",passReqUpper:"Не менее 1 заглавной буквы (A–Z)",passReqLower:"Не менее 1 строчной буквы (a–z)",passReqHint:"Не используйте пароль с других сайтов и легко угадываемые комбинации.",regPassErr:"Пароль не соответствует требованиям",regPassOk:"Пароль подходит ✓",regStorePh:"Название магазина",regAddressPh:"Адрес магазина",regPhoneErr:"Неверный номер: 9 цифр и правильный префикс (10,50,51,55,60,70,77,99,12)",regBtn:"Завершить регистрацию",regHaveAccount:"Уже зарегистрированы? Войти",loginTitle:"Вход по email",loginBtn:"Войти",forgotLink:"Забыли пароль?",noAccount:"Нет аккаунта? Регистрация",backMethods:"‹ Показать способы",authTitle:"Вход и регистрация",modelReportOk:"Уведомление о модели \"{m}\" принято",noChangelog:"Обновлений пока нет",clFirst:"Добавлено моделей: {n}",clAdded:"Добавлено моделей: {n}",clRemoved:"Удалено моделей: {n}",clBoth:"Добавлено: {a}, удалено: {r}",clUpdated:"обновлено...",blockedMsg:"Ваш аккаунт заблокирован.",blockedReason:"Причина:"},
+ en:{title:"Screen protector compatibility",search:"Search: Samsung, Mi, iPhone ...",selected:"SELECTED MODEL",compat:"SCREEN PROTECTORS OF THESE MODELS ARE INTERCHANGEABLE",settings:"Settings",privacy:"Privacy Policy",secBase:"DATABASE",secTheme:"THEME",secFont:"FONT SIZE",secLang:"LANGUAGE",secSoundHaptic:"SOUND & HAPTIC",secAccent:"ACCENT COLOR",secPerformance:"PERFORMANCE",secPrivacy:"PRIVACY",secContact:"CONTACT",secInfo:"INFO",secApp:"APP",totalModels:"TOTAL MODELS",lastUpd:"LAST UPDATE",updateNow:"UPDATE",updating:"UPDATING...",system:"SYSTEM",auto:"AUTO",light:"LIGHT",dark:"DARK",ruleLbl:"RULE",ruleText:"If the database isn't updated for over 3 days, the app is locked.",version:"VERSION",dbSize:"GROUPS IN DATABASE",modelCountLbl:"MODELS IN DATABASE",blockTitle:"App locked",blockText:"The database hasn't been updated for over 3 days.<br><br>Please connect to the internet and update it.",updateBase:"UPDATE DATABASE",unknown:"Unknown",found:"RESULTS",similar:"SIMILAR RESULTS",none:"NO RESULTS",noneText:"nothing found",noDb:"NO DATABASE — PLEASE UPDATE",alertFail:"Couldn't update the database!\n\nCheck your internet connection.",recent:"RECENT SEARCHES",clear:"CLEAR",nfBtn:"Report this model to us",stFresh:"Database is up to date",stOld:"Update needed",stStale:"Database outdated (over 3 days)",soundLbl:"Sound effects",soundTypeLbl:"Sound Tone",hapticLbl:"Haptic Vibration",hapticIntensityLbl:"Vibration Intensity",lowPowerLbl:"Battery Saver Mode",lowPowerDesc:"Turns off all animations and effects",offlineBanner:"No internet connection — Offline mode",offlineDot:"No internet",fontSmall:"SMALL",fontNormal:"NORMAL",fontLarge:"LARGE",secChangelog:"UPDATE HISTORY",compatNote:"Dimensions may not be exact",regTitle:"Store Registration",regLang:"Language:",regNamePh:"First & Last Name *",regNameErr:"Name must be at least 3 letters (random filling is not allowed)",regEmailPh:"Email (for password recovery) *",regPassPh:"Password (e.g. Baku1234) *",passReqTitle:"Password requirements",passStrength:"Strength: ",passReqLen:"At least 8 characters",passReqNum:"At least 1 number",passReqUpper:"At least 1 uppercase letter (A–Z)",passReqLower:"At least 1 lowercase letter (a–z)",passReqHint:"Avoid passwords used on other sites or ones that are easy to guess.",regPassErr:"Password does not meet the requirements",regPassOk:"Password is valid ✓",regStorePh:"Store name",regAddressPh:"Store address",regPhoneErr:"Invalid number: 9 digits with a valid prefix (10,50,51,55,60,70,77,99,12)",regBtn:"Complete Registration",regHaveAccount:"Already registered? Sign in",loginTitle:"Sign in with email",loginBtn:"Sign In",forgotLink:"Forgot password?",noAccount:"Don't have an account? Register",backMethods:"‹ Show methods",authTitle:"Sign in & Register",modelReportOk:"Notification about model \"{m}\" has been received",noChangelog:"No updates yet",clFirst:"{n} models added",clAdded:"{n} models added",clRemoved:"{n} models removed",clBoth:"{a} models added, {r} models removed",clUpdated:"updated...",blockedMsg:"Your account has been blocked.",blockedReason:"Reason:"},
+ tr:{title:"Koruyucu cam uyumluluğu",search:"Samsung, Mi, iPhone ...",selected:"SEÇİLEN MODEL",compat:"BU MODELLERİN KORUYUCU CAMLARI BİRBİRİNE UYGUNDUR",settings:"Ayarlar",privacy:"Gizlilik Politikası",secBase:"VERİTABANI",secTheme:"TEMA",secFont:"YAZI BOYUTU",secLang:"DİL",secSoundHaptic:"SES VE HAPTİK",secAccent:"VURGU RENGİ",secPerformance:"PERFORMANS",secPrivacy:"GİZLİLİK",secContact:"İLETİŞİM",secInfo:"BİLGİ",secApp:"UYGULAMA",totalModels:"TOPLAM MODEL SAYISI",lastUpd:"SON GÜNCELLEME",updateNow:"GÜNCELLE",updating:"GÜNCELLENİYOR...",system:"SİSTEM",auto:"OTO",light:"AÇIK",dark:"KOYU",ruleLbl:"KURAL",ruleText:"Veritabanı 3 günden fazla güncellenmezse uygulama kilitlenir.",version:"SÜRÜM",dbSize:"VERİTABANINDA GRUP",modelCountLbl:"VERİTABANINDA MODEL",blockTitle:"Uygulama kilitlendi",blockText:"Veritabanı 3 günden uzun süredir güncellenmedi.<br><br>Lütfen internete bağlanıp güncelleyin.",updateBase:"VERİTABANINI GÜNCELLE",unknown:"Bilinmiyor",found:"SONUÇ",similar:"BENZER SONUÇ",none:"SONUÇ BULUNAMADI",noneText:"hiçbir şey bulunamadı",noDb:"VERİTABANI YOK — GÜNCELLEYİN",alertFail:"Veritabanı güncellenemedi!\n\nİnternet bağlantınızı kontrol edin.",recent:"SON ARAMALAR",clear:"TEMİZLE",nfBtn:"Bu modeli bize bildir",stFresh:"Veritabanı güncel",stOld:"Güncelleme gerekli",stStale:"Veritabanı eski (3 günden fazla)",soundLbl:"Ses efektleri",soundTypeLbl:"Ses Tonu",hapticLbl:"Haptik Titreşim",hapticIntensityLbl:"Titreşim Gücü",lowPowerLbl:"Pil Tasarruf Modu",lowPowerDesc:"Tüm animasyon ve efektleri kapatır",offlineBanner:"İnternet bağlantısı yok — Çevrimdışı mod",offlineDot:"İnternet yok",fontSmall:"KÜÇÜK",fontNormal:"NORMAL",fontLarge:"BÜYÜK",secChangelog:"GÜNCELLEME GEÇMİŞİ",compatNote:"Ölçüler tam olarak doğru olmayabilir",regTitle:"Mağaza Kaydı",regLang:"Dil:",regNamePh:"Ad ve Soyad *",regNameErr:"Ad ve soyad en az 3 harf olmalıdır (rastgele doldurma yasaktır)",regEmailPh:"E-posta (şifre sıfırlama için) *",regPassPh:"Şifre (örn: Baku1234) *",passReqTitle:"Şifre gereksinimleri",passStrength:"Güç: ",passReqLen:"En az 8 karakter",passReqNum:"En az 1 rakam",passReqUpper:"En az 1 büyük harf (A–Z)",passReqLower:"En az 1 küçük harf (a–z)",passReqHint:"Başka sitelerde kullandığınız veya kolay tahmin edilen şifrelerden kaçının.",regPassErr:"Şifre gereksinimleri karşılamıyor",regPassOk:"Şifre uygun ✓",regStorePh:"Mağaza adı",regAddressPh:"Mağaza adresi",regPhoneErr:"Geçersiz numara: 9 hane ve doğru önek (10,50,51,55,60,70,77,99,12)",regBtn:"Kaydı Tamamla",regHaveAccount:"Zaten kayıtlı mısınız? Giriş yap",loginTitle:"E-posta ile Giriş",loginBtn:"Giriş Yap",forgotLink:"Şifremi unuttum",noAccount:"Hesabınız yok mu? Kayıt ol",backMethods:"‹ Yöntemleri göster",authTitle:"Giriş ve Kayıt",modelReportOk:"\"{m}\" modeli hakkında bildirim alındı",noChangelog:"Henüz güncelleme yok",clFirst:"{n} model eklendi",clAdded:"{n} model eklendi",clRemoved:"{n} model kaldırıldı",clBoth:"{a} model eklendi, {r} model kaldırıldı",clUpdated:"güncellendi...",blockedMsg:"Hesabınız engellendi.",blockedReason:"Sebep:"}
 };
 const I18N_EXTRA = {
  az:{clEdited:"{n} modeldə düzəliş edildi",clRegroup:"{n} qrupda uyğunluq düzəlişi edildi",clRegroupM:"{n} modeldə uyğunluq düzəlişi edildi",clRegroupG:"Uyğunluq düzəlişləri edildi",clNoChange:"Baza aktualdır — yeni dəyişiklik yoxdur",exitHint:"Çıxmaq üçün «Geri» düyməsinə bir daha basın",profileLoadFail:"Profil məlumatları yüklənmədi. İnterneti yoxlayın.",notLoggedIn:"Daxil olmamısınız!",phoneInvalid:"Nömrə yanlışdır, 9 rəqəm olmalıdır",nickEmpty:"Ləqəb boş ola bilməz!",saving:"Yadda saxlanılır...",profileUpdated:"Məlumatlar uğurla yeniləndi!",profileSaved:"✓ Dəyişikliklər yadda saxlanıldı!",errPrefix:"Xəta:",tryAgain:"Yenidən cəhd edin",anonLeft:"Anonim rejim: qalan axtarış {n}. Davam etmək üçün qeydiyyatdan keçin.",anonLimitEnded:"Anonim axtarış limiti bitdi. Davam etmək üçün qeydiyyat tələb olunur.",freeLimitEnded:"Pulsuz axtarış limiti bitdi. Qeydiyyatdan keçin.",authNeeded:"Axtarış üçün giriş və ya qeydiyyat tələb olunur",authMsgLimit:"Pulsuz axtarış limitiniz bitdi. Daxil olun, qeydiyyatdan keçin və ya anonim davam edin (5 əlavə axtarış).",authMsgRequired:"Axtarışı davam etdirmək üçün giriş və ya qeydiyyat tələb olunur.",authMsgAnonEnded:"Anonim istifadə üçün nəzərdə tutulan 5 axtarış limiti bitdi. Davam etmək üçün qeydiyyat tələb olunur.",authMsgProfile:"Mağaza profili üçün giriş və ya qeydiyyat tələb olunur.",loginCancelled:"Giriş ləğv edildi.",popupBlocked:"Brauzer pəncərəni blokladı. İcazə verib yenidən cəhd edin.",tooMany:"Çox cəhd edildi. Bir az sonra yenidən yoxlayın.",completeProfile:"Qeydiyyatı tamamlamaq üçün profil məlumatlarını doldurun",loginOk:"Uğurla daxil oldunuz!",googleConnecting:"Google ilə əlaqə qurulur...",anonConnecting:"Anonim giriş edilir...",anonStart:"Anonim rejim: {n} axtarış hüququnuz var. Sonra qeydiyyat tələb olunacaq.",fillRequired:"Zəhmət olmasa bütün məcburi sahələri düzgün doldurun!",fillBasic:"Zəhmət olmasa ad və soyad, e-poçt və parol sahələrini doldurun!",regInProgress:"Qeydiyyat aparılır...",regOk:"Qeydiyyat uğurla tamamlandı!",enterEmailPass:"E-poçt və parolu daxil edin!",loginFail:"E-poçt və ya parol səhvdir!",enterEmail:"E-poçt daxil edin!",resetSent:"Bərpa linki e-poçtunuza göndərildi! Gəlmədisə, Spam qovluğuna baxın.",resetNotFound:"Belə e-poçt tapılmadı."},
@@ -10736,7 +10939,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.05";
+const APP_VERSION = "3.1.3.06";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Yeniləmə 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -12439,7 +12642,7 @@ function thxSend(x, btn) {
     uid: u.uid, nid: nid, name: String(a.username || a.displayName || "").slice(0, 60), email: String(u.email || a.email || "").slice(0, 100),
     days: Math.round(+x.days || 0), reason: String(x.reason || "").slice(0, 30), createdAt: firebase.firestore.FieldValue.serverTimestamp()
   }).catch(function () {});
-  if (x.id) db.collection("users").doc(u.uid).collection("notifications").doc(x.id).update({ thanked: true }).catch(function () {});
+  if (x.id) ptNotifCol(u.uid).doc(x.id).update({ thanked: true }).catch(function () {});
 }
 var _renderNotifs = renderNotifications;
 renderNotifications = function () {
@@ -12773,7 +12976,7 @@ adminSendMessage = function (id) {
   var u = (typeof adminFindUser === "function" && adminFindUser(id)) || {};
   appPrompt("✉ " + T("pxMsg"), (u.username || u.email || id) + "\n" + T("pxVarH"), "", true, T("pxMsgPh")).then(function (text) {
     if (!text || !text.trim()) return;
-    db.collection("users").doc(id).collection("notifications").add({ type: "msg", text: text.trim().slice(0, 500), createdAt: Date.now(), read: false })
+    ptNotifCol(id).add({ type: "msg", text: text.trim().slice(0, 500), createdAt: Date.now(), read: false })
       .then(function () { toast(T("pxSentN").replace("{n}", 1)); }).catch(function (e) { toast(errT(e)); });
   });
 };
@@ -13404,7 +13607,7 @@ window.ptSaveCodes = function (key, codes) {
   indexFor = null;
   var fp = new firebase.firestore.FieldPath("codes", key);
   var val = codes.length ? codes : firebase.firestore.FieldValue.delete();
-  return Promise.all([db.doc(FS_DB_DOC).update(fp, val), apiFetch("/catalog").then(function (c) {
+  return Promise.all([dataPost("/base/codes", { key: key, codes: codes }), apiFetch("/catalog").then(function (c) {
     c = c || {}; c.codes = c.codes || {};
     if (codes.length) c.codes[key] = codes; else delete c.codes[key];
     return apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "catalog", val: c }) });
@@ -13734,6 +13937,7 @@ function pushFromNotif(uid, x, force) {
     }, Promise.resolve()).then(function () { return { sent: sent }; });
 }
 window.ptPushNotif = function (uids, x) { return pushFromNotif(uids, x, true); };
+window.ptAutoPush = function (uid, x) { return pushFromNotif(uid, x); };
 (function hookNotifAdd() {
     try {
         var CR = firebase.firestore.CollectionReference;
@@ -13820,7 +14024,7 @@ window.ptAdminPushSend = function () {
         pushSend({ to: user ? [user._id] : "all", t: type, ti: ti, b: b, o: "notif" }).then(function (d) {
             if (user) {
                 var ul = user.lang || user.language || "az";
-                db.collection("users").doc(user._id).collection("notifications").add({ type: "msg", text: (b[ul] || b.az).slice(0, 500), createdAt: Date.now(), read: false, noPush: true }).catch(function () {});
+                ptNotifCol(user._id).add({ type: "msg", text: (b[ul] || b.az).slice(0, 500), createdAt: Date.now(), read: false, noPush: true }).catch(function () {});
             }
             showAppToast("📲 Göndərildi" + (d && typeof d.sent === "number" ? " · " + d.sent + " cihaz" : ""));
             LS.forEach(function (l) { ["ptPushTi" + l, "ptPushB" + l].forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ""; }); });
@@ -14319,6 +14523,150 @@ window.ptPushPick = function (el) {
     hap(15);
 };
 applyTexts();
+})();
+</script>
+<style>
+/* «Dərc et» — yüklənmə animasiyası */
+.adm-publish{position:relative;overflow:hidden;isolation:isolate}
+.adm-publish.busy{pointer-events:none;background:linear-gradient(110deg,#ff6b2c 0%,#ff5722 40%,#e0481b 70%,#ff7043 100%);background-size:220% 100%;animation:updGlowShift 3.2s ease-in-out infinite}
+.adm-publish.busy::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.5) 50%,transparent 62%);background-size:220% 100%;animation:updShine 2.6s cubic-bezier(.4,0,.2,1) infinite;pointer-events:none}
+.adm-publish > *{position:relative;z-index:1}
+.adm-publish .pt-bspin{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:ptBSpin .8s linear infinite}
+.adm-publish.busy .pt-bspin{display:inline-block}
+.adm-publish.busy .e3d{display:none}
+@keyframes ptBSpin{to{transform:rotate(360deg)}}
+.adm-vers{flex:0 0 auto;height:48px;padding:0 14px;border-radius:14px;border:1px solid var(--border-color,rgba(255,255,255,.12));background:var(--card-bg,rgba(255,255,255,.04));color:var(--text-color,#fff);font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer}
+.adm-vers svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.adm-vers:active{transform:scale(.97)}
+/* Versiyalar pəncərəsi */
+#ptVerSheet{position:fixed;inset:0;z-index:10050;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55)}
+#ptVerSheet.show{display:flex}
+#ptVerSheet .pv-box{width:100%;max-width:560px;max-height:82vh;display:flex;flex-direction:column;background:var(--bg-color,#111);color:var(--text-color,#fff);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 40px rgba(0,0,0,.4);animation:pvUp .25s ease}
+@keyframes pvUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+#ptVerSheet .pv-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+#ptVerSheet .pv-head b{font-size:17px}
+#ptVerSheet .pv-x{border:none;background:none;color:inherit;font-size:24px;line-height:1;cursor:pointer;padding:4px 8px}
+#ptVerSheet .pv-sub{font-size:12px;color:var(--muted,#999);margin-bottom:10px}
+#ptVerSheet .pv-list{overflow:auto;-webkit-overflow-scrolling:touch}
+#ptVerSheet .pv-row{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--border-color,rgba(255,255,255,.1));border-radius:14px;margin-bottom:8px}
+#ptVerSheet .pv-row.cur{border-color:#2ecc71;background:rgba(46,204,113,.08)}
+#ptVerSheet .pv-i{flex:1;min-width:0;font-size:13px}
+#ptVerSheet .pv-i small{display:block;color:var(--muted,#999);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ptVerSheet .pv-tag{font-size:11px;font-weight:800;color:#2ecc71;white-space:nowrap}
+#ptVerSheet .pv-btn{border:none;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;color:#fff;background:linear-gradient(135deg,#ff7a2f,#e0461b);cursor:pointer;white-space:nowrap}
+#ptVerSheet .pv-btn:disabled{opacity:.5}
+#ptVerSheet .pv-empty{padding:24px 6px;text-align:center;color:var(--muted,#999);font-size:13px}
+</style>
+<div id="ptVerSheet" onclick="if(event.target===this)ptVerClose()">
+  <div class="pv-box" role="dialog" aria-modal="true" aria-labelledby="ptVerTitle">
+    <div class="pv-head"><b id="ptVerTitle">Baza versiyaları</b><button type="button" class="pv-x" onclick="ptVerClose()" aria-label="Bağla">×</button></div>
+    <div class="pv-sub">Hər «Dərc et» ayrıca versiya kimi saxlanılır (son 40). Geri qaytarma seçilmiş versiyanı yenidən dərc edir.</div>
+    <div class="pv-list" id="ptVerList"></div>
+  </div>
+</div>
+<script>
+(function () {
+/* ---------- «Dərc et» düyməsi: dərc müddətində yüklənmə animasiyası ---------- */
+function pubBtns() { return [].slice.call(document.querySelectorAll(".adm-publish")); }
+function setPubBusy(on) {
+    pubBtns().forEach(function (b) {
+        if (!b.querySelector(".pt-bspin")) { var sp = document.createElement("span"); sp.className = "pt-bspin"; sp.setAttribute("aria-hidden", "true"); b.insertBefore(sp, b.firstChild); }
+        var lbl = b.querySelector("span:last-child");
+        if (lbl && !lbl.getAttribute("data-l")) lbl.setAttribute("data-l", lbl.textContent);
+        if (lbl) lbl.textContent = on ? "Dərc edilir…" : lbl.getAttribute("data-l");
+        b.classList.toggle("busy", !!on);
+        b.disabled = !!on;
+        b.setAttribute("aria-busy", on ? "true" : "false");
+    });
+}
+if (typeof adminPublishDatabase === "function") {
+    var origPub = adminPublishDatabase;
+    var running = false;
+    adminPublishDatabase = async function () {
+        if (running) return;
+        running = true;
+        setPubBusy(true);
+        try { return await origPub.apply(this, arguments); }
+        finally { running = false; setPubBusy(false); }
+    };
+}
+
+/* ---------- «Yenilə» düymələri: hamısında eyni animasiya ---------- */
+if (typeof forceUpdate === "function") {
+    var origUpd = forceUpdate;
+    forceUpdate = function () {
+        var bs = [].slice.call(document.querySelectorAll('[onclick="forceUpdate()"]')).filter(function (b) { return b.id !== "updateButton"; });
+        bs.forEach(function (b) { b.classList.add("updating"); b.disabled = true; b.setAttribute("aria-busy", "true"); });
+        var done = function () { bs.forEach(function (b) { b.classList.remove("updating"); b.disabled = false; b.setAttribute("aria-busy", "false"); }); };
+        var r;
+        try { r = origUpd.apply(this, arguments); } catch (e) { done(); throw e; }
+        Promise.resolve(r).then(done, done);
+        return r;
+    };
+}
+
+/* ---------- Tənzimləmələr: ümumi model sayı ---------- */
+if (typeof updateDbCount === "function") {
+    var origCnt = updateDbCount;
+    updateDbCount = function () {
+        var r = origCnt.apply(this, arguments);
+        try {
+            var el = document.getElementById("setModelTotal");
+            var src = document.getElementById("modelCount");
+            if (el && src) { var n = parseInt(String(src.innerText).replace(/\D/g, ""), 10) || 0; el.textContent = n ? n.toLocaleString("az-AZ").replace(/,/g, " ") : "—"; }
+        } catch (e) {}
+        return r;
+    };
+    try { updateDbCount(); } catch (e) {}
+}
+
+/* ---------- Baza versiyaları (D1): siyahı və geri qaytarma ---------- */
+var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+var fmt = function (ts) { try { var d = new Date(+ts); return d.toLocaleDateString("az-AZ") + " " + d.toLocaleTimeString("az-AZ", { hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
+var num = function (n) { return (+n || 0).toLocaleString("az-AZ").replace(/,/g, " "); };
+window.ptVerClose = function () { var s = document.getElementById("ptVerSheet"); if (s) s.classList.remove("show"); document.body.style.overflow = ""; };
+window.ptVerOpen = function () {
+    if (typeof isAdmin === "undefined" || !isAdmin) return;
+    var s = document.getElementById("ptVerSheet"), box = document.getElementById("ptVerList");
+    s.classList.add("show");
+    document.body.style.overflow = "hidden";
+    box.innerHTML = '<div class="pv-empty">Yüklənir…</div>';
+    dataFetch("/base/list").then(function (d) {
+        var items = d.items || [];
+        if (!items.length) { box.innerHTML = '<div class="pv-empty">Hələ versiya yoxdur. İlk «Dərc et»dən sonra burada görünəcək.</div>'; return; }
+        box.innerHTML = items.map(function (v) {
+            var cur = v.id === d.cur;
+            return '<div class="pv-row' + (cur ? " cur" : "") + '"><div class="pv-i"><b>#' + v.id + "</b> · " + esc(fmt(v.ts)) +
+                " · " + num(v.models) + " model, " + num(v.groups) + " qrup" +
+                "<small>" + esc(v.note || "—") + (v.by ? " · " + esc(v.by) : "") + "</small></div>" +
+                (cur ? '<span class="pv-tag">CARİ</span>' : '<button type="button" class="pv-btn" onclick="ptVerRestore(' + v.id + ',this)">Geri qaytar</button>') + "</div>";
+        }).join("");
+    }).catch(function (e) {
+        box.innerHTML = '<div class="pv-empty" style="color:#e74c3c">Oxunmadı (' + esc((e && e.code) || "") + ")</div>";
+    });
+};
+window.ptVerRestore = function (id, btn) {
+    confirmAction("#" + id + " versiyası geri qaytarılsın? Baza həmin vəziyyətə qayıdacaq və istifadəçilər üçün yenidən dərc ediləcək.", function () {
+        if (btn) btn.disabled = true;
+        dataFetch("/base/get?id=" + encodeURIComponent(id)).then(function (d) {
+            var data = (d.ver && d.ver.data) || {};
+            var groups = groupsFromFirestore(data);
+            if (!groups.length) throw new Error("Versiya boşdur");
+            if (typeof applyCodes === "function") applyCodes(data.codes, true);
+            adminEditDb = groups;
+            adminSelected.clear();
+            window._ptRollbackNote = "#" + id + " versiyası geri qaytarıldı";
+            ptVerClose();
+            if (typeof renderAdminList === "function") renderAdminList();
+            return adminPublishDatabase();
+        }).catch(function (e) {
+            if (btn) btn.disabled = false;
+            window._ptRollbackNote = "";
+            showAppToast("Geri qaytarılmadı: " + ((e && (e.code || e.message)) || ""));
+        });
+    }, "Geri qaytar");
+};
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVerClose(); });
 })();
 </script>
 </body>

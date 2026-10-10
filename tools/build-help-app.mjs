@@ -37,7 +37,7 @@ const app = `
     return u;
   }
   function fmt(s) {
-    return esc(String(s).replace(/\\{app\\}/g, "/"))
+    return esc(String(s).replace(/\\{app\\}/g, "/application/eminapp/"))
       .replace(/\\*\\*(.+?)\\*\\*/g, "<b>$1</b>")
       .replace(/\\{dot:(\\w+)\\}/g, '<i class="sw sw-$1"></i>')
       .replace(/\\{bar:(\\w+)\\}/g, '<i class="sbar sw-$1"></i>')

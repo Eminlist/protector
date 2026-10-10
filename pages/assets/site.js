@@ -31,7 +31,7 @@
   // Sadə işarələmə: **qalın**, [mətn](link), {app} — proqramın ünvanı,
   // rəng nişanları: {dot:green} {bar:yellow} {tick:1} {tick:2}
   function fmt(s) {
-    return esc(String(s).replace(/\{app\}/g, CFG.appUrl || "/"))
+    return esc(String(s).replace(/\{app\}/g, CFG.appUrl || "/application/eminapp/"))
       .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
       .replace(/\{dot:(\w+)\}/g, '<i class="sw sw-$1" aria-hidden="true"></i>')
       .replace(/\{bar:(\w+)\}/g, '<i class="sbar sw-$1" aria-hidden="true"></i>')
@@ -215,7 +215,7 @@
       }).join("");
     });
     // Proqramın ünvanı (common.json → "_" → appUrl): <a data-app-link>
-    document.querySelectorAll("[data-app-link]").forEach(function (a) { a.href = CFG.appUrl || "/"; });
+    document.querySelectorAll("[data-app-link]").forEach(function (a) { a.href = CFG.appUrl || "/application/eminapp/"; });
     var title = get(T, "page.title");
     if (title) document.title = title + " — ProTechtor™";
     var desc = get(T, "page.desc");

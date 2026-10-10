@@ -6,6 +6,8 @@ Proqramın ünvanı (Qeydiyyat / Giriş düymələri): `texts/common.json → _ 
 
 | Ünvan | HTML faylı | Mətn faylı |
 |---|---|---|
+| / — Ana səhifə (reklam) | index.html | texts/home.json |
+| /application/eminapp/ — Proqram (veb tətbiq) | kökdəki index.html (build zamanı köçürülür) | — |
 | /account/register — Qeydiyyat | account/register.html | texts/register.json |
 | /account/login — Giriş | account/login.html | texts/login.json |
 | /application — Proqram haqqında | application.html | texts/about.json |

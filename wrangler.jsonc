@@ -6,8 +6,12 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/", "/index.html", "/sw.js", "/apk", "/apk/*"]
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/", "/index.html", "/sw.js", "/apk", "/apk/*", "/api/*", "/application/eminapp"]
   },
+  "services": [
+    { "binding": "API", "service": "protector-api" }
+  ],
   "routes": [
     { "pattern": "protechtor.app", "custom_domain": true },
     { "pattern": "www.protechtor.app", "custom_domain": true }
