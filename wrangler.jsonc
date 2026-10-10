@@ -1,0 +1,15 @@
+{
+  "name": "protechtor-site",
+  "main": "site-worker/worker.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/", "/index.html", "/sw.js", "/apk", "/apk/*"]
+  },
+  "routes": [
+    { "pattern": "protechtor.app", "custom_domain": true },
+    { "pattern": "www.protechtor.app", "custom_domain": true }
+  ]
+}
