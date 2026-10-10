@@ -5002,6 +5002,7 @@ function openAi() {
     if (!box.children.length) aiAddMsg(t("aiHello"), "bot");
     renderAiLeft();
     p.classList.add("open");
+    aiGetChat().catch(function () { aiChat = null; });
     if (window.matchMedia("(min-width: 561px)").matches) setTimeout(function () { document.getElementById("aiInput").focus(); }, 60);
 }
 
@@ -5048,25 +5049,38 @@ function aiFindCompatible(query) {
     return { found: out.length > 0, groups: out };
 }
 
+let aiAppCheck = null;
+let aiLibP = null;
+let aiNoThink = true;
+
 function aiLoadLib() {
     if (aiLib) return Promise.resolve(aiLib);
-    return Promise.all([import(FB_CDN + "firebase-app.js"), import(FB_CDN + "firebase-ai.js"), import(FB_CDN + "firebase-app-check.js")]).then(function (mods) {
+    if (aiLibP) return aiLibP;
+    aiLibP = Promise.all([import(FB_CDN + "firebase-app.js"), import(FB_CDN + "firebase-ai.js"), import(FB_CDN + "firebase-app-check.js")]).then(function (mods) {
         const appMod = mods[0], aiMod = mods[1], acMod = mods[2];
         let app;
         try { app = appMod.getApp("pt-ai"); } catch (e) {
             app = appMod.initializeApp(firebaseConfig, "pt-ai");
-            acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled: true });
+            aiAppCheck = acMod.initializeAppCheck(app, { provider: new acMod.ReCaptchaEnterpriseProvider(RECAPTCHA_SITE_KEY), isTokenAutoRefreshEnabled: true });
         }
         aiLib = { mod: aiMod, ai: aiMod.getAI(app, { backend: new aiMod.GoogleAIBackend() }) };
+        if (aiAppCheck) return acMod.getToken(aiAppCheck).catch(function () {}).then(function () { return aiLib; });
         return aiLib;
-    });
+    }).catch(function (e) { aiLibP = null; throw e; });
+    return aiLibP;
+}
+
+function aiThinkCfg(model) {
+    if (!aiNoThink) return null;
+    return /gemini-(3|4)/i.test(model) ? { thinkingLevel: "minimal" } : { thinkingBudget: 0 };
 }
 
 function aiGetChat() {
     const c = aiConf();
-    const key = c.model + "|" + c.instructions.length + "|" + currentLang;
+    const key = c.model + "|" + c.instructions.length + "|" + currentLang + "|" + aiNoThink;
     if (aiChat && aiChatKey === key) return Promise.resolve(aiChat);
     return aiLoadLib().then(function (L) {
+        if (aiChat && aiChatKey === key) return aiChat;
         const S = L.mod.Schema;
         const model = L.mod.getGenerativeModel(L.ai, {
             model: c.model,
@@ -5076,7 +5090,7 @@ function aiGetChat() {
                 description: "ProTechtor bazasında telefon modelini axtarır və həmin modelin antiudarı (qoruyucu şüşəsi) uyğun gələn bütün modellərin siyahısını qaytarır.",
                 parameters: S.object({ properties: { model: S.string({ description: "Telefon modeli, məs: Samsung A54, iPhone 13, Redmi Note 12" }) } })
             }] }],
-            generationConfig: { maxOutputTokens: 700, temperature: 0.4 }
+            generationConfig: Object.assign({ maxOutputTokens: 700, temperature: 0.4 }, aiThinkCfg(c.model) ? { thinkingConfig: aiThinkCfg(c.model) } : {})
         });
         aiChat = model.startChat();
         aiChatKey = key;
@@ -5093,9 +5107,15 @@ function aiErrText(e) {
     return t("aiError");
 }
 
-function aiRun(chat, payload, depth) {
-    return chat.sendMessage(payload).then(function (res) {
-        const r = res.response;
+function aiRun(chat, payload, depth, onChunk) {
+    return chat.sendMessageStream(payload).then(async function (res) {
+        let acc = "";
+        for await (const ch of res.stream) {
+            let tx = "";
+            try { tx = (ch.text && ch.text()) || ""; } catch (e) { tx = ""; }
+            if (tx) { acc += tx; if (onChunk) onChunk(acc); }
+        }
+        const r = await res.response;
         const calls = (r.functionCalls && r.functionCalls()) || [];
         if (calls.length && depth < 3) {
             const parts = calls.map(function (fc) {
@@ -5103,9 +5123,11 @@ function aiRun(chat, payload, depth) {
                 const data = fc.name === "findCompatible" ? aiFindCompatible(args.model) : { error: "unknown tool" };
                 return { functionResponse: { name: fc.name, response: data } };
             });
-            return aiRun(chat, parts, depth + 1);
+            return aiRun(chat, parts, depth + 1, onChunk);
         }
-        return (r.text && r.text()) || "";
+        let full = "";
+        try { full = (r.text && r.text()) || ""; } catch (e) { full = ""; }
+        return full || acc;
     });
 }
 
@@ -5122,11 +5144,21 @@ function sendAi() {
     const typing = aiAddMsg("…", "bot typing");
     aiBusy = true;
     document.getElementById("aiSend").disabled = true;
-    aiGetChat().then(function (chat) {
-        return aiRun(chat, text, 0);
+    const fmt = function (a) { return String(a || "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/^\s*[*-]\s+/gm, "• ").trim(); };
+    const box = document.getElementById("aiMsgs");
+    const onChunk = function (acc) {
+        typing.classList.remove("typing");
+        typing.textContent = fmt(acc);
+        box.scrollTop = box.scrollHeight;
+    };
+    const go = function () { return aiGetChat().then(function (chat) { return aiRun(chat, text, 0, onChunk); }); };
+    go().catch(function (e) {
+        const s = String((e && (e.message || e.code)) || e || "").toLowerCase();
+        if (aiNoThink && s.indexOf("think") >= 0) { aiNoThink = false; aiChat = null; return go(); }
+        throw e;
     }).then(function (answer) {
         typing.remove();
-        aiAddMsg(String(answer || "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/^\s*[*-]\s+/gm, "• ").trim() || t("aiError"), "bot");
+        aiAddMsg(fmt(answer) || t("aiError"), "bot");
         aiCountUse();
         renderAiLeft();
     }).catch(function (e) {
@@ -10487,7 +10519,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.1.3";
+const APP_VERSION = "3.1.3.1.4";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
 const RECENT_KEY = "antiudar_recent_v1";
