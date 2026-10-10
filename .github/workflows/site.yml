@@ -21,5 +21,6 @@ jobs:
         run: |
           mkdir dist
           cp index.html sw.js manifest.json *.png *.ico dist/
+          cp -r pages/. dist/
       - name: Deploy
         run: npx -y wrangler@4 deploy

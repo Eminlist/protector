@@ -1,0 +1,190 @@
+{
+  "az": {
+    "page": { "title": "Məxfilik siyasəti", "desc": "ProTechtor™ saytı və Android proqramı üçün məxfilik siyasəti." },
+    "doc": {
+      "h": "Məxfilik siyasəti",
+      "upd": "Son yenilənmə: 10 oktyabr 2026",
+      "sections": [
+        { "h": "1. Ümumi müddəalar", "p": ["Bu siyasət ProTechtor™ saytından (protechtor.app) və ProTechtor™ Android proqramından (bundan sonra — «Xidmət») istifadə zamanı hansı məlumatların toplandığını, onların hansı məqsədlə istifadə edildiyini və necə qorunduğunu müəyyən edir.", "Xidmətdən istifadə etməklə siz bu siyasətin şərtləri ilə razılaşmış olursunuz."] },
+        { "h": "2. Toplanan məlumatlar", "ul": [
+          "**Hesab məlumatları:** e-poçt ünvanı, ad və telefon nömrəsi.",
+          "**İstifadə məlumatları:** axtarış sorğuları və onların sayı, istifadə limitləri, Premium statusu.",
+          "**Əlaqə məlumatları:** «Adminlə əlaqə» bölməsində göndərdiyiniz mesajlar və şəkillər.",
+          "**Bildiriş məlumatları:** bildirişlərin çatdırılması üçün cihazın bildiriş identifikatoru (token).",
+          "**Texniki məlumatlar:** IP ünvanı, cihaz və brauzer növü — yalnız təhlükəsizlik və sui-istifadənin qarşısının alınması məqsədilə."
+        ] },
+        { "h": "3. Telefon nömrəsinin tələb olunma səbəbi", "p": ["Telefon nömrəsi Premium sınaq müddətindən təkrar və sui-istifadənin qarşısını almaq məqsədilə tələb olunur. Nömrə reklam və ya marketinq məqsədilə istifadə edilmir və üçüncü şəxslərə ötürülmür."] },
+        { "h": "4. Məlumatların istifadə məqsədləri", "ul": [
+          "Hesabın yaradılması, girişin təmin edilməsi və hesabın qorunması.",
+          "Xidmətin əsas funksiyalarının — model axtarışı və uyğunluq məlumatlarının — təqdim edilməsi.",
+          "Gündəlik istifadə limitlərinin və Premium imkanlarının tətbiqi.",
+          "Bildirişlərin və müraciətlərə cavabların göndərilməsi.",
+          "Avtomatlaşdırılmış sorğuların, robotların və sui-istifadə hallarının aşkarlanması və bloklanması.",
+          "Xidmətin keyfiyyətinin və model bazasının təkmilləşdirilməsi."
+        ] },
+        { "h": "5. Xidmət təminatçıları", "p": ["Xidmətin fəaliyyəti üçün aşağıdakı etibarlı təminatçılardan istifadə olunur:"], "ul": [
+          "**Google Firebase** — istifadəçilərin identifikasiyası (giriş) və bildirişlərin çatdırılması.",
+          "**Google Gemini (Firebase AI)** — Premium «Köməkçi» funksiyasında yazdığınız sorğuların emalı.",
+          "**Cloudflare** — sayt və serverlərin yerləşdirilməsi, məlumat bazası, robotlardan qoruma (Turnstile)."
+        ], "p2": ["Şəxsi məlumatlarınız satılmır və reklam məqsədilə üçüncü şəxslərə ötürülmür."] },
+        { "h": "6. Məlumatların saxlanma müddəti", "ul": [
+          "«Adminlə əlaqə» bölməsindəki mesajlar və şəkillər 30 gün sonra avtomatik silinir.",
+          "Hesab məlumatları hesab mövcud olduğu müddətdə saxlanılır və hesab silindikdən sonra məhv edilir.",
+          "Təhlükəsizlik məqsədilə toplanan texniki məlumatlar yalnız zəruri müddət ərzində saxlanılır."
+        ] },
+        { "h": "7. Cihaz icazələri (Android proqramı)", "ul": [
+          "**Bildirişlər** — xəbərlərin və müraciətlərə cavabların çatdırılması üçün.",
+          "**Batareya optimallaşdırmasından azad edilmə** — bildirişlərin gecikmədən çatması üçün (istəyə bağlı).",
+          "**Proqram quraşdırma** — proqramın yeni versiyalarının quraşdırılması üçün.",
+          "**Şəkillərə giriş** — yalnız «Adminlə əlaqə» bölməsində şəkil göndərdiyiniz zaman."
+        ] },
+        { "h": "8. İstifadəçinin hüquqları", "p": ["Siz istənilən vaxt şəxsi məlumatlarınızla tanış olmaq, onların düzəldilməsini və ya hesabınızın bütün məlumatlarla birlikdə silinməsini tələb etmək hüququna maliksiniz. Bunun üçün [Əlaqə](/contact) səhifəsində göstərilən vasitələrdən istifadə edin."] },
+        { "h": "9. Uşaqların məxfiliyi", "p": ["Xidmət 13 yaşından kiçik şəxslər üçün nəzərdə tutulmayıb və onlardan bilərəkdən məlumat toplanmır."] },
+        { "h": "10. Məlumatların təhlükəsizliyi", "p": ["Məlumatlar şifrələnmiş əlaqə (HTTPS) vasitəsilə ötürülür, serverlərə giriş məhdudlaşdırılıb və yalnız səlahiyyətli şəxslərə açıqdır."] },
+        { "h": "11. Siyasətdə dəyişikliklər", "p": ["Bu siyasət Xidmətin funksiyaları dəyişdikcə yenilənə bilər. Yenilənmə tarixi səhifənin yuxarısında göstərilir."] },
+        { "h": "12. Əlaqə", "p": ["Məxfiliklə bağlı suallar üçün: [app.protechtor@gmail.com](mailto:app.protechtor@gmail.com), Telegram: [@protechtor_app](https://t.me/protechtor_app)."] }
+      ]
+    }
+  },
+  "ru": {
+    "page": { "title": "Политика конфиденциальности", "desc": "Политика конфиденциальности сайта и Android-приложения ProTechtor™." },
+    "doc": {
+      "h": "Политика конфиденциальности",
+      "upd": "Последнее обновление: 10 октября 2026 г.",
+      "sections": [
+        { "h": "1. Общие положения", "p": ["Настоящая политика определяет, какие данные собираются при использовании сайта ProTechtor™ (protechtor.app) и Android-приложения ProTechtor™ (далее — «Сервис»), с какой целью они используются и каким образом защищаются.", "Используя Сервис, вы соглашаетесь с условиями настоящей политики."] },
+        { "h": "2. Собираемые данные", "ul": [
+          "**Данные учётной записи:** адрес электронной почты, имя и номер телефона.",
+          "**Данные об использовании:** поисковые запросы и их количество, лимиты использования, статус Premium.",
+          "**Данные обращений:** сообщения и изображения, отправленные в разделе «Связь с администратором».",
+          "**Данные уведомлений:** идентификатор (токен) устройства для доставки уведомлений.",
+          "**Технические данные:** IP-адрес, тип устройства и браузера — исключительно в целях безопасности и предотвращения злоупотреблений."
+        ] },
+        { "h": "3. Причина запроса номера телефона", "p": ["Номер телефона запрашивается в целях предотвращения повторного использования и злоупотребления пробным периодом Premium. Номер не используется в рекламных или маркетинговых целях и не передаётся третьим лицам."] },
+        { "h": "4. Цели использования данных", "ul": [
+          "Создание учётной записи, обеспечение входа и защита учётной записи.",
+          "Предоставление основных функций Сервиса — поиска моделей и данных о совместимости.",
+          "Применение ежедневных лимитов использования и возможностей Premium.",
+          "Отправка уведомлений и ответов на обращения.",
+          "Выявление и блокировка автоматизированных запросов, роботов и случаев злоупотребления.",
+          "Повышение качества Сервиса и совершенствование базы моделей."
+        ] },
+        { "h": "5. Поставщики услуг", "p": ["Для работы Сервиса используются следующие надёжные поставщики:"], "ul": [
+          "**Google Firebase** — идентификация пользователей (вход) и доставка уведомлений.",
+          "**Google Gemini (Firebase AI)** — обработка запросов в функции Premium «Помощник».",
+          "**Cloudflare** — размещение сайта и серверов, база данных, защита от роботов (Turnstile)."
+        ], "p2": ["Ваши персональные данные не продаются и не передаются третьим лицам в рекламных целях."] },
+        { "h": "6. Сроки хранения данных", "ul": [
+          "Сообщения и изображения в разделе «Связь с администратором» автоматически удаляются через 30 дней.",
+          "Данные учётной записи хранятся в течение всего срока её существования и уничтожаются после её удаления.",
+          "Технические данные, собранные в целях безопасности, хранятся только в течение необходимого срока."
+        ] },
+        { "h": "7. Разрешения устройства (Android-приложение)", "ul": [
+          "**Уведомления** — для доставки новостей и ответов на обращения.",
+          "**Исключение из оптимизации батареи** — для доставки уведомлений без задержек (по желанию).",
+          "**Установка приложений** — для установки новых версий приложения.",
+          "**Доступ к изображениям** — только при отправке изображения в разделе «Связь с администратором»."
+        ] },
+        { "h": "8. Права пользователя", "p": ["Вы вправе в любое время ознакомиться со своими персональными данными, потребовать их исправления или удаления учётной записи вместе со всеми данными. Для этого воспользуйтесь способами, указанными на странице [Контакты](/contact)."] },
+        { "h": "9. Конфиденциальность детей", "p": ["Сервис не предназначен для лиц младше 13 лет, и данные таких лиц намеренно не собираются."] },
+        { "h": "10. Безопасность данных", "p": ["Данные передаются по зашифрованному соединению (HTTPS), доступ к серверам ограничен и предоставлен только уполномоченным лицам."] },
+        { "h": "11. Изменения политики", "p": ["Настоящая политика может обновляться по мере изменения функций Сервиса. Дата обновления указывается в верхней части страницы."] },
+        { "h": "12. Контакты", "p": ["По вопросам конфиденциальности: [app.protechtor@gmail.com](mailto:app.protechtor@gmail.com), Telegram: [@protechtor_app](https://t.me/protechtor_app)."] }
+      ]
+    }
+  },
+  "tr": {
+    "page": { "title": "Gizlilik politikası", "desc": "ProTechtor™ web sitesi ve Android uygulaması için gizlilik politikası." },
+    "doc": {
+      "h": "Gizlilik politikası",
+      "upd": "Son güncelleme: 10 Ekim 2026",
+      "sections": [
+        { "h": "1. Genel hükümler", "p": ["Bu politika, ProTechtor™ web sitesi (protechtor.app) ve ProTechtor™ Android uygulaması (bundan sonra «Hizmet») kullanılırken hangi verilerin toplandığını, hangi amaçla kullanıldığını ve nasıl korunduğunu belirler.", "Hizmeti kullanarak bu politikanın koşullarını kabul etmiş olursunuz."] },
+        { "h": "2. Toplanan veriler", "ul": [
+          "**Hesap bilgileri:** e-posta adresi, ad ve telefon numarası.",
+          "**Kullanım bilgileri:** arama sorguları ve sayısı, kullanım limitleri, Premium durumu.",
+          "**İletişim bilgileri:** «Yöneticiyle iletişim» bölümünde gönderdiğiniz mesajlar ve görseller.",
+          "**Bildirim bilgileri:** bildirimlerin iletilmesi için cihazın bildirim tanımlayıcısı (token).",
+          "**Teknik bilgiler:** IP adresi, cihaz ve tarayıcı türü — yalnızca güvenlik ve kötüye kullanımın önlenmesi amacıyla."
+        ] },
+        { "h": "3. Telefon numarasının istenme nedeni", "p": ["Telefon numarası, Premium deneme süresinin tekrar ve kötüye kullanılmasını önlemek amacıyla istenir. Numara reklam veya pazarlama amacıyla kullanılmaz ve üçüncü kişilere aktarılmaz."] },
+        { "h": "4. Verilerin kullanım amaçları", "ul": [
+          "Hesabın oluşturulması, girişin sağlanması ve hesabın korunması.",
+          "Hizmetin temel işlevlerinin — model arama ve uyumluluk bilgilerinin — sunulması.",
+          "Günlük kullanım limitlerinin ve Premium özelliklerinin uygulanması.",
+          "Bildirimlerin ve başvurulara verilen yanıtların gönderilmesi.",
+          "Otomatik sorguların, robotların ve kötüye kullanım durumlarının tespit edilmesi ve engellenmesi.",
+          "Hizmet kalitesinin ve model veritabanının geliştirilmesi."
+        ] },
+        { "h": "5. Hizmet sağlayıcılar", "p": ["Hizmetin işleyişi için aşağıdaki güvenilir sağlayıcılar kullanılmaktadır:"], "ul": [
+          "**Google Firebase** — kullanıcı kimlik doğrulaması (giriş) ve bildirimlerin iletilmesi.",
+          "**Google Gemini (Firebase AI)** — Premium «Asistan» işlevinde yazdığınız sorguların işlenmesi.",
+          "**Cloudflare** — web sitesi ve sunucuların barındırılması, veritabanı, robotlara karşı koruma (Turnstile)."
+        ], "p2": ["Kişisel verileriniz satılmaz ve reklam amacıyla üçüncü kişilere aktarılmaz."] },
+        { "h": "6. Verilerin saklanma süresi", "ul": [
+          "«Yöneticiyle iletişim» bölümündeki mesajlar ve görseller 30 gün sonra otomatik olarak silinir.",
+          "Hesap bilgileri hesap var olduğu sürece saklanır ve hesap silindikten sonra imha edilir.",
+          "Güvenlik amacıyla toplanan teknik bilgiler yalnızca gerekli süre boyunca saklanır."
+        ] },
+        { "h": "7. Cihaz izinleri (Android uygulaması)", "ul": [
+          "**Bildirimler** — haberlerin ve başvurulara verilen yanıtların iletilmesi için.",
+          "**Pil optimizasyonundan muafiyet** — bildirimlerin gecikmeden ulaşması için (isteğe bağlı).",
+          "**Uygulama yükleme** — uygulamanın yeni sürümlerinin yüklenmesi için.",
+          "**Görsellere erişim** — yalnızca «Yöneticiyle iletişim» bölümünde görsel gönderdiğinizde."
+        ] },
+        { "h": "8. Kullanıcı hakları", "p": ["Dilediğiniz zaman kişisel verilerinizi öğrenme, düzeltilmesini veya hesabınızın tüm verilerle birlikte silinmesini talep etme hakkına sahipsiniz. Bunun için [İletişim](/contact) sayfasında belirtilen yolları kullanın."] },
+        { "h": "9. Çocukların gizliliği", "p": ["Hizmet 13 yaşından küçük kişiler için tasarlanmamıştır ve bu kişilerden bilerek veri toplanmaz."] },
+        { "h": "10. Veri güvenliği", "p": ["Veriler şifreli bağlantı (HTTPS) üzerinden iletilir, sunuculara erişim kısıtlanmıştır ve yalnızca yetkili kişilere açıktır."] },
+        { "h": "11. Politikadaki değişiklikler", "p": ["Bu politika, Hizmetin işlevleri değiştikçe güncellenebilir. Güncelleme tarihi sayfanın üst kısmında belirtilir."] },
+        { "h": "12. İletişim", "p": ["Gizlilikle ilgili sorular için: [app.protechtor@gmail.com](mailto:app.protechtor@gmail.com), Telegram: [@protechtor_app](https://t.me/protechtor_app)."] }
+      ]
+    }
+  },
+  "en": {
+    "page": { "title": "Privacy Policy", "desc": "Privacy Policy for the ProTechtor™ website and Android application." },
+    "doc": {
+      "h": "Privacy Policy",
+      "upd": "Last updated: October 10, 2026",
+      "sections": [
+        { "h": "1. General provisions", "p": ["This policy sets out what data is collected when using the ProTechtor™ website (protechtor.app) and the ProTechtor™ Android application (hereinafter — the «Service»), the purposes for which it is used, and how it is protected.", "By using the Service, you agree to the terms of this policy."] },
+        { "h": "2. Data we collect", "ul": [
+          "**Account data:** e-mail address, name and phone number.",
+          "**Usage data:** search queries and their count, usage limits, Premium status.",
+          "**Communication data:** messages and images sent in the «Contact admin» section.",
+          "**Notification data:** the device notification identifier (token) used to deliver notifications.",
+          "**Technical data:** IP address, device and browser type — solely for security purposes and abuse prevention."
+        ] },
+        { "h": "3. Why we ask for a phone number", "p": ["The phone number is requested to prevent repeated use and abuse of the Premium trial period. It is not used for advertising or marketing purposes and is not shared with third parties."] },
+        { "h": "4. How we use data", "ul": [
+          "Creating your account, enabling sign-in and protecting your account.",
+          "Providing the core functions of the Service — model search and compatibility information.",
+          "Applying daily usage limits and Premium features.",
+          "Sending notifications and replies to your requests.",
+          "Detecting and blocking automated requests, bots and abuse.",
+          "Improving the quality of the Service and the model database."
+        ] },
+        { "h": "5. Service providers", "p": ["The Service relies on the following trusted providers:"], "ul": [
+          "**Google Firebase** — user authentication (sign-in) and notification delivery.",
+          "**Google Gemini (Firebase AI)** — processing of queries entered in the Premium «Assistant» feature.",
+          "**Cloudflare** — website and server hosting, database, bot protection (Turnstile)."
+        ], "p2": ["Your personal data is not sold and is not shared with third parties for advertising purposes."] },
+        { "h": "6. Data retention", "ul": [
+          "Messages and images in the «Contact admin» section are deleted automatically after 30 days.",
+          "Account data is kept for as long as the account exists and is destroyed after the account is deleted.",
+          "Technical data collected for security purposes is kept only for as long as necessary."
+        ] },
+        { "h": "7. Device permissions (Android app)", "ul": [
+          "**Notifications** — to deliver news and replies to your requests.",
+          "**Battery optimization exemption** — to deliver notifications without delay (optional).",
+          "**Install packages** — to install new versions of the application.",
+          "**Access to images** — only when you send an image in the «Contact admin» section."
+        ] },
+        { "h": "8. Your rights", "p": ["You may at any time request access to your personal data, its correction, or the deletion of your account together with all associated data. To do so, use the channels listed on the [Contact](/contact) page."] },
+        { "h": "9. Children's privacy", "p": ["The Service is not intended for persons under the age of 13, and we do not knowingly collect data from them."] },
+        { "h": "10. Data security", "p": ["Data is transmitted over an encrypted connection (HTTPS); access to servers is restricted and available only to authorized persons."] },
+        { "h": "11. Changes to this policy", "p": ["This policy may be updated as the functions of the Service change. The date of the latest update is shown at the top of this page."] },
+        { "h": "12. Contact", "p": ["For privacy-related questions: [app.protechtor@gmail.com](mailto:app.protechtor@gmail.com), Telegram: [@protechtor_app](https://t.me/protechtor_app)."] }
+      ]
+    }
+  }
+}

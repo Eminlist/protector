@@ -1,0 +1,18 @@
+{
+  "az": {
+    "nav": { "home": "Ana səhifə", "app": "Proqram", "contact": "Əlaqə", "privacy": "Məxfilik" },
+    "foot": { "rights": "Bütün hüquqlar qorunur." }
+  },
+  "ru": {
+    "nav": { "home": "Главная", "app": "Приложение", "contact": "Контакты", "privacy": "Конфиденциальность" },
+    "foot": { "rights": "Все права защищены." }
+  },
+  "tr": {
+    "nav": { "home": "Ana sayfa", "app": "Uygulama", "contact": "İletişim", "privacy": "Gizlilik" },
+    "foot": { "rights": "Tüm hakları saklıdır." }
+  },
+  "en": {
+    "nav": { "home": "Home", "app": "App", "contact": "Contact", "privacy": "Privacy" },
+    "foot": { "rights": "All rights reserved." }
+  }
+}

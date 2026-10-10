@@ -1,0 +1,110 @@
+{
+  "az": {
+    "page": {
+      "title": "Əlaqə",
+      "desc": "ProTechtor™ ilə əlaqə: Telegram, e-poçt və proqramdaxili «Adminlə əlaqə» bölməsi."
+    },
+    "hero": {
+      "h": "Əlaqə",
+      "p": "Sual, təklif və ya müraciətləriniz üçün aşağıdakı vasitələrdən biri ilə bizimlə əlaqə saxlaya bilərsiniz."
+    },
+    "tg": {
+      "h": "Telegram"
+    },
+    "mail": {
+      "h": "E-poçt"
+    },
+    "chat": {
+      "h": "Adminlə əlaqə",
+      "p": "Proqramda: Tənzimləmələr → Əlaqə"
+    },
+    "info": {
+      "h": "Müraciət qaydası",
+      "p": [
+        "Hesabla bağlı müraciətlərdə qeydiyyatda istifadə etdiyiniz e-poçt ünvanını qeyd etməyiniz xahiş olunur. Şifrənizi və ya təsdiq kodlarını heç kimə göndərməyin.",
+        "Hesabınızın və şəxsi məlumatlarınızın silinməsi barədə müraciəti də bu vasitələrlə göndərə bilərsiniz. Ətraflı məlumat üçün [Məxfilik siyasəti](/privacy) ilə tanış olun."
+      ]
+    }
+  },
+  "ru": {
+    "page": {
+      "title": "Контакты",
+      "desc": "Связь с ProTechtor™: Telegram, электронная почта и раздел «Связь с администратором» в приложении."
+    },
+    "hero": {
+      "h": "Контакты",
+      "p": "По вопросам, предложениям и обращениям вы можете связаться с нами одним из следующих способов."
+    },
+    "tg": {
+      "h": "Telegram"
+    },
+    "mail": {
+      "h": "Электронная почта"
+    },
+    "chat": {
+      "h": "Связь с администратором",
+      "p": "В приложении: Настройки → Связь"
+    },
+    "info": {
+      "h": "Порядок обращения",
+      "p": [
+        "При обращениях, связанных с учётной записью, просим указывать адрес электронной почты, использованный при регистрации. Никому не сообщайте свой пароль и коды подтверждения.",
+        "Этими же способами можно направить запрос на удаление учётной записи и персональных данных. Подробнее — в [Политике конфиденциальности](/privacy)."
+      ]
+    }
+  },
+  "tr": {
+    "page": {
+      "title": "İletişim",
+      "desc": "ProTechtor™ ile iletişim: Telegram, e-posta ve uygulama içi «Yöneticiyle iletişim» bölümü."
+    },
+    "hero": {
+      "h": "İletişim",
+      "p": "Soru, öneri veya başvurularınız için aşağıdaki yollardan biriyle bizimle iletişime geçebilirsiniz."
+    },
+    "tg": {
+      "h": "Telegram"
+    },
+    "mail": {
+      "h": "E-posta"
+    },
+    "chat": {
+      "h": "Yöneticiyle iletişim",
+      "p": "Uygulamada: Ayarlar → İletişim"
+    },
+    "info": {
+      "h": "Başvuru kuralları",
+      "p": [
+        "Hesapla ilgili başvurularda kayıt sırasında kullandığınız e-posta adresini belirtmeniz rica olunur. Şifrenizi veya doğrulama kodlarını kimseyle paylaşmayın.",
+        "Hesabınızın ve kişisel verilerinizin silinmesi talebini de bu yollarla iletebilirsiniz. Ayrıntılı bilgi için [Gizlilik politikası](/privacy) sayfasını inceleyin."
+      ]
+    }
+  },
+  "en": {
+    "page": {
+      "title": "Contact",
+      "desc": "Contact ProTechtor™: Telegram, e-mail and the in-app «Contact admin» section."
+    },
+    "hero": {
+      "h": "Contact",
+      "p": "For questions, suggestions or requests, you can reach us through any of the following channels."
+    },
+    "tg": {
+      "h": "Telegram"
+    },
+    "mail": {
+      "h": "E-mail"
+    },
+    "chat": {
+      "h": "Contact admin",
+      "p": "In the app: Settings → Contact"
+    },
+    "info": {
+      "h": "How to contact us",
+      "p": [
+        "For account-related requests, please include the e-mail address used for registration. Never share your password or verification codes with anyone.",
+        "Requests to delete your account and personal data can also be sent through these channels. For details, see the [Privacy Policy](/privacy)."
+      ]
+    }
+  }
+}
