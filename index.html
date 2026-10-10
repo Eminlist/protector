@@ -696,6 +696,17 @@
             transition: background 0.2s;
         }
 
+        .pt-tg-btn{background:#229ED9;box-shadow:0 4px 15px rgba(34,158,217,.3);margin-top:10px}
+        .pt-tg-btn:active{background:#1b86b8 !important}
+        .pt-as-sub{font-size:calc(11px * var(--font-scale));color:var(--muted);margin-top:2px;line-height:1.35}
+        .pt-as-dim{opacity:.45;pointer-events:none}
+        .pt-as-box .settings-row+.settings-row{border-top:1px solid var(--border)}
+        .pt-as-warn{display:block;width:100%;text-align:left;background:color-mix(in srgb,#e74c3c 14%,transparent);color:#e74c3c;border:1px solid color-mix(in srgb,#e74c3c 40%,transparent);border-radius:14px;padding:10px 14px;font-size:calc(12.5px * var(--font-scale));font-weight:600;margin-bottom:10px;cursor:pointer;font-family:inherit}
+        .pt-as-seg{display:flex;gap:6px}
+        .pt-as-seg button{border:1px solid var(--border);background:transparent;color:var(--text);border-radius:10px;padding:6px 10px;font-size:calc(12px * var(--font-scale));font-weight:700;cursor:pointer;font-family:inherit}
+        .pt-as-seg button.on{background:var(--accent-color);border-color:var(--accent-color);color:#111}
+        .pt-as-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:48px;margin-top:10px;border-radius:16px;border:1px solid var(--accent-color);background:transparent;color:var(--accent-color);font-weight:700;font-size:calc(14px * var(--font-scale));cursor:pointer;font-family:inherit}
+        .pt-as-btn:active{opacity:.7}
         .whatsapp-button:active {
             background: #1da851;
         }
@@ -2546,6 +2557,22 @@
             </div>
         </details>
         <details class="adm-acc">
+            <summary><span class="e3d ic3d" style="--a:#7FD4FF;--b:#1C7FD6" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></svg></span><span class="adm-ttl">Push bildiriş (telefona)</span><span class="chev">›</span></summary>
+            <div class="adm-acc-body">
+                <div class="fm">
+                    <div><span class="fm-lbl">Növ</span><select id="ptPushType" class="fm-in"><option value="news">📰 Admin xəbəri (söndürülə bilər)</option><option value="bulk">📢 Toplu mesaj (söndürülə bilər)</option><option value="warn">⚠️ Xəbərdarlıq (söndürülmür)</option><option value="vip">🔔 Vacib — səsli (söndürülmür, gecə də səslə)</option></select></div>
+                    <div><span class="fm-lbl">Kimə · boş qalsa hamıya</span><input type="text" id="ptPushTo" class="fm-in" placeholder="İstifadəçinin e-poçtu (boş = hamı)"></div>
+                    <div class="fm-seg"><button type="button" class="on" onclick="fmSeg(this,'pp','az')">AZ</button><button type="button" onclick="fmSeg(this,'pp','ru')">RU</button><button type="button" onclick="fmSeg(this,'pp','tr')">TR</button><button type="button" onclick="fmSeg(this,'pp','en')">EN</button></div>
+                    <div class="fm-pane on" data-pane="pp-az"><input type="text" id="ptPushTiaz" class="fm-in" placeholder="Başlıq (AZ) — boş qalsa «ProTechtor™»" style="margin-bottom:8px"><textarea id="ptPushBaz" class="fm-ta sm" placeholder="Mətn (AZ) *"></textarea></div>
+                    <div class="fm-pane" data-pane="pp-ru"><input type="text" id="ptPushTiru" class="fm-in" placeholder="Başlıq (RU)" style="margin-bottom:8px"><textarea id="ptPushBru" class="fm-ta sm" placeholder="Mətn (RU) — boş qalsa AZ göstərilir"></textarea></div>
+                    <div class="fm-pane" data-pane="pp-tr"><input type="text" id="ptPushTitr" class="fm-in" placeholder="Başlıq (TR)" style="margin-bottom:8px"><textarea id="ptPushBtr" class="fm-ta sm" placeholder="Mətn (TR) — boş qalsa AZ göstərilir"></textarea></div>
+                    <div class="fm-pane" data-pane="pp-en"><input type="text" id="ptPushTien" class="fm-in" placeholder="Başlıq (EN)" style="margin-bottom:8px"><textarea id="ptPushBen" class="fm-ta sm" placeholder="Mətn (EN) — boş qalsa AZ göstərilir"></textarea></div>
+                    <div class="fm-acts"><button type="button" class="fm-btn pri wide" id="ptPushSendBtn" onclick="ptAdminPushSend()">Göndər</button></div>
+                    <div class="fm-note"><div>Push yalnız Android proqramında (APK) gəlir. Fərdi mesaj, müraciət cavabları, Premium və «Dərc et»dəki yeni modellər üçün push avtomatik gedir.</div></div>
+                </div>
+            </div>
+        </details>
+        <details class="adm-acc">
             <summary><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2" /><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2" /><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8" /><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" /></svg></span><span class="adm-ttl">Salamlama mesajı</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
                 <div class="fm"><div class="fm-sw-row"><span>Aktivdir</span><label class="switch"><input type="checkbox" id="adminWlOn" checked><span class="slider"></span></label></div><div class="fm-seg"><button type="button" class="on" onclick="fmSeg(this,'wl','az')">AZ</button><button type="button" onclick="fmSeg(this,'wl','ru')">RU</button><button type="button" onclick="fmSeg(this,'wl','tr')">TR</button><button type="button" onclick="fmSeg(this,'wl','en')">EN</button></div><div class="fm-pane on" data-pane="wl-az"><input type="text" id="adminWlTaz" class="fm-in" placeholder="Başlıq (AZ)"><textarea id="adminWlXaz" class="fm-ta" placeholder="Mətn (AZ)"></textarea></div><div class="fm-pane" data-pane="wl-ru"><input type="text" id="adminWlTru" class="fm-in" placeholder="Başlıq (RU)"><textarea id="adminWlXru" class="fm-ta" placeholder="Mətn (RU)"></textarea></div><div class="fm-pane" data-pane="wl-tr"><input type="text" id="adminWlTtr" class="fm-in" placeholder="Başlıq (TR)"><textarea id="adminWlXtr" class="fm-ta" placeholder="Mətn (TR)"></textarea></div><div class="fm-pane" data-pane="wl-en"><input type="text" id="adminWlTen" class="fm-in" placeholder="Başlıq (EN)"><textarea id="adminWlXen" class="fm-ta" placeholder="Mətn (EN)"></textarea></div><div class="fm-acts"><button type="button" class="fm-btn pri wide" onclick="adminSaveWelcome(false)"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>Yadda saxla</button><button type="button" class="fm-btn" onclick="adminPreviewWelcome()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" /><circle cx="12" cy="12" r="3" /></svg>Önizlə</button></div><div class="fm-acts col"><button type="button" class="fm-btn wide" onclick="adminSaveWelcome(true)"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path d="m7 22-4-4 4-4" /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg>Hamıya yenidən göstər</button><button type="button" class="fm-btn ghost wide" onclick="adminFillWelcomeDefault()"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></svg>Standart mətn</button></div></div>
@@ -2818,11 +2845,17 @@
                 </div>
             </div>
 
+            <div id="ptAppSettings"></div>
+
             <div class="settings-section">
                 <div class="settings-section-title"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></svg></span><span data-i18n="secContact">ƏLAQƏ</span></div>
-                <a href="https://wa.me/994553115544?text=Salam,%20ProTechtor™%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" target="_blank" rel="noopener">
+                <a id="ptWaBtn" href="https://wa.me/994553115544?text=Salam,%20ProTechtor™%20tətbiqi%20ilə%20bağlı%20yazıram." class="whatsapp-button" target="_blank" rel="noopener">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.879 9.888-9.879 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.879-9.885 9.879m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                     <span data-i18n="whatsapp">WhatsApp ilə əlaqə</span>
+                </a>
+                <a id="ptTgBtn" href="https://t.me/protechtor_app" class="whatsapp-button pt-tg-btn" target="_blank" rel="noopener">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.94 4.3a1.5 1.5 0 0 0-2.05-1.38L2.9 9.6c-1.2.47-1.18 2.18.03 2.62l4.1 1.5 1.6 5.1c.27.86 1.36 1.13 2 .5l2.3-2.24 4.33 3.2c.86.63 2.08.16 2.3-.88l2.38-14.5ZM9.6 13.2l7.9-5.9c.25-.18.53.15.32.37l-6.5 6.4-.25 2.9-1.47-3.77Z"/></svg>
+                    <span id="ptTgLbl">Telegram ilə əlaqə</span>
                 </a>
             </div>
 
@@ -13140,6 +13173,319 @@ window.ptEditModel = function (model) {
 <script>
 function ptAccToggle(t,id){var w=document.getElementById(id);if(!w)return;var o=!w.classList.contains("open");w.classList.toggle("open",o);t.setAttribute("aria-expanded",o?"true":"false");}
 function ptClToggle(t){var w=document.getElementById("changelogWrap");if(!w)return;var o=!w.classList.contains("open");w.classList.toggle("open",o);t.setAttribute("aria-expanded",o?"true":"false");}
+</script>
+<script>
+/* ===== ProTechtor™ Android: bildirişlər, proqram ayarları, push, əlaqə ===== */
+(function () {
+var PUSH_API = "https://protector-push.o553115544.workers.dev";
+var TG_USER = "protechtor_app";
+var WA_NUM = "994553115544";
+var LS = ["az", "ru", "tr", "en"];
+
+function inApp() { try { return !!(window.PTAndroid && typeof PTAndroid.getPrefs === "function"); } catch (e) { return false; } }
+window.ptInApp = inApp;
+function L() { return (typeof currentLang !== "undefined" && LS.indexOf(currentLang) >= 0) ? currentLang : "az"; }
+function esc(x) { return String(x == null ? "" : x).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+var TX = {
+    secNotif: { az: "BİLDİRİŞLƏR", ru: "УВЕДОМЛЕНИЯ", tr: "BİLDİRİMLER", en: "NOTIFICATIONS" },
+    push: { az: "Bildirişlər", ru: "Уведомления", tr: "Bildirimler", en: "Notifications" },
+    pushSub: { az: "yeniliklərdən ilk sən xəbərdar ol", ru: "узнавай о новинках первым", tr: "yeniliklerden ilk sen haberdar ol", en: "be the first to know about updates" },
+    news: { az: "Admin xəbərləri", ru: "Новости от администрации", tr: "Yönetici haberleri", en: "Admin news" },
+    models: { az: "Bazaya yeni modellər", ru: "Новые модели в базе", tr: "Veritabanına yeni modeller", en: "New models in the database" },
+    reply: { az: "Müraciətlərə cavab", ru: "Ответы на обращения", tr: "Taleplere yanıt", en: "Replies to your requests" },
+    bulk: { az: "Toplu mesajlar", ru: "Массовые сообщения", tr: "Toplu mesajlar", en: "Bulk messages" },
+    premium: { az: "Premium müddəti", ru: "Срок Premium", tr: "Premium süresi", en: "Premium period" },
+    general: { az: "Admindən mesajlar", ru: "Сообщения от администрации", tr: "Yöneticiden mesajlar", en: "Messages from admin" },
+    update: { az: "Proqram yeniləməsi", ru: "Обновление приложения", tr: "Uygulama güncellemesi", en: "App updates" },
+    warnNote: { az: "Admin xəbərdarlıqları həmişə gəlir.", ru: "Предупреждения администрации приходят всегда.", tr: "Yönetici uyarıları her zaman gelir.", en: "Admin warnings are always delivered." },
+    quiet: { az: "Səssiz rejim", ru: "Тихий режим", tr: "Sessiz mod", en: "Quiet mode" },
+    quietSub: { az: "{a}–{b} arası bildirişlər səssiz gəlir", ru: "С {a} до {b} уведомления приходят без звука", tr: "{a}–{b} arası bildirimler sessiz gelir", en: "Notifications are silent from {a} to {b}" },
+    permOff: { az: "⚠ Telefonda bildiriş icazəsi bağlıdır — açmaq üçün toxunun", ru: "⚠ Уведомления запрещены в телефоне — нажмите, чтобы разрешить", tr: "⚠ Telefonda bildirim izni kapalı — açmak için dokunun", en: "⚠ Notifications are blocked on this phone — tap to allow" },
+    secApp: { az: "PROQRAM", ru: "ПРИЛОЖЕНИЕ", tr: "UYGULAMA", en: "APP" },
+    autoUpd: { az: "Avtomatik yeniləmə", ru: "Автообновление", tr: "Otomatik güncelleme", en: "Auto update" },
+    autoUpdSub: { az: "Yeni versiya çıxanda özü xəbər verir", ru: "Сообщает о выходе новой версии", tr: "Yeni sürüm çıkınca haber verir", en: "Tells you when a new version is out" },
+    updNet: { az: "Yeniləmə şəbəkəsi", ru: "Сеть для обновления", tr: "Güncelleme ağı", en: "Update network" },
+    netAny: { az: "Hər biri", ru: "Любая", tr: "Hepsi", en: "Any" },
+    netWifi: { az: "Yalnız Wi-Fi", ru: "Только Wi-Fi", tr: "Yalnızca Wi-Fi", en: "Wi-Fi only" },
+    check: { az: "Yeniləmələri yoxla", ru: "Проверить обновления", tr: "Güncellemeleri kontrol et", en: "Check for updates" },
+    curVer: { az: "Cari versiya", ru: "Текущая версия", tr: "Mevcut sürüm", en: "Current version" },
+    keepOn: { az: "Ekran həmişə açıq", ru: "Экран всегда включён", tr: "Ekran hep açık", en: "Keep screen on" },
+    keepOnSub: { az: "Proqram açıq olanda ekran sönmür", ru: "Пока приложение открыто, экран не гаснет", tr: "Uygulama açıkken ekran kapanmaz", en: "The screen stays on while the app is open" },
+    cache: { az: "Keşi təmizlə", ru: "Очистить кэш", tr: "Önbelleği temizle", en: "Clear cache" },
+    cacheSub: { az: "Köhnə məlumat görünəndə kömək edir (baza və ayarlar silinmir)", ru: "Помогает, если видны старые данные (база и настройки не удаляются)", tr: "Eski veriler görünürse yardımcı olur (veritabanı ve ayarlar silinmez)", en: "Helps if old data shows up (database and settings are kept)" },
+    tg: { az: "Telegram ilə əlaqə", ru: "Связаться в Telegram", tr: "Telegram ile iletişim", en: "Contact on Telegram" },
+    msgApp: { az: "Salam! ProTechtor™ Android proqramından yazıram.", ru: "Здравствуйте! Пишу из Android-приложения ProTechtor™.", tr: "Merhaba! ProTechtor™ Android uygulamasından yazıyorum.", en: "Hello! I'm writing from the ProTechtor™ Android app." },
+    msgWeb: { az: "Salam! ProTechtor™ saytından yazıram.", ru: "Здравствуйте! Пишу с сайта ProTechtor™.", tr: "Merhaba! ProTechtor™ sitesinden yazıyorum.", en: "Hello! I'm writing from the ProTechtor™ website." },
+    acc: { az: "Hesab", ru: "Аккаунт", tr: "Hesap", en: "Account" },
+    ver: { az: "Versiya", ru: "Версия", tr: "Sürüm", en: "Version" }
+};
+function tx(k) { var o = TX[k]; return o ? (o[L()] || o.az) : k; }
+var TYPES = ["news", "models", "reply", "bulk", "premium", "general", "update"];
+
+function prefs() { try { return JSON.parse(PTAndroid.getPrefs() || "{}") || {}; } catch (e) { return {}; } }
+function sw(id, on, onch, dis) {
+    return '<label class="switch"><input type="checkbox" id="' + id + '"' + (on ? " checked" : "") + (dis ? " disabled" : "") + ' onchange="' + onch + '"><span class="slider"></span></label>';
+}
+function row(label, sub, right, cls) {
+    return '<div class="settings-row' + (cls ? " " + cls : "") + '"><div style="min-width:0;padding-right:10px"><div>' + label + '</div>' + (sub ? '<div class="pt-as-sub">' + sub + '</div>' : "") + '</div>' + right + '</div>';
+}
+function hh(n) { n = +n || 0; return (n < 10 ? "0" : "") + n + ":00"; }
+function secTitle(txt, a, b, svg) {
+    return '<div class="settings-section-title"><span class="e3d ic3d" style="--a:' + a + ';--b:' + b + '" aria-hidden="true"><svg viewBox="0 0 24 24">' + svg + '</svg></span><span>' + txt + '</span></div>';
+}
+
+function render() {
+    var box = document.getElementById("ptAppSettings");
+    if (!box) return;
+    if (!inApp()) { box.innerHTML = ""; return; }
+    var p = prefs(), ty = p.types || {}, h = "";
+    var on = p.push !== false;
+    // ---- BİLDİRİŞLƏR ----
+    h += '<div class="settings-section">' + secTitle(tx("secNotif"), "#7FD4FF", "#1C7FD6", '<path d="M10.268 21a2 2 0 0 0 3.464 0" /><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />');
+    if (p.perm === false) h += '<button type="button" class="pt-as-warn" onclick="ptAppNotifSettings()">' + esc(tx("permOff")) + '</button>';
+    h += '<div class="settings-box pt-as-box">';
+    h += row('<b>' + esc(tx("push")) + '</b>', esc(tx("pushSub")), sw("ptPushOn", on, "ptAppPref('push',this.checked)"));
+    TYPES.forEach(function (k) {
+        h += row(esc(tx(k)), "", sw("ptN_" + k, on && ty[k] !== false, "ptAppPref('n_" + k + "',this.checked)", !on), on ? "" : "pt-as-dim");
+    });
+    h += '</div><div class="pt-as-sub" style="margin:6px 4px 10px">' + esc(tx("warnNote")) + '</div>';
+    h += '<div class="settings-box pt-as-box">' + row(esc(tx("quiet")), esc(tx("quietSub").replace("{a}", hh(p.quietFrom != null ? p.quietFrom : 23)).replace("{b}", hh(p.quietTo != null ? p.quietTo : 9))), sw("ptQuiet", !!p.quiet, "ptAppPref('quiet',this.checked)")) + '</div>';
+    h += '</div>';
+    // ---- PROQRAM ----
+    var net = p.updNet === "wifi" ? "wifi" : "any";
+    h += '<div class="settings-section">' + secTitle(tx("secApp"), "#B9A6FF", "#6A4BE0", '<rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" />');
+    h += '<div class="settings-box pt-as-box">';
+    h += row(esc(tx("autoUpd")), esc(tx("autoUpdSub")), sw("ptAutoUpd", p.autoUpd !== false, "ptAppPref('autoUpd',this.checked)"));
+    h += row(esc(tx("updNet")), "", '<div class="pt-as-seg"><button type="button" class="' + (net === "any" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'any\')">' + esc(tx("netAny")) + '</button><button type="button" class="' + (net === "wifi" ? "on" : "") + '" onclick="ptAppPref(\'updNet\',\'wifi\')">' + esc(tx("netWifi")) + '</button></div>');
+    h += row(esc(tx("curVer")), "", '<b>' + esc((p.ver || "") + (p.code ? " (" + p.code + ")" : "")) + '</b>');
+    h += '</div>';
+    h += '<button type="button" class="pt-as-btn" onclick="ptAppCheckUpdate()">⟳ ' + esc(tx("check")) + '</button>';
+    h += '<div class="settings-box pt-as-box" style="margin-top:10px">' + row(esc(tx("keepOn")), esc(tx("keepOnSub")), sw("ptKeepOn", !!p.keepOn, "ptAppPref('keepOn',this.checked)")) + '</div>';
+    h += '<button type="button" class="pt-as-btn" onclick="ptAppClearCache()">🧹 ' + esc(tx("cache")) + '</button>';
+    h += '<div class="pt-as-sub" style="margin:6px 4px 0">' + esc(tx("cacheSub")) + '</div>';
+    h += '</div>';
+    box.innerHTML = h;
+}
+
+window.ptAppPref = function (k, v) {
+    try { PTAndroid.setPref(k, v === true ? "1" : v === false ? "0" : String(v)); } catch (e) {}
+    try { if (typeof triggerHaptic === "function") triggerHaptic(15); } catch (e) {}
+    render();
+};
+window.ptAppPrefsChanged = render;
+window.ptAppNotifSettings = function () { try { PTAndroid.openNotifSettings(); } catch (e) {} };
+window.ptAppCheckUpdate = function () { try { PTAndroid.checkUpdate(); } catch (e) {} };
+window.ptAppClearCache = function () { try { PTAndroid.clearCache(); } catch (e) {} };
+
+// ---- Əlaqə düymələri (sayt + proqram) ----
+function contactText() {
+    var t = tx(inApp() ? "msgApp" : "msgWeb");
+    try {
+        var u = auth.currentUser;
+        if (u && !u.isAnonymous && u.email) t += "\n" + tx("acc") + ": " + u.email;
+    } catch (e) {}
+    var v = "";
+    try { if (inApp()) { var p = prefs(); v = (p.ver || "") + (p.code ? " (" + p.code + ")" : ""); } else if (typeof APP_VERSION !== "undefined") v = APP_VERSION; } catch (e) {}
+    if (v) t += "\n" + tx("ver") + ": " + v;
+    return t + "\n\n";
+}
+function renderContact() {
+    var m = encodeURIComponent(contactText());
+    var wa = document.getElementById("ptWaBtn");
+    if (wa) wa.href = "https://wa.me/" + WA_NUM + "?text=" + m;
+    var tg = document.getElementById("ptTgBtn");
+    if (tg) tg.href = "https://t.me/" + TG_USER + "?text=" + m;
+    var tl = document.getElementById("ptTgLbl");
+    if (tl) tl.textContent = tx("tg");
+}
+
+// ---- Proqrama dil və Premium bitmə vaxtını bildir ----
+function syncApp() {
+    if (!inApp()) return;
+    try { PTAndroid.setLang(L()); } catch (e) {}
+    try {
+        var end = 0;
+        if (typeof premiumState === "function" && typeof accountData !== "undefined" && accountData) {
+            var st = premiumState();
+            if (st && (st.state === "active" || st.state === "expiring" || st.state === "trial")) end = +st.until || 0;
+        }
+        if (typeof PTAndroid.setPremiumEnd === "function") PTAndroid.setPremiumEnd(end);
+    } catch (e) {}
+}
+
+// ---- Push tokenini Worker-də qeyd et ----
+function pushRegister() {
+    if (!inApp() || typeof auth === "undefined") return;
+    var u = auth.currentUser;
+    if (!u || u.isAnonymous) return;
+    var tok = "";
+    try { tok = PTAndroid.pushToken() || ""; } catch (e) {}
+    if (!tok) return;
+    var key = u.uid + "|" + tok + "|" + L();
+    var day = Math.floor(Date.now() / 86400000);
+    try { if (localStorage.getItem("pt_push_reg") === key + "|" + day) return; } catch (e) {}
+    u.getIdToken().then(function (id) {
+        return fetch(PUSH_API + "/register", { method: "POST", headers: { "Authorization": "Bearer " + id, "Content-Type": "application/json" }, body: JSON.stringify({ token: tok, lang: L() }) });
+    }).then(function (r) {
+        if (r && r.ok) try { localStorage.setItem("pt_push_reg", key + "|" + day); } catch (e) {}
+    }).catch(function () {});
+}
+function pushUnregister() {
+    if (!inApp() || typeof auth === "undefined") return Promise.resolve();
+    var u = auth.currentUser, tok = "";
+    try { tok = PTAndroid.pushToken() || ""; } catch (e) {}
+    if (!u || u.isAnonymous || !tok) return Promise.resolve();
+    try { localStorage.removeItem("pt_push_reg"); } catch (e) {}
+    var p = u.getIdToken().then(function (id) {
+        return fetch(PUSH_API + "/unregister", { method: "POST", headers: { "Authorization": "Bearer " + id, "Content-Type": "application/json" }, body: JSON.stringify({ token: tok }) });
+    }).catch(function () {});
+    return Promise.race([p, new Promise(function (r) { setTimeout(r, 2500); })]);
+}
+window.ptOnPushToken = function () { pushRegister(); };
+window.ptOnPush = function () { try { if (typeof loadNotifications === "function") loadNotifications(); } catch (e) {} };
+window.ptAppOpen = function (x) {
+    try {
+        if (x === "profile" && typeof openProfile === "function") openProfile();
+        else if (typeof openNotifications === "function") openNotifications();
+    } catch (e) {}
+};
+
+// ---- Admin: push göndərmə ----
+function pushSend(body) {
+    var u = auth.currentUser;
+    if (!u) return Promise.reject(new Error("auth"));
+    return u.getIdToken().then(function (id) {
+        return fetch(PUSH_API + "/send", { method: "POST", headers: { "Authorization": "Bearer " + id, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) throw new Error((d && (d.error + (d.detail ? ": " + d.detail : ""))) || ("http-" + r.status)); return d; });
+    });
+}
+window.ptPushSend = pushSend;
+
+var TITLE = {
+    general: { az: "Admindən mesaj", ru: "Сообщение от администрации", tr: "Yöneticiden mesaj", en: "Message from admin" },
+    reply: { az: "Müraciətinizə cavab", ru: "Ответ на ваше обращение", tr: "Talebinize yanıt", en: "Reply to your request" },
+    premium: { az: "ProTechtor™ Premium", ru: "ProTechtor™ Premium", tr: "ProTechtor™ Premium", en: "ProTechtor™ Premium" },
+    models: { az: "Bazaya yeni modellər əlavə olundu", ru: "В базу добавлены новые модели", tr: "Veritabanına yeni modeller eklendi", en: "New models added to the database" }
+};
+function inLangs(fn) {
+    var out = {}, save = currentLang;
+    LS.forEach(function (l) { try { currentLang = l; out[l] = String(fn(l) || ""); } catch (e) { out[l] = ""; } });
+    currentLang = save;
+    return out;
+}
+// Admin istifadəçiyə bildiriş yazanda (users/{uid}/notifications) — eyni bildirişi telefona da göndər
+function pushFromNotif(uid, x) {
+    if (!x || x.noPush) return;
+    var ty = x.pushType || (/^premium_/.test(x.type || "") ? "premium" : (x.type === "req_reply" || /^misfit_/.test(x.type || "")) ? "reply" : "general");
+    var b = inLangs(function () {
+        if (x.type === "req_reply" && x.text) return x.text;
+        if (x.type === "misfit_rejected") return (x.model ? x.model + " — " : "") + (x.rejectReason || x.text || "");
+        return typeof notifText === "function" ? notifText(x) : (x.text || "");
+    });
+    if (!b.az) return;
+    pushSend({ to: [uid], t: ty, ti: TITLE[ty] || TITLE.general, b: b, o: /^premium_/.test(x.type || "") ? "profile" : "notif" })
+        .catch(function (e) { console.warn("push", e && e.message); });
+}
+(function hookNotifAdd() {
+    try {
+        var CR = firebase.firestore.CollectionReference;
+        if (!CR || !CR.prototype || CR.prototype.__ptHook) return;
+        var orig = CR.prototype.add;
+        CR.prototype.add = function (data) {
+            var pr = orig.apply(this, arguments);
+            try {
+                var m = /^users\/([^/]+)\/notifications$/.exec(this.path || "");
+                if (m && typeof isAdmin !== "undefined" && isAdmin && data) {
+                    var uid = m[1], copy = Object.assign({}, data);
+                    pr.then(function () { pushFromNotif(uid, copy); }, function () {});
+                }
+            } catch (e) {}
+            return pr;
+        };
+        CR.prototype.__ptHook = 1;
+    } catch (e) { console.warn("push hook", e); }
+})();
+
+// «Dərc et»: yeni model əlavə olunubsa — hamıya push
+(function hookPublish() {
+    if (typeof adminPublishDatabase !== "function") return;
+    var orig = adminPublishDatabase;
+    adminPublishDatabase = async function () {
+        var before = 0;
+        try { before = +((getChangelogList() || [])[0] || {}).ts || 0; } catch (e) {}
+        var r = await orig.apply(this, arguments);
+        try {
+            var c = (getChangelogList() || [])[0];
+            if (c && (+c.ts || 0) > before && +c.a > 0) {
+                var b = inLangs(function () { return t("clAdded").replace("{n}", c.a); });
+                pushSend({ to: "all", t: "models", ti: TITLE.models, b: b, o: "notif" })
+                    .then(function () { showAppToast("📲 Push: " + c.a + " yeni model"); })
+                    .catch(function (e) { console.warn("push", e && e.message); });
+            }
+        } catch (e) {}
+        return r;
+    };
+})();
+
+window.ptAdminPushSend = function () {
+    if (typeof isAdmin === "undefined" || !isAdmin) return;
+    var g = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; };
+    var type = g("ptPushType") || "news";
+    var ti = {}, b = {};
+    LS.forEach(function (l) { ti[l] = g("ptPushTi" + l); b[l] = g("ptPushB" + l); });
+    if (!b.az) { appAlert("Mətni yazın (AZ mütləqdir).", "Push", "🔔"); return; }
+    var to = g("ptPushTo"), user = null;
+    if (to) {
+        var q = to.toLowerCase();
+        user = (adminUsersCache || []).filter(function (u) { return String(u.email || "").toLowerCase() === q || u._id === to; })[0];
+        if (!user) { appAlert("Bu e-poçtla istifadəçi tapılmadı. Əvvəlcə «İstifadəçilər» siyahısını açın.", "Push", "🔔"); return; }
+    }
+    var names = { news: "Admin xəbəri", bulk: "Toplu mesaj", warn: "Xəbərdarlıq", vip: "Vacib (səsli)" };
+    appConfirm((names[type] || type) + " göndərilsin?\nKimə: " + (user ? (user.username || user.email) : "HAMIYA") + "\n\n" + b.az, "Bəli, göndər").then(function (ok) {
+        if (!ok) return;
+        var btn = document.getElementById("ptPushSendBtn");
+        if (btn) btn.disabled = true;
+        pushSend({ to: user ? [user._id] : "all", t: type, ti: ti, b: b, o: "notif" }).then(function (d) {
+            if (user) {
+                var ul = user.lang || user.language || "az";
+                db.collection("users").doc(user._id).collection("notifications").add({ type: "msg", text: (b[ul] || b.az).slice(0, 500), createdAt: Date.now(), read: false, noPush: true }).catch(function () {});
+            }
+            showAppToast("📲 Göndərildi" + (d && typeof d.sent === "number" ? " · " + d.sent + " cihaz" : ""));
+            LS.forEach(function (l) { ["ptPushTi" + l, "ptPushB" + l].forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ""; }); });
+        }).catch(function (e) {
+            appAlert("Göndərilmədi: " + ((e && e.message) || "") + "\n\nprotector-push Worker qurulubmu?", "Push", "⚠️");
+        }).then(function () { if (btn) btn.disabled = false; });
+    });
+};
+
+// ---- Bağlantılar ----
+(function hookUi() {
+    if (typeof openSettings === "function") {
+        var os = openSettings;
+        openSettings = function () { var r = os.apply(this, arguments); render(); renderContact(); syncApp(); return r; };
+    }
+    if (typeof applyLang === "function") {
+        var al = applyLang;
+        applyLang = function () { var r = al.apply(this, arguments); try { render(); renderContact(); syncApp(); pushRegister(); } catch (e) {} return r; };
+    }
+    try {
+        if (typeof auth !== "undefined") {
+            var so = auth.signOut.bind(auth);
+            auth.signOut = function () { var a = arguments; return pushUnregister().then(function () { return so.apply(null, a); }); };
+            auth.onAuthStateChanged(function (u) {
+                renderContact();
+                if (u && !u.isAnonymous) setTimeout(function () { pushRegister(); syncApp(); }, 2500);
+                else syncApp();
+            });
+        }
+    } catch (e) {}
+    document.addEventListener("visibilitychange", function () { if (!document.hidden) { syncApp(); if (document.getElementById("settings-view") && document.getElementById("settings-view").classList.contains("active")) render(); } });
+    render(); renderContact(); syncApp();
+    setTimeout(syncApp, 6000);
+})();
+})();
 </script>
 </body>
 </html>
