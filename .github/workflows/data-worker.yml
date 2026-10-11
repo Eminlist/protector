@@ -12,6 +12,8 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TG_TOKEN: ${{ secrets.TG_TOKEN }}
+      TG_CHAT: ${{ secrets.TG_CHAT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,3 +33,13 @@ jobs:
       - name: Deploy
         working-directory: data-worker
         run: npx -y wrangler@4 deploy -c wrangler.toml
+      - name: Sync Telegram secrets (protector-data)
+        if: ${{ env.TG_TOKEN != '' && env.TG_CHAT != '' }}
+        working-directory: data-worker
+        run: |
+          printf '%s' "$TG_TOKEN" | npx -y wrangler@4 secret put TG_TOKEN --name protector-data
+          printf '%s' "$TG_CHAT" | npx -y wrangler@4 secret put TG_CHAT --name protector-data
+      - name: Telegram test (only on manual run)
+        if: ${{ github.event_name == 'workflow_dispatch' && env.TG_TOKEN != '' && env.TG_CHAT != '' }}
+        run: |
+          curl -fsS "https://api.telegram.org/bot$TG_TOKEN/sendMessage" -d "chat_id=$TG_CHAT" --data-urlencode "text=✅ protector-data: xəbərdarlıq sistemi işləyir" > /dev/null && echo "Telegram OK"

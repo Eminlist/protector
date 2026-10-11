@@ -162,7 +162,26 @@ async function cleanup(env) {
 }
 
 // ---------- Marşrutlar ----------
-export default {
+// ---------- Xəta xəbərdarlığı (Telegram) ----------
+// Secrets: TG_TOKEN + TG_CHAT. Eyni isolate-də dəqiqədə ən çox 1 xəbər (spam olmasın).
+let _lastAlert = 0;
+async function tgAlert(env, where, err, req) {
+  try {
+    if (!env.TG_TOKEN || !env.TG_CHAT) return;
+    const t = Date.now();
+    if (t - _lastAlert < 60000) return;
+    _lastAlert = t;
+    let p = "";
+    try { if (req) p = " " + req.method + " " + new URL(req.url).pathname; } catch (e) {}
+    const msg = "⚠️ " + "protector-data" + " xətası (" + where + ")" + p + "\n\n" + String((err && err.message) || err).slice(0, 500);
+    await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: env.TG_CHAT, text: msg })
+    });
+  } catch (e) {}
+}
+
+const _handler = {
   async fetch(req, env, ctx) {
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
     const url = new URL(req.url);
@@ -383,6 +402,24 @@ export default {
   },
 
   async scheduled(ev, env, ctx) {
-    ctx.waitUntil(cleanup(env));
+    await cleanup(env);
+  }
+};
+
+export default {
+  async fetch(req, env, ctx) {
+    try {
+      return await _handler.fetch(req, env, ctx);
+    } catch (e) {
+      ctx.waitUntil(tgAlert(env, "fetch", e, req));
+      return J({ error: "server" }, 500);
+    }
+  },
+  async scheduled(ev, env, ctx) {
+    try {
+      await _handler.scheduled(ev, env, ctx);
+    } catch (e) {
+      ctx.waitUntil(tgAlert(env, "cron", e));
+    }
   }
 };
