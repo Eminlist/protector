@@ -31,7 +31,7 @@ jobs:
           rm d1.json
       - name: Deploy
         working-directory: chat-worker
-        run: npx -y wrangler@4 deploy
+        run: npx -y wrangler@4 deploy -c wrangler.toml
       - name: Sync PUSH_KEY (protector-chat + protector-push)
         if: ${{ env.PUSH_KEY != '' }}
         working-directory: chat-worker
