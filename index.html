@@ -11036,7 +11036,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.12";
+const APP_VERSION = "3.1.3.13";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -12378,10 +12378,10 @@ en: { pxDear: "Dear user", pxBlkTitle: "Your account is temporarily restricted",
 };
 Object.keys(X).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], X[l]); });
 var X2 = {
-az: { pxThx: "Təşəkkür", pxThxDone: "Təşəkkür göndərildi ✓", pxThxSent: "Təşəkkürünüz adminə çatdırıldı 🙏" },
-ru: { pxThx: "Спасибо", pxThxDone: "Спасибо отправлено ✓", pxThxSent: "Ваша благодарность передана администратору 🙏" },
-tr: { pxThx: "Teşekkürler", pxThxDone: "Teşekkür gönderildi ✓", pxThxSent: "Teşekkürünüz yöneticiye iletildi 🙏" },
-en: { pxThx: "Thank you", pxThxDone: "Thanks sent ✓", pxThxSent: "Your thanks were delivered to the admin 🙏" }
+az: { pxHolExp: "Hədiyyə müddəti bitdi", pxThx: "Təşəkkür", pxThxDone: "Təşəkkür göndərildi ✓", pxThxSent: "Təşəkkürünüz adminə çatdırıldı 🙏" },
+ru: { pxHolExp: "Срок получения подарка истёк", pxThx: "Спасибо", pxThxDone: "Спасибо отправлено ✓", pxThxSent: "Ваша благодарность передана администратору 🙏" },
+tr: { pxHolExp: "Hediye süresi doldu", pxThx: "Teşekkürler", pxThxDone: "Teşekkür gönderildi ✓", pxThxSent: "Teşekkürünüz yöneticiye iletildi 🙏" },
+en: { pxHolExp: "The gift period has expired", pxThx: "Thank you", pxThxDone: "Thanks sent ✓", pxThxSent: "Your thanks were delivered to the admin 🙏" }
 };
 Object.keys(X2).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], X2[l]); });
 
@@ -12686,8 +12686,9 @@ function loadHol() {
   }).catch(function () {});
 }
 function bakuAt(back) { var d = new Date(Date.now() + 4 * 3600000 - (back || 0) * 86400000); return { y: d.getUTCFullYear(), md: two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()), full: d.getUTCFullYear() + "-" + two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()) }; }
+var HOL_GIFT_DAYS = 30; /* hədiyyə bayramdan sonra 1 ay ərzində qəbul olunur */
 function holAge(h) {
-  for (var k = 0; k <= 2; k++) { var t = bakuAt(k); if ((h.md && h.md === t.md) || (h.date && h.date === t.full)) return k; }
+  for (var k = 0; k <= HOL_GIFT_DAYS; k++) { var t = bakuAt(k); if ((h.md && h.md === t.md) || (h.date && h.date === t.full)) return k; }
   return -1;
 }
 var holTried = {};
@@ -12703,7 +12704,7 @@ function holidayCheck() {
       if (k === 0 && !localStorage.getItem(mk)) {
         try { localStorage.setItem(mk, "1"); } catch (e) {}
         var texts = {}; ["az", "ru", "tr", "en"].forEach(function (l) { texts[l] = greetText(h, l); });
-        addLocal({ local: id, uid: u.uid, type: "holiday", texts: texts, createdAt: Date.now() });
+        addLocal({ local: id, uid: u.uid, type: "holiday", texts: texts, hid: h.id, hy: t.y, hg: (holType(h) !== "m" && +h.gift > 0) ? Math.round(+h.gift) : 0, createdAt: Date.now() });
         if (!toasted) { toasted = true; toast(texts[L()] || texts.az, 6500); }
       }
       /* admin hədiyyə almır; anım günlərində hədiyyə yoxdur */
@@ -12747,6 +12748,16 @@ renderNotifications = function () {
   try {
     [].forEach.call(document.querySelectorAll("#notifList .notif-item"), function (el) {
       var x = notifRendered[+el.getAttribute("data-i")];
+      if (x && x.type === "holiday" && +x.hg > 0 && !el.querySelector(".pt-hexp") && Date.now() - (+x.createdAt || 0) > HOL_GIFT_DAYS * DAY_MS) {
+        var gk = "holgift_" + x.hid + "_" + x.hy, got = false;
+        try { got = allNotifs().some(function (n) { return n && (n.local === gk || (n.type === "premium_gift" && n.reason === "holiday" && n.local === gk)); }); } catch (e) {}
+        var nb0 = el.querySelector(".nbody");
+        if (!got && nb0) {
+          var ex = document.createElement("div"); ex.className = "pt-hexp";
+          ex.style.cssText = "margin-top:6px;font-size:12px;opacity:.75";
+          ex.textContent = T("pxHolExp"); nb0.appendChild(ex);
+        }
+      }
       if (!x || x.type !== "premium_gift" || el.querySelector(".pt-thx")) return;
       var nb = el.querySelector(".nbody"); if (!nb) return;
       var b = document.createElement("button"); b.type = "button"; b.className = "pt-thx" + (thxDone(x) ? " done" : "");
