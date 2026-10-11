@@ -1,0 +1,22 @@
+name: Deploy protechtor.com (coming soon)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["coming-soon/**", ".github/workflows/coming-soon.yml"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Deploy
+        working-directory: coming-soon
+        run: npx -y wrangler@4 deploy -c wrangler.jsonc

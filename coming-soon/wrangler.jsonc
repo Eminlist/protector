@@ -1,0 +1,10 @@
+{
+  "name": "protechtor-com",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "assets": { "directory": "./public", "html_handling": "auto-trailing-slash", "not_found_handling": "single-page-application" },
+  "routes": [
+    { "pattern": "protechtor.com", "custom_domain": true },
+    { "pattern": "www.protechtor.com", "custom_domain": true }
+  ]
+}
