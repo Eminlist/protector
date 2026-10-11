@@ -1,0 +1,33 @@
+name: Inspect Cloudflare (read-only)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Worker list
+        run: |
+          curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" \
+            | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{JSON.parse(s).result.forEach(w=>console.log(w.id))})"
+      - name: protector-push source and bindings
+        run: |
+          curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/protector-push/content/v2" -o push.js || true
+          echo "==== SOURCE ===="; cat push.js | head -c 60000 || true
+          echo; echo "==== BINDINGS ===="
+          curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts/protector-push/settings" \
+            | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s).result||{};console.log(JSON.stringify((r.bindings||[]).map(b=>({type:b.type,name:b.name,id:b.id||b.database_id||b.namespace_id}))))})" || true
+      - name: D1 tables
+        run: |
+          echo '{"name":"x"}' > /dev/null
+          npx -y wrangler@4 d1 execute protector-db --remote --json --command "SELECT name, sql FROM sqlite_master WHERE type='table'" | head -c 20000 || true
