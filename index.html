@@ -1334,7 +1334,8 @@
             background-size:220% 100%;animation:updShine 2.6s cubic-bezier(.4,0,.2,1) infinite}
         #pt-progress.run .pt-prog-bar{background:linear-gradient(110deg,#ff6b2c 0%,#ff5722 40%,#e0481b 70%,#ff7043 100%);background-size:220% 100%;animation:updGlowShift 3.2s ease-in-out infinite}
         :root[data-theme="light"] .compatibility-title span,:root[data-theme="reading"] .compatibility-title span{color:#a86b00}
-        #results{display:flex;flex-direction:column;gap:9px}
+        #results,#ptBatResults{display:flex;flex-direction:column;gap:9px}
+        #ptBatResults{width:100%}
         .result-item{flex-shrink:0;min-height:0;margin:0;padding:12px 12px 12px 14px;gap:14px;border:1px solid var(--border);border-bottom:1px solid var(--border);border-radius:20px;background:var(--surface);box-shadow:0 8px 18px -14px rgba(0,0,0,.7);transition:transform .15s,border-color .2s}
         .result-item:active{transform:scale(.985);background:var(--surface);border-color:color-mix(in srgb,var(--accent-color) 50%,var(--border))}
         .brand-badge{min-width:0;width:50px;height:50px;padding:0 4px;box-sizing:border-box;border-radius:15px;background:linear-gradient(160deg,var(--surface-2),color-mix(in srgb,var(--surface-2) 80%,#000)) !important;color:var(--text) !important;border:1px solid var(--border);font-size:8.5px;letter-spacing:.4px;overflow:hidden;white-space:nowrap;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 4px 10px -6px rgba(0,0,0,.5)}
@@ -1810,7 +1811,7 @@
         .rf-btn{margin-left:8px;height:26px;padding:0 9px;border-radius:8px;border:1px solid var(--c-bad);background:transparent;color:var(--c-bad);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
         .rev-row .rv-r{display:flex;align-items:center;gap:4px;flex-shrink:0}
         .rev-title{font-size:12px;font-weight:800;color:var(--accent-color);letter-spacing:1px;margin:6px 0}
-        #results, #compatibility-list, .result-item, .compatibility-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+        #results, #ptBatResults, #compatibility-list, .result-item, .compatibility-item{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
         .misfit-bar{padding:10px 16px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border);background:var(--header-bg)}
         .misfit-btn{width:100%;height:46px;border-radius:14px;border:1px solid #f39c12;background:transparent;color:#f39c12;font-weight:800;font-size:calc(14px * var(--font-scale));cursor:pointer}
         .detail-size{display:none;text-align:center;padding:8px 16px;font-size:calc(14px * var(--font-scale));font-weight:700;color:var(--accent-color);border-bottom:1px solid var(--border);background:var(--surface)}
@@ -2247,6 +2248,14 @@
 .pt-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:none;background:#03060d}
 .pt-stage[data-m=anti] #ptVidA,.pt-stage[data-m=bat] #ptVidB{display:block}
 
+/* Batareya: seçilmiş model səhifəsi antiudar ilə eyni görünür */
+#ptBatRecent{display:none;margin-bottom:8px}
+#detail-view.pt-bat-detail #pt-fit{display:none}
+#detail-view.pt-bat-detail .misfit-bar .pt-bat-acts{margin-top:0}
+#detail-view.pt-bat-detail .detail-size{white-space:normal;line-height:1.9}
+#detail-view.pt-bat-detail .compat-model .m-code{margin-top:6px;font-size:calc(12.5px * var(--font-scale));font-weight:700;color:var(--accent-color);letter-spacing:.3px}
+#ptBatResults .result-model .m-code{margin-top:6px;font-size:calc(12.5px * var(--font-scale));font-weight:700;color:var(--accent-color);letter-spacing:.3px}
+
 /* Matrix kimi yanıb-sönən vəziyyət nöqtəsi */
 .status-dot.green,.status-dot.yellow,.status-dot.red{animation:ptMx 2.4s steps(1,end) infinite}
 .status-dot.green{animation-name:ptMx}
@@ -2590,6 +2599,8 @@ html.sensitive .ripple-ring{display:none !important}
                     <input id="ptBatInput" class="search-input" type="text" placeholder="BN54 / Redmi Note 9" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                     <button id="ptBatClear" class="clear-button" type="button" onclick="ptBatClear()">×</button>
                 </div>
+                <div id="ptBatBrands" class="brand-suggest" style="display:none;" role="listbox" aria-label="Brand suggestions"></div>
+                <div id="ptBatRecent"></div>
                 <div id="ptBatStatus" class="status"></div>
                 <div id="ptBatResults"></div>
             </div>
@@ -3620,10 +3631,9 @@ function ptReportsCol() {
             return dataFetch("/r/list?n=" + col._n).then(function (r) { return ptSnap(r.items); });
         },
         onSnapshot: function (cb, err) {
-            let known = null, stop = false;
-            const tick = function () {
-                if (stop) return;
-                col.get().then(function (snap) {
+            let known = null, stop = false, sig = "", busy = false;
+            const full = function () {
+                return col.get().then(function (snap) {
                     const changes = [];
                     if (known) snap.docs.forEach(function (d) { if (!known[d.id]) changes.push({ type: "added", doc: d }); });
                     known = {};
@@ -3632,11 +3642,28 @@ function ptReportsCol() {
                     // Nişan yalnız gözləyən hesabatları sayır
                     snap.size = snap.docs.filter(function (d) { return (d.data().status || "pending") === "pending"; }).length;
                     cb(snap);
-                }).catch(function (e) { if (err) err(e); });
+                });
+            };
+            // Yüngül yoxlama (/r/count): dəyişiklik olanda siyahı dərhal yüklənir
+            const tick = function () {
+                if (stop || busy) return;
+                busy = true;
+                dataFetch("/r/count").then(function (c) {
+                    const s2 = ((c && c.pending) || 0) + ":" + ((c && c.last) || 0);
+                    if (known && s2 === sig) return;
+                    sig = s2;
+                    return full();
+                }).catch(function () {
+                    /* /r/count yoxdursa və ya xəta olsa belə tam siyahı yoxlanılır */
+                    return full().catch(function (e2) { if (err) err(e2); });
+                }).then(function () { busy = false; });
             };
             tick();
-            const iv = setInterval(function () { if (!document.hidden) tick(); }, 45000);
-            return function () { stop = true; clearInterval(iv); };
+            const iv = setInterval(function () { if (!document.hidden) tick(); }, 10000);
+            const wake = function () { if (!document.hidden) tick(); };
+            document.addEventListener("visibilitychange", wake);
+            window.addEventListener("focus", wake);
+            return function () { stop = true; clearInterval(iv); document.removeEventListener("visibilitychange", wake); window.removeEventListener("focus", wake); };
         }
     };
     return col;
@@ -3669,8 +3696,8 @@ async function ptBaseRead() {
     }
     return data;
 }
-async function ptBasePublish(doc, note) {
-    const r = await dataPost("/base/publish", { data: doc, note: note || "", models: namesFromGroups(JSON.parse(doc.dataJson || "[]")).length });
+async function ptBasePublish(doc, note, hist) {
+    const r = await dataPost("/base/publish", { data: doc, note: note || "", hist: hist || null, models: namesFromGroups(JSON.parse(doc.dataJson || "[]")).length });
     window.ptBaseCur = { id: r.id, ts: r.ts };
     return r;
 }
@@ -6150,7 +6177,10 @@ async function adminPublishDatabase() {
             updatedAt: Date.now(),
             updatedBy: (auth.currentUser && auth.currentUser.email) || ADMIN_EMAIL,
             groupCount: cleaned.length
-        }, ptPubNote(note, changelogMsg));
+        }, ptPubNote(note, changelogMsg), changelogMsg ? {
+            a: changelogMsg.a || 0, r: changelogMsg.r || 0, e: changelogMsg.e || 0, g: changelogMsg.g || 0,
+            n: changelogMsg.n || 0, first: !!changelogMsg.first, note: note === "battery" ? "" : (note || "")
+        } : null);
         database = JSON.parse(JSON.stringify(cleaned));
         cacheCatalog(database);
         localStorage.setItem(UPDATE_KEY, Date.now().toString());
@@ -6165,7 +6195,7 @@ async function adminPublishDatabase() {
         updateLastUpdate();
         checkBlockStatus();
         indexFor = null;
-        renderChangelogHistory();
+        ptHistRefresh();
         setAdminStatus("☁ Dərc olundu · " + cleaned.length + " qrup" + (sizeN ? " · " + sizeN + " ölçü" : "") + " · " + new Date().toLocaleTimeString());
         showAppToast(changelogMsg ? formatChangelogEntry(changelogMsg) : "✓ Baza dərc olundu!");
         showChangelogToast(changelogMsg);
@@ -6949,7 +6979,7 @@ function loadMisfits() {
         box.innerHTML = adminMisfits.map(function (x, i) {
             const st = stMap[x.status || "pending"] || stMap.pending;
             const bat = x.kind === "battery";
-            const rs = bat ? ((x.reason === "bat_fit" ? "🔋 Uyğundur" : "🔋 Uyğun gəlmədi") + (x.code ? " · " + x.code : "")) : x.reason;
+            const rs = bat ? ((x.reason === "bat_fit" ? "🔋 Uyğundur" : (x.reason === "bat_missing" ? "🔋 Bazada yoxdur" : "🔋 Uyğun gəlmədi")) + (x.code ? " · " + x.code : "")) : x.reason;
             return '<div class="req-row"><span><b>' + escapeHtml(x.model) + '</b> <small style="color:var(--muted)">' + escapeHtml(x.date || "") + ' · ' + st + '</small>' +
                 (rs ? '<br><small style="color:var(--accent-color)">' + escapeHtml(rs) + '</small>' : '') +
                 (x.comment ? '<br>' + escapeHtml(x.comment) : '') + '</span>' +
@@ -9438,13 +9468,13 @@ function initCopyProtection() {
     const guarded = function (e) {
         if (isAdmin) return false;
         const el = e.target && e.target.nodeType === 1 ? e.target : (e.target && e.target.parentElement);
-        return !!(el && el.closest && el.closest("#results, #compatibility-list, #detail-view"));
+        return !!(el && el.closest && el.closest("#results, #ptBatResults, #compatibility-list, #detail-view"));
     };
     document.addEventListener("copy", function (e) {
         const sel = window.getSelection && window.getSelection();
         const node = sel && sel.anchorNode;
         const el = node && (node.nodeType === 1 ? node : node.parentElement);
-        if (!isAdmin && el && el.closest && el.closest("#results, #compatibility-list, #detail-view")) e.preventDefault();
+        if (!isAdmin && el && el.closest && el.closest("#results, #ptBatResults, #compatibility-list, #detail-view")) e.preventDefault();
     });
     document.addEventListener("contextmenu", function (e) { if (guarded(e)) e.preventDefault(); });
     document.addEventListener("selectstart", function (e) { if (guarded(e)) e.preventDefault(); });
@@ -10865,7 +10895,7 @@ function showChangelogToast(msg) {
     }, 4800);
 }
 
-function renderChangelogHistory() {
+function renderChangelogHistoryLocal() {
     const box = document.getElementById("changelogBox");
     if (!box) return;
     const todayKey = getDateKey(new Date());
@@ -10918,6 +10948,105 @@ function renderChangelogHistory() {
     if (!box.children.length) {
         box.innerHTML = '<div class="changelog-empty">' + t("noChangelog") + '</div>';
     }
+}
+
+/* Yeniləmə tarixçəsi serverdəki jurnaldan oxunur (antiudar + batareya bazası, bugün də daxil) —
+   cihaz yaddaşından asılı deyil; yalnız qonaqlar və oflayn hal üçün yerli siyahı qalır */
+var _ptHist = null, _ptHistAt = 0, _ptHistBusy = false;
+function ptHistLoad(force) {
+    if (_ptHistBusy) return;
+    if (!force && _ptHist && Date.now() - _ptHistAt < 30000) return;
+    try {
+        if (typeof dataFetch !== "function" || !auth || !auth.currentUser || auth.currentUser.isAnonymous) return;
+    } catch (e) { return; }
+    _ptHistBusy = true;
+    dataFetch("/hist").then(function (d) {
+        _ptHist = (d && Array.isArray(d.items)) ? d.items : [];
+        _ptHistAt = Date.now();
+    }).catch(function () {}).then(function () {
+        _ptHistBusy = false;
+        if (_ptHist) renderChangelogHistory(true);
+    });
+}
+function ptHistRefresh() { _ptHistAt = 0; renderChangelogHistory(); }
+var PT_BAT_LBL = { az: "Batareya", ru: "Батарея", tr: "Batarya", en: "Battery" };
+function ptHistRows(inst) {
+    const items = (_ptHist || []).filter(function (x) {
+        if (inst.ts && (x.ts || 0) < inst.ts) return false;
+        if (inst.n && x.first && x.kind !== "bat") return false;
+        return true;
+    });
+    if (inst.ts && inst.n) items.push({ ts: inst.ts, kind: "base", a: inst.n, n: inst.n, first: 1 });
+    const days = {}, rows = [];
+    items.forEach(function (x) {
+        const d = new Date(x.ts), key = getDateKey(d);
+        let day = days[key];
+        if (!day) { day = days[key] = { date: formatDateShort(d), ts: x.ts, base: null, bat: null }; rows.push(day); }
+        if ((x.ts || 0) > day.ts) day.ts = x.ts;
+        const slot = x.kind === "bat" ? "bat" : "base";
+        const acc = day[slot] || (day[slot] = { a: 0, r: 0, e: 0, g: 0, n: 0, first: false, notes: [] });
+        acc.a += x.a || 0; acc.r += x.r || 0; acc.e += x.e || 0; acc.g += x.g || 0;
+        if (x.first) acc.first = true;
+        if (x.note && acc.notes.indexOf(x.note) < 0) acc.notes.push(x.note);
+    });
+    return rows.map(function (day) {
+        const parts = [];
+        if (day.base) {
+            const b = day.base, p = [];
+            if (b.first) p.push(t("clFirst").replace("{n}", String(b.a || b.n)));
+            else if (b.a) p.push(t("clAdded").replace("{n}", String(b.a)));
+            if (b.r) p.push(t("clRemoved").replace("{n}", String(b.r)));
+            if (b.e) p.push(t("clEdited").replace("{n}", String(b.e)));
+            if (b.g) p.push(t("clRegroupG"));
+            b.notes.forEach(function (n) { const v = t("note_" + n); if (n !== "battery" && v && v !== "note_" + n) p.push(v); });
+            if (p.length) parts.push(p.join(", "));
+        }
+        if (day.bat) {
+            const b = day.bat, p = [];
+            if (b.a) p.push(t("clAdded").replace("{n}", String(b.a)));
+            if (b.r) p.push(t("clRemoved").replace("{n}", String(b.r)));
+            parts.push("🔋 " + (p.length ? (PT_BAT_LBL[currentLang] || PT_BAT_LBL.az) + ": " + p.join(", ") : t("note_battery")));
+        }
+        return { date: day.date, parts: parts, ts: day.ts };
+    }).filter(function (r) { return r.parts.length; });
+}
+function renderChangelogHistory(noLoad) {
+    if (!noLoad) ptHistLoad(false);
+    if (!_ptHist || !_ptHist.length) return renderChangelogHistoryLocal();
+    const box = document.getElementById("changelogBox");
+    if (!box) return;
+    const inst = getInstallInfo();
+    const rows = ptHistRows(inst);
+    /* Serverdəki jurnaldan əvvəlki günlər: yerli (köhnə) siyahıdan tamamlanır */
+    let firstTs = Infinity;
+    _ptHist.forEach(function (x) { if ((x.ts || 0) < firstTs) firstTs = x.ts || 0; });
+    const fd = new Date(firstTs); fd.setHours(0, 0, 0, 0);
+    getChangelogList().forEach(function (x) {
+        if ((x.ts || 0) >= fd.getTime()) return;
+        if (inst.ts && (x.ts || 0) < inst.ts) return;
+        if (inst.n && x.first) return;
+        const text = formatChangelogEntry(x); if (!text) return;
+        const dp = text.split(" ")[0] || "";
+        if (dp && !rows.some(function (r) { return r.date === dp; })) rows.push({ date: dp, parts: [text.slice(dp.length).trim()], ts: x.ts || 0 });
+    });
+    const last = localStorage.getItem(UPDATE_KEY);
+    if (last) {
+        const lt = parseInt(last, 10), ld = formatDateShort(new Date(lt));
+        if (!rows.some(function (r) { return r.date === ld; })) rows.push({ date: ld, parts: [t("lastCheck")], ts: lt });
+    }
+    rows.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
+    box.innerHTML = "";
+    rows.slice(0, 60).forEach(function (r) {
+        const div = document.createElement("div");
+        div.className = "changelog-item";
+        const dateEl = document.createElement("div");
+        dateEl.className = "changelog-date";
+        dateEl.textContent = r.date;
+        div.appendChild(dateEl);
+        div.appendChild(document.createTextNode(r.parts.join(" · ")));
+        box.appendChild(div);
+    });
+    if (!box.children.length) box.innerHTML = '<div class="changelog-empty">' + t("noChangelog") + '</div>';
 }
 
 const I18N = {
@@ -11122,7 +11251,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.5";
+const APP_VERSION = "3.1.3.6";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -11953,7 +12082,7 @@ async function fetchDatabase(retries = 3) {
             applyDb(res);
             localStorage.setItem(UPDATE_KEY, Date.now().toString());
         }
-        renderChangelogHistory();
+        ptHistRefresh();
         updateLastUpdate();
         progCountTo(namesFromGroups(database || []).length || (catalogMeta && catalogMeta.modelCount) || knownN);
 
@@ -12018,7 +12147,15 @@ async function backgroundCheckUpdate() {
                     showChangelogToast(changelogMsg);
                 }
             }
-            renderChangelogHistory();
+            ptHistRefresh();
+            /* Real yeniləmə arxa planda gələndə də yüklənmə paneli görünsün */
+            try {
+                if (!document.hidden && typeof showProgress === "function") {
+                    showProgress("loading");
+                    progCountTo(namesFromGroups(database || []).length);
+                    setTimeout(function () { try { finishProgress(true); } catch (e) {} }, 2800);
+                }
+            } catch (e) {}
             playSuccessSound();
         }
     } catch (e) {}
@@ -14867,10 +15004,10 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
 (function () {
   "use strict";
   var STR = {
-    az: { ph: "BN54 / Redmi Note 9", st: "Model və ya batareya kodu yazın", none: "Nəticə tapılmadı", note: "Bir neçə kod göstərilibsə, modelə bunlardan biri uyğun gəlir.", cnt: "Batareya bazası: {n} model · {c} kod", same: "Uyğun ola bilən modellər", fit: "✓ Uyğundur", nofit: "⚠ Uyğun gəlmədi", mine: "＋ Modelim də uyğundur", login: "Batareya axtarışı üçün daxil olun və ya qeydiyyatdan keçin.", loginBtn: "Daxil ol", limit: "Bu gün üçün batareya axtarış limiti doldu. Sabah yenidən cəhd edin.", slow: "Çox tez-tez axtarırsınız. Bir az gözləyin.", err: "Axtarış alınmadı. Bir az sonra yenidən cəhd edin.", sent: "Bildirişiniz adminə göndərildi. Təşəkkür edirik!", fail: "Bildiriş göndərilmədi. Bir az sonra yenidən cəhd edin.", rlimit: "Bu gün üçün bildiriş limiti doldu.", nfTitle: "Uyğun gəlmədi", nfText: "Qısa izah yazın (istəyə bağlı)", mineTitle: "Modelinizin adı", mineText: "Bu batareyaya uyğun gələn telefon modelini yazın" },
-    ru: { ph: "BN54 / Redmi Note 9", st: "Введите модель или код батареи", none: "Ничего не найдено", note: "Если указано несколько кодов, подходит один из них.", cnt: "База батарей: {n} моделей · {c} кодов", same: "Возможно совместимые модели", fit: "✓ Подходит", nofit: "⚠ Не подошла", mine: "＋ Моя модель тоже подходит", login: "Для поиска батарей войдите или зарегистрируйтесь.", loginBtn: "Войти", limit: "Дневной лимит поиска батарей исчерпан. Попробуйте завтра.", slow: "Вы ищете слишком часто. Подождите немного.", err: "Поиск не выполнен. Попробуйте чуть позже.", sent: "Ваше сообщение отправлено администратору. Спасибо!", fail: "Сообщение не отправлено. Попробуйте чуть позже.", rlimit: "Дневной лимит сообщений исчерпан.", nfTitle: "Не подошла", nfText: "Напишите краткое пояснение (по желанию)", mineTitle: "Название вашей модели", mineText: "Укажите модель телефона, которой подходит эта батарея" },
-    tr: { ph: "BN54 / Redmi Note 9", st: "Model veya batarya kodu yazın", none: "Sonuç bulunamadı", note: "Birden fazla kod gösterilmişse, bunlardan biri uyumludur.", cnt: "Batarya veritabanı: {n} model · {c} kod", same: "Uyumlu olabilecek modeller", fit: "✓ Uyumlu", nofit: "⚠ Uyumlu değil", mine: "＋ Modelim de uyumlu", login: "Batarya araması için giriş yapın veya kayıt olun.", loginBtn: "Giriş yap", limit: "Bugünkü batarya arama limiti doldu. Yarın tekrar deneyin.", slow: "Çok sık arama yapıyorsunuz. Biraz bekleyin.", err: "Arama yapılamadı. Biraz sonra tekrar deneyin.", sent: "Bildiriminiz yöneticiye gönderildi. Teşekkürler!", fail: "Bildirim gönderilemedi. Biraz sonra tekrar deneyin.", rlimit: "Bugünkü bildirim limiti doldu.", nfTitle: "Uyumlu değil", nfText: "Kısa bir açıklama yazın (isteğe bağlı)", mineTitle: "Modelinizin adı", mineText: "Bu bataryaya uyan telefon modelini yazın" },
-    en: { ph: "BN54 / Redmi Note 9", st: "Enter a model or battery code", none: "No results found", note: "If several codes are shown, any one of them fits the model.", cnt: "Battery database: {n} models · {c} codes", same: "Models that may also fit", fit: "✓ It fits", nofit: "⚠ Does not fit", mine: "＋ My model fits too", login: "Sign in or register to search batteries.", loginBtn: "Sign in", limit: "Today's battery search limit has been reached. Please try again tomorrow.", slow: "You are searching too often. Please wait a moment.", err: "Search failed. Please try again shortly.", sent: "Your report was sent to the admin. Thank you!", fail: "Report not sent. Please try again shortly.", rlimit: "Today's report limit has been reached.", nfTitle: "Does not fit", nfText: "Write a short explanation (optional)", mineTitle: "Your model name", mineText: "Enter the phone model that fits this battery" }
+    az: { compat: "BU MODELLƏRİN BATAREYALARI BİR-BİRİNƏ UYĞUNDUR", ph: "BN54 / Redmi Note 9", st: "Model və ya batareya kodu yazın", none: "Nəticə tapılmadı", note: "Bir neçə kod göstərilibsə, modelə bunlardan biri uyğun gəlir.", cnt: "Batareya bazası: {n} model · {c} kod", same: "Uyğun ola bilən modellər", fit: "✓ Uyğundur", nofit: "⚠ Uyğun gəlmədi", mine: "＋ Modelim də uyğundur", login: "Batareya axtarışı üçün daxil olun və ya qeydiyyatdan keçin.", loginBtn: "Daxil ol", limit: "Bu gün üçün batareya axtarış limiti doldu. Sabah yenidən cəhd edin.", slow: "Çox tez-tez axtarırsınız. Bir az gözləyin.", err: "Axtarış alınmadı. Bir az sonra yenidən cəhd edin.", sent: "Bildirişiniz adminə göndərildi. Təşəkkür edirik!", fail: "Bildiriş göndərilmədi. Bir az sonra yenidən cəhd edin.", rlimit: "Bu gün üçün bildiriş limiti doldu.", nfTitle: "Uyğun gəlmədi", nfText: "Qısa izah yazın (istəyə bağlı)", mineTitle: "Modelinizin adı", mineText: "Bu batareyaya uyğun gələn telefon modelini yazın" },
+    ru: { compat: "БАТАРЕИ ЭТИХ МОДЕЛЕЙ ВЗАИМОЗАМЕНЯЕМЫ", ph: "BN54 / Redmi Note 9", st: "Введите модель или код батареи", none: "Ничего не найдено", note: "Если указано несколько кодов, подходит один из них.", cnt: "База батарей: {n} моделей · {c} кодов", same: "Возможно совместимые модели", fit: "✓ Подходит", nofit: "⚠ Не подошла", mine: "＋ Моя модель тоже подходит", login: "Для поиска батарей войдите или зарегистрируйтесь.", loginBtn: "Войти", limit: "Дневной лимит поиска батарей исчерпан. Попробуйте завтра.", slow: "Вы ищете слишком часто. Подождите немного.", err: "Поиск не выполнен. Попробуйте чуть позже.", sent: "Ваше сообщение отправлено администратору. Спасибо!", fail: "Сообщение не отправлено. Попробуйте чуть позже.", rlimit: "Дневной лимит сообщений исчерпан.", nfTitle: "Не подошла", nfText: "Напишите краткое пояснение (по желанию)", mineTitle: "Название вашей модели", mineText: "Укажите модель телефона, которой подходит эта батарея" },
+    tr: { compat: "BU MODELLERİN BATARYALARI BİRBİRİNE UYUMLUDUR", ph: "BN54 / Redmi Note 9", st: "Model veya batarya kodu yazın", none: "Sonuç bulunamadı", note: "Birden fazla kod gösterilmişse, bunlardan biri uyumludur.", cnt: "Batarya veritabanı: {n} model · {c} kod", same: "Uyumlu olabilecek modeller", fit: "✓ Uyumlu", nofit: "⚠ Uyumlu değil", mine: "＋ Modelim de uyumlu", login: "Batarya araması için giriş yapın veya kayıt olun.", loginBtn: "Giriş yap", limit: "Bugünkü batarya arama limiti doldu. Yarın tekrar deneyin.", slow: "Çok sık arama yapıyorsunuz. Biraz bekleyin.", err: "Arama yapılamadı. Biraz sonra tekrar deneyin.", sent: "Bildiriminiz yöneticiye gönderildi. Teşekkürler!", fail: "Bildirim gönderilemedi. Biraz sonra tekrar deneyin.", rlimit: "Bugünkü bildirim limiti doldu.", nfTitle: "Uyumlu değil", nfText: "Kısa bir açıklama yazın (isteğe bağlı)", mineTitle: "Modelinizin adı", mineText: "Bu bataryaya uyan telefon modelini yazın" },
+    en: { compat: "BATTERIES OF THESE MODELS ARE INTERCHANGEABLE", ph: "BN54 / Redmi Note 9", st: "Enter a model or battery code", none: "No results found", note: "If several codes are shown, any one of them fits the model.", cnt: "Battery database: {n} models · {c} codes", same: "Models that may also fit", fit: "✓ It fits", nofit: "⚠ Does not fit", mine: "＋ My model fits too", login: "Sign in or register to search batteries.", loginBtn: "Sign in", limit: "Today's battery search limit has been reached. Please try again tomorrow.", slow: "You are searching too often. Please wait a moment.", err: "Search failed. Please try again shortly.", sent: "Your report was sent to the admin. Thank you!", fail: "Report not sent. Please try again shortly.", rlimit: "Today's report limit has been reached.", nfTitle: "Does not fit", nfText: "Write a short explanation (optional)", mineTitle: "Your model name", mineText: "Enter the phone model that fits this battery" }
   };
   function L() {
     var l = "az";
@@ -14932,7 +15069,123 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     setTimeout(function () { inp.placeholder = m; inp.style.opacity = 1; }, 280);
   }
 
-  window.ptBatClear = function () { var i = $("ptBatInput"); i.value = ""; run(); scene(); i.focus(); };
+  function T(k) { try { return t(k); } catch (e) { return k; } }
+  window.ptBatClear = function () {
+    var i = $("ptBatInput"), b = $("ptBatClear");
+    b.classList.add("rotate"); setTimeout(function () { b.classList.remove("rotate"); }, 300);
+    i.value = ""; run(); scene(); i.focus();
+    try { triggerHaptic(20); } catch (e) {}
+  };
+
+  // ----- Son axtarışlar (antiudar axtarışı ilə eyni) -----
+  var RK = "antiudar_bat_recent_v1";
+  function getRecent() {
+    try { var a = JSON.parse(localStorage.getItem(RK) || "[]"); return Array.isArray(a) ? a.filter(function (x) { return typeof x === "string"; }).slice(0, 10) : []; } catch (e) { return []; }
+  }
+  function saveRecent(q) {
+    q = String(q || "").trim(); if (!q) return;
+    var a = getRecent().filter(function (x) { return x.toLowerCase() !== q.toLowerCase(); });
+    a.unshift(q);
+    try { localStorage.setItem(RK, JSON.stringify(a.slice(0, 10))); } catch (e) {}
+  }
+  function clearRecent() { try { localStorage.removeItem(RK); } catch (e) {} renderRecent(); }
+  function hideRecent() { var b = $("ptBatRecent"); if (b) { b.style.display = "none"; b.textContent = ""; } }
+  function renderRecent() {
+    var box = $("ptBatRecent"); if (!box) return;
+    var list = getRecent();
+    box.textContent = "";
+    if (!list.length || $("ptBatInput").value.trim()) { box.style.display = "none"; return; }
+    box.style.display = "block";
+    var head = el("div", "recent-head");
+    head.appendChild(el("div", "recent-title", T("recent")));
+    var clr = el("button", "recent-clear", T("clear")); clr.type = "button"; clr.onclick = clearRecent;
+    head.appendChild(clr); box.appendChild(head);
+    list.forEach(function (q) {
+      var row = el("div", "recent-item");
+      row.appendChild(el("span", "", q)); row.appendChild(el("span", "", "›"));
+      row.onclick = function () { var i = $("ptBatInput"); i.value = q; run(); scene(); };
+      box.appendChild(row);
+    });
+  }
+
+  // ----- Marka təklifləri (antiudar axtarışı ilə eyni; qənaət rejimində söndürülür) -----
+  function hideBrands() { var b = $("ptBatBrands"); if (b) { b.classList.remove("show"); b.style.display = "none"; b.textContent = ""; } }
+  function updateBrands(q) {
+    var box = $("ptBatBrands"); if (!box) return;
+    q = String(q || "").trim();
+    if (document.documentElement.classList.contains("low-power") || !q || q.indexOf(" ") >= 0 || q.length > 12) return hideBrands();
+    var nq = norm(q), seenB = {}, all = [];
+    BRANDS.concat(typeof KNOWN_BRANDS !== "undefined" ? KNOWN_BRANDS : []).forEach(function (b) { if (!seenB[b]) { seenB[b] = 1; all.push(b); } });
+    var hits = all.filter(function (b) { return norm(b).indexOf(nq) >= 0; }).slice(0, 6);
+    if (!hits.length) return hideBrands();
+    box.textContent = "";
+    hits.forEach(function (b) {
+      var btn = el("button", "brand-chip", b); btn.type = "button";
+      btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
+      btn.addEventListener("click", function () {
+        var i = $("ptBatInput"); i.value = b + " "; i.focus();
+        try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) {}
+        hideBrands(); run(); scene();
+      });
+      box.appendChild(btn);
+    });
+    box.classList.add("show"); box.style.display = "flex";
+  }
+
+  // ----- Seçilmiş model səhifəsi: antiudar ilə eyni səhifə (#detail-view), batareya məzmunu ilə -----
+  var orig = null;
+  function restoreDetail() {
+    var dv = $("detail-view");
+    if (!dv || !dv.classList.contains("pt-bat-detail")) return;
+    dv.classList.remove("pt-bat-detail");
+    if (!orig) return;
+    var cs = dv.querySelector(".compatibility-title"), bar = dv.querySelector(".misfit-bar");
+    if (cs) cs.innerHTML = orig.title;
+    if (bar) bar.innerHTML = orig.bar;
+  }
+  try {
+    var odw = openDetailWith;
+    openDetailWith = function () { restoreDetail(); return odw.apply(this, arguments); };
+  } catch (e) {}
+  function compatItem(model, codes, isSel, total) {
+    var it = el("div", "compatibility-item"), full = isSel || (codes.length >= total);
+    if (isSel) it.classList.add("selected", "sticky-sel", "match-full");
+    else it.classList.add(full ? "size-ok" : "size-warn", full ? "match-full" : "match-partial");
+    var br = el("div", "compat-brand");
+    try { fillBrandBadge(br, model, 22, 38); } catch (e) {}
+    var nm = el("div", "compat-model", model);
+    if (isSel) nm.appendChild(el("span", "match-badge full", "✓"));
+    else if (!full) nm.appendChild(el("span", "match-badge partial", "±"));
+    if (codes.length) nm.appendChild(el("div", "m-code", "🔋 " + codes.join(" · ")));
+    it.appendChild(br); it.appendChild(nm);
+    return it;
+  }
+  function openDetail(item) {
+    var s = L(), dv = $("detail-view"); if (!dv) return;
+    var cs = dv.querySelector(".compatibility-title"), bar = dv.querySelector(".misfit-bar");
+    if (!orig && cs && bar) orig = { title: cs.innerHTML, bar: bar.innerHTML };
+    saveRecent(item.model);
+    $("detail-model").textContent = item.model;
+    if (cs) { cs.textContent = ""; cs.appendChild(el("span", "", s.compat)); cs.appendChild(el("small", "", s.note)); }
+    var sz = $("detail-size"); sz.textContent = "";
+    item.codes.forEach(function (c) { sz.appendChild(el("span", "pt-bat-code", c)); });
+    sz.classList.toggle("show", item.codes.length > 0);
+    $("detail-warn").textContent = "";
+    var list = $("compatibility-list"); list.textContent = "";
+    list.appendChild(compatItem(item.model, item.codes, true, item.codes.length));
+    var others = (item.others || []).slice().sort(function (a, b) { return b.codes.length - a.codes.length; });
+    others.forEach(function (o) { list.appendChild(compatItem(o.m, o.codes, false, item.codes.length)); });
+    if (bar) {
+      bar.textContent = "";
+      bar.appendChild(reportBtns(item.model, item.codes));
+      bar.appendChild(mineBtn(item.codes.join(", ").slice(0, 60)));
+    }
+    dv.classList.add("pt-bat-detail");
+    history.pushState({ modal: "detail" }, "");
+    dv.classList.add("active");
+    list.scrollTop = 0;
+    document.body.style.overflow = "hidden";
+  }
 
   // ----- «Uyğundur» / «Uyğun gəlmədi» bildirişi (admin xəbərdar olunur) -----
   function sendReport(btn, model, code, reason, comment) {
@@ -14983,41 +15236,79 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     }
     out.appendChild(d);
   }
-  function render(d) {
-    var s = L(), out = $("ptBatResults"), st = $("ptBatStatus");
-    out.textContent = "";
-    var shown = 0;
-    (d.codes || []).forEach(function (c) {
-      var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", c.code));
-      (c.models || []).forEach(function (m) { row.appendChild(el("div", "", m)); });
-      row.appendChild(mineBtn(c.code));
-      out.appendChild(row); shown++;
-    });
+  // Server cavabı → antiudar kimi model sətirləri (ad üzrə tapılanlar, sonra kod üzrə tapılanlar)
+  function entries(d) {
+    var out = [], seen = {};
     (d.models || []).forEach(function (m) {
-      var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", m.model));
-      var wrap = el("div");
-      (m.codes || []).forEach(function (c) { wrap.appendChild(el("span", "pt-bat-code", c)); });
-      row.appendChild(wrap);
-      if (m.same && m.same.length) {
-        row.appendChild(el("div", "pt-bat-sub", s.same));
-        row.appendChild(el("div", "pt-bat-same", m.same.join(", ")));
-      }
-      row.appendChild(reportBtns(m.model, m.codes || []));
-      out.appendChild(row); shown++;
+      var k = norm(m.model); if (seen[k]) return; seen[k] = 1;
+      var sh = m.shared || {};
+      out.push({ model: m.model, codes: m.codes || [], hit: "", others: (m.same || []).map(function (x) { return { m: x, codes: sh[x] || [] }; }) });
     });
-    if (d.multi) out.appendChild(el("div", "pt-bat-note", s.note));
-    st.textContent = shown ? "" : s.none;
+    (d.codes || []).forEach(function (c) {
+      var mc = c.mc || {};
+      (c.models || []).forEach(function (mn) {
+        var k = norm(mn); if (seen[k]) return; seen[k] = 1;
+        var own = mc[mn] && mc[mn].length ? mc[mn] : [c.code];
+        var others = (c.models || []).filter(function (x) { return x !== mn; }).map(function (x) {
+          var oc = mc[x] || [c.code], shared = oc.filter(function (z) { return own.indexOf(z) >= 0; });
+          return { m: x, codes: shared.length ? shared : [c.code] };
+        });
+        out.push({ model: mn, codes: own, hit: c.code, others: others });
+      });
+    });
+    return out;
+  }
+  function row(item, q) {
+    var r = el("div", "result-item");
+    var brand = el("div", "brand-badge");
+    try { fillBrandBadge(brand, item.model, 22, 38); } catch (e) {}
+    var name = el("div", "result-model");
+    try { name.innerHTML = highlightMatch(escapeHtml(item.model), q); } catch (e) { name.textContent = item.model; }
+    name.appendChild(el("div", "m-code", "🔋 " + (item.hit || item.codes.join(" · "))));
+    r.appendChild(brand); r.appendChild(name); r.appendChild(el("div", "result-arrow", "›"));
+    r.addEventListener("click", function () {
+      try { playSoundEffect(); triggerHaptic(30); } catch (e) {}
+      openDetail(item);
+    });
+    return r;
+  }
+  function notFound(q) {
+    var out = $("ptBatResults"), st = $("ptBatStatus");
+    st.textContent = T("none");
+    out.appendChild(el("div", "no-results", '"' + q + '": ' + T("noneText")));
+    var b = el("button", "update-button nf-button", T("nfBtn")); b.type = "button";
+    b.style.cssText = "max-width:280px;margin:18px auto 0;height:48px;font-size:13px";
+    b.onclick = function () { sendReport(b, q.slice(0, 100), "", "bat_missing", ""); };
+    out.appendChild(b);
+  }
+  function render(d, q) {
+    var out = $("ptBatResults"), st = $("ptBatStatus"), gen = seq;
+    out.textContent = "";
+    var list = entries(d).slice(0, 240);
+    if (!list.length) { notFound(q); return; }
+    st.textContent = list.length + " " + T(d.fuzzy ? "similar" : "found");
+    function chunk(from, n) {
+      if (gen !== seq) return;
+      var frag = document.createDocumentFragment(), to = Math.min(list.length, from + n);
+      for (var i = from; i < to; i++) frag.appendChild(row(list[i], q));
+      out.appendChild(frag);
+      if (to < list.length) requestAnimationFrame(function () { chunk(to, 60); });
+    }
+    chunk(0, 30);
   }
   function run() {
     var s = L(), q = $("ptBatInput").value.trim(), out = $("ptBatResults"), st = $("ptBatStatus");
     $("ptBatClear").style.display = q ? "block" : "none";
+    updateBrands(q);
     var my = ++seq;
-    if (!q) { out.textContent = ""; st.textContent = ""; return; }
+    out.textContent = "";
+    if (!q) { st.textContent = ""; renderRecent(); return; }
+    hideRecent();
     if (!registered()) { st.textContent = ""; msg(out, s.login, true); return; }
     loadMeta();
     dataFetch("/bat/search?q=" + encodeURIComponent(q)).then(function (d) {
       if (my !== seq) return;
-      render(d || {});
+      render(d || {}, q);
     }).catch(function (e) {
       if (my !== seq) return;
       var c = e && e.code;
@@ -15101,7 +15392,13 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
   var done = false;
   function init() {
     if (done || !$("ptBatInput")) return; done = true;
-    $("ptBatInput").addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { run(); scene(); }, 320); });
+    $("ptBatInput").addEventListener("input", function () {
+      clearTimeout(timer);
+      $("ptBatClear").style.display = this.value ? "block" : "none";
+      updateBrands(this.value);
+      if (!this.value.trim()) { run(); scene(); return; }
+      timer = setTimeout(function () { run(); scene(); }, 320);
+    });
     var ai = $("searchInput"); if (ai) ai.addEventListener("input", function () { setTimeout(scene, 0); });
     $("ptBatClear").style.display = "none";
     var mb = /\/application\/eminapp\/?$/.test(location.pathname) ? "/application/eminapp/media/" : "media/";

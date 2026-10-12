@@ -71,7 +71,12 @@ async function init(db) {
     db.prepare("CREATE TABLE IF NOT EXISTS pt_base (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, groups INTEGER, models INTEGER, size INTEGER, data BLOB NOT NULL)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_cfg (k TEXT PRIMARY KEY, v TEXT)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_rate (k TEXT PRIMARY KEY, n INTEGER DEFAULT 0)"),
-    db.prepare("CREATE TABLE IF NOT EXISTS pt_bat (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, lines INTEGER, models INTEGER, codes INTEGER, size INTEGER, data BLOB NOT NULL)")
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_bat (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, lines INTEGER, models INTEGER, codes INTEGER, size INTEGER, data BLOB NOT NULL)"),
+    // Yeniləmə tarixçəsi: versiya saxlama limitindən asılı olmayan yüngül jurnal (antiudar + batareya)
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_hist (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, kind TEXT NOT NULL, a INTEGER DEFAULT 0, r INTEGER DEFAULT 0, e INTEGER DEFAULT 0, g INTEGER DEFAULT 0, n INTEGER DEFAULT 0, c INTEGER DEFAULT 0, note TEXT DEFAULT '', first INTEGER DEFAULT 0)"),
+    db.prepare("CREATE INDEX IF NOT EXISTS pt_hist_ts ON pt_hist (ts)"),
+    // Gecə saatlarında (Bakı 23:00–10:00) Telegram xəbərləri burada gözləyir, səhər 10:00-da bir yerdə gedir
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_tgq (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, text TEXT NOT NULL)")
   ]);
   READY = true;
 }
@@ -204,9 +209,40 @@ async function batIndex(db) {
   BAT = { id: cur, ix };
   return ix;
 }
+function lev(a, b) {
+  if (a === b) return 0;
+  const m = a.length, n = b.length;
+  if (!m) return n; if (!n) return m;
+  let prev = new Array(n + 1), cur = new Array(n + 1);
+  for (let j = 0; j <= n; j++) prev[j] = j;
+  for (let i = 1; i <= m; i++) {
+    cur[0] = i;
+    for (let j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    const t = prev; prev = cur; cur = t;
+  }
+  return prev[n];
+}
+function batModelOut(ix, m) {
+  const codes = [], cs = new Set(), same = [], ss = new Set([m]), shared = {};
+  ix.byModel.get(m).forEach((r) => {
+    r.codes.forEach((c) => { if (!cs.has(c)) { cs.add(c); codes.push(c); } });
+  });
+  // eyni batareya kodunu paylaşan digər modellər — uyğun ola bilən modellər (hər biri üçün ortaq kodlar)
+  codes.forEach((c) => {
+    const ent = ix.byCode.get(nz(c));
+    if (ent) ent.rows.forEach((r) => r.models.forEach((x) => {
+      if (x === m) return;
+      if (!ss.has(x)) { ss.add(x); same.push(x); shared[x] = []; }
+      if (shared[x].indexOf(c) < 0) shared[x].push(c);
+    }));
+  });
+  const sh = {};
+  same.slice(0, 40).forEach((x) => { sh[x] = shared[x].slice(0, 6); });
+  return { model: m, codes, same: same.slice(0, 40), shared: sh };
+}
 function batSearch(ix, q) {
   const k = nz(q);
-  const out = { codes: [], models: [], multi: false };
+  const out = { codes: [], models: [], multi: false, fuzzy: false };
   if (!k) return out;
   let codeHit = ix.byCode.has(k) ? [k] : [];
   if (!codeHit.length && k.length >= 2) {
@@ -216,7 +252,13 @@ function batSearch(ix, q) {
   codeHit.slice(0, 20).forEach((c) => {
     const ent = ix.byCode.get(c), seen = new Set(), mods = [];
     ent.rows.forEach((r) => r.models.forEach((m) => { if (!seen.has(m)) { seen.add(m); mods.push(m); } }));
-    out.codes.push({ code: ent.code, models: mods.slice(0, 80) });
+    const mc = {};
+    mods.slice(0, 80).forEach((m) => {
+      const cs = [];
+      ix.byModel.get(m).forEach((r) => r.codes.forEach((x) => { if (cs.indexOf(x) < 0) cs.push(x); }));
+      mc[m] = cs.slice(0, 6);
+    });
+    out.codes.push({ code: ent.code, models: mods.slice(0, 80), mc });
   });
   const toks = String(q).toLowerCase().split(/[\s,\/]+/).map(nz).filter(Boolean);
   const mHit = [];
@@ -224,18 +266,20 @@ function batSearch(ix, q) {
     const z = nz(m);
     if (z.indexOf(k) >= 0 || (toks.length > 1 && toks.every((t) => z.indexOf(t) >= 0))) mHit.push(m);
   });
+  // heç nə tapılmadısa: bir hərf səhvinə dözümlülük (antiudar axtarışı kimi)
+  if (!mHit.length && !out.codes.length && toks.length) {
+    out.fuzzy = true;
+    ix.byModel.forEach((_, m) => {
+      const z = nz(m);
+      const words = m.toLowerCase().split(/[^a-z0-9а-яё]+/).filter(Boolean);
+      const ok = toks.every((tk) => z.indexOf(tk) >= 0 || (tk.length >= 4 && words.some((w) => Math.abs(w.length - tk.length) <= 1 && lev(w, tk) <= 1)));
+      if (ok) mHit.push(m);
+    });
+  }
   mHit.slice(0, 60).forEach((m) => {
-    const codes = [], cs = new Set(), same = [], ss = new Set([m]);
-    ix.byModel.get(m).forEach((r) => {
-      r.codes.forEach((c) => { if (!cs.has(c)) { cs.add(c); codes.push(c); } });
-      if (r.codes.length > 1) out.multi = true;
-    });
-    // eyni batareya kodunu paylaşan digər modellər — uyğun ola bilən modellər
-    codes.forEach((c) => {
-      const ent = ix.byCode.get(nz(c));
-      if (ent) ent.rows.forEach((r) => r.models.forEach((x) => { if (!ss.has(x)) { ss.add(x); same.push(x); } }));
-    });
-    out.models.push({ model: m, codes, same: same.slice(0, 40) });
+    const o = batModelOut(ix, m);
+    if (ix.byModel.get(m).some((r) => r.codes.length > 1)) out.multi = true;
+    out.models.push(o);
   });
   return out;
 }
@@ -255,17 +299,55 @@ async function batLimit(db, me) {
   return null;
 }
 
+// ---------- Telegram: gecə sakit saatları (Bakı vaxtı 23:00–10:00) ----------
+const TG_QUIET_FROM = 23, TG_QUIET_TO = 10;
+const TG_FLUSH_CRON = "0 6 * * *";           // 06:00 UTC = 10:00 Bakı
+const bakuHour = (t) => (new Date(t || Date.now()).getUTCHours() + 4) % 24;
+const bakuHM = (t) => new Date((t || Date.now()) + 4 * 3600000).toISOString().slice(11, 16);
+const tgQuiet = () => { const h = bakuHour(); return h >= TG_QUIET_FROM || h < TG_QUIET_TO; };
+async function tgRaw(env, text) {
+  const r = await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: env.TG_CHAT, text: String(text).slice(0, 4000) })
+  });
+  return r.ok;
+}
+async function tgSend(env, text) {
+  if (!env.TG_TOKEN || !env.TG_CHAT) return;
+  if (tgQuiet() && env.DB) {
+    try {
+      await env.DB.prepare("CREATE TABLE IF NOT EXISTS pt_tgq (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, text TEXT NOT NULL)").run();
+      await env.DB.prepare("INSERT INTO pt_tgq (ts, text) VALUES (?, ?)").bind(Date.now(), String(text).slice(0, 1500)).run();
+      return;
+    } catch (e) { /* növbə alınmasa, gecə də olsa göndər */ }
+  }
+  try { await tgRaw(env, text); } catch (e) {}
+}
+async function tgFlush(env) {
+  if (!env.TG_TOKEN || !env.TG_CHAT || !env.DB) return;
+  const db = env.DB;
+  await init(db);
+  const rs = await db.prepare("SELECT id, ts, text FROM pt_tgq ORDER BY id LIMIT 300").all();
+  const rows = rs.results || [];
+  if (!rows.length) return;
+  const head = "🌅 Gecə bildirişləri (" + rows.length + ")";
+  const chunks = [];
+  let cur = head;
+  rows.forEach((r) => {
+    const part = "\n\n— " + bakuHM(r.ts) + " —\n" + r.text;
+    if ((cur + part).length > 3800) { chunks.push(cur); cur = head + " · davamı"; }
+    cur += part;
+  });
+  chunks.push(cur);
+  for (const c of chunks) { if (!(await tgRaw(env, c))) return; }
+  await db.batch(rows.map((r) => db.prepare("DELETE FROM pt_tgq WHERE id=?").bind(r.id)));
+}
+
 // ---------- Adminə xəbərdarlıq (Telegram + telefona push) ----------
+// Push dərhal gedir; Telegram gözləsə də push gecikmir (paralel)
 async function notifyAdmin(env, db, title, text) {
-  try {
-    if (env.TG_TOKEN && env.TG_CHAT) {
-      await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: env.TG_CHAT, text: title + "\n\n" + text })
-      }).catch(() => {});
-    }
-  } catch (e) {}
-  try {
+  const tg = tgSend(env, title + "\n\n" + text).catch(() => {});
+  const push = (async () => {
     if (!env.PUSH_KEY) return;
     const a = await db.prepare("SELECT v FROM chat_cfg WHERE k='admin_uid'").first();
     if (!a || !a.v) return;
@@ -275,7 +357,8 @@ async function notifyAdmin(env, db, title, text) {
       headers: { "X-Push-Key": env.PUSH_KEY, "Content-Type": "application/json" },
       body: JSON.stringify({ to: [a.v], t: "general", ti: { az: title, ru: title, tr: title, en: title }, b: { az: bt, ru: bt, tr: bt, en: bt }, o: "notif" })
     });
-  } catch (e) {}
+  })().catch(() => {});
+  await Promise.all([tg, push]);
 }
 
 // ---------- Marşrutlar ----------
@@ -291,10 +374,7 @@ async function tgAlert(env, where, err, req) {
     let p = "";
     try { if (req) p = " " + req.method + " " + new URL(req.url).pathname; } catch (e) {}
     const msg = "⚠️ " + "protector-data" + " xətası (" + where + ")" + p + "\n\n" + String((err && err.message) || err).slice(0, 500);
-    await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TG_CHAT, text: msg })
-    });
+    await tgSend(env, msg);
   } catch (e) {}
 }
 
@@ -439,11 +519,20 @@ const _handler = {
         db.prepare("INSERT INTO pt_rate (k, n) VALUES (?, 1) ON CONFLICT(k) DO UPDATE SET n=n+1").bind(rk)
       ]);
       if (x.kind === "battery") {
-        const fit = x.reason === "bat_fit";
-        ctx.waitUntil(notifyAdmin(env, db, fit ? "🔋 Batareya: «Uyğundur» bildirişi" : "🔋 Batareya: «Uyğun gəlmədi» bildirişi",
+        const fit = x.reason === "bat_fit", miss = x.reason === "bat_missing";
+        ctx.waitUntil(notifyAdmin(env, db, fit ? "🔋 Batareya: «Uyğundur» bildirişi" : (miss ? "🔋 Batareya: bazada yoxdur" : "🔋 Batareya: «Uyğun gəlmədi» bildirişi"),
           (me.email || me.uid) + "\n" + x.model + (x.code ? " — " + x.code : "") + (x.comment ? "\n" + x.comment : "")));
+      } else if (!me.admin) {
+        // Antiudar «Uyğun gəlmədi» / yeni model bildirişi də adminə dərhal push kimi çatsın
+        ctx.waitUntil(notifyAdmin(env, db, "⚠ Yeni bildiriş: " + x.model.slice(0, 60),
+          (me.email || me.uid) + "\n" + (x.reason || "") + (x.comment ? "\n" + x.comment : "")));
       }
       return J({ ok: true, id });
+    }
+    // ===== Yeniləmə tarixçəsi (hamı üçün eyni: antiudar + batareya bazası) =====
+    if (path === "/hist" && req.method === "GET") {
+      const rs = await db.prepare("SELECT ts, kind, a, r, e, g, n, c, note, first FROM pt_hist ORDER BY ts DESC LIMIT 150").all();
+      return J({ items: rs.results || [] });
     }
     // ===== Batareya axtarışı (qeydiyyatlı istifadəçilər; baza heç vaxt tam göndərilmir) =====
     if (path === "/bat/meta" && req.method === "GET") {
@@ -475,10 +564,17 @@ const _handler = {
       prev.byModel.forEach((_, m) => { if (!ix.byModel.has(m)) removed.push(m); });
       const txt = JSON.stringify(arr);
       const note = "+" + added.length + " / −" + removed.length;
+      const now = Date.now();
       const ins = await db.prepare("INSERT INTO pt_bat (ts, by, note, lines, models, codes, size, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-        .bind(Date.now(), me.email, note, arr.length, ix.byModel.size, ix.byCode.size, txt.length, await gz(txt)).run();
+        .bind(now, me.email, note, arr.length, ix.byModel.size, ix.byCode.size, txt.length, await gz(txt)).run();
       const id = ins.meta && ins.meta.last_row_id;
       await cfgSet(db, "bat_cur", id);
+      // Tarixçə jurnalı: dəyişiklik varsa (model +/−, kod və ya sətir sayı) qeyd olunur
+      const structChanged = ix.byCode.size !== prev.byCode.size || ix.rows.length !== prev.rows.length;
+      if (added.length || removed.length || structChanged) {
+        await db.prepare("INSERT INTO pt_hist (ts, kind, a, r, n, c, note) VALUES (?, 'bat', ?, ?, ?, ?, ?)")
+          .bind(now, added.length, removed.length, ix.byModel.size, ix.byCode.size, added.length || removed.length ? "" : "edit").run();
+      }
       BAT = { id, ix };
       ctx.waitUntil(db.prepare("DELETE FROM pt_bat WHERE id NOT IN (SELECT id FROM pt_bat ORDER BY id DESC LIMIT ?)").bind(BAT_KEEP).run().catch(() => {}));
       if (added.length || removed.length) {
@@ -494,6 +590,12 @@ const _handler = {
       return J({ items: rs.results || [], cur: +(await cfgGet(db, "bat_cur")) || 0 });
     }
 
+    // Yüngül yoxlama: admin paneli hər 10 saniyədən bir yalnız bunu çağırır, dəyişiklik varsa siyahını yükləyir
+    if (path === "/r/count" && req.method === "GET") {
+      const p = await db.prepare("SELECT COUNT(*) n, COALESCE(MAX(ts), 0) t FROM pt_report WHERE status='pending'").first();
+      const l = await db.prepare("SELECT COALESCE(MAX(ts), 0) t FROM pt_report").first();
+      return J({ pending: (p && p.n) || 0, last: (l && l.t) || 0 });
+    }
     if (path === "/r/list" && req.method === "GET") {
       const n = Math.min(Math.max(+url.searchParams.get("n") || 100, 1), 500);
       const rs = await db.prepare("SELECT * FROM pt_report ORDER BY ts DESC LIMIT ?").bind(n).all();
@@ -563,6 +665,12 @@ const _handler = {
         .bind(now, me.email, String(b.note || "").slice(0, 200), +data.groupCount || 0, +b.models || 0, txt.length, blob).run();
       const id = ins.meta && ins.meta.last_row_id;
       await cfgSet(db, "base_cur", id);
+      // Tarixçə jurnalı (client dərc zamanı göndərdiyi say məlumatı)
+      const h = b.hist && typeof b.hist === "object" ? b.hist : null;
+      if (h && (h.a || h.r || h.e || h.g || h.note)) {
+        await db.prepare("INSERT INTO pt_hist (ts, kind, a, r, e, g, n, note, first) VALUES (?, 'base', ?, ?, ?, ?, ?, ?, ?)")
+          .bind(now, +h.a || 0, +h.r || 0, +h.e || 0, +h.g || 0, +h.n || +b.models || 0, String(h.note || "").slice(0, 30), h.first ? 1 : 0).run();
+      }
       ctx.waitUntil(db.prepare("DELETE FROM pt_base WHERE id NOT IN (SELECT id FROM pt_base ORDER BY id DESC LIMIT ?)").bind(BASE_KEEP).run().catch(() => {}));
       return J({ ok: true, id, ts: now });
     }
@@ -586,6 +694,8 @@ const _handler = {
   },
 
   async scheduled(ev, env, ctx) {
+    // 10:00 Bakı: gecə növbəsindəki Telegram xəbərləri bir mesajda göndərilir
+    if (ev && ev.cron === TG_FLUSH_CRON) { await tgFlush(env); return; }
     await cleanup(env);
   }
 };

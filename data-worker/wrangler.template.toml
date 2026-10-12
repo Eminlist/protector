@@ -9,7 +9,7 @@ database_name = "protector-db"
 database_id = "__D1_ID__"
 
 [triggers]
-crons = ["37 0 * * *"]
+crons = ["37 0 * * *", "0 6 * * *"]
 
 [observability]
 enabled = true

@@ -186,10 +186,7 @@ async function sendMsg(env, ctx, me, body, authHeader) {
   }
   if (!me.admin && env.TG_TOKEN && env.TG_CHAT) {
     const who = (body.name || me.email || uid);
-    ctx.waitUntil(fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TG_CHAT, text: "💬 Yeni mesaj — " + who + "\n\n" + (txt || "📷 Şəkil") })
-    }).catch(() => {}));
+    ctx.waitUntil(tgSend(env, "💬 Yeni mesaj — " + who + "\n\n" + (txt || "📷 Şəkil")).catch(() => {}));
   }
   return J({ ok: true, ts: now });
 }
@@ -206,6 +203,27 @@ async function cleanup(env) {
   ]);
 }
 
+// ---------- Telegram: gecə sakit saatları (Bakı vaxtı 23:00–10:00) ----------
+// Gecə xəbərləri D1-də (pt_tgq) gözləyir; protector-data Worker-i hər səhər 10:00-da bir mesajda göndərir.
+const TG_QUIET_FROM = 23, TG_QUIET_TO = 10;
+const tgQuiet = () => { const h = (new Date().getUTCHours() + 4) % 24; return h >= TG_QUIET_FROM || h < TG_QUIET_TO; };
+async function tgSend(env, text) {
+  if (!env.TG_TOKEN || !env.TG_CHAT) return;
+  if (tgQuiet() && env.DB) {
+    try {
+      await env.DB.prepare("CREATE TABLE IF NOT EXISTS pt_tgq (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, text TEXT NOT NULL)").run();
+      await env.DB.prepare("INSERT INTO pt_tgq (ts, text) VALUES (?, ?)").bind(Date.now(), String(text).slice(0, 1500)).run();
+      return;
+    } catch (e) { /* növbə alınmasa, gecə də olsa göndər */ }
+  }
+  try {
+    await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: env.TG_CHAT, text: String(text).slice(0, 4000) })
+    });
+  } catch (e) {}
+}
+
 // ---------- Marşrutlar ----------
 // ---------- Xəta xəbərdarlığı (Telegram) ----------
 // Secrets: TG_TOKEN + TG_CHAT. Eyni isolate-də dəqiqədə ən çox 1 xəbər (spam olmasın).
@@ -219,10 +237,7 @@ async function tgAlert(env, where, err, req) {
     let p = "";
     try { if (req) p = " " + req.method + " " + new URL(req.url).pathname; } catch (e) {}
     const msg = "⚠️ " + "protector-chat" + " xətası (" + where + ")" + p + "\n\n" + String((err && err.message) || err).slice(0, 500);
-    await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TG_CHAT, text: msg })
-    });
+    await tgSend(env, msg);
   } catch (e) {}
 }
 
