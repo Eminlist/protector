@@ -23,7 +23,6 @@ jobs:
           # Proqram (veb tətbiq): protechtor.app/application/eminapp/
           cp index.html sw.js manifest.json *.png *.ico dist/application/eminapp/
           cp -r media dist/application/eminapp/media
-          cp battery.json dist/application/eminapp/battery.json
           # Sayt səhifələri (ana səhifə = pages/index.html) və ümumi ikonlar
           cp *.png *.ico dist/
           cp -r pages/. dist/

@@ -13,6 +13,12 @@ const REPORT_DAY_LIMIT = 20;            // istifadəçi gündə ən çox 20 hesa
 const BASE_KEEP = 40;                   // son 40 versiya saxlanılır
 const MAX_BODY = 8 * 1024 * 1024;
 const LANDING_MODES = ["on", "nogirl", "off"];
+const PUSH_URL = "https://protector-push.o553115544.workers.dev";
+// Batareya bazası (Battery.json) — yalnız serverdə saxlanılır, axtarış serverdə gedir (antiudar kimi qorunur)
+const BAT_KEEP = 10;               // son 10 versiya
+const BAT_DAY_LIMIT = 300;         // istifadəçi gündə ən çox 300 batareya axtarışı
+const BAT_MIN_LIMIT = 40;          // dəqiqədə ən çox 40 (kütləvi çıxarmanın qarşısı)
+const BAT_OLD = ["Sony Ericsson", "Samsung", "Philips", "Motorola", "Siemens", "Nokia"];
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -64,7 +70,8 @@ async function init(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS pt_report_ts ON pt_report (ts)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_base (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, groups INTEGER, models INTEGER, size INTEGER, data BLOB NOT NULL)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_cfg (k TEXT PRIMARY KEY, v TEXT)"),
-    db.prepare("CREATE TABLE IF NOT EXISTS pt_rate (k TEXT PRIMARY KEY, n INTEGER DEFAULT 0)")
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_rate (k TEXT PRIMARY KEY, n INTEGER DEFAULT 0)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_bat (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, lines INTEGER, models INTEGER, codes INTEGER, size INTEGER, data BLOB NOT NULL)")
   ]);
   READY = true;
 }
@@ -158,8 +165,117 @@ async function cleanup(env) {
   await db.batch([
     db.prepare("DELETE FROM pt_notif WHERE ts < ?").bind(now - NOTIF_KEEP_MS),
     db.prepare("DELETE FROM pt_report WHERE ts < ? AND status != 'pending'").bind(now - REPORT_KEEP_MS),
-    db.prepare("DELETE FROM pt_rate WHERE k < ?").bind("r:" + (Math.floor(now / 86400000) - 2))
+    db.prepare("DELETE FROM pt_rate WHERE k < ?").bind("r:" + (Math.floor(now / 86400000) - 2)),
+    db.prepare("DELETE FROM pt_rate WHERE k LIKE 'b:%' AND k < ?").bind("b:" + (Math.floor(now / 86400000) - 2)),
+    db.prepare("DELETE FROM pt_rate WHERE k LIKE 'bm:%' AND k < ?").bind("bm:" + (Math.floor(now / 60000) - 1440))
   ]);
+}
+
+// ---------- Batareya bazası ----------
+const nz = (x) => String(x || "").toLowerCase().replace(/[^a-z0-9а-яё]+/g, "");
+function batBuild(arr) {
+  const byModel = new Map(), byCode = new Map(), rows = [];
+  (Array.isArray(arr) ? arr : []).forEach((line) => {
+    const p = String(line).split("|").map((x) => x.trim());
+    if (p.length < 2) return;
+    const models = p[0].split(",").map((x) => x.trim()).filter(Boolean);
+    const codes = p[1].split(",").map((x) => x.trim()).filter(Boolean);
+    if (!models.length || !codes.length) return;
+    const r = { models, codes };
+    rows.push(r);
+    models.forEach((m) => { if (!byModel.has(m)) byModel.set(m, []); byModel.get(m).push(r); });
+    codes.forEach((c) => { const k = nz(c); if (!k) return; if (!byCode.has(k)) byCode.set(k, { code: c, rows: [] }); byCode.get(k).rows.push(r); });
+  });
+  const old = [];
+  byModel.forEach((_, m) => {
+    if (BAT_OLD.some((b) => m.indexOf(b + " ") === 0 && (b !== "Samsung" || !/galaxy|5g|fold|flip/i.test(m)))) old.push(m);
+  });
+  return { byModel, byCode, rows, old };
+}
+let BAT = { id: -1, ix: null };
+async function batIndex(db) {
+  const cur = +(await cfgGet(db, "bat_cur")) || 0;
+  if (BAT.id === cur && BAT.ix) return BAT.ix;
+  let ix = batBuild([]);
+  if (cur) {
+    const r = await db.prepare("SELECT data FROM pt_bat WHERE id=?").bind(cur).first();
+    if (r) { try { ix = batBuild(JSON.parse(await gunz(r.data))); } catch (e) {} }
+  }
+  BAT = { id: cur, ix };
+  return ix;
+}
+function batSearch(ix, q) {
+  const k = nz(q);
+  const out = { codes: [], models: [], multi: false };
+  if (!k) return out;
+  let codeHit = ix.byCode.has(k) ? [k] : [];
+  if (!codeHit.length && k.length >= 2) {
+    codeHit = Array.from(ix.byCode.keys()).filter((c) => c.indexOf(k) >= 0)
+      .sort((a, b) => (a.indexOf(k) - b.indexOf(k)) || (a.length - b.length));
+  }
+  codeHit.slice(0, 20).forEach((c) => {
+    const ent = ix.byCode.get(c), seen = new Set(), mods = [];
+    ent.rows.forEach((r) => r.models.forEach((m) => { if (!seen.has(m)) { seen.add(m); mods.push(m); } }));
+    out.codes.push({ code: ent.code, models: mods.slice(0, 80) });
+  });
+  const toks = String(q).toLowerCase().split(/[\s,\/]+/).map(nz).filter(Boolean);
+  const mHit = [];
+  ix.byModel.forEach((_, m) => {
+    const z = nz(m);
+    if (z.indexOf(k) >= 0 || (toks.length > 1 && toks.every((t) => z.indexOf(t) >= 0))) mHit.push(m);
+  });
+  mHit.slice(0, 60).forEach((m) => {
+    const codes = [], cs = new Set(), same = [], ss = new Set([m]);
+    ix.byModel.get(m).forEach((r) => {
+      r.codes.forEach((c) => { if (!cs.has(c)) { cs.add(c); codes.push(c); } });
+      if (r.codes.length > 1) out.multi = true;
+    });
+    // eyni batareya kodunu paylaşan digər modellər — uyğun ola bilən modellər
+    codes.forEach((c) => {
+      const ent = ix.byCode.get(nz(c));
+      if (ent) ent.rows.forEach((r) => r.models.forEach((x) => { if (!ss.has(x)) { ss.add(x); same.push(x); } }));
+    });
+    out.models.push({ model: m, codes, same: same.slice(0, 40) });
+  });
+  return out;
+}
+// Gündəlik + dəqiqəlik limit (admin istisna)
+async function batLimit(db, me) {
+  if (me.admin) return null;
+  const now = Date.now(), dk = "b:" + Math.floor(now / 86400000) + ":" + me.uid, mk = "bm:" + Math.floor(now / 60000) + ":" + me.uid;
+  await db.batch([
+    db.prepare("INSERT INTO pt_rate (k, n) VALUES (?, 1) ON CONFLICT(k) DO UPDATE SET n=n+1").bind(dk),
+    db.prepare("INSERT INTO pt_rate (k, n) VALUES (?, 1) ON CONFLICT(k) DO UPDATE SET n=n+1").bind(mk)
+  ]);
+  const rs = await db.prepare("SELECT k, n FROM pt_rate WHERE k IN (?, ?)").bind(dk, mk).all();
+  let day = 0, min = 0;
+  (rs.results || []).forEach((r) => { if (r.k === dk) day = r.n; else min = r.n; });
+  if (day > BAT_DAY_LIMIT) return "daily-limit";
+  if (min > BAT_MIN_LIMIT) return "slow";
+  return null;
+}
+
+// ---------- Adminə xəbərdarlıq (Telegram + telefona push) ----------
+async function notifyAdmin(env, db, title, text) {
+  try {
+    if (env.TG_TOKEN && env.TG_CHAT) {
+      await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: env.TG_CHAT, text: title + "\n\n" + text })
+      }).catch(() => {});
+    }
+  } catch (e) {}
+  try {
+    if (!env.PUSH_KEY) return;
+    const a = await db.prepare("SELECT v FROM chat_cfg WHERE k='admin_uid'").first();
+    if (!a || !a.v) return;
+    const bt = String(text).slice(0, 200);
+    await fetch(PUSH_URL + "/send", {
+      method: "POST",
+      headers: { "X-Push-Key": env.PUSH_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ to: [a.v], t: "general", ti: { az: title, ru: title, tr: title, en: title }, b: { az: bt, ru: bt, tr: bt, en: bt }, o: "notif" })
+    });
+  } catch (e) {}
 }
 
 // ---------- Marşrutlar ----------
@@ -315,15 +431,68 @@ const _handler = {
         date: String(d.date || "").slice(0, 20),
         createdAt: Date.now()
       };
+      if (d.kind === "battery") { x.kind = "battery"; x.code = String(d.code || "").slice(0, 60); }
       if (!x.model) return E("model");
       const id = rid();
       await db.batch([
         db.prepare("INSERT INTO pt_report (id, uid, ts, status, data) VALUES (?, ?, ?, 'pending', ?)").bind(id, me.uid, x.createdAt, JSON.stringify(x)),
         db.prepare("INSERT INTO pt_rate (k, n) VALUES (?, 1) ON CONFLICT(k) DO UPDATE SET n=n+1").bind(rk)
       ]);
+      if (x.kind === "battery") {
+        const fit = x.reason === "bat_fit";
+        ctx.waitUntil(notifyAdmin(env, db, fit ? "🔋 Batareya: «Uyğundur» bildirişi" : "🔋 Batareya: «Uyğun gəlmədi» bildirişi",
+          (me.email || me.uid) + "\n" + x.model + (x.code ? " — " + x.code : "") + (x.comment ? "\n" + x.comment : "")));
+      }
       return J({ ok: true, id });
     }
-    if (!me.admin && (path.startsWith("/r/") || path.startsWith("/base/"))) return E("forbidden", 403);
+    // ===== Batareya axtarışı (qeydiyyatlı istifadəçilər; baza heç vaxt tam göndərilmir) =====
+    if (path === "/bat/meta" && req.method === "GET") {
+      const ix = await batIndex(db);
+      const old = ix.old.slice();
+      for (let i = old.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = old[i]; old[i] = old[j]; old[j] = t; }
+      return J({ n: ix.byModel.size, c: ix.byCode.size, brands: BAT_OLD, old: old.slice(0, 24) });
+    }
+    if (path === "/bat/search" && req.method === "GET") {
+      const q = String(url.searchParams.get("q") || "").trim().slice(0, 60);
+      if (!q) return J({ codes: [], models: [], multi: false });
+      const lim = await batLimit(db, me);
+      if (lim) return E(lim, 429);
+      return J(batSearch(await batIndex(db), q));
+    }
+
+    if (!me.admin && (path.startsWith("/r/") || path.startsWith("/base/") || path.startsWith("/bat/"))) return E("forbidden", 403);
+
+    // ===== Batareya bazası: dərc (admin, GitHub-dan gələn Battery.json) =====
+    if (path === "/bat/publish" && req.method === "POST") {
+      const lines = Array.isArray(b.lines) ? b.lines : null;
+      if (!lines || lines.length < 1 || lines.length > 30000) return E("data");
+      const arr = lines.map((x) => String(x).slice(0, 600)).filter((x) => x.indexOf("|") > 0);
+      const ix = batBuild(arr);
+      if (!ix.byModel.size || !ix.byCode.size) return E("data");
+      const prev = await batIndex(db);
+      const added = [], removed = [];
+      ix.byModel.forEach((_, m) => { if (!prev.byModel.has(m)) added.push(m); });
+      prev.byModel.forEach((_, m) => { if (!ix.byModel.has(m)) removed.push(m); });
+      const txt = JSON.stringify(arr);
+      const note = "+" + added.length + " / −" + removed.length;
+      const ins = await db.prepare("INSERT INTO pt_bat (ts, by, note, lines, models, codes, size, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+        .bind(Date.now(), me.email, note, arr.length, ix.byModel.size, ix.byCode.size, txt.length, await gz(txt)).run();
+      const id = ins.meta && ins.meta.last_row_id;
+      await cfgSet(db, "bat_cur", id);
+      BAT = { id, ix };
+      ctx.waitUntil(db.prepare("DELETE FROM pt_bat WHERE id NOT IN (SELECT id FROM pt_bat ORDER BY id DESC LIMIT ?)").bind(BAT_KEEP).run().catch(() => {}));
+      if (added.length || removed.length) {
+        ctx.waitUntil(notifyAdmin(env, db, "🔋 Batareya bazası yeniləndi",
+          "Əlavə: " + added.length + (added.length ? " (" + added.slice(0, 8).join(", ") + (added.length > 8 ? "…" : "") + ")" : "") +
+          "\nSilindi: " + removed.length + (removed.length ? " (" + removed.slice(0, 8).join(", ") + (removed.length > 8 ? "…" : "") + ")" : "") +
+          "\nCəmi: " + ix.byModel.size + " model · " + ix.byCode.size + " kod"));
+      }
+      return J({ ok: true, id, a: added.length, r: removed.length, n: ix.byModel.size, c: ix.byCode.size, added: added.slice(0, 10), removed: removed.slice(0, 10) });
+    }
+    if (path === "/bat/list" && req.method === "GET") {
+      const rs = await db.prepare("SELECT id, ts, by, note, lines, models, codes, size FROM pt_bat ORDER BY id DESC LIMIT ?").bind(BAT_KEEP).all();
+      return J({ items: rs.results || [], cur: +(await cfgGet(db, "bat_cur")) || 0 });
+    }
 
     if (path === "/r/list" && req.method === "GET") {
       const n = Math.min(Math.max(+url.searchParams.get("n") || 100, 1), 500);

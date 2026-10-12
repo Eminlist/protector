@@ -2229,7 +2229,15 @@
 .pt-bat-row{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px}
 .pt-bat-row b{display:block;color:var(--text);font-size:calc(15px * var(--font-scale));margin-bottom:6px;word-break:break-word}
 .pt-bat-code{display:inline-block;margin:2px 6px 2px 0;padding:4px 10px;border-radius:10px;border:1px solid var(--accent-color);color:var(--accent-color);font-weight:800;font-size:calc(14px * var(--font-scale));letter-spacing:.5px}
-.pt-bat-code.v{background:var(--accent-color);color:var(--bg,#000)}
+.pt-bat-sub{margin:8px 0 2px;font-size:calc(11px * var(--font-scale));letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:800}
+.pt-bat-same{font-size:calc(13px * var(--font-scale));color:var(--text);line-height:1.5;word-break:break-word}
+.pt-bat-acts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pt-bat-acts button{flex:1 1 0;min-width:120px;height:38px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text);font-weight:800;font-size:calc(13px * var(--font-scale));cursor:pointer;touch-action:manipulation}
+.pt-bat-acts button.ok{border-color:var(--c-ok,#2ecc71);color:var(--c-ok,#2ecc71)}
+.pt-bat-acts button.no{border-color:#f39c12;color:#f39c12}
+.pt-bat-acts button:disabled{opacity:.5}
+.pt-bat-login{text-align:center;color:var(--muted);padding:18px 8px}
+.pt-bat-login button{margin-top:10px;height:42px;padding:0 22px;border-radius:12px;border:1px solid var(--accent-color);background:transparent;color:var(--accent-color);font-weight:800;cursor:pointer}
 .pt-bat-note{font-size:calc(12px * var(--font-scale));color:var(--muted);margin:2px 2px 10px}
 #ptBatCount{text-align:center;color:var(--muted);font-size:calc(12px * var(--font-scale));letter-spacing:.5px;padding:18px 0 6px}
 .pt-mode button{display:flex;align-items:center;justify-content:center}
@@ -2732,6 +2740,7 @@ html.sensitive .ripple-ring{display:none !important}
                         <option value="sizes">Antiudar ölçüləri dəqiqləşdirildi</option>
                         <option value="refreshed">Baza aktual hala gətirildi</option>
                         <option value="checked">Model uyğunluqları yoxlanıldı</option>
+                        <option value="battery">Batareya bazası yeniləndi</option>
                     </select>
                     <button type="button" class="adm-publish" onclick="adminPublishDatabase()"><span class="e3d ic3d" style="--a:#FFB866;--b:#F06A1D" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 13v8" /><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" /><path d="m8 17 4-4 4 4" /></svg></span><span>Dərc et</span></button><button type="button" class="adm-vers" onclick="ptVerOpen()" title="Baza versiyaları və geri qaytarma"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg><span>Versiyalar</span></button>
                 </div>
@@ -6092,7 +6101,7 @@ function groupsFromFirestore(data) {
 
 function ptPubNote(note, cl) {
     if (window._ptRollbackNote) { const n = window._ptRollbackNote; window._ptRollbackNote = ""; return n; }
-    const L = { sizes: "Antiudar ölçüləri dəqiqləşdirildi", refreshed: "Baza aktual hala gətirildi", checked: "Model uyğunluqları yoxlanıldı" };
+    const L = { sizes: "Antiudar ölçüləri dəqiqləşdirildi", refreshed: "Baza aktual hala gətirildi", checked: "Model uyğunluqları yoxlanıldı", battery: "Batareya bazası yeniləndi" };
     return L[note] || (cl ? formatChangelogEntry(cl) : "Dərc edildi");
 }
 
@@ -6939,8 +6948,10 @@ function loadMisfits() {
         const stMap = { pending: "⏳ Gözləyir", added: "✅ Əlavə olundu", rejected: "❌ Rədd" };
         box.innerHTML = adminMisfits.map(function (x, i) {
             const st = stMap[x.status || "pending"] || stMap.pending;
+            const bat = x.kind === "battery";
+            const rs = bat ? ((x.reason === "bat_fit" ? "🔋 Uyğundur" : "🔋 Uyğun gəlmədi") + (x.code ? " · " + x.code : "")) : x.reason;
             return '<div class="req-row"><span><b>' + escapeHtml(x.model) + '</b> <small style="color:var(--muted)">' + escapeHtml(x.date || "") + ' · ' + st + '</small>' +
-                (x.reason ? '<br><small style="color:var(--accent-color)">' + escapeHtml(x.reason) + '</small>' : '') +
+                (rs ? '<br><small style="color:var(--accent-color)">' + escapeHtml(rs) + '</small>' : '') +
                 (x.comment ? '<br>' + escapeHtml(x.comment) : '') + '</span>' +
                 '<span class="req-acts">' +
                 '<button onclick="resolveMisfit(' + i + ',\'added\')">✅</button>' +
@@ -6971,7 +6982,8 @@ function resolveMisfit(i, status) {
             createdAt: Date.now(),
             read: false
         };
-        if (status === "added") payload.linkModel = x.model || "";
+        if (x.kind === "battery") payload.kind = "battery";
+        if (status === "added" && x.kind !== "battery") payload.linkModel = x.model || "";
         if (status === "rejected") payload.rejectReason = rejectReason || "";
         const notify = x.uid
             ? ptNotifCol(x.uid).add(payload).catch(function () {})
@@ -8686,7 +8698,7 @@ function notifText(x) {
     if (x.type === "grace") return t("proGrace").replace("{n}", x.n);
     if (x.type === "trial") return t("trialEnding").replace("{n}", x.n);
     if (x.type === "req_reply") return t(x.reply === "not_sale" ? "nReqNotSale" : x.reply === "not_exist" ? "nReqNotExist" : "nReqAdded").replace("{m}", x.model || "");
-    if (x.type === "misfit_done") return t("nMisfitDone").replace("{m}", x.model || "");
+    if (x.type === "misfit_done") return t(x.kind === "battery" ? "nBatDone" : "nMisfitDone").replace("{m}", x.model || "");
     return x.text || "";
 }
 
@@ -10931,7 +10943,7 @@ Object.keys(I18N_A11Y).forEach(function (l) { Object.assign(I18N[l], I18N_A11Y[l
 
 const I18N_MORE = {"az": {"mEmail": "E-poçt və parol", "mEmailSub": "Giriş və ya yeni qeydiyyat (mağaza profili ilə)", "mGoogle": "Google hesabı", "mGoogleSub": "Bir toxunuşla giriş və qeydiyyat", "mAnon": "Anonim davam et", "mAnonSub": "Cəmi 5 əlavə axtarış. Bitdikdən sonra qeydiyyat tələb olunur.", "loginEmailPh": "E-poçt ünvanınız", "loginPassPh": "Parol", "forgotTitle": "Parolu Bərpa Et", "forgotPh": "Qeydiyyat e-poçtunuz", "forgotBtn": "Bərpa Linki Göndər", "backToLogin": "Girişə qayıt", "profSmall": "İDARƏETMƏ", "profTitle": "Mağaza Profili", "profSection": "ŞƏXSİ VƏ MAĞAZA MƏLUMATLARI", "profNick": "Ləqəb", "profPhone": "Telefon Nömrəsi", "profSaveBtn": "Dəyişiklikləri Yadda Saxla", "logoutBtn": "Hesabdan Çıxış Et", "confirmTitle": "Təsdiq", "confirmYes": "Bəli, Sil", "confirmNo": "İmtina", "installText": "Tətbiqi quraşdır", "installBtn": "Quraşdır", "sndBip": "Standart", "sndClick": "Yumşaq Klik", "sndPop": "Pop Səsi", "hapLight": "Zəif", "hapMedium": "Orta", "hapHeavy": "Güclü", "modelNamePrompt": "Model adı:", "modelReportFail": "Bildiriş göndərilmədi. İnterneti yoxlayın və ya daxil olub yenidən cəhd edin."}, "ru": {"mEmail": "Email и пароль", "mEmailSub": "Вход или новая регистрация (с профилем магазина)", "mGoogle": "Аккаунт Google", "mGoogleSub": "Вход и регистрация в одно касание", "mAnon": "Продолжить анонимно", "mAnonSub": "Всего 5 дополнительных поисков. Затем нужна регистрация.", "loginEmailPh": "Ваш email", "loginPassPh": "Пароль", "forgotTitle": "Восстановление пароля", "forgotPh": "Email, указанный при регистрации", "forgotBtn": "Отправить ссылку", "backToLogin": "Вернуться ко входу", "profSmall": "УПРАВЛЕНИЕ", "profTitle": "Профиль магазина", "profSection": "ЛИЧНЫЕ ДАННЫЕ И МАГАЗИН", "profNick": "Псевдоним", "profPhone": "Номер телефона", "profSaveBtn": "Сохранить изменения", "logoutBtn": "Выйти из аккаунта", "confirmTitle": "Подтверждение", "confirmYes": "Да, удалить", "confirmNo": "Отмена", "installText": "Установить приложение", "installBtn": "Установить", "sndBip": "Стандартный", "sndClick": "Мягкий клик", "sndPop": "Звук «Поп»", "hapLight": "Слабая", "hapMedium": "Средняя", "hapHeavy": "Сильная", "modelNamePrompt": "Название модели:", "modelReportFail": "Не удалось отправить. Проверьте интернет или войдите и попробуйте снова."}, "tr": {"mEmail": "E-posta ve şifre", "mEmailSub": "Giriş veya yeni kayıt (mağaza profiliyle)", "mGoogle": "Google hesabı", "mGoogleSub": "Tek dokunuşla giriş ve kayıt", "mAnon": "Anonim devam et", "mAnonSub": "Sadece 5 ek arama. Bittikten sonra kayıt gerekir.", "loginEmailPh": "E-posta adresiniz", "loginPassPh": "Şifre", "forgotTitle": "Şifreyi Sıfırla", "forgotPh": "Kayıtlı e-postanız", "forgotBtn": "Sıfırlama Bağlantısı Gönder", "backToLogin": "Girişe dön", "profSmall": "YÖNETİM", "profTitle": "Mağaza Profili", "profSection": "KİŞİSEL VE MAĞAZA BİLGİLERİ", "profNick": "Takma ad", "profPhone": "Telefon Numarası", "profSaveBtn": "Değişiklikleri Kaydet", "logoutBtn": "Hesaptan Çıkış Yap", "confirmTitle": "Onay", "confirmYes": "Evet, Sil", "confirmNo": "İptal", "installText": "Uygulamayı yükle", "installBtn": "Yükle", "sndBip": "Standart", "sndClick": "Yumuşak Tık", "sndPop": "Pop Sesi", "hapLight": "Zayıf", "hapMedium": "Orta", "hapHeavy": "Güçlü", "modelNamePrompt": "Model adı:", "modelReportFail": "Bildirim gönderilemedi. İnterneti kontrol edin veya giriş yapıp tekrar deneyin."}, "en": {"mEmail": "Email and password", "mEmailSub": "Sign in or register (with store profile)", "mGoogle": "Google account", "mGoogleSub": "One-tap sign in and registration", "mAnon": "Continue anonymously", "mAnonSub": "Only 5 extra searches. Registration is required afterwards.", "loginEmailPh": "Your email", "loginPassPh": "Password", "forgotTitle": "Reset Password", "forgotPh": "Your registration email", "forgotBtn": "Send Reset Link", "backToLogin": "Back to sign in", "profSmall": "MANAGEMENT", "profTitle": "Store Profile", "profSection": "PERSONAL & STORE DETAILS", "profNick": "Nickname", "profPhone": "Phone Number", "profSaveBtn": "Save Changes", "logoutBtn": "Sign Out", "confirmTitle": "Confirm", "confirmYes": "Yes, Delete", "confirmNo": "Cancel", "installText": "Install the app", "installBtn": "Install", "sndBip": "Standard", "sndClick": "Soft Click", "sndPop": "Pop Sound", "hapLight": "Light", "hapMedium": "Medium", "hapHeavy": "Strong", "modelNamePrompt": "Model name:", "modelReportFail": "Couldn't send. Check your internet or sign in and try again."}};
 Object.keys(I18N_MORE).forEach(function (l) { Object.assign(I18N[l], I18N_MORE[l]); });
-const I18N_NOTES = {"az": {"note_sizes": "Antiudar ölçüləri dəqiqləşdirildi", "note_refreshed": "Baza aktual hala gətirildi", "note_checked": "Model uyğunluqları yoxlanıldı", "lastCheck": "✓ Baza aktual hala gətirildi"}, "ru": {"note_sizes": "Размеры защитных стёкол уточнены", "note_refreshed": "База актуализирована", "note_checked": "Совместимость моделей проверена", "lastCheck": "✓ База актуализирована"}, "tr": {"note_sizes": "Koruyucu cam ölçüleri netleştirildi", "note_refreshed": "Veritabanı güncel hale getirildi", "note_checked": "Model uyumlulukları kontrol edildi", "lastCheck": "✓ Veritabanı güncel hale getirildi"}, "en": {"note_sizes": "Screen protector sizes refined", "note_refreshed": "Database brought up to date", "note_checked": "Model compatibility checked", "lastCheck": "✓ Database brought up to date"}};
+const I18N_NOTES = {"az": {"note_sizes": "Antiudar ölçüləri dəqiqləşdirildi", "note_refreshed": "Baza aktual hala gətirildi", "note_checked": "Model uyğunluqları yoxlanıldı", "note_battery": "Batareya bazası yeniləndi", "nBatDone": "«{m}» üzrə batareya uyğunluğu bildirişiniz yoxlanıldı. Təşəkkür edirik!", "lastCheck": "✓ Baza aktual hala gətirildi"}, "ru": {"note_sizes": "Размеры защитных стёкол уточнены", "note_refreshed": "База актуализирована", "note_checked": "Совместимость моделей проверена", "note_battery": "База батарей обновлена", "nBatDone": "Ваше сообщение о совместимости батареи для «{m}» проверено. Спасибо!", "lastCheck": "✓ База актуализирована"}, "tr": {"note_sizes": "Koruyucu cam ölçüleri netleştirildi", "note_refreshed": "Veritabanı güncel hale getirildi", "note_checked": "Model uyumlulukları kontrol edildi", "note_battery": "Batarya veritabanı güncellendi", "nBatDone": "«{m}» için batarya uyumluluğu bildiriminiz incelendi. Teşekkürler!", "lastCheck": "✓ Veritabanı güncel hale getirildi"}, "en": {"note_sizes": "Screen protector sizes refined", "note_refreshed": "Database brought up to date", "note_checked": "Model compatibility checked", "note_battery": "Battery database updated", "nBatDone": "Your battery compatibility report for «{m}» has been reviewed. Thank you!", "lastCheck": "✓ Database brought up to date"}};
 Object.keys(I18N_NOTES).forEach(function (l) { Object.assign(I18N[l], I18N_NOTES[l]); });
 const I18N_REPORT = {"az": {"reportNeedsAccount": "Model bildirmək üçün qeydiyyatdan keçin və ya daxil olun.", "authMsgReport": "Tapılmayan modeli bildirmək yalnız qeydiyyatlı istifadəçilər üçündür. Daxil olun və ya qeydiyyatdan keçin."}, "ru": {"reportNeedsAccount": "Чтобы сообщить о модели, войдите или зарегистрируйтесь.", "authMsgReport": "Сообщать об отсутствующих моделях могут только зарегистрированные пользователи. Войдите или зарегистрируйтесь."}, "tr": {"reportNeedsAccount": "Model bildirmek için giriş yapın veya kayıt olun.", "authMsgReport": "Bulunamayan modeli bildirmek yalnızca kayıtlı kullanıcılar içindir. Giriş yapın veya kayıt olun."}, "en": {"reportNeedsAccount": "Sign in or register to report a model.", "authMsgReport": "Only registered users can report missing models. Please sign in or register."}};
 Object.keys(I18N_REPORT).forEach(function (l) { Object.assign(I18N[l], I18N_REPORT[l]); });
@@ -11110,7 +11122,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.4";
+const APP_VERSION = "3.1.3.5";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -14854,13 +14866,11 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
 <script>
 (function () {
   "use strict";
-  var RAW = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Battery.json";
-  var KEY = "pt_battery_v1";
   var STR = {
-    az: { anti: "Antiudar", bat: "Batareya", ph: "BN54 / Redmi Note 9", st: "Model və ya batareya kodu yazın", none: "Nəticə tapılmadı", model: "Modellər", codes: "Batareya kodları", ver: "Yoxlanılıb", note: "Bir neçə kod göstərilibsə, modelə bunlardan biri uyğun gəlir.", cnt: "Batareya bazası: {n} model · {c} kod" },
-    ru: { anti: "Антиудар", bat: "Батарея", ph: "BN54 / Redmi Note 9", st: "Введите модель или код батареи", none: "Ничего не найдено", model: "Модели", codes: "Коды батарей", ver: "Проверено", note: "Если указано несколько кодов, подходит один из них.", cnt: "База батарей: {n} моделей · {c} кодов" },
-    tr: { anti: "Antişok", bat: "Batarya", ph: "BN54 / Redmi Note 9", st: "Model veya batarya kodu yazın", none: "Sonuç bulunamadı", model: "Modeller", codes: "Batarya kodları", ver: "Doğrulandı", note: "Birden fazla kod gösterilmişse, bunlardan biri uyumludur.", cnt: "Batarya veritabanı: {n} model · {c} kod" },
-    en: { anti: "Screen glass", bat: "Battery", ph: "BN54 / Redmi Note 9", st: "Enter a model or battery code", none: "No results found", model: "Models", codes: "Battery codes", ver: "Verified", note: "If several codes are shown, any one of them fits the model.", cnt: "Battery database: {n} models · {c} codes" }
+    az: { ph: "BN54 / Redmi Note 9", st: "Model və ya batareya kodu yazın", none: "Nəticə tapılmadı", note: "Bir neçə kod göstərilibsə, modelə bunlardan biri uyğun gəlir.", cnt: "Batareya bazası: {n} model · {c} kod", same: "Uyğun ola bilən modellər", fit: "✓ Uyğundur", nofit: "⚠ Uyğun gəlmədi", mine: "＋ Modelim də uyğundur", login: "Batareya axtarışı üçün daxil olun və ya qeydiyyatdan keçin.", loginBtn: "Daxil ol", limit: "Bu gün üçün batareya axtarış limiti doldu. Sabah yenidən cəhd edin.", slow: "Çox tez-tez axtarırsınız. Bir az gözləyin.", err: "Axtarış alınmadı. Bir az sonra yenidən cəhd edin.", sent: "Bildirişiniz adminə göndərildi. Təşəkkür edirik!", fail: "Bildiriş göndərilmədi. Bir az sonra yenidən cəhd edin.", rlimit: "Bu gün üçün bildiriş limiti doldu.", nfTitle: "Uyğun gəlmədi", nfText: "Qısa izah yazın (istəyə bağlı)", mineTitle: "Modelinizin adı", mineText: "Bu batareyaya uyğun gələn telefon modelini yazın" },
+    ru: { ph: "BN54 / Redmi Note 9", st: "Введите модель или код батареи", none: "Ничего не найдено", note: "Если указано несколько кодов, подходит один из них.", cnt: "База батарей: {n} моделей · {c} кодов", same: "Возможно совместимые модели", fit: "✓ Подходит", nofit: "⚠ Не подошла", mine: "＋ Моя модель тоже подходит", login: "Для поиска батарей войдите или зарегистрируйтесь.", loginBtn: "Войти", limit: "Дневной лимит поиска батарей исчерпан. Попробуйте завтра.", slow: "Вы ищете слишком часто. Подождите немного.", err: "Поиск не выполнен. Попробуйте чуть позже.", sent: "Ваше сообщение отправлено администратору. Спасибо!", fail: "Сообщение не отправлено. Попробуйте чуть позже.", rlimit: "Дневной лимит сообщений исчерпан.", nfTitle: "Не подошла", nfText: "Напишите краткое пояснение (по желанию)", mineTitle: "Название вашей модели", mineText: "Укажите модель телефона, которой подходит эта батарея" },
+    tr: { ph: "BN54 / Redmi Note 9", st: "Model veya batarya kodu yazın", none: "Sonuç bulunamadı", note: "Birden fazla kod gösterilmişse, bunlardan biri uyumludur.", cnt: "Batarya veritabanı: {n} model · {c} kod", same: "Uyumlu olabilecek modeller", fit: "✓ Uyumlu", nofit: "⚠ Uyumlu değil", mine: "＋ Modelim de uyumlu", login: "Batarya araması için giriş yapın veya kayıt olun.", loginBtn: "Giriş yap", limit: "Bugünkü batarya arama limiti doldu. Yarın tekrar deneyin.", slow: "Çok sık arama yapıyorsunuz. Biraz bekleyin.", err: "Arama yapılamadı. Biraz sonra tekrar deneyin.", sent: "Bildiriminiz yöneticiye gönderildi. Teşekkürler!", fail: "Bildirim gönderilemedi. Biraz sonra tekrar deneyin.", rlimit: "Bugünkü bildirim limiti doldu.", nfTitle: "Uyumlu değil", nfText: "Kısa bir açıklama yazın (isteğe bağlı)", mineTitle: "Modelinizin adı", mineText: "Bu bataryaya uyan telefon modelini yazın" },
+    en: { ph: "BN54 / Redmi Note 9", st: "Enter a model or battery code", none: "No results found", note: "If several codes are shown, any one of them fits the model.", cnt: "Battery database: {n} models · {c} codes", same: "Models that may also fit", fit: "✓ It fits", nofit: "⚠ Does not fit", mine: "＋ My model fits too", login: "Sign in or register to search batteries.", loginBtn: "Sign in", limit: "Today's battery search limit has been reached. Please try again tomorrow.", slow: "You are searching too often. Please wait a moment.", err: "Search failed. Please try again shortly.", sent: "Your report was sent to the admin. Thank you!", fail: "Report not sent. Please try again shortly.", rlimit: "Today's report limit has been reached.", nfTitle: "Does not fit", nfText: "Write a short explanation (optional)", mineTitle: "Your model name", mineText: "Enter the phone model that fits this battery" }
   };
   function L() {
     var l = "az";
@@ -14868,36 +14878,24 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     return STR[l] || STR.az;
   }
   function $(id) { return document.getElementById(id); }
-  function nz(x) { return String(x || "").toLowerCase().replace(/[^a-z0-9а-яё]+/g, ""); }
-  var rows = [], byModel = {}, byCode = {};
-  function build(arr) {
-    rows = []; byModel = {}; byCode = {};
-    (arr || []).forEach(function (line) {
-      var p = String(line).split("|").map(function (x) { return x.trim(); });
-      if (p.length < 2) return;
-      var models = p[0].split(",").map(function (x) { return x.trim(); }).filter(Boolean);
-      var codes = p[1].split(",").map(function (x) { return x.trim(); }).filter(Boolean);
-      var ver = (p[2] || "").toLowerCase() === "verified";
-      var r = { models: models, codes: codes, ver: ver };
-      rows.push(r);
-      models.forEach(function (m) { (byModel[m] = byModel[m] || []).push(r); });
-      codes.forEach(function (c) { (byCode[nz(c)] = byCode[nz(c)] || { code: c, rows: [] }).rows.push(r); });
-    });
-    count();
-  }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function registered() { try { return typeof isRegisteredUser === "function" && isRegisteredUser(); } catch (e) { return false; } }
+  function toast(m) { try { showAppToast(m, 4000); } catch (e) {} }
+
+  var mode = "anti", meta = null, metaBusy = false, seq = 0, timer = 0;
+  var BRANDS = ["Sony Ericsson", "Samsung", "Philips", "Motorola", "Siemens", "Nokia"];
+
   function count() {
-    var el = $("ptBatCount"); if (!el) return;
-    var n = Object.keys(byModel).length, c = Object.keys(byCode).length;
-    el.textContent = n ? L().cnt.replace("{n}", n).replace("{c}", c) : "";
+    var e = $("ptBatCount"); if (!e) return;
+    e.textContent = meta && meta.n ? L().cnt.replace("{n}", meta.n).replace("{c}", meta.c) : "";
   }
-  function load() {
-    try { var c = JSON.parse(localStorage.getItem(KEY) || "null"); if (Array.isArray(c)) build(c); } catch (e) {}
-    function ok(a) { if (Array.isArray(a) && a.length) { build(a); try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) {} if (mode === "bat") run(); return true; } return false; }
-    var base = /\/application\/eminapp\/?$/.test(location.pathname) ? "/application/eminapp/" : "";
-    fetch(base + "battery.json?v=" + Date.now()).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (a) { if (!ok(a)) throw 0; })
-      .catch(function () { return fetch(RAW + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { return r.json(); }).then(ok).catch(function () {}); });
+  function loadMeta() {
+    if (meta || metaBusy || !registered()) return;
+    metaBusy = true;
+    dataFetch("/bat/meta").then(function (d) { meta = d || null; if (meta && Array.isArray(meta.brands) && meta.brands.length) BRANDS = meta.brands; count(); phBuild(); })
+      .catch(function () {}).then(function () { metaBusy = false; });
   }
-  var mode = "anti";
+
   window.ptSetMode = function (m) {
     m = m === "bat" ? "bat" : "anti";
     if (m === mode) return;
@@ -14907,7 +14905,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     $("ptAntiBox").hidden = mode !== "anti";
     $("ptBatBox").hidden = mode !== "bat";
     scene();
-    if (mode === "bat") run();
+    if (mode === "bat") { loadMeta(); run(); }
   };
   function scene() {
     var st = $("ptStage"); if (!st) return;
@@ -14918,11 +14916,11 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     var on = st.hidden ? null : (mode === "bat" ? vb : va);
     [va, vb].forEach(function (v) { if (!v) return; if (v === on) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } else v.pause(); });
   }
-  var phSeq = [], phIdx = 0, OLD = ["Nokia", "Sony Ericsson", "BlackBerry"];
+
+  var phSeq = [], phIdx = 0;
   function phBuild() {
-    var models = Object.keys(byModel).filter(function (m) { return OLD.some(function (b) { return m.indexOf(b + " ") === 0; }); });
-    for (var i = models.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), x = models[i]; models[i] = models[j]; models[j] = x; }
-    phSeq = OLD.concat(models.slice(0, 14));
+    var models = ((meta && meta.old) || []).slice(0, 14);
+    phSeq = BRANDS.concat(models);
     phIdx = 0;
   }
   function phTick() {
@@ -14933,53 +14931,186 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     inp.style.opacity = 0.4;
     setTimeout(function () { inp.placeholder = m; inp.style.opacity = 1; }, 280);
   }
-  function labels() { count(); }
+
   window.ptBatClear = function () { var i = $("ptBatInput"); i.value = ""; run(); scene(); i.focus(); };
-  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
-  function codeChips(box, codes, ver) { codes.forEach(function (c) { box.appendChild(el("span", "pt-bat-code" + (ver ? " v" : ""), c)); }); }
-  function run() {
-    var s = L(), q = $("ptBatInput").value.trim(), out = $("ptBatResults"), st = $("ptBatStatus");
-    out.textContent = "";
-    $("ptBatClear").style.display = q ? "block" : "none";
-    if (!q) { st.textContent = ""; return; }
-    var k = nz(q), shown = 0, note = false;
-    var codeHit = Object.keys(byCode).filter(function (c) { return c === k; });
-    if (!codeHit.length && k.length >= 2) codeHit = Object.keys(byCode).filter(function (c) { return c.indexOf(k) >= 0; }).sort(function (a, b) { return (a.indexOf(k) - b.indexOf(k)) || (a.length - b.length); });
-    if (codeHit.length) {
-      codeHit.slice(0, 20).forEach(function (c) {
-        var ent = byCode[c], seen = {}, mods = [];
-        var verified = ent.rows.some(function (r) { return r.ver; });
-        ent.rows.forEach(function (r) { r.models.forEach(function (m) { if (!seen[m]) { seen[m] = 1; mods.push(m); } }); });
-        var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", ent.code + (verified ? "  ✓ " + s.ver : "")));
-        mods.forEach(function (m) { row.appendChild(el("div", "", m)); });
-        out.appendChild(row); shown++;
+
+  // ----- «Uyğundur» / «Uyğun gəlmədi» bildirişi (admin xəbərdar olunur) -----
+  function sendReport(btn, model, code, reason, comment) {
+    var s = L();
+    if (btn) btn.disabled = true;
+    var today = ""; try { today = getDateKey(new Date()); } catch (e) {}
+    return dataPost("/r/add", { d: { kind: "battery", model: model, code: code, reason: reason, comment: comment || "", date: today } })
+      .then(function () { toast(s.sent); })
+      .catch(function (e) {
+        if (btn) btn.disabled = false;
+        toast(e && e.code === "daily-limit" ? s.rlimit : s.fail);
       });
+  }
+  function ask(title, text, multiline) {
+    return typeof appPrompt === "function" ? appPrompt(title, text, "", !!multiline) : Promise.resolve(window.prompt(text) || null);
+  }
+  function reportBtns(model, codes) {
+    var s = L(), box = el("div", "pt-bat-acts"), code = codes.join(", ").slice(0, 60);
+    var ok = el("button", "ok", s.fit), no = el("button", "no", s.nofit);
+    ok.type = "button"; no.type = "button";
+    ok.onclick = function () { sendReport(ok, model, code, "bat_fit", ""); };
+    no.onclick = function () {
+      ask(s.nfTitle, s.nfText, true).then(function (c) { if (c == null) return; sendReport(no, model, code, "bat_nofit", String(c).trim().slice(0, 300)); });
+    };
+    box.appendChild(ok); box.appendChild(no);
+    return box;
+  }
+  function mineBtn(code) {
+    var s = L(), box = el("div", "pt-bat-acts"), b = el("button", "ok", s.mine);
+    b.type = "button";
+    b.onclick = function () {
+      ask(s.mineTitle, s.mineText, false).then(function (m) {
+        m = String(m || "").trim(); if (!m) return;
+        sendReport(b, m.slice(0, 100), code, "bat_fit", "");
+      });
+    };
+    box.appendChild(b);
+    return box;
+  }
+
+  function msg(out, text, login) {
+    out.textContent = "";
+    var d = el("div", login ? "pt-bat-login" : "pt-bat-note", text);
+    if (login) {
+      var b = el("button", "", L().loginBtn); b.type = "button";
+      b.onclick = function () { try { openAuthModal("required"); } catch (e) {} };
+      d.appendChild(el("br")); d.appendChild(b);
     }
-    var toks = q.toLowerCase().split(/[\s,\/]+/).map(nz).filter(Boolean);
-    var mHit = Object.keys(byModel).filter(function (m) { var z = nz(m); return z.indexOf(k) >= 0 || (toks.length > 1 && toks.every(function (t) { return z.indexOf(t) >= 0; })); });
-    mHit.slice(0, 60).forEach(function (m) {
-      var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", m));
-      var wrap = el("div"), seen = {};
-      byModel[m].forEach(function (r) { var cs = r.codes.filter(function (c) { if (seen[c]) return false; seen[c] = 1; return true; }); codeChips(wrap, cs, r.ver); if (r.codes.length > 1) note = true; });
-      row.appendChild(wrap); out.appendChild(row); shown++;
+    out.appendChild(d);
+  }
+  function render(d) {
+    var s = L(), out = $("ptBatResults"), st = $("ptBatStatus");
+    out.textContent = "";
+    var shown = 0;
+    (d.codes || []).forEach(function (c) {
+      var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", c.code));
+      (c.models || []).forEach(function (m) { row.appendChild(el("div", "", m)); });
+      row.appendChild(mineBtn(c.code));
+      out.appendChild(row); shown++;
     });
-    if (note) out.appendChild(el("div", "pt-bat-note", s.note));
+    (d.models || []).forEach(function (m) {
+      var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", m.model));
+      var wrap = el("div");
+      (m.codes || []).forEach(function (c) { wrap.appendChild(el("span", "pt-bat-code", c)); });
+      row.appendChild(wrap);
+      if (m.same && m.same.length) {
+        row.appendChild(el("div", "pt-bat-sub", s.same));
+        row.appendChild(el("div", "pt-bat-same", m.same.join(", ")));
+      }
+      row.appendChild(reportBtns(m.model, m.codes || []));
+      out.appendChild(row); shown++;
+    });
+    if (d.multi) out.appendChild(el("div", "pt-bat-note", s.note));
     st.textContent = shown ? "" : s.none;
   }
+  function run() {
+    var s = L(), q = $("ptBatInput").value.trim(), out = $("ptBatResults"), st = $("ptBatStatus");
+    $("ptBatClear").style.display = q ? "block" : "none";
+    var my = ++seq;
+    if (!q) { out.textContent = ""; st.textContent = ""; return; }
+    if (!registered()) { st.textContent = ""; msg(out, s.login, true); return; }
+    loadMeta();
+    dataFetch("/bat/search?q=" + encodeURIComponent(q)).then(function (d) {
+      if (my !== seq) return;
+      render(d || {});
+    }).catch(function (e) {
+      if (my !== seq) return;
+      var c = e && e.code;
+      st.textContent = "";
+      if (c === "unauthenticated" || c === "registered-only") msg(out, s.login, true);
+      else msg(out, c === "daily-limit" ? s.limit : (c === "slow" ? s.slow : s.err));
+    });
+  }
+
+  // ----- Admin: «Əsas baza» hər iki bazanı GitHub-dan gətirir, «Dərc et» hər ikisini dərc edir -----
+  function batLinesFrom(data) {
+    var a = Array.isArray(data) ? data : [];
+    return a.map(function (x) { return String(x); }).filter(function (x) { return x.indexOf("|") > 0; });
+  }
+  async function fetchBatteryFromGitHub() {
+    var token = "";
+    try { var sn = await db.doc("admin/github").get(); if (sn.exists) token = String((sn.data() || {}).token || "").trim(); } catch (e) {}
+    var r;
+    if (token) {
+      r = await fetch("https://api.github.com/repos/Eminlist/Emin/contents/Battery.json?ref=main&t=" + Date.now(), {
+        headers: { "Authorization": "Bearer " + token, "Accept": "application/vnd.github.raw+json", "X-GitHub-Api-Version": "2022-11-28" }, cache: "no-store" });
+    } else {
+      r = await fetch("https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Battery.json?t=" + Date.now(), { cache: "no-store" });
+    }
+    if (!r.ok) throw new Error("GitHub " + r.status);
+    var lines = batLinesFrom(await r.json());
+    if (!lines.length) throw new Error("Battery.json boşdur");
+    return lines;
+  }
+  window.ptBatPending = null;
+
+  function hookAdmin() {
+    if (typeof adminImportFromGitHub === "function" && !adminImportFromGitHub._bat) {
+      var oi = adminImportFromGitHub;
+      adminImportFromGitHub = async function () {
+        var r = await oi.apply(this, arguments);
+        try {
+          var lines = await fetchBatteryFromGitHub();
+          window.ptBatPending = lines;
+          setAdminStatus("Əsas baza və Batareya bazası gətirildi · Batareya: " + lines.length + " sətir. İndi «Dərc et» basın!");
+          showAppToast("🔋 Batareya bazası da gətirildi (" + lines.length + " sətir)");
+        } catch (e) {
+          window.ptBatPending = null;
+          showAppToast("Batareya bazası gətirilmədi: " + ((e && e.message) || ""), 5000);
+        }
+        return r;
+      };
+      adminImportFromGitHub._bat = 1;
+    }
+    if (typeof adminPublishDatabase === "function" && !adminPublishDatabase._bat) {
+      var op = adminPublishDatabase;
+      adminPublishDatabase = async function () {
+        var res = null;
+        if (isAdmin) {
+          try {
+            setAdminStatus("Batareya bazası dərc edilir...");
+            var lines = window.ptBatPending || await fetchBatteryFromGitHub();
+            res = await dataPost("/bat/publish", { lines: lines });
+            window.ptBatPending = null;
+            var sel = $("adminNoteSelect");
+            if (res && (res.a || res.r) && sel && !sel.value) sel.value = "battery";
+          } catch (e) {
+            res = null;
+            showAppToast("Batareya bazası dərc edilmədi: " + ((e && (e.code || e.message)) || ""), 6000);
+          }
+        }
+        var r = await op.apply(this, arguments);
+        if (res && res.ok) {
+          meta = null; loadMeta();
+          var line = "🔋 Batareya: " + res.n + " model · " + res.c + " kod · +" + res.a + " / −" + res.r;
+          try { var st = $("adminStatus"); if (st) setAdminStatus(String(st.textContent || "").replace(/[.…]+$/, "") + " · " + line); } catch (e) {}
+        }
+        return r;
+      };
+      adminPublishDatabase._bat = 1;
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", init);
   if (document.readyState !== "loading") init();
   var done = false;
   function init() {
     if (done || !$("ptBatInput")) return; done = true;
-    var t = 0;
-    $("ptBatInput").addEventListener("input", function () { clearTimeout(t); t = setTimeout(function () { run(); scene(); }, 80); });
+    $("ptBatInput").addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(function () { run(); scene(); }, 320); });
     var ai = $("searchInput"); if (ai) ai.addEventListener("input", function () { setTimeout(scene, 0); });
     $("ptBatClear").style.display = "none";
     var mb = /\/application\/eminapp\/?$/.test(location.pathname) ? "/application/eminapp/media/" : "media/";
     var va = $("ptVidA"), vb = $("ptVidB");
     va.poster = mb + "antiudar.jpg"; vb.poster = mb + "batareya.jpg";
     va.src = mb + "antiudar.mp4"; vb.src = mb + "batareya.mp4";
-    labels(); scene(); load(); setInterval(phTick, 2400);
+    count(); scene(); hookAdmin(); phBuild();
+    var tries = 0, iv = setInterval(function () { loadMeta(); if (meta || ++tries > 30) clearInterval(iv); }, 2000);
+    setInterval(phTick, 2400);
   }
 })();
 </script>
