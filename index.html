@@ -2239,6 +2239,11 @@
 .pt-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:none;background:#03060d}
 .pt-stage[data-m=anti] #ptVidA,.pt-stage[data-m=bat] #ptVidB{display:block}
 
+/* Matrix kimi yanıb-sönən vəziyyət nöqtəsi */
+.status-dot.green,.status-dot.yellow,.status-dot.red{animation:ptMx 2.4s steps(1,end) infinite}
+.status-dot.green{animation-name:ptMx}
+@keyframes ptMx{0%{opacity:1;transform:scale(1)}8%{opacity:.25;transform:scale(.8)}12%{opacity:1;transform:scale(1.1)}20%{opacity:.5}24%{opacity:1;transform:scale(1)}55%{opacity:1}58%{opacity:.15;transform:scale(.7)}62%{opacity:1;transform:scale(1.15)}66%{opacity:.4;transform:scale(.9)}70%,100%{opacity:1;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.status-dot{animation:none!important}}
 </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style>.ts-box{display:flex;justify-content:center;min-height:65px;margin:8px 0}</style>
@@ -11105,7 +11110,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.3";
+const APP_VERSION = "3.1.3.4";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
