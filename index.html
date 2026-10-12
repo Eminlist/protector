@@ -2767,6 +2767,20 @@ html.sensitive .ripple-ring{display:none !important}
                 <div class="fm"><div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div id="admAbInfo">Gündəlik axtarış limitini ardıcıl bir neçə gün dolduran hesablar avtomatik bloklanır və sizə Telegram-da bildiriş gəlir.</div></div><div id="admAbList" class="ab-list"></div></div>
             </div>
         </details>
+        <details class="adm-acc" ontoggle="if(this.open)adminLandingLoad()">
+            <summary><span class="e3d ic3d" style="--a:#C29BFF;--b:#7B3FE4" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5" /><path d="M10 21v-6h4v6" /></svg></span><span class="adm-ttl">İlk səhifə</span><span class="chev">›</span></summary>
+            <div class="adm-acc-body">
+                <div class="fm">
+                    <div class="fm-note"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg><div id="admLandInfo">protechtor.app ana səhifəsinin rejimini seçin. Dəyişiklik təxminən 20 saniyə ərzində hamıya görünür.</div></div>
+                    <div class="fm-seg" id="admLandSeg">
+                        <button type="button" data-m="on" onclick="adminLandingSet('on')">Açıq</button>
+                        <button type="button" data-m="nogirl" onclick="adminLandingSet('nogirl')">Qızsız</button>
+                        <button type="button" data-m="off" onclick="adminLandingSet('off')">Bağlı</button>
+                    </div>
+                    <div class="fm-note"><div><b>Açıq</b> — bələdçi qızlı interaktiv səhifə. <b>Qızsız</b> — yalnız menyular və telefonlar. <b>Bağlı</b> — «Sayt təmirdədir» səhifəsi göstərilir.</div></div>
+                </div>
+            </div>
+        </details>
         <details class="adm-acc st-acc" ontoggle="if(this.open)adminStatsLoad()">
             <summary><span class="e3d ic3d" style="--a:#7FC8FF;--b:#1E6FD9" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" /></svg></span><span class="adm-ttl">Statistika</span><span class="chev">›</span></summary>
             <div class="adm-acc-body">
@@ -3434,6 +3448,24 @@ async function dataFetch(path, opts) {
     return d || {};
 }
 const dataPost = function (path, b) { return dataFetch(path, { method: "POST", body: JSON.stringify(b || {}) }); };
+// ---------- İlk səhifə rejimi (protechtor.app): on / nogirl / off ----------
+function adminLandingMark(m) {
+    document.querySelectorAll("#admLandSeg button").forEach(function (x) { x.classList.toggle("on", x.getAttribute("data-m") === m); });
+}
+async function adminLandingLoad() {
+    try {
+        const r = await fetch(DATA_API + "/cfg/landing", { cache: "no-store" });
+        const d = await r.json();
+        adminLandingMark(d.mode || "on");
+    } catch (e) { showAppToast("İlk səhifə rejimi oxunmadı"); }
+}
+async function adminLandingSet(m) {
+    try {
+        await dataPost("/cfg/landing", { mode: m });
+        adminLandingMark(m);
+        showAppToast(m === "off" ? "İlk səhifə bağlandı («təmirdədir» göstərilir)" : (m === "nogirl" ? "İlk səhifə qızsız rejimdə açıldı" : "İlk səhifə tam açıldı"));
+    } catch (e) { showAppToast("Saxlanmadı: " + ((e && e.code) || "xəta")); }
+}
 // Firestore sorğusuna bənzər cavab (mövcud kod dəyişmədən işləsin)
 function ptSnap(items, changes) {
     const docs = (items || []).map(function (x) { return { id: x.id, exists: true, data: function () { return Object.assign({}, x.d); } }; });
@@ -11038,7 +11070,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.14";
+const APP_VERSION = "3.1.3.15";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));

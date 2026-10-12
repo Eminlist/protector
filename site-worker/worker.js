@@ -47,6 +47,23 @@ async function catalog(request, env, ctx, url) {
   return new Response(JSON.stringify(out), { headers: Object.assign({ "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-pt-cache": hit ? "HIT" : "MISS" }, CORS) });
 }
 
+// İlk səhifə rejimi (admin paneldən idarə olunur): on | nogirl | off — Cloudflare keşində qısa müddət saxlanılır
+const DATA_ORIGIN = "https://protector-data.o553115544.workers.dev";
+const LANDING_TTL = 20; // saniyə
+async function landingMode(env, ctx) {
+  const cache = caches.default;
+  const key = new Request("https://protechtor.app/__cache/landing-mode");
+  const hit = await cache.match(key);
+  if (hit) { try { const j = await hit.json(); if (j && j.mode) return j.mode; } catch (e) {} }
+  let mode = "on";
+  try {
+    const r = env.DATA ? await env.DATA.fetch(new Request(DATA_ORIGIN + "/cfg/landing")) : await fetch(DATA_ORIGIN + "/cfg/landing");
+    if (r.ok) { const j = await r.json(); if (j && /^(on|nogirl|off)$/.test(j.mode)) mode = j.mode; }
+    ctx.waitUntil(cache.put(key, new Response(JSON.stringify({ mode: mode }), { headers: { "content-type": "application/json", "cache-control": "public, max-age=" + LANDING_TTL } })));
+  } catch (e) { mode = "on"; }
+  return mode;
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -69,6 +86,19 @@ export default {
         return Response.redirect("https://protechtor.app" + APP + url.search, 302);
       }
     }
+    if (url.pathname === "/") {
+      const mode = await landingMode(env, ctx);
+      const nc = { "cache-control": "no-cache" };
+      if (mode === "off") {
+        const soon = await env.ASSETS.fetch(new Request(new URL("/soon/", url).toString(), { headers: request.headers }));
+        return new Response(soon.body, { status: 200, headers: Object.assign({ "content-type": "text/html; charset=utf-8" }, nc) });
+      }
+      const page = await env.ASSETS.fetch(request);
+      const out = new Response(page.body, { status: page.status, headers: page.headers });
+      out.headers.set("cache-control", "no-cache");
+      return new HTMLRewriter().on("html", { element(el) { el.setAttribute("data-mode", mode); } }).transform(out);
+    }
+
     if (url.pathname === "/sw.js") {
       return new Response(KILL_SW, { headers: { "content-type": "application/javascript; charset=utf-8", "cache-control": "no-store" } });
     }

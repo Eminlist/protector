@@ -12,6 +12,7 @@ const REPORT_KEEP_MS = 365 * 86400000;  // hesabatlar 1 il
 const REPORT_DAY_LIMIT = 20;            // istifadəçi gündə ən çox 20 hesabat
 const BASE_KEEP = 40;                   // son 40 versiya saxlanılır
 const MAX_BODY = 8 * 1024 * 1024;
+const LANDING_MODES = ["on", "nogirl", "off"];
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -191,6 +192,12 @@ const _handler = {
     if (path === "/health") return J({ ok: true });
     await init(db);
 
+    // İlk səhifə rejimi (ictimai oxuma): on = bələdçi ilə, nogirl = qızsız, off = «təmirdədir» səhifəsi
+    if (path === "/cfg/landing" && req.method === "GET") {
+      const m = await cfgGet(db, "landing");
+      return J({ mode: LANDING_MODES.indexOf(m) >= 0 ? m : "on" });
+    }
+
     const me = await verify((req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, ""));
     if (!me) return E("auth", 401);
     if (me.anon) return E("registered-only", 403);
@@ -198,6 +205,14 @@ const _handler = {
     let b = {};
     if (req.method === "POST") {
       try { b = await body(req); } catch (e) { return E("too-big", 413); }
+    }
+
+    // ===== İlk səhifə rejimi (yalnız admin) =====
+    if (path === "/cfg/landing" && req.method === "POST") {
+      if (!me.admin) return E("forbidden", 403);
+      if (LANDING_MODES.indexOf(b.mode) < 0) return E("mode");
+      await cfgSet(db, "landing", b.mode);
+      return J({ ok: true, mode: b.mode });
     }
 
     // ===== Bildirişlər =====

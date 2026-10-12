@@ -1,54 +1,557 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="az">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>ProTechtor™ — tezliklə</title>
-<meta name="description" content="ProTechtor™ yenilənir. Tezliklə xidmətinizdə — super bir şey hazırlanır.">
-<meta name="theme-color" content="#07080d">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProTechtor™ — qoruyucu şüşə uyğunluğu</title>
+<meta name="description" content="ProTechtor™ — mobil cihazlar üçün qoruyucu şüşələrin uyğunluğunu model adı və ya model kodu ilə müəyyən edən peşəkar vasitə.">
+<meta name="theme-color" content="#070a10">
 <link rel="canonical" href="https://protechtor.app/">
 <link rel="icon" href="/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta property="og:title" content="ProTechtor™ — qoruyucu şüşə uyğunluğu">
+<meta property="og:description" content="Model adı və ya kodu ilə uyğun qoruyucu şüşəni tapın.">
+<meta property="og:image" content="https://protechtor.app/assets/og.png">
 <style>
-*{box-sizing:border-box;margin:0}
-html,body{height:100%}
-body{background:#07080d;color:#eef1f8;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;overflow:hidden;text-align:center;padding:24px}
-.glow{position:fixed;inset:-20%;background:
- radial-gradient(40% 40% at 25% 30%,rgba(80,140,255,.30),transparent 70%),
- radial-gradient(35% 35% at 75% 70%,rgba(160,90,255,.28),transparent 70%),
- radial-gradient(30% 30% at 60% 20%,rgba(0,220,200,.18),transparent 70%);
- filter:blur(30px);animation:drift 14s ease-in-out infinite alternate}
-@keyframes drift{to{transform:translate3d(3%,-4%,0) scale(1.08)}}
-main{position:relative;max-width:560px}
-.logo{width:92px;height:92px;border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(90,140,255,.35);animation:float 4s ease-in-out infinite}
-@keyframes float{50%{transform:translateY(-8px)}}
-h1{margin-top:28px;font-size:clamp(28px,6vw,44px);letter-spacing:-.02em;line-height:1.1}
-h1 span{background:linear-gradient(90deg,#6aa8ff,#b57bff,#35e0cf);-webkit-background-clip:text;background-clip:text;color:transparent}
-p{margin-top:16px;color:#aab2c5;font-size:clamp(15px,3.6vw,18px);line-height:1.55}
-.pill{display:inline-flex;gap:10px;align-items:center;margin-top:30px;padding:10px 18px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);font-size:14px;color:#cfd6e6}
-.dot{width:9px;height:9px;border-radius:50%;background:#35e0cf;box-shadow:0 0 0 0 rgba(53,224,207,.7);animation:pulse 1.8s infinite}
-@keyframes pulse{70%{box-shadow:0 0 0 12px rgba(53,224,207,0)}100%{box-shadow:0 0 0 0 rgba(53,224,207,0)}}
-a{color:#8db8ff;text-decoration:none}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+:root{
+  --bg:#070a10; --card:rgba(16,22,36,.78); --text:#f4f6fb; --muted:#93a0b8;
+  --gold:#f0c879; --teal:#2dd4bf; --line:rgba(255,255,255,.09);
+  --Z:.55;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+header{position:relative;z-index:5;text-align:center;padding:26px 16px 0}
+header .brand{font-weight:700;letter-spacing:.02em;font-size:1.15rem}
+header .brand b{color:var(--gold)}
+header p{color:var(--muted);font-size:.9rem;margin-top:6px}
+
+/* ---------- STAGE ---------- */
+.stage{
+  position:relative;z-index:3;margin:14px auto 0;max-width:1280px;height:620px;
+  display:grid;grid-template-columns:270px 1fr 270px;gap:20px;align-items:center;padding:0 20px;
+}
+.wing{display:flex;flex-direction:column;gap:14px;position:relative;z-index:6}
+.door{
+  --g:0;
+  position:relative;text-align:left;cursor:pointer;color:var(--text);font:inherit;
+  background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(240,200,121,calc(.12 + var(--g)*.8));
+  border-radius:18px;padding:13px 16px;display:flex;gap:12px;align-items:center;
+  box-shadow:0 0 calc(var(--g)*36px) rgba(240,200,121,calc(var(--g)*.55)), 0 10px 26px rgba(0,0,0,.45);
+  transform:translateY(0) scale(calc(1 + var(--g)*.035));
+  opacity:0;transition:opacity .6s ease, transform .25s ease;
+}
+.door.show{opacity:1}
+.door .n{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font:600 .75rem ui-monospace,monospace;color:var(--gold);background:rgba(240,200,121,.12);border:1px solid rgba(240,200,121,.35);flex-shrink:0}
+.door .t{font-weight:600;font-size:.98rem;line-height:1.15;display:block}
+.door .s{font-size:.72rem;color:var(--muted);display:block;margin-top:2px}
+.door.selected{border-color:var(--gold);background:linear-gradient(135deg,rgba(240,200,121,.2),rgba(16,22,36,.95))}
+
+.fog{
+  position:absolute;z-index:4;width:340px;height:240px;margin:-120px 0 0 -170px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(255,226,170,.55),rgba(240,200,121,.22) 55%,transparent 80%);
+  filter:blur(26px);opacity:0;transform:scale(.3);
+}
+.fog.on{animation:fog 2.6s ease-out forwards}
+@keyframes fog{0%{opacity:0;transform:scale(.3)}35%{opacity:1}100%{opacity:0;transform:scale(1.9)}}
+
+.center{position:relative;height:100%;perspective:1500px}
+.floor{position:absolute;left:50%;bottom:22px;width:700px;height:190px;transform:translateX(-50%) rotateX(72deg);border-radius:50%;
+  border:1px solid rgba(240,200,121,.25);background:radial-gradient(circle,rgba(240,200,121,.12),transparent 70%)}
+
+/* ---------- 3D PHONES ---------- */
+.ring-wrap{position:absolute;left:0;right:0;top:-70px;height:100%;display:grid;place-items:center;transform-style:preserve-3d;z-index:1}
+.ring{position:relative;width:140px;height:270px;transform-style:preserve-3d;transform:rotateX(-6deg)}
+.phone{
+  position:absolute;inset:0;border-radius:24px;padding:7px;background:#0a0f1c;border:2px solid rgba(255,255,255,.16);
+  box-shadow:0 18px 40px rgba(0,0,0,.7),inset 0 0 12px rgba(45,212,191,.1);display:flex;flex-direction:column;overflow:hidden;
+  backface-visibility:visible;
+}
+.phone .notch{width:48px;height:11px;background:#000;border-radius:10px;margin:2px auto 5px}
+.phone .scr{flex:1;border-radius:17px;background:linear-gradient(180deg,#121a2e,#080c16);padding:9px 8px;display:flex;flex-direction:column;gap:6px}
+.phone .tag{font:600 .5rem ui-monospace,monospace;color:var(--gold);background:rgba(240,200,121,.12);border:1px solid rgba(240,200,121,.3);padding:2px 5px;border-radius:4px;align-self:flex-start}
+.phone h4{font-size:.74rem}
+.phone .row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:.55rem;color:#dbe3f2;background:rgba(255,255,255,.05);padding:6px 6px;border-radius:7px}
+.phone .row i{display:block;width:16px;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--teal),#34d399);opacity:.8}
+.phone .bar{height:18px;border-radius:9px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08)}
+
+/* ---------- GIRL (video) ---------- */
+.girl{position:absolute;left:50%;bottom:24px;width:0;height:0;z-index:8;will-change:transform;pointer-events:none}
+.girl .gv{
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);opacity:0;transition:opacity .38s ease;
+  pointer-events:none;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5));max-width:none;
+}
+.girl .gv.on{opacity:1}
+.girl.flip .gv{transform:translateX(-50%) scaleX(-1)}
+.girl .shadow{position:absolute;left:0;bottom:-8px;width:120px;height:18px;margin-left:-60px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%)}
+.girl svg{display:none}
+
+/* ---------- GIRL (SVG ehtiyat variantı) ---------- */
+.girl.fallback svg{display:block;position:absolute;left:-60px;bottom:0;width:120px;height:300px;overflow:visible;filter:drop-shadow(0 14px 18px rgba(0,0,0,.6))}
+.g-body{animation:breathe 4s ease-in-out infinite;transform-origin:60px 150px}
+@keyframes breathe{50%{transform:translateY(-2px)}}
+.leg-l,.leg-r{transform-origin:50% 0;transform-box:fill-box}
+.arm-l,.arm-r{transform-box:fill-box;transform-origin:50% 8%;transition:transform .5s ease}
+.girl.walking .g-body{animation:bob .5s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+.girl.walking .leg-l{animation:stepA .9s ease-in-out infinite}
+.girl.walking .leg-r{animation:stepB .9s ease-in-out infinite}
+.girl.walking .arm-l{animation:swingA .9s ease-in-out infinite}
+.girl.walking .arm-r{animation:swingB .9s ease-in-out infinite}
+@keyframes stepA{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}}
+@keyframes stepB{0%,100%{transform:rotate(14deg)}50%{transform:rotate(-14deg)}}
+@keyframes swingA{0%,100%{transform:rotate(10deg)}50%{transform:rotate(-10deg)}}
+@keyframes swingB{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+.girl.waving .arm-r{animation:wave .7s ease-in-out infinite alternate;transform:rotate(-150deg)}
+@keyframes wave{from{transform:rotate(-135deg)}to{transform:rotate(-165deg)}}
+
+/* ---------- CHAT DÜYMƏSİ + PANEL ---------- */
+.launcher{
+  position:fixed;right:24px;bottom:24px;z-index:50;width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),#c89a3e);color:#1a1205;display:grid;place-items:center;
+  box-shadow:0 10px 30px rgba(240,200,121,.45);transition:transform .25s ease, box-shadow .25s ease;
+}
+.launcher:hover{transform:scale(1.08);box-shadow:0 14px 40px rgba(240,200,121,.65)}
+.launcher::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(240,200,121,.5);animation:ping 2.4s ease-out infinite}
+@keyframes ping{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.launcher.open::after{display:none}
+.panel{
+  position:fixed;right:24px;bottom:100px;z-index:49;width:370px;height:500px;max-height:calc(100vh - 130px);
+  background:rgba(12,17,30,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(240,200,121,.3);border-radius:22px;
+  box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 50px rgba(240,200,121,.12);
+  display:flex;flex-direction:column;overflow:hidden;
+  transform-origin:bottom right;transform:scale(.6) translateY(30px);opacity:0;pointer-events:none;
+  transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .3s ease;
+}
+.panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
+.p-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.p-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f6e3b8,#d9ab63);display:grid;place-items:center;font:700 1rem system-ui;color:#2a1c06}
+.p-head b{font-size:.95rem;display:block}
+.p-head span{font-size:.7rem;color:var(--teal)}
+.p-head button{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer}
+.p-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
+.msg{max-width:86%;padding:10px 13px;border-radius:16px 16px 16px 4px;background:rgba(255,255,255,.07);font-size:.88rem;line-height:1.45;animation:pop .35s ease}
+.msg.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:rgba(240,200,121,.2)}
+.msg a{display:inline-block;margin-top:8px;padding:7px 13px;border-radius:100px;background:var(--gold);color:#1a1205;font-weight:600;font-size:.8rem;text-decoration:none;margin-right:6px}
+.msg a:hover{filter:brightness(1.08)}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.typing{display:flex;gap:4px;padding:12px 14px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:dot 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 14px;border-top:1px solid var(--line);max-height:128px;overflow-y:auto}
+.chip{font:inherit;font-size:.75rem;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:6px 11px;border-radius:100px;cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--gold);color:var(--gold);background:rgba(240,200,121,.1)}
+
+.hint{position:relative;z-index:5;text-align:center;color:var(--muted);font-size:.8rem;padding:6px 16px 8px}
+.foot{position:relative;z-index:5;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;padding:6px 16px 34px;font-size:.82rem}
+.foot a{color:#8db8ff;text-decoration:none}
+.foot a:hover{text-decoration:underline}
+.foot a.app{color:#1a1205;background:var(--gold);padding:5px 14px;border-radius:100px;font-weight:600;text-decoration:none}
+
+@media(max-width:1000px){
+  .stage{grid-template-columns:1fr;height:auto;padding-bottom:30px}
+  .center{height:520px;order:-1}
+  .wing{flex-direction:row;flex-wrap:wrap}
+  .door{flex:1 1 220px}
+  .panel{right:12px;left:12px;width:auto}
+}
+@media(prefers-reduced-motion:reduce){.launcher::after{animation:none}}
 </style>
 </head>
 <body>
-<div class="glow"></div>
-<main>
-  <img class="logo" src="/icon-192.png" alt="ProTechtor™">
-  <h1 id="t">Sayt <span>təmirdədir</span></h1>
-  <p id="d">Tezliklə xidmətinizdə! Sizin üçün super bir şey hazırlayırıq — gözləməyə dəyəcək.</p>
-  <div class="pill"><i class="dot"></i><span id="s">Hazırlıq gedir</span></div>
-  <p style="margin-top:26px;font-size:14px"><a href="https://protechtor.app">protechtor.app</a></p>
+<canvas id="particles"></canvas>
+
+<header>
+  <div class="brand">Pro<b>Techtor</b>™</div>
+  <p>Bölməni seçin — bələdçi ora gedib açacaq. Sağ aşağıdakı düymə ilə söhbət tərzində də seçə bilərsiniz.</p>
+</header>
+
+<main class="stage" id="stage">
+  <div class="wing" id="wingL"></div>
+
+  <div class="center" id="center">
+    <div class="floor"></div>
+    <div class="ring-wrap"><div class="ring" id="ring"></div></div>
+
+    <div class="girl" id="girl">
+      <div class="shadow"></div>
+      <svg viewBox="0 0 120 300" fill="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="dressG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbf7ec"/><stop offset=".6" stop-color="#e9e1cd"/><stop offset="1" stop-color="#cfc4a8"/></linearGradient>
+        <linearGradient id="hairG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4e2b2"/><stop offset=".6" stop-color="#e2c07e"/><stop offset="1" stop-color="#c49a55"/></linearGradient>
+        <linearGradient id="goldG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f8e3a6"/><stop offset=".5" stop-color="#e0b455"/><stop offset="1" stop-color="#b98a2e"/></linearGradient>
+      </defs>
+      <g class="g-body">
+        <path d="M31 46 C28 16 92 16 89 46 L91 76 C86 84 77 80 75 71 L45 71 C43 80 34 84 29 76Z" fill="url(#hairG)"/>
+        <g class="leg-l"><rect x="47" y="214" width="12" height="52" rx="6" fill="#efc9a8"/><path d="M44 262 h18 a4 4 0 0 1 0 9 h-18z" fill="#d9c3a8"/></g>
+        <g class="leg-r"><rect x="62" y="214" width="12" height="52" rx="6" fill="#efc9a8"/><path d="M59 262 h18 a4 4 0 0 1 0 9 h-18z" fill="#d9c3a8"/></g>
+        <g class="arm-l"><rect x="24" y="84" width="12" height="74" rx="6" fill="#efc9a8"/><circle cx="30" cy="164" r="6.5" fill="#f2cfae"/></g>
+        <path d="M36 84 C36 74 46 70 60 70 C74 70 84 74 84 84 L81 126 C90 160 96 200 98 232 Q60 244 22 232 C24 200 30 160 39 126Z" fill="url(#dressG)"/>
+        <rect x="38" y="122" width="44" height="5" rx="2.5" fill="url(#goldG)"/>
+        <rect x="53" y="58" width="14" height="16" rx="6" fill="#f2cfae"/>
+        <ellipse cx="60" cy="40" rx="20" ry="24" fill="#f6d8ba"/>
+        <path d="M38 40 C37 14 84 12 82 40 C75 28 64 24 54 28 C47 31 42 36 38 46Z" fill="url(#hairG)"/>
+        <path d="M33 50 C31 66 33 76 38 82 C37 70 38 58 41 48Z" fill="url(#hairG)"/>
+        <path d="M87 50 C89 66 87 76 82 82 C83 70 82 58 79 48Z" fill="url(#hairG)"/>
+        <circle cx="52" cy="42" r="1.8" fill="#2b2118"/><circle cx="68" cy="42" r="1.8" fill="#2b2118"/>
+        <path d="M54 52 Q60 56 66 52" stroke="#b4575f" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <g class="arm-r"><rect x="84" y="84" width="12" height="74" rx="6" fill="#efc9a8"/><circle cx="90" cy="164" r="6.5" fill="#f2cfae"/></g>
+      </g>
+    </svg>
+    </div>
+  </div>
+
+  <div class="wing" id="wingR"></div>
 </main>
+
+<div class="hint">Səssiz rejim · bələdçi bir müddət hərəkət edilməyəndə oturub dincəlir, toxunduqda dərhal qayıdır.</div>
+<nav class="foot" aria-label="Əsas keçidlər">
+  <a class="app" href="/application/eminapp/">Proqrama keç</a>
+  <a href="/application">Proqram</a>
+  <a href="/help">Yardım mərkəzi</a>
+  <a href="/contact">Əlaqə</a>
+  <a href="/privacy">Məxfilik</a>
+</nav>
+
+<!-- söhbət düyməsi və paneli -->
+<div class="panel" id="panel" aria-hidden="true">
+  <div class="p-head">
+    <div class="p-av">P</div>
+    <div><b>Bələdçi</b><span>● onlayn</span></div>
+    <button id="pClose" aria-label="Bağla">×</button>
+  </div>
+  <div class="p-body" id="pBody"></div>
+  <div class="chips" id="pChips"></div>
+</div>
+<button class="launcher" id="launcher" aria-label="Menyu">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/></svg>
+</button>
+
 <script>
-var L={
-az:["Sayt <span>təmirdədir</span>","Tezliklə xidmətinizdə! Sizin üçün super bir şey hazırlayırıq — gözləməyə dəyəcək.","Hazırlıq gedir"],
-ru:["Сайт на <span>обслуживании</span>","Скоро будем к вашим услугам! Готовим для вас кое-что супер — ожидание того стоит.","Идёт подготовка"],
-tr:["Site <span>bakımda</span>","Çok yakında hizmetinizde! Sizin için süper bir şey hazırlıyoruz — beklemeye değecek.","Hazırlıklar sürüyor"],
-en:["Site <span>under maintenance</span>","Coming soon! We're building something super for you — it'll be worth the wait.","Getting ready"]};
-var l=(navigator.language||"az").slice(0,2).toLowerCase();var x=L[l]||L.az;
-document.documentElement.lang=L[l]?l:"az";
-document.getElementById("t").innerHTML=x[0];document.getElementById("d").textContent=x[1];document.getElementById("s").textContent=x[2];
+(function(){
+'use strict';
+const $=s=>document.querySelector(s);
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const rand=(a,b)=>a+Math.random()*(b-a);
+
+const DL='/application/download';
+const MENUS=[
+ {id:'app',  t:'Mobil ekranlar', s:'Proqramın səhifələri',
+  msgs:['Üç ölçülü telefonların hər birində proqramın ayrıca səhifəsi göstərilir.','Telefonlar öz-özünə fırlanır; siçanı üzərinə gətirdikdə fırlanma dayanır və səhifəni diqqətlə nəzərdən keçirə bilərsiniz.',{t:'',a:[['Proqramı aç','/application/eminapp/']]}]},
+ {id:'about',t:'Proqram haqqında', s:'ProTechtor™ nədir',
+  msgs:['ProTechtor™ telefon modelinə uyğun qoruyucu şüşəni müəyyən etməyə kömək edən proqramdır.','Model adı və ya model kodu ilə axtarış aparılır; eyni şüşəyə uyğun gələn modellər qrup şəklində təqdim olunur.',{t:'',a:[['Ətraflı','/application']]}]},
+ {id:'pros', t:'Proqram üstünlükləri', s:'Əsas imkanlar',
+  msgs:['Sürətli axtarış, qruplaşdırılmış nəticələr və daim yenilənən məlumat bazası.','İstifadəçi üçün sadə və aydın interfeys.',{t:'',a:[['Bütün imkanlar','/application/features']]}]},
+ {id:'guide',t:'İstifadə təlimatları', s:'Axtarış və nəticələr',
+  msgs:['1) Axtarış xanasına telefonun model adını və ya kodunu daxil edin.','2) Nəticələrdə həmin şüşəyə uyğun gələn modellərin qrupu göstərilir.',{t:'Ətraflı təlimat:',a:[['İstifadə təlimatı','/application/guide']]}]},
+ {id:'setup',t:'Quraşdırma təlimatı', s:'APK-nın quraşdırılması',
+  msgs:['Əvvəlcə quraşdırma faylını (APK) endirin.','Telefonun təhlükəsizlik parametrlərində naməlum mənbələrdən quraşdırmaya icazə verin, sonra faylı açıb quraşdırmanı təsdiqləyin.',{t:'',a:[['Quraşdırma təlimatı','/application/install'],['Proqramı yüklə',DL]]}]},
+ {id:'dl',   t:'Proqramı yüklə', s:'Rəsmi yükləmə səhifəsi',
+  msgs:['Proqramın ən son versiyasını rəsmi yükləmə səhifəsindən əldə edə bilərsiniz.',{t:'',a:[['Yükləmə səhifəsi',DL]]}]},
+ {id:'gal',  t:'Qalereya', s:'Proqramdan kadrlar',
+  msgs:['Proqramın interfeysindən nümunələr yuxarıdakı telefonların ekranlarında göstərilir.','Fırlanmanı dayandırmaq üçün siçanı telefonlara yaxınlaşdırın.']},
+ {id:'help', t:'Yardım mərkəzi', s:'Əlaqə və dəstək',
+  msgs:['Sualınız və ya təklifiniz olarsa, bizimlə əlaqə saxlaya bilərsiniz.',{t:'',a:[['Yardım mərkəzi','/help'],['Telegram: @protechtor_app','https://t.me/protechtor_app'],['admin@protechtor.app','mailto:admin@protechtor.app']]}]}
+];
+const PHONES=[
+ ['01 AXTARIŞ','Model axtarışı',['Model adı və ya kodu','Uyğun qrup','Nəticələr']],
+ ['02 HAQQINDA','ProTechtor™',['Model bazası','Avtomatik qruplar']],
+ ['03 ÜSTÜNLÜKLƏR','Əsas imkanlar',['Sürətli axtarış','Qruplaşdırma','Yenilənən baza']],
+ ['04 TƏLİMAT','Necə istifadə etməli',['Axtarış','Nəticə']],
+ ['05 QURAŞDIRMA','Quraşdırma təlimatı',['Faylı endir','İcazə ver','Quraşdır']],
+ ['06 YÜKLƏ','Rəsmi səhifə',['Android','Ən son versiya']],
+ ['07 QALEREYA','Proqramdan kadrlar',['Ana ekran','Nəticələr']],
+ ['08 YARDIM','Əlaqə və dəstək',['Telegram','E-poçt']],
+ ['09 ANA EKRAN','Xoş gəldiniz',['Son axtarışlar','Tənzimləmə']]
+];
+
+/* ---- menyular ---- */
+const wingL=$('#wingL'), wingR=$('#wingR'), doors=[];
+MENUS.forEach((m,i)=>{
+  const b=document.createElement('button');
+  b.className='door'; b.dataset.id=m.id;
+  b.innerHTML=`<span class="n">0${i+1}</span><span><span class="t">${m.t}</span><span class="s">${m.s}</span></span>`;
+  (i<4?wingL:wingR).appendChild(b); doors.push(b);
+  b.addEventListener('click',()=>selectMenu(m.id));
+  b.addEventListener('mouseenter',wake);
+});
+
+/* ---- 3D telefonlar ---- */
+const ring=$('#ring');
+PHONES.forEach((p,i)=>{
+  const d=document.createElement('div'); d.className='phone';
+  d.innerHTML=`<div class="notch"></div><div class="scr"><span class="tag">${p[0]}</span><h4>${p[1]}</h4><div class="bar"></div>${p[2].map(r=>`<div class="row"><span>${r}</span><i></i></div>`).join('')}</div>`;
+  d.style.transform=`rotateY(${i*40}deg) translateZ(270px)`;
+  ring.appendChild(d);
+});
+let angle=0, auto=true, focusTarget=null, hoverRing=false;
+const center=$('#center'), stage=$('#stage'), girl=$('#girl');
+center.addEventListener('mouseenter',()=>hoverRing=true);
+center.addEventListener('mouseleave',()=>hoverRing=false);
+(function loop(){
+  if(focusTarget!==null){
+    let diff=((focusTarget-angle)%360+540)%360-180;
+    angle+=diff*0.06;
+    if(Math.abs(diff)<.4)focusTarget=null;
+  }else if(auto&&!hoverRing){angle-=0.14}
+  ring.style.transform=`rotateX(-6deg) rotateY(${angle}deg)`;
+  requestAnimationFrame(loop);
+})();
+
+/* =====================================================
+   BƏLƏDÇİ — videolar (şəffaf WebM) və ya SVG ehtiyat
+   ===================================================== */
+const CLIPS={
+  walk:    {loop:true},
+  idle:    {loop:true},
+  nails:   {loop:true},
+  wave:    {loop:false,dur:5300},
+  sit_idle:{loop:true},
+  sit_hair:{loop:false,dur:6400},
+  sit_wink:{loop:false,dur:7000}
+};
+const MODE=document.documentElement.getAttribute('data-mode')||'on';
+const GIRL=MODE!=='nogirl';
+const isSafari=/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+const probe=document.createElement('video');
+let VID=GIRL && !isSafari && !!probe.canPlayType && probe.canPlayType('video/webm; codecs="vp9"')!=='';
+const vids={};
+let cur=null, Z=.55;
+
+const zk=n=>n.indexOf('sit_')===0?1.12:1;
+function fitGirl(){
+  Z=Math.max(.34,Math.min(.6,center.clientHeight*.55/605));
+  document.documentElement.style.setProperty('--Z',Z);
+  Object.keys(vids).forEach(k=>{ const v=vids[k]; if(v.videoWidth) v.style.width=(v.videoWidth*Z*zk(k))+'px'; });
+}
+function fallbackMode(){ if(!GIRL) return;
+  VID=false; girl.classList.add('fallback');
+  Object.values(vids).forEach(v=>v.remove());
+}
+function buildVideos(){
+  Object.keys(CLIPS).forEach(name=>{
+    const v=document.createElement('video');
+    v.className='gv'; v.muted=true; v.defaultMuted=true; v.playsInline=true; v.setAttribute('playsinline','');
+    v.preload='auto'; v.loop=!!CLIPS[name].loop; v.disablePictureInPicture=true;
+    v.src='/media/girl/'+name+'.webm';
+    v.addEventListener('loadedmetadata',()=>{ v.style.width=(v.videoWidth*Z*zk(name))+'px'; });
+    v.addEventListener('error',()=>{ if(VID) fallbackMode(); });
+    girl.appendChild(v); vids[name]=v;
+  });
+}
+function show(name,gap){
+  if(!VID){
+    girl.classList.toggle('walking',name==='walk');
+    girl.classList.toggle('waving',name==='wave');
+    cur=name; return null;
+  }
+  const v=vids[name]; if(!v) return null;
+  if(cur===name&&CLIPS[name].loop) return v;
+  const old=cur&&vids[cur]; cur=name;
+  try{v.currentTime=0}catch(e){}
+  const p=v.play(); if(p&&p.catch)p.catch(()=>{});
+  if(old&&old!==v){ old.classList.remove('on'); setTimeout(()=>{ if(vids[cur]!==old) old.pause(); },500); }
+  if(gap){ v.classList.remove('on'); setTimeout(()=>{ if(vids[cur]===v) v.classList.add('on'); },gap); }
+  else v.classList.add('on');
+  return v;
+}
+function clipEnd(name){
+  const d=(CLIPS[name]&&CLIPS[name].dur)||3000;
+  const v=VID?vids[name]:null;
+  return new Promise(res=>{
+    let done=false; const f=()=>{ if(!done){done=true; if(v)v.removeEventListener('ended',f); res();} };
+    if(v) v.addEventListener('ended',f);
+    setTimeout(f,d+600);
+  });
+}
+function setFlip(on){ girl.classList.toggle('flip',!!on); }
+
+let pos={x:0,y:0};
+const walkMs=d=>Math.max(900,d/(178*Z)*1000);
+function setPos(x,y,dur){
+  girl.style.transition=dur?`transform ${dur}ms linear`:'none';
+  girl.style.transform=`translate(${x}px,${y}px)`;
+  pos={x,y};
+}
+
+/* ---- boşluq (idle) və oyanma ---- */
+let busy=false, lastAct=Date.now(), stage_='stand', token=0;
+function wake(){
+  lastAct=Date.now();
+  if(stage_==='sit'||stage_==='nails'){
+    token++; const was=stage_; stage_='stand';
+    setFlip(false); show('idle');
+  }
+}
+['pointerdown','keydown','wheel','touchstart'].forEach(ev=>addEventListener(ev,wake,{passive:true}));
+$('#launcher').addEventListener('mouseenter',wake);
+
+async function goHome(my){
+  if(Math.abs(pos.x)<6&&Math.abs(pos.y)<6) return;
+  const dur=walkMs(Math.abs(pos.x));
+  setFlip(pos.x>0); show('walk'); setPos(0,0,dur); await wait(dur+80);
+  if(my!==token) return;
+  setFlip(false); show('idle');
+}
+async function idleTick(){
+  if(!GIRL||busy||stage_==='intro') return;
+  const idle=Date.now()-lastAct;
+  if(stage_==='stand' && idle>7000 && VID){
+    stage_='nails'; setFlip(false); show('nails');
+  }else if(stage_==='nails' && idle>14000 && VID){
+    const my=++token; await goHome(my);
+    if(my!==token||busy) return;
+    stage_='sit'; show('sit_idle',650); seatLoop(my);
+  }
+}
+setInterval(idleTick,600);
+async function seatLoop(my){
+  while(my===token&&stage_==='sit'){
+    await wait(rand(3500,6500));
+    if(my!==token||stage_!=='sit') break;
+    const c=Math.random()<.42?'sit_wink':'sit_hair';
+    show(c); await clipEnd(c);
+    if(my!==token||stage_!=='sit') break;
+    show('sit_idle');
+  }
+}
+
+/* ---- giriş ---- */
+async function intro(){
+  stage_='intro';
+  const w=center.clientWidth;
+  const x0=-(w/2+110); setPos(x0,0,0); setFlip(false);
+  await wait(500);
+  const d0=walkMs(Math.abs(x0));
+  show('walk'); setPos(0,0,d0); await wait(d0+60);
+  show('wave'); await clipEnd('wave');
+  show('idle');
+  stage_='stand'; lastAct=Date.now();
+  for(const d of doors){d.classList.add('show');await wait(140)}
+}
+
+/* ---- menyuya yeriş ---- */
+async function walkTo(door){
+  const cr=center.getBoundingClientRect(), dr=door.getBoundingClientRect();
+  const left=(dr.left+dr.width/2)<(cr.left+cr.width/2);
+  const tx=left?-(cr.width/2-110):(cr.width/2-110);
+  const ty=0;
+  const dur=walkMs(Math.abs(tx-pos.x));
+  if(Math.abs(tx-pos.x)<8){ show('idle'); await wait(300); return; }
+  setFlip(tx<pos.x); show('walk'); setPos(tx,ty,dur);
+  await wait(dur+80);
+  setFlip(false); show('idle');
+}
+
+/* ---- duman işığı ---- */
+function fogAt(door){
+  const sr=stage.getBoundingClientRect(), dr=door.getBoundingClientRect();
+  const f=document.createElement('div'); f.className='fog';
+  f.style.left=(dr.left+dr.width/2-sr.left)+'px';
+  f.style.top=(dr.top+dr.height/2-sr.top)+'px';
+  stage.appendChild(f);
+  requestAnimationFrame(()=>f.classList.add('on'));
+  setTimeout(()=>f.remove(),2800);
+}
+
+/* ---- maus menyuya yaxınlaşdıqca işıqlanma ---- */
+addEventListener('mousemove',e=>{
+  doors.forEach(d=>{
+    const r=d.getBoundingClientRect();
+    const dx=Math.max(r.left-e.clientX,0,e.clientX-r.right);
+    const dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom);
+    const g=Math.max(0,1-Math.hypot(dx,dy)/200);
+    d.style.setProperty('--g',g.toFixed(3));
+  });
+});
+
+/* ---- söhbət paneli ---- */
+const panel=$('#panel'), launcher=$('#launcher'), pBody=$('#pBody'), pChips=$('#pChips');
+function openPanel(){panel.classList.add('open');launcher.classList.add('open');panel.setAttribute('aria-hidden','false')}
+function closePanel(){panel.classList.remove('open');launcher.classList.remove('open');panel.setAttribute('aria-hidden','true')}
+launcher.addEventListener('click',()=>{
+  if(panel.classList.contains('open')){closePanel();return}
+  openPanel();
+  if(!pBody.children.length){ bot(['Xoş gəldiniz! Hansı bölməni açım?']); }
+});
+$('#pClose').addEventListener('click',closePanel);
+MENUS.forEach(m=>{
+  const c=document.createElement('button'); c.className='chip'; c.textContent=m.t;
+  c.addEventListener('click',()=>selectMenu(m.id,true)); pChips.appendChild(c);
+});
+function addMsg(item,me){
+  const d=document.createElement('div'); d.className='msg'+(me?' me':'');
+  const text=typeof item==='string'?item:item.t;
+  if(text) d.appendChild(document.createTextNode(text));
+  if(item.a){ if(text) d.appendChild(document.createElement('br'));
+    item.a.forEach(([l,h])=>{ const a=document.createElement('a'); a.textContent=l; a.href=h; if(/^https?:/.test(h)){a.target='_blank'; a.rel='noopener';} d.appendChild(a); }); }
+  pBody.appendChild(d); pBody.scrollTop=pBody.scrollHeight; return d;
+}
+async function bot(list){
+  for(const t of list){
+    const ty=document.createElement('div'); ty.className='msg typing'; ty.innerHTML='<i></i><i></i><i></i>';
+    pBody.appendChild(ty); pBody.scrollTop=pBody.scrollHeight;
+    const len=typeof t==='string'?t.length:(t.t||'').length;
+    await wait(650+Math.min(len*8,700));
+    ty.remove(); addMsg(t);
+  }
+}
+
+/* ---- seçim ---- */
+async function selectMenu(id,fromChat){
+  if(busy||stage_==='intro') return; busy=true;
+  wake(); token++;
+  if(stage_!=='stand'){stage_='stand'}
+  const idx=MENUS.findIndex(m=>m.id===id), m=MENUS[idx], door=doors[idx];
+  doors.forEach(d=>d.classList.remove('selected')); door.classList.add('selected');
+  fogAt(door);
+  focusTarget=-(idx*40);
+  openPanel();
+  if(fromChat||pBody.children.length) addMsg(m.t,true);
+  await wait(250);
+  if(GIRL) await walkTo(door);
+  await bot(m.msgs);
+  await wait(600);
+  lastAct=Date.now();
+  busy=false;
+}
+
+/* ---- zərrəcik toru ---- */
+const cv=$('#particles'), cx=cv.getContext('2d');
+let W,H,P=[], mouse={x:-999,y:-999};
+function initP(){
+  W=cv.width=innerWidth;H=cv.height=innerHeight;
+  const n=Math.min(90,Math.floor(W*H/18000));
+  P=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,s:Math.random()*2+1}));
+}
+initP(); addEventListener('resize',initP);
+addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+addEventListener('touchmove',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY},{passive:true});
+(function draw(){
+  cx.clearRect(0,0,W,H);
+  for(let i=0;i<P.length;i++){
+    const p=P[i]; p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+    const dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.hypot(dx,dy)||1;
+    if(d<150){const f=(150-d)/150;p.x+=dx/d*f*2;p.y+=dy/d*f*2;
+      cx.strokeStyle=`rgba(240,200,121,${f*.55})`;cx.lineWidth=1;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(mouse.x,mouse.y);cx.stroke();}
+    cx.fillStyle='rgba(240,200,121,.55)';cx.beginPath();cx.arc(p.x,p.y,p.s,0,6.283);cx.fill();
+    for(let j=i+1;j<P.length;j++){
+      const q=P[j],dd=Math.hypot(p.x-q.x,p.y-q.y);
+      if(dd<120){cx.strokeStyle=`rgba(147,160,184,${(1-dd/120)*.2})`;cx.lineWidth=.7;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke();}
+    }
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ---- start ---- */
+if(!GIRL){ girl.style.display='none'; } else if(VID) buildVideos(); else girl.classList.add('fallback');
+fitGirl();
+addEventListener('resize',()=>{ fitGirl(); if(!busy&&stage_!=='intro') setPos(0,0,0); });
+if(GIRL) intro(); else { stage_='stand'; (async()=>{ for(const d of doors){d.classList.add('show');await wait(120)} })(); }
+})();
 </script>
 </body>
 </html>
