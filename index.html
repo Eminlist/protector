@@ -2220,6 +2220,18 @@
         #profile-view .acc-group .pw-toggle-btn{border:0 !important;border-radius:0 !important;background:transparent}
         #profile-view .acc-group .pw-chev{color:var(--pa)}
         #profile-view .acc-group .pw-form{border:0;border-radius:0;box-shadow:none;background:transparent;padding-top:2px}
+
+/* Batareya axtarışı: sol Antiudar | sağ Batareya — seçilən böyüyür, digəri kiçilir */
+.pt-mode{display:flex;gap:10px;margin-bottom:14px}
+.pt-mode button{flex:1 1 0;min-width:0;height:48px;border:2px solid var(--border);border-radius:16px;background:var(--surface);color:var(--muted);font-weight:800;font-size:calc(14px * var(--font-scale));cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 8px;transition:flex-grow .35s ease,background .25s,color .25s,border-color .25s}
+.pt-mode button.on{flex-grow:3;border-color:var(--accent-color);color:var(--accent-color);background:var(--surface-2)}
+#ptBatBox[hidden],#ptAntiBox[hidden]{display:none}
+.pt-bat-row{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.pt-bat-row b{display:block;color:var(--text);font-size:calc(15px * var(--font-scale));margin-bottom:6px;word-break:break-word}
+.pt-bat-code{display:inline-block;margin:2px 6px 2px 0;padding:4px 10px;border-radius:10px;border:1px solid var(--accent-color);color:var(--accent-color);font-weight:800;font-size:calc(14px * var(--font-scale));letter-spacing:.5px}
+.pt-bat-code.v{background:var(--accent-color);color:var(--bg,#000)}
+.pt-bat-note{font-size:calc(12px * var(--font-scale));color:var(--muted);margin:2px 2px 10px}
+#ptBatCount{text-align:center;color:var(--muted);font-size:calc(12px * var(--font-scale));letter-spacing:.5px;padding:18px 0 6px}
 </style>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
     <style>.ts-box{display:flex;justify-content:center;min-height:65px;margin:8px 0}</style>
@@ -2528,6 +2540,11 @@ html.sensitive .ripple-ring{display:none !important}
         </header>
 
         <main class="main-content">
+            <div class="pt-mode" id="ptMode">
+                <button type="button" id="ptModeAnti" class="on" onclick="ptSetMode('anti')">Antiudar</button>
+                <button type="button" id="ptModeBat" onclick="ptSetMode('bat')">Batareya</button>
+            </div>
+            <div id="ptAntiBox">
             <div class="search-wrapper">
                 <input
                     id="searchInput"
@@ -2547,6 +2564,16 @@ html.sensitive .ripple-ring{display:none !important}
             <div id="recent"></div>
             <div id="status" class="status"></div>
             <div id="results"></div>
+            </div>
+            <div id="ptBatBox" hidden>
+                <div class="search-wrapper">
+                    <input id="ptBatInput" class="search-input" type="text" placeholder="BN54 / Redmi Note 9" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <button id="ptBatClear" class="clear-button" type="button" onclick="ptBatClear()">×</button>
+                </div>
+                <div id="ptBatStatus" class="status"></div>
+                <div id="ptBatResults"></div>
+            </div>
+            <div id="ptBatCount"></div>
         </main>
     </div>
 
@@ -11070,7 +11097,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.16";
+const APP_VERSION = "3.1.3.17";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -14809,6 +14836,110 @@ window.ptVerRestore = function (id, btn) {
     }, "Geri qaytar");
 };
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVerClose(); });
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var RAW = "https://raw.githubusercontent.com/Eminlist/Emin/refs/heads/main/Battery.json";
+  var KEY = "pt_battery_v1";
+  var STR = {
+    az: { anti: "Antiudar", bat: "Batareya", ph: "BN54 / Redmi Note 9", st: "Model və ya batareya kodu yazın", none: "Nəticə tapılmadı", model: "Modellər", codes: "Batareya kodları", ver: "Yoxlanılıb", note: "Bir neçə kod göstərilibsə, modelə bunlardan biri uyğun gəlir.", cnt: "Batareya bazası: {n} model · {c} kod" },
+    ru: { anti: "Антиудар", bat: "Батарея", ph: "BN54 / Redmi Note 9", st: "Введите модель или код батареи", none: "Ничего не найдено", model: "Модели", codes: "Коды батарей", ver: "Проверено", note: "Если указано несколько кодов, подходит один из них.", cnt: "База батарей: {n} моделей · {c} кодов" },
+    tr: { anti: "Antişok", bat: "Batarya", ph: "BN54 / Redmi Note 9", st: "Model veya batarya kodu yazın", none: "Sonuç bulunamadı", model: "Modeller", codes: "Batarya kodları", ver: "Doğrulandı", note: "Birden fazla kod gösterilmişse, bunlardan biri uyumludur.", cnt: "Batarya veritabanı: {n} model · {c} kod" },
+    en: { anti: "Screen glass", bat: "Battery", ph: "BN54 / Redmi Note 9", st: "Enter a model or battery code", none: "No results found", model: "Models", codes: "Battery codes", ver: "Verified", note: "If several codes are shown, any one of them fits the model.", cnt: "Battery database: {n} models · {c} codes" }
+  };
+  function L() {
+    var l = "az";
+    try { l = String(localStorage.getItem("antiudar_lang") || document.documentElement.lang || "az").slice(0, 2).toLowerCase(); } catch (e) {}
+    return STR[l] || STR.az;
+  }
+  function $(id) { return document.getElementById(id); }
+  function nz(x) { return String(x || "").toLowerCase().replace(/[^a-z0-9а-яё]+/g, ""); }
+  var rows = [], byModel = {}, byCode = {};
+  function build(arr) {
+    rows = []; byModel = {}; byCode = {};
+    (arr || []).forEach(function (line) {
+      var p = String(line).split("|").map(function (x) { return x.trim(); });
+      if (p.length < 2) return;
+      var models = p[0].split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+      var codes = p[1].split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+      var ver = (p[2] || "").toLowerCase() === "verified";
+      var r = { models: models, codes: codes, ver: ver };
+      rows.push(r);
+      models.forEach(function (m) { (byModel[m] = byModel[m] || []).push(r); });
+      codes.forEach(function (c) { (byCode[nz(c)] = byCode[nz(c)] || { code: c, rows: [] }).rows.push(r); });
+    });
+    count();
+  }
+  function count() {
+    var el = $("ptBatCount"); if (!el) return;
+    var n = Object.keys(byModel).length, c = Object.keys(byCode).length;
+    el.textContent = n ? L().cnt.replace("{n}", n).replace("{c}", c) : "";
+  }
+  function load() {
+    try { var c = JSON.parse(localStorage.getItem(KEY) || "null"); if (Array.isArray(c)) build(c); } catch (e) {}
+    function ok(a) { if (Array.isArray(a) && a.length) { build(a); try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) {} if (mode === "bat") run(); return true; } return false; }
+    fetch(RAW + "?t=" + Date.now(), { cache: "no-store" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (a) { if (!ok(a)) throw 0; })
+      .catch(function () { return fetch("battery.json").then(function (r) { return r.json(); }).then(ok).catch(function () {}); });
+  }
+  var mode = "anti";
+  window.ptSetMode = function (m) {
+    mode = m === "bat" ? "bat" : "anti";
+    $("ptModeAnti").classList.toggle("on", mode === "anti");
+    $("ptModeBat").classList.toggle("on", mode === "bat");
+    $("ptAntiBox").hidden = mode !== "anti";
+    $("ptBatBox").hidden = mode !== "bat";
+    labels();
+    if (mode === "bat") { run(); var i = $("ptBatInput"); if (i) try { i.focus(); } catch (e) {} }
+  };
+  function labels() {
+    var s = L();
+    $("ptModeAnti").textContent = s.anti; $("ptModeBat").textContent = s.bat;
+    $("ptBatInput").placeholder = s.ph; count();
+  }
+  window.ptBatClear = function () { var i = $("ptBatInput"); i.value = ""; run(); i.focus(); };
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+  function codeChips(box, codes, ver) { codes.forEach(function (c) { box.appendChild(el("span", "pt-bat-code" + (ver ? " v" : ""), c)); }); }
+  function run() {
+    var s = L(), q = $("ptBatInput").value.trim(), out = $("ptBatResults"), st = $("ptBatStatus");
+    out.textContent = "";
+    $("ptBatClear").style.display = q ? "block" : "none";
+    if (!q) { st.textContent = s.st; return; }
+    var k = nz(q), shown = 0, note = false;
+    var codeHit = Object.keys(byCode).filter(function (c) { return c === k; });
+    if (!codeHit.length && k.length >= 2) codeHit = Object.keys(byCode).filter(function (c) { return c.indexOf(k) === 0; });
+    if (codeHit.length) {
+      codeHit.slice(0, 20).forEach(function (c) {
+        var ent = byCode[c], seen = {}, mods = [];
+        var verified = ent.rows.some(function (r) { return r.ver; });
+        ent.rows.forEach(function (r) { r.models.forEach(function (m) { if (!seen[m]) { seen[m] = 1; mods.push(m); } }); });
+        var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", ent.code + (verified ? "  ✓ " + s.ver : "")));
+        mods.forEach(function (m) { row.appendChild(el("div", "", m)); });
+        out.appendChild(row); shown++;
+      });
+    }
+    var mHit = Object.keys(byModel).filter(function (m) { return nz(m).indexOf(k) >= 0; });
+    mHit.slice(0, 60).forEach(function (m) {
+      var row = el("div", "pt-bat-row"); row.appendChild(el("b", "", m));
+      var wrap = el("div"), seen = {};
+      byModel[m].forEach(function (r) { var cs = r.codes.filter(function (c) { if (seen[c]) return false; seen[c] = 1; return true; }); codeChips(wrap, cs, r.ver); if (r.codes.length > 1) note = true; });
+      row.appendChild(wrap); out.appendChild(row); shown++;
+    });
+    if (note) out.appendChild(el("div", "pt-bat-note", s.note));
+    st.textContent = shown ? "" : s.none;
+  }
+  document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState !== "loading") init();
+  var done = false;
+  function init() {
+    if (done || !$("ptBatInput")) return; done = true;
+    var t = 0;
+    $("ptBatInput").addEventListener("input", function () { clearTimeout(t); t = setTimeout(run, 80); });
+    $("ptBatClear").style.display = "none";
+    labels(); load();
+    setInterval(function () { if ($("ptModeAnti").textContent !== L().anti) labels(); }, 1500);
+  }
 })();
 </script>
 </body>
