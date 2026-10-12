@@ -79,7 +79,7 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 /* ---------- GIRL (video) ---------- */
 .girl{position:absolute;left:50%;bottom:24px;width:0;height:0;z-index:8;will-change:transform;pointer-events:none}
 .girl .gv{
-  position:absolute;left:50%;bottom:0;transform:translateX(-50%);opacity:0;transition:opacity .38s ease;
+  position:absolute;left:50%;bottom:0;transform:translateX(-50%);opacity:0;transition:opacity .22s ease;
   pointer-events:none;filter:drop-shadow(0 12px 14px rgba(0,0,0,.5));max-width:none;
 }
 .girl .gv.on{opacity:1}
@@ -391,7 +391,7 @@ $('#launcher').addEventListener('mouseenter',wake);
 async function goHome(my){
   if(Math.abs(pos.x)<6&&Math.abs(pos.y)<6) return;
   const dur=walkMs(Math.abs(pos.x));
-  setFlip(pos.x>0); show('walk'); setPos(0,0,dur); await wait(dur+80);
+  setFlip(pos.x<0); show('walk'); setPos(0,0,dur); await wait(dur+80);
   if(my!==token) return;
   setFlip(false); show('idle');
 }
@@ -422,11 +422,11 @@ async function seatLoop(my){
 async function intro(){
   stage_='intro';
   const w=center.clientWidth;
-  const x0=-(w/2+110); setPos(x0,0,0); setFlip(false);
+  const x0=-(w/2+110); setPos(x0,0,0); setFlip(true);
   await wait(500);
   const d0=walkMs(Math.abs(x0));
   show('walk'); setPos(0,0,d0); await wait(d0+60);
-  show('wave'); await clipEnd('wave');
+  setFlip(false); show('wave'); await clipEnd('wave');
   show('idle');
   stage_='stand'; lastAct=Date.now();
   for(const d of doors){d.classList.add('show');await wait(140)}
@@ -440,7 +440,7 @@ async function walkTo(door){
   const ty=0;
   const dur=walkMs(Math.abs(tx-pos.x));
   if(Math.abs(tx-pos.x)<8){ show('idle'); await wait(300); return; }
-  setFlip(tx<pos.x); show('walk'); setPos(tx,ty,dur);
+  setFlip(tx>pos.x); show('walk'); setPos(tx,ty,dur);
   await wait(dur+80);
   setFlip(false); show('idle');
 }
