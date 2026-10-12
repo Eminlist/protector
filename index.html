@@ -3559,37 +3559,6 @@ function ptReportsCol() {
     };
     return col;
 }
-// Admin: bütün istifadəçilərin köhnə Firestore bildirişlərini D1-ə bir dəfəlik köçür
-let ptNAllBusy = false;
-async function ptNotifMigrateAll() {
-    if (ptNAllBusy || typeof isAdmin === "undefined" || !isAdmin) return;
-    try { if (localStorage.getItem("pt_nmig_all")) return; } catch (e) {}
-    ptNAllBusy = true;
-    try {
-        const st = await dataFetch("/n/mig-status");
-        if (st && st.done) { try { localStorage.setItem("pt_nmig_all", "1"); } catch (e) {} return; }
-        const us = await db.collection("users").get();
-        const uids = [];
-        us.forEach(function (d) { uids.push(d.id); });
-        let items = 0, failed = 0;
-        for (let i = 0; i < uids.length; i++) {
-            try {
-                const snap = await db.collection("users/" + uids[i] + "/notifications").orderBy("createdAt", "desc").limit(200).get();
-                const arr = [];
-                snap.forEach(function (d) {
-                    const x = Object.assign({}, d.data() || {});
-                    Object.keys(x).forEach(function (k) { const v = x[k]; if (v && typeof v.toMillis === "function") x[k] = v.toMillis(); });
-                    arr.push({ id: d.id, d: x });
-                });
-                await dataPost("/n/import-user", { uid: uids[i], items: arr });
-                items += arr.length;
-            } catch (e) { failed++; console.warn("nmigall", uids[i], e && (e.code || e.message)); }
-        }
-        const r = await dataPost("/n/mig-done", { users: uids.length, items: items, failed: failed });
-        if (r && r.done) { try { localStorage.setItem("pt_nmig_all", "1"); } catch (e) {} }
-    } catch (e) { console.warn("nmigall", e && (e.code || e.message)); }
-    ptNAllBusy = false;
-}
 let ptRMigDone = false;
 function ptReportsMigrate() {
     if (ptRMigDone || typeof isAdmin === "undefined" || !isAdmin) return;
@@ -3734,7 +3703,6 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             isAdmin = isAdminEmail(user.email);
             document.documentElement.classList.toggle("is-admin", isAdmin);
-            if (isAdmin) setTimeout(ptNotifMigrateAll, 4000);
             purgeIfDeleted(user);
             if (isAdmin) refreshSizes();
             startAccountWatch(user);
@@ -11068,7 +11036,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.14";
+const APP_VERSION = "3.1.3.13";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));

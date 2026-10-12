@@ -165,23 +165,19 @@ async function cleanup(env) {
 // ---------- Xəta xəbərdarlığı (Telegram) ----------
 // Secrets: TG_TOKEN + TG_CHAT. Eyni isolate-də dəqiqədə ən çox 1 xəbər (spam olmasın).
 let _lastAlert = 0;
-async function tgSend(env, text) {
-  try {
-    if (!env.TG_TOKEN || !env.TG_CHAT) return;
-    await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: env.TG_CHAT, text: String(text).slice(0, 3500) })
-    });
-  } catch (e) {}
-}
 async function tgAlert(env, where, err, req) {
   try {
+    if (!env.TG_TOKEN || !env.TG_CHAT) return;
     const t = Date.now();
     if (t - _lastAlert < 60000) return;
     _lastAlert = t;
     let p = "";
     try { if (req) p = " " + req.method + " " + new URL(req.url).pathname; } catch (e) {}
-    await tgSend(env, "⚠️ protector-data xətası (" + where + ")" + p + "\n\n" + String((err && err.message) || err).slice(0, 500));
+    const msg = "⚠️ " + "protector-data" + " xətası (" + where + ")" + p + "\n\n" + String((err && err.message) || err).slice(0, 500);
+    await fetch("https://api.telegram.org/bot" + env.TG_TOKEN + "/sendMessage", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: env.TG_CHAT, text: msg })
+    });
   } catch (e) {}
 }
 
@@ -285,33 +281,6 @@ const _handler = {
       }
       await cfgSet(db, key, Date.now());
       return J({ ok: true, n: items.length });
-    }
-
-    // Admin: BÜTÜN köhnə Firestore bildirişlərinin bir dəfəlik köçürülməsi
-    if (path === "/n/import-user" && req.method === "POST") {
-      if (!me.admin) return E("forbidden", 403);
-      const uid = String(b.uid || "");
-      if (!okUid(uid)) return E("uid");
-      const items = (Array.isArray(b.items) ? b.items : []).slice(0, 200);
-      for (const it of items) {
-        if (!it || !okId(String(it.id || "")) || !it.d) continue;
-        await notifAdd(db, uid, it.d, "fs_" + it.id);
-      }
-      await cfgSet(db, "nmig:" + uid, Date.now());
-      return J({ ok: true, n: items.length });
-    }
-    if (path === "/n/mig-status" && req.method === "GET") {
-      if (!me.admin) return E("forbidden", 403);
-      return J({ done: !!(await cfgGet(db, "nmig_all")) });
-    }
-    if (path === "/n/mig-done" && req.method === "POST") {
-      if (!me.admin) return E("forbidden", 403);
-      const users = +b.users || 0, items = +b.items || 0, failed = +b.failed || 0;
-      if (!failed) await cfgSet(db, "nmig_all", Date.now());
-      await tgSend(env, (failed ? "⚠️ Bildiriş köçürməsi yarımçıq qaldı" : "✅ Bildiriş köçürməsi tamamlandı") +
-        "\nİstifadəçi: " + users + ", bildiriş: " + items + (failed ? ", xəta: " + failed : "") +
-        (failed ? "\nAdmin kimi proqramı yenidən açın." : "\nFirestore oxumasını bağlamaq olar."));
-      return J({ ok: true, done: !failed });
     }
 
     // ===== «Uyğun gəlmədi» hesabatları =====
