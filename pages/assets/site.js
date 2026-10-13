@@ -57,7 +57,7 @@
         '<nav class="mnav" id="mnav" aria-label="Menu"></nav>' +
         '<div class="top-r">' +
         '<select class="lang" id="lang" aria-label="Language"><option value="az">AZ</option><option value="ru">RU</option><option value="tr">TR</option><option value="en">EN</option></select>' +
-        '<a class="btn sm cta" href="/application/download" data-t="cta"></a>' +
+        '<a class="btn sm cta" href="/application/download" data-t="__cta"></a>' +
         '<button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>' +
         "</div></div>";
       // Panel header-in xaricindədir: header-dəki blur fixed paneli sıxışdırır
@@ -97,7 +97,7 @@
         return '<div class="mx' + (on ? " open" : "") + '"><button class="mx-b">' + esc(g.h) + '</button><div class="mx-d"><div>' +
           g.items.map(function (it) { return '<a href="' + it.u + '"' + (here(it.u) ? ' class="on"' : "") + ">" + esc(it.t) + "</a>"; }).join("") +
           "</div></div></div>";
-      }).join("") + '<a class="btn mx-cta" href="/application/download">' + esc(get(T, "cta") || "") + "</a>";
+      }).join("") + '<a class="btn mx-cta" href="/application/download">' + esc(get(T, "__cta") || "") + "</a>";
     }
     var fc = document.getElementById("fcols");
     if (fc) {
@@ -355,10 +355,12 @@
     var files = ["common"].concat(page ? [page] : [], extra);
     return Promise.all(files.map(fetchText)).then(function (parts) {
       T = {};
+      var c0 = parts[0] || {};
       parts.forEach(function (p) {
         if (p._) Object.keys(p._).forEach(function (k) { CFG[k] = p._[k]; });
         var src = p[lang] || p.az || {};
         Object.keys(src).forEach(function (k) { T[k] = src[k]; });
+      T.__cta = ((c0[lang] || c0.az || {}).cta) || "";
       });
       render();
       if (!load._h) { load._h = 1; setTimeout(openHash, 60); }
