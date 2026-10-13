@@ -3847,6 +3847,16 @@ const GCACHE_KEY = "pt_gcache_v1";
 const GCACHE_MAX = 300;
 let dbMode = "catalog";
 let catalogMeta = null;
+/* İstifadəçilərə REAL dərc olunmuş baza (serverdəki kataloq): model sayı, qrup sayı, dərc vaxtı.
+   Ayarlardakı «Veritabanı» kartı və tarixçə yalnız bunu göstərir (cihazdakı və ya adminin dərc olunmamış işçi bazasını yox). */
+let ptPub = null;
+try { ptPub = JSON.parse(localStorage.getItem("pt_pub") || "null"); } catch (e) { ptPub = null; }
+function ptPubSet(d) {
+    if (!d || !(+d.modelCount)) return;
+    ptPub = { n: +d.modelCount || 0, g: +d.groupCount || 0, at: +d.updatedAt || 0, ver: +d.ver || 0 };
+    try { localStorage.setItem("pt_pub", JSON.stringify(ptPub)); } catch (e) {}
+    try { if (typeof updateLastUpdate === "function") updateLastUpdate(); } catch (e) {}
+}
 const INSTALL_KEY = "antiudar_install_v1";
 const WAS_NEW_USER = !localStorage.getItem(DB_KEY) && !localStorage.getItem(CATALOG_KEY) && !localStorage.getItem(INSTALL_KEY);
 try { localStorage.removeItem(DB_KEY); localStorage.removeItem("pt_sizes"); } catch (e) {}
@@ -3857,8 +3867,7 @@ function getInstallInfo() {
 
 function ensureInstallInfo() {
     if (localStorage.getItem(INSTALL_KEY)) return;
-    let n = 0;
-    (database || []).forEach(function (g) { if (Array.isArray(g)) n += g.length; });
+    const n = (ptPub && ptPub.n) || 0;
     if (!n) return;
     localStorage.setItem(INSTALL_KEY, JSON.stringify(WAS_NEW_USER ? { ts: Date.now(), n: n } : { ts: 0 }));
 }
@@ -6504,6 +6513,7 @@ async function readDbFromFirestore() {
         const groups = data ? groupsFromFirestore(data) : [];
         if (data) applyCodes(data.codes, true);
         catalogMeta = { groupCount: groups.length, modelCount: namesFromGroups(groups).length, ver: 0 };
+        ptCatalog(0).then(function (c) { if (c && !c.same) ptPubSet(c); }).catch(function () {});
         return { groups: groups, data: data, mode: "full" };
     }
     let cat = null;
@@ -6516,6 +6526,7 @@ async function readDbFromFirestore() {
     if (cat) {
         const data = cat;
         catalogMeta = { groupCount: +data.groupCount || 0, modelCount: +data.modelCount || 0, ver: +data.ver || 0 };
+        ptPubSet(data);
         checkGroupCacheVer(catalogMeta.ver);
         applyCodes(data.codes, false);
         return { groups: (Array.isArray(data.names) ? data.names : []).map(function (n) { return [String(n)]; }), data: data, mode: "catalog" };
@@ -6579,6 +6590,18 @@ function changelogForFs() {
 }
 
 // İstifadəçilər üçün baza: hər model ayrıca sənəd + yalnız adlar siyahısı
+async function ptMetaPut(step, opts) {
+    for (let t = 0; ; t++) {
+        try { return await apiFetch("/admin/meta", opts); }
+        catch (e) {
+            if (t >= 2 || (e && (e.code === "unauthenticated" || e.code === "forbidden"))) {
+                const er = new Error(step + " yazılmadı (" + ((e && e.message) || "şəbəkə") + ", " + Math.round(String(opts.body || "").length / 1024) + " KB)");
+                er.code = e && e.code; throw er;
+            }
+            await new Promise(function (r) { setTimeout(r, 1000 * (t + 1)); });
+        }
+    }
+}
 async function publishPublicModels(groups) {
     if (!isAdmin) return 0;
     const docs = {};
@@ -6614,22 +6637,52 @@ async function publishPublicModels(groups) {
         if (old[k] !== h) ops.push({ k: k, d: docs[k] });
     });
     Object.keys(old).forEach(function (k) { if (!docs[k]) ops.push({ k: k, del: true }); });
-    for (let i = 0; i < ops.length; i += 500) {
-        const body = { set: {}, del: [] };
-        ops.slice(i, i + 500).forEach(function (o) { if (o.del) body.del.push(o.k); else body.set[o.k] = o.d; });
-        await apiFetch("/admin/models", { method: "POST", body: JSON.stringify(body) });
+    /* Böyük bazada 500 modellik paketlər serverin limitini keçirdi (brauzer «Failed to fetch» göstərirdi).
+       İndi paketlər ölçüyə görə kiçik göndərilir (≤ 60 KB, ≤ 100 model); şəbəkə xətasında paket yarıya bölünüb təkrar göndərilir. */
+    const chunks = [];
+    let cur = { set: {}, del: [] }, curN = 0, curB = 0;
+    ops.forEach(function (o) {
+        const sz = o.del ? o.k.length + 4 : JSON.stringify(o.d).length + o.k.length + 6;
+        if (curN && (curN >= 100 || curB + sz > 60000)) { chunks.push(cur); cur = { set: {}, del: [] }; curN = 0; curB = 0; }
+        if (o.del) cur.del.push(o.k); else cur.set[o.k] = o.d;
+        curN++; curB += sz;
+    });
+    if (curN) chunks.push(cur);
+    async function sendChunk(body, depth) {
+        for (let t = 0; t < 3; t++) {
+            try { return await apiFetch("/admin/models", { method: "POST", body: JSON.stringify(body) }); }
+            catch (e) {
+                if (e && (e.code === "unauthenticated" || e.code === "forbidden")) throw e;
+                const keys = Object.keys(body.set);
+                if (depth < 4 && keys.length + body.del.length > 1) {
+                    const h = Math.ceil(keys.length / 2), hd = Math.ceil(body.del.length / 2);
+                    const a = { set: {}, del: body.del.slice(0, hd) }, b = { set: {}, del: body.del.slice(hd) };
+                    keys.forEach(function (k, i) { (i < h ? a : b).set[k] = body.set[k]; });
+                    await sendChunk(a, depth + 1);
+                    return sendChunk(b, depth + 1);
+                }
+                await new Promise(function (r) { setTimeout(r, 800 * (t + 1)); });
+                if (t === 2) { const er = new Error("İstifadəçi bazası göndərilmədi (" + ((e && e.message) || "şəbəkə") + ")"); er.code = e && e.code; throw er; }
+            }
+        }
+    }
+    for (let i = 0; i < chunks.length; i++) {
+        setAdminStatus("İstifadəçi bazası yenilənir... " + (i + 1) + "/" + chunks.length);
+        await sendChunk(chunks[i], 0);
     }
     const ver = ops.length || !oldVer ? Date.now() : oldVer;
-    await apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "pubindex", val: { h: hashes, ver: ver, updatedAt: Date.now() } }) });
-    await apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "catalog", val: {
+    await ptMetaPut("İndeks", { method: "PUT", body: JSON.stringify({ key: "pubindex", val: { h: hashes, ver: ver, updatedAt: Date.now() } }) });
+    const pubAt = Date.now();
+    await ptMetaPut("Kataloq", { method: "PUT", body: JSON.stringify({ key: "catalog", val: {
         names: names,
         groupCount: groups.length,
         modelCount: names.length,
         codes: codesFor(groups),
         ver: ver,
         changelog: changelogForFs(),
-        updatedAt: Date.now()
+        updatedAt: pubAt
     } }) });
+    ptPubSet({ modelCount: names.length, groupCount: groups.length, updatedAt: pubAt, ver: ver });
     return ops.length;
 }
 
@@ -11057,7 +11110,7 @@ function renderChangelogHistoryLocal() {
    bazası hər yeniləndikdə real olaraq nə aldığı yadda saxlanılır, yalnız son 3 əməliyyat göstərilir.
    10 və ya 20 gündən sonra girən istifadəçi aradakı bütün dəyişiklikləri bir əməliyyat kimi görür. */
 var _ptHist = null, _ptHistAt = 0, _ptHistBusy = false, _ptHistUid = "";
-function ptHistKey(uid) { return "pt_usync_" + uid; }
+function ptHistKey(uid) { return "pt_usync2_" + uid; }
 function ptHistLoad(force) {
     if (_ptHistBusy) return;
     let u = null;
@@ -11069,10 +11122,10 @@ function ptHistLoad(force) {
     }
     if (!force && _ptHistAt && Date.now() - _ptHistAt < 30000) return;
     let cnt = 0;
-    try { cnt = namesFromGroups(database || []).length || (catalogMeta && catalogMeta.modelCount) || 0; } catch (e) { cnt = 0; }
+    cnt = (ptPub && ptPub.n) || 0; /* yalnız real dərc olunmuş baza sayılır */
     if (!cnt) return; /* baza hələ yüklənməyib — əməliyyat yazılmasın */
     const inst = getInstallInfo();
-    const body = { since: inst.ts || Date.now(), n: (inst.ts && inst.n) ? inst.n : cnt };
+    const body = { since: inst.ts || Date.now(), n: cnt };
     _ptHistBusy = true;
     const uid = u.uid;
     dataFetch("/usync", { method: "POST", body: JSON.stringify(body) }).then(function (d) {
@@ -11341,8 +11394,8 @@ function ptVerLabel(v) {
     if (!m) return String(v || "");
     var base = m[1] + "." + m[2] + "." + m[3], n = parseInt(m[4] || "0", 10);
     if (!n) return base;
-    // Bütün dillərdə eyni: «3.1.3 r13»
-    return base + " r" + n;
+    // Bütün dillərdə eyni: «3.1.3 Rev. 13»
+    return base + " Rev. " + n;
 }
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
@@ -11456,6 +11509,11 @@ function showDotInfo() {
 }
 
 function updateDbCount() {
+    if (ptPub && ptPub.n) {
+        document.getElementById("dbCount").innerText = ptPub.g || (Array.isArray(database) ? database.length : 0);
+        document.getElementById("modelCount").innerText = ptPub.n;
+        return;
+    }
     if (dbMode === "catalog" && catalogMeta && catalogMeta.groupCount) {
         document.getElementById("dbCount").innerText = catalogMeta.groupCount;
         document.getElementById("modelCount").innerText = catalogMeta.modelCount || (Array.isArray(database) ? database.length : 0);
@@ -12433,7 +12491,7 @@ function updateLastUpdate() {
     updateDbCount();
     ensureInstallInfo();
     renderChangelogHistory();
-    const last = localStorage.getItem(UPDATE_KEY);
+    const last = (ptPub && ptPub.at) ? String(ptPub.at) : localStorage.getItem(UPDATE_KEY);
     const element = document.getElementById("lastUpdateText");
 
     if (!last) {

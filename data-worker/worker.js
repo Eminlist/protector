@@ -79,7 +79,7 @@ async function init(db) {
     db.prepare("CREATE TABLE IF NOT EXISTS pt_hist (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, kind TEXT NOT NULL, a INTEGER DEFAULT 0, r INTEGER DEFAULT 0, e INTEGER DEFAULT 0, g INTEGER DEFAULT 0, n INTEGER DEFAULT 0, c INTEGER DEFAULT 0, note TEXT DEFAULT '', first INTEGER DEFAULT 0)"),
     db.prepare("CREATE INDEX IF NOT EXISTS pt_hist_ts ON pt_hist (ts)"),
     // Hər istifadəçinin öz yeniləmə jurnalı: son sinxron vaxtı + real son 3 əməliyyat
-    db.prepare("CREATE TABLE IF NOT EXISTS pt_usync (uid TEXT PRIMARY KEY, last INTEGER NOT NULL, ops TEXT NOT NULL)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_usync2 (uid TEXT PRIMARY KEY, last INTEGER NOT NULL, ops TEXT NOT NULL)"),
     // Gecə saatlarında (Bakı 23:00–10:00) Telegram xəbərləri burada gözləyir, səhər 10:00-da bir yerdə gedir
     db.prepare("CREATE TABLE IF NOT EXISTS pt_tgq (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, text TEXT NOT NULL)")
   ]);
@@ -619,7 +619,7 @@ const _handler = {
     if (path === "/usync" && req.method === "POST") {
       if (me.anon) return J({ ops: [] });
       const now = Date.now();
-      const row = await db.prepare("SELECT last, ops FROM pt_usync WHERE uid=?").bind(me.uid).first();
+      const row = await db.prepare("SELECT last, ops FROM pt_usync2 WHERE uid=?").bind(me.uid).first();
       let ops = [], last = 0;
       if (row) { last = +row.last || 0; try { ops = JSON.parse(row.ops) || []; } catch (e) { ops = []; } }
       const agg = (rs) => {
@@ -652,7 +652,7 @@ const _handler = {
       }
       ops.sort((x, y) => (y.ts || 0) - (x.ts || 0));
       ops = ops.slice(0, 3);
-      await db.prepare("INSERT INTO pt_usync (uid, last, ops) VALUES (?, ?, ?) ON CONFLICT(uid) DO UPDATE SET last=excluded.last, ops=excluded.ops")
+      await db.prepare("INSERT INTO pt_usync2 (uid, last, ops) VALUES (?, ?, ?) ON CONFLICT(uid) DO UPDATE SET last=excluded.last, ops=excluded.ops")
         .bind(me.uid, now, JSON.stringify(ops)).run();
       return J({ ops, changed });
     }
