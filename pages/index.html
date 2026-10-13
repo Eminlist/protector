@@ -843,6 +843,8 @@ if(!GIRL){ girl.style.display='none'; } else if(VID) buildVideos(); else girl.cl
 fitGirl();
 addEventListener('resize',()=>{ fitGirl(); if(!busy&&stage_!=='intro') setPos(0,0,0); });
 if(GIRL) intro(); else stage_='stand';
+if(location.hash==='#gallery') setTimeout(openGallery,400);
+addEventListener('hashchange',()=>{ if(location.hash==='#gallery') openGallery(); });
 requestAnimationFrame(()=>requestAnimationFrame(()=>doors.forEach((d,i)=>{ d.style.transitionDelay=(i%4)*0.18+'s'; d.classList.add('show'); setTimeout(()=>{d.style.transitionDelay='';d.classList.add('in');},2200+i*200); })));
 })();
 </script>

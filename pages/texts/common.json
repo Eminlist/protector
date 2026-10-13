@@ -43,6 +43,11 @@
       "t": "Proqram yüklə",
       "d": "Ən son versiya",
       "u": "/application/download"
+     },
+     {
+      "t": "Qalereya",
+      "d": "Proqramdan kadrlar",
+      "u": "/#gallery"
      }
     ]
    },
@@ -121,6 +126,11 @@
       "t": "Скачать приложение",
       "d": "Последняя версия",
       "u": "/application/download"
+     },
+     {
+      "t": "Галерея",
+      "d": "Кадры из приложения",
+      "u": "/#gallery"
      }
     ]
    },
@@ -199,6 +209,11 @@
       "t": "Uygulamayı indir",
       "d": "En son sürüm",
       "u": "/application/download"
+     },
+     {
+      "t": "Galeri",
+      "d": "Uygulamadan kareler",
+      "u": "/#gallery"
      }
     ]
    },
@@ -277,6 +292,11 @@
       "t": "Download the app",
       "d": "Latest version",
       "u": "/application/download"
+     },
+     {
+      "t": "Gallery",
+      "d": "App screenshots",
+      "u": "/#gallery"
      }
     ]
    },
