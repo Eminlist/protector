@@ -700,10 +700,10 @@ async function bot(list){
 }
 
 
-/* ---- Qalereya: /media/gallery/1..8 şəkilləri varsa onlar, yoxsa telefon ekranları ---- */
+/* ---- Qalereya: /media/gallery/1..9 şəkilləri varsa onlar, yoxsa telefon ekranları ---- */
 let galEl=null, galI=0, galN=0;
 function galImgs(){
-  return Promise.all([1,2,3,4,5,6,7,8].map(n=>new Promise(r=>{ const im=new Image(); im.onload=()=>r(im.src); im.onerror=()=>{ const j=new Image(); j.onload=()=>r(j.src); j.onerror=()=>r(null); j.src='/media/gallery/'+n+'.jpg'; }; im.src='/media/gallery/'+n+'.png'; }))).then(a=>a.filter(Boolean));
+  return Promise.all([1,2,3,4,5,6,7,8,9].map(n=>new Promise(r=>{ const im=new Image(); im.onload=()=>r(im.src); im.onerror=()=>{ const j=new Image(); j.onload=()=>r(j.src); j.onerror=()=>r(null); j.src='/media/gallery/'+n+'.jpg'; }; im.src='/media/gallery/'+n+'.png'; }))).then(a=>a.filter(Boolean));
 }
 function galGo(k){
   if(!galEl||!galN) return;
