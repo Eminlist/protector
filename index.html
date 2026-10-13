@@ -2273,10 +2273,10 @@
   .header-buttons{gap:4px}
   .pt-logo img{width:36px;height:36px}
 }
-.pt-hero{text-align:center;padding:30px 8px 26px}
+.pt-hero{text-align:center;padding:14px 8px 10px}
 .pt-hero[hidden]{display:none}
-.pt-hero-s{font-size:calc(13px * var(--font-scale));letter-spacing:7px;color:var(--accent-color);text-transform:uppercase;font-weight:700;margin-bottom:10px}
-.pt-hero-t{font-size:calc(clamp(22px,6vw,32px) * var(--font-scale));line-height:1.15;font-weight:800;letter-spacing:-.8px;color:var(--text);word-wrap:break-word}
+.pt-hero-s{font-size:calc(13px * var(--font-scale));letter-spacing:3px;color:var(--accent-color);text-transform:uppercase;font-weight:700;margin-bottom:2px}
+.pt-hero-t{font-size:calc(clamp(22px,6vw,32px) * var(--font-scale));line-height:1.1;font-weight:800;letter-spacing:-.8px;color:var(--text);word-wrap:break-word}
 /* Scroll zolağı hər yerdə eyni görünür, səhifə yerindən tərpənmir */
 html{scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:var(--accent-color) transparent}
 *{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent-color) 70%,transparent) transparent}
@@ -2291,6 +2291,7 @@ html{scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:var(--accent-c
   .pt-stage{max-width:380px;height:470px;margin-left:auto;margin-right:auto}
 }
 /* Son axtarışlar: yenilənmə tarixçəsi kimi — toxunanda açılır */
+#recent{margin-top:-6px}
 #recent .rc-toggle{margin-bottom:0}
 #recent .cl-wrap>.rc-box{overflow:hidden;min-height:0;border-radius:14px}
 #recent .cl-wrap:not(.open)>.rc-box{border-width:0}
@@ -11320,7 +11321,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.10";
+const APP_VERSION = "3.1.3.11";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
