@@ -245,7 +245,32 @@
       b.style.height = ""; b.style.overflow = ""; b.style.transition = "";
     }, 720);
   }
+  // Zolaq menyusu maus ilə sağa-sola çəkilir (telefonda barmaqla öz-özünə sürüşür)
+  function dragStrip(w) {
+    if (!w || w._dr) return;
+    w._dr = 1;
+    var sx = 0, sl = 0, down = false, moved = false;
+    w.addEventListener("pointerdown", function (e) {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      if (e.target.closest(".acc-body")) return;
+      down = true; moved = false; sx = e.clientX; sl = w.scrollLeft;
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (!down) return;
+      var dx = e.clientX - sx;
+      if (!moved && Math.abs(dx) > 5) { moved = true; w.classList.add("dragging"); }
+      if (moved) { w.scrollLeft = sl - dx; e.preventDefault(); }
+    });
+    window.addEventListener("pointerup", function () {
+      if (!down) return;
+      down = false;
+      w.classList.remove("dragging");
+      if (moved) { w._drag = 1; setTimeout(function () { w._drag = 0; }, 0); }
+    });
+  }
   function bindAcc(root) {
+    if (root.classList && root.classList.contains("vstrip")) dragStrip(root);
+    if (root.querySelectorAll) root.querySelectorAll(".vstrip").forEach(dragStrip);
     root.querySelectorAll("details.acc").forEach(function (d) {
       if (d._acc) return;
       d._acc = 1;
@@ -254,8 +279,17 @@
         e.preventDefault();
         var par = d.parentElement;
         if (par && par.classList.contains("vstrip")) {
+          if (par._drag) return;
+          if (window.__ptTick) window.__ptTick();
           if (d.open) return;
-          Array.prototype.forEach.call(par.children, function (o) { if (o !== d && o.open) o.open = false; });
+          var kids = Array.prototype.slice.call(par.children), k = kids.indexOf(d);
+          kids.forEach(function (o, j) {
+            if (o !== d && o.open) o.open = false;
+            if (j === k) return;
+            o.classList.remove("sl-l", "sl-r"); void o.offsetWidth;
+            o.classList.add(j < k ? "sl-l" : "sl-r");
+            setTimeout(function () { o.classList.remove("sl-l", "sl-r"); }, 650);
+          });
           d.open = true;
           try { par.scrollTo({ left: d.offsetLeft - par.offsetLeft - 4, behavior: "smooth" }); } catch (x) {}
           return;
@@ -355,6 +389,7 @@
   (function () {
     var pcq = window.matchMedia("(min-width:901px)");
     var ac = null;
+    window.__ptTick = function () { tick(); };
     function tick() { // yalnız qısa klik səsi
       try {
         ac = ac || new (window.AudioContext || window.webkitAudioContext)();

@@ -78,7 +78,7 @@
     document.getElementById("hp").innerHTML = PT.fmt(tp.p || "");
     document.title = tp.t + " — ProTechtor™";
     var hs = document.getElementById("hs");
-    hs.className = "acc-list";
+    hs.className = "acc-list vstrip";
     hs.innerHTML = PT.sections(tp.s || [], true);
     PT.bindAcc(hs);
     var more = document.getElementById("hmore");

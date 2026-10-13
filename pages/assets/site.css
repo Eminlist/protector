@@ -280,3 +280,21 @@ html{scrollbar-width:thin;scrollbar-color:rgba(46,204,113,.6) var(--bg)}
 @media (min-width:901px){.vstrip>details.acc[open]{flex:1 1 0}}
 @media (prefers-reduced-motion:reduce){.vstrip>details.acc{transition:none}}
 .vstrip>details.acc:only-child{flex:1 1 auto}
+
+/* Zolaqlar: maus üstündə reaksiya, yuxarıda işarə xətti, sürüşdürmə (ölçülər dəyişmir) */
+.vstrip{cursor:grab;user-select:none}
+.vstrip.dragging{cursor:grabbing;scroll-snap-type:none}
+.vstrip.dragging>details.acc{pointer-events:none}
+.vstrip>details.acc[open] .acc-body{user-select:text;cursor:auto}
+.vstrip>details.acc::after{content:"";position:absolute;top:0;left:50%;width:44%;height:4px;border-radius:0 0 6px 6px;background:var(--accent);box-shadow:0 0 12px var(--accent);transform:translateX(-50%) scaleX(0);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.25,1.2),opacity .3s;pointer-events:none}
+.vstrip>details.acc:hover::after,.vstrip>details.acc[open]::after{transform:translateX(-50%) scaleX(1);opacity:1}
+.vstrip>details.acc:not([open]){transition:flex .6s cubic-bezier(.22,.8,.2,1),border-color .35s,box-shadow .35s,background .35s,translate .35s cubic-bezier(.2,.9,.25,1.2)}
+.vstrip>details.acc:not([open]):hover{border-color:rgba(46,204,113,.55);background:linear-gradient(180deg,rgba(46,204,113,.10),var(--card) 45%);box-shadow:0 14px 28px -16px rgba(46,204,113,.55)}
+.vstrip>details.acc:not([open]):hover>summary>span:not(.ai):not(.chev){color:var(--accent)}
+.vstrip>details.acc:not([open]):hover>summary .ai{background:rgba(46,204,113,.25)}
+.vstrip>details.acc:not([open])>summary{cursor:pointer}
+.vstrip>details.acc.sl-l{animation:slL .6s cubic-bezier(.2,.8,.2,1)}
+.vstrip>details.acc.sl-r{animation:slR .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes slL{0%{transform:translateX(0)}35%{transform:translateX(-14px)}100%{transform:translateX(0)}}
+@keyframes slR{0%{transform:translateX(0)}35%{transform:translateX(14px)}100%{transform:translateX(0)}}
+@media (prefers-reduced-motion:reduce){.vstrip>details.acc.sl-l,.vstrip>details.acc.sl-r{animation:none}}
