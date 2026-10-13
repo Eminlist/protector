@@ -192,8 +192,8 @@
     document.querySelectorAll("[data-sections]").forEach(function (el) {
       var arr = get(T, el.getAttribute("data-sections"));
       if (!Array.isArray(arr)) return;
-      el.classList.add("acc-list");
-      el.innerHTML = sectionsHtml(arr, !el.hasAttribute("data-closed"));
+      el.classList.add("acc-list", "vstrip");
+      el.innerHTML = sectionsHtml(arr, true);
       bindAcc(el);
     });
     // Kartlar: data-cards="açar" → [{i, h, p}]
@@ -252,6 +252,14 @@
       var s = d.querySelector("summary");
       s.addEventListener("click", function (e) {
         e.preventDefault();
+        var par = d.parentElement;
+        if (par && par.classList.contains("vstrip")) {
+          if (d.open) return;
+          Array.prototype.forEach.call(par.children, function (o) { if (o !== d && o.open) o.open = false; });
+          d.open = true;
+          try { par.scrollTo({ left: d.offsetLeft - par.offsetLeft - 4, behavior: "smooth" }); } catch (x) {}
+          return;
+        }
         var willOpen = !d.open;
         if (willOpen && d.parentElement) {
           Array.prototype.forEach.call(d.parentElement.children, function (o) {
@@ -281,6 +289,18 @@
       while (sec.firstChild) bd.appendChild(sec.firstChild);
       d.appendChild(sum); d.appendChild(bd);
       sec.replaceWith(d);
+    });
+    // Ardıcıl məlumat bölmələri şaquli zolaqlara yığılır (biri açıq, telefonda sürüşdürülür)
+    document.querySelectorAll("details.acc").forEach(function (d) {
+      if (d.parentElement.classList.contains("vstrip")) return;
+      var w = document.createElement("div");
+      w.className = "acc-list vstrip";
+      d.parentNode.insertBefore(w, d);
+      var n = d;
+      while (n && n.matches && n.matches("details.acc")) { var nx = n.nextElementSibling; w.appendChild(n); n = nx; }
+    });
+    document.querySelectorAll(".vstrip").forEach(function (w) {
+      if (!w.querySelector("details[open]") && w.firstElementChild) w.firstElementChild.open = true;
     });
     bindAcc(document);
   }
