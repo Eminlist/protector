@@ -2248,7 +2248,12 @@
 .m-bat-none{border-color:var(--border);color:var(--muted);cursor:default}
 .m-bat-none .m-bat-code{letter-spacing:2px;font-weight:700}
 .result-model .m-brandtxt{font-size:calc(11px * var(--font-scale));letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:2px}
-.m-spec{flex-wrap:wrap}
+.m-spec{flex-wrap:nowrap;min-width:0;max-width:100%;padding-right:4px;box-sizing:border-box}
+.m-spec .sz{white-space:nowrap;flex:0 0 auto}
+.m-spec .sz-src{flex:0 0 auto}
+.m-spec .m-bat{flex:0 0 auto;padding:1px 7px 1px 4px;gap:3px;font-size:.95em;letter-spacing:0;white-space:nowrap}
+.m-spec .sz-src{margin-left:0}
+@media (max-width:440px){.m-spec{gap:5px!important}.m-spec .cut-ic svg{width:18px;height:11px}.m-spec .m-bat{padding:1px 6px 1px 3px}}
 /* Logo (başlıqda) və ana səhifə yazısı */
 .pt-logo{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;cursor:default;color:var(--text);-webkit-tap-highlight-color:transparent;font:inherit}
 .pt-logo img{width:52px;height:52px;border-radius:14px;display:block;box-shadow:0 0 14px color-mix(in srgb,var(--accent-color) 30%,transparent)}
@@ -15280,6 +15285,24 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     if (!sp) { sp = el("div", "m-spec"); host.appendChild(sp); }
     return sp;
   }
+  /* batareya xətti ölçüdən sonra, yaşıl işıqdan (.sz-src) əvvəl dayanır — hamısı bir sətirdə */
+  function put(host, chip) {
+    var sp = slot(host), dot = sp.querySelector(".sz-src");
+    if (dot) sp.insertBefore(chip, dot); else sp.appendChild(chip);
+    fit(sp);
+  }
+  /* sətir sığmırsa yazı azca kiçilir — aşağı düşmür, kəsilmir */
+  function fit(sp) {
+    requestAnimationFrame(function () {
+      try {
+        if (!sp.isConnected || !sp.clientWidth) return;
+        sp.style.fontSize = "";
+        var f = parseFloat(getComputedStyle(sp).fontSize) || 12, n = 0;
+        while (sp.scrollWidth > sp.clientWidth && f > 8.5 && n++ < 12) { f -= 0.5; sp.style.fontSize = f + "px"; }
+      } catch (e) {}
+    });
+  }
+  window.addEventListener("resize", function () { document.querySelectorAll(".m-spec").forEach(function (sp) { if (sp.querySelector(".m-bat")) fit(sp); }); });
   function batNone() {
     var d = el("div", "m-bat m-bat-none");
     var ic = el("span", "m-bat-ic"); ic.textContent = "🔋";
@@ -15291,8 +15314,8 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     try {
       if (!host || host.querySelector(".m-bat")) return;
       var e = batMap[norm(model)];
-      if (e) slot(host).appendChild(batLine(e));
-      else if (batDone === seq) slot(host).appendChild(batNone());
+      if (e) put(host, batLine(e));
+      else if (batDone === seq) put(host, batNone());
     } catch (x) {}
   };
   function batRow(item, q) {
@@ -15305,7 +15328,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     if (bt) name.appendChild(el("div", "m-brandtxt", bt));
     var sp = null; try { sp = specLineEl(item.model, null); } catch (e) {}
     if (sp) name.appendChild(sp);
-    slot(name).appendChild(batLine(item));
+    put(name, batLine(item));
     r.appendChild(brand); r.appendChild(name); r.appendChild(el("div", "result-arrow", "›"));
     r.addEventListener("click", function () {
       try { playSoundEffect(); triggerHaptic(30); } catch (e) {}
@@ -15330,7 +15353,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
       var e = batMap[r.getAttribute("data-k")]; if (e) window.ptBatDecorate(r.querySelector(".result-model"), e.model);
     });
     res.querySelectorAll(".result-item[data-k]").forEach(function (r) {
-      var h = r.querySelector(".result-model"); if (h && !h.querySelector(".m-bat")) slot(h).appendChild(batNone());
+      var h = r.querySelector(".result-model"); if (h && !h.querySelector(".m-bat")) put(h, batNone());
     });
     if (!list.length) return;
     /* antiudarda heç nə tapılmayıbsa «tapılmadı» bloku götürülür */
@@ -15383,11 +15406,11 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
           if (it.querySelector(".m-bat")) return;
           var c = m[norm(it.getAttribute("data-model"))];
           var host = it.querySelector(".compat-model"); if (!host) return;
-          if (!c || !c.length) { slot(host).appendChild(batNone()); return; }
+          if (!c || !c.length) { put(host, batNone()); return; }
           var d2 = el("div", "m-bat"), ic = el("span", "m-bat-ic"); ic.textContent = "🔋";
           d2.appendChild(ic); d2.appendChild(el("span", "m-bat-code", c.join(" · ")));
           d2.style.cursor = "default";
-          slot(host).appendChild(d2);
+          put(host, d2);
         });
       }).catch(function () {});
     } catch (e) {}
