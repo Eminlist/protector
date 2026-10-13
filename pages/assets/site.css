@@ -99,9 +99,9 @@ details.acc[open] .acc-body>*:nth-child(4){animation-delay:.15s}
 .pl::after{transform:rotate(90deg)}
 .mg.open .pl::after,.mx.open .pl::after{transform:rotate(0)}
 .mg.open .pl::before,.mx.open .pl::before{transform:rotate(180deg)}
-.mg-d{position:absolute;top:calc(100% + 10px);left:-8px;min-width:290px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .2s,transform .25s,visibility .2s}
+.mg-d{position:absolute;top:calc(100% + 10px);left:-8px;min-width:290px;visibility:hidden;clip-path:inset(0 -40px 100% -40px);transition:clip-path .6s cubic-bezier(.4,0,.2,1),visibility 0s linear .6s}
 .mg-d::before{content:"";position:absolute;left:0;right:0;top:-12px;height:12px}
-.mg.open .mg-d{opacity:1;visibility:visible;transform:none}
+.mg.open .mg-d{visibility:visible;clip-path:inset(-14px -40px -60px -40px);transition:clip-path .6s cubic-bezier(.4,0,.2,1),visibility 0s}
 .mg-dl{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:8px;box-shadow:0 24px 50px -18px rgba(0,0,0,.8)}
 .mg-dl a{display:block;padding:10px 12px;border-radius:10px;color:var(--text)}
 .mg-dl a b{display:block;font-size:15px;font-weight:600}
@@ -142,7 +142,7 @@ details.acc[open] .acc-body>*:nth-child(4){animation-delay:.15s}
 .mx-b{display:flex;align-items:center;justify-content:space-between;width:100%;background:none;border:0;color:var(--text);font:inherit;font-size:22px;font-weight:600;padding:18px 2px;cursor:pointer;text-align:left}
 .mx-b .pl{width:14px;height:14px}
 .mx-b .pl::before,.mx-b .pl::after{top:6px;width:14px}
-.mx-d{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s cubic-bezier(.4,0,.2,1)}
+.mx-d{display:grid;grid-template-rows:0fr;transition:grid-template-rows .6s cubic-bezier(.4,0,.2,1)}
 .mx.open .mx-d{grid-template-rows:1fr}
 .mx-d>div{overflow:hidden}
 .mx-d a{display:block;color:var(--muted);font-size:17px;padding:9px 2px}
@@ -252,3 +252,19 @@ html{scrollbar-width:thin;scrollbar-color:rgba(46,204,113,.6) var(--bg)}
   .tiles .tile.act::after{content:"›";position:absolute;right:18px;bottom:18px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--accent);color:var(--onaccent);font-size:22px;line-height:1;padding-bottom:3px}
 }
 @media (prefers-reduced-motion:reduce){.tiles .tile{transition:none}.tiles .tile.act b,.tiles .tile.act small{animation:none}}
+
+/* ===== Qeydiyyat forması (/account/register) ===== */
+.rform{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+.rform h2{margin:0 0 4px}
+.rform label{display:flex;flex-direction:column;gap:5px;font-size:14px;color:var(--muted)}
+.rform input{width:100%;font:inherit;font-size:16px;color:var(--text);background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.rform input:focus{border-color:rgba(46,204,113,.6);box-shadow:0 0 0 3px rgba(46,204,113,.12)}
+.rform input.bad{border-color:#e74c3c}
+.rform small{font-size:12px;color:var(--muted)}
+.rphone{display:flex;align-items:center;gap:8px}
+.rphone b{color:var(--text);font-weight:600}
+.rts{min-height:65px}
+.rmsg{font-size:14px;min-height:1em}
+.rmsg.err{color:#e74c3c}
+.rmsg.ok{color:var(--accent)}
+.rform .btn[disabled]{opacity:.6;pointer-events:none}

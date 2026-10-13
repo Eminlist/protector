@@ -84,7 +84,7 @@
       nav.innerHTML = menu.map(function (g, i) {
         var on = g.items.some(function (it) { return here(it.u); });
         return '<div class="mg' + (on ? " on" : "") + '"><button class="mg-b" aria-expanded="false" data-i="' + i + '">' + esc(g.h) +
-          '<span class="pl" aria-hidden="true"></span></button><div class="mg-d"><div class="mg-dl">' +
+          '</button><div class="mg-d"><div class="mg-dl">' +
           g.items.map(function (it) {
             return '<a href="' + it.u + '"' + (here(it.u) ? ' class="on"' : "") + "><b>" + esc(it.t) + "</b>" + (it.d ? "<small>" + esc(it.d) + "</small>" : "") + "</a>";
           }).join("") + "</div></div></div>";
@@ -94,7 +94,7 @@
     if (mp) {
       mp.innerHTML = menu.map(function (g) {
         var on = g.items.some(function (it) { return here(it.u); });
-        return '<div class="mx' + (on ? " open" : "") + '"><button class="mx-b">' + esc(g.h) + '<span class="pl" aria-hidden="true"></span></button><div class="mx-d"><div>' +
+        return '<div class="mx' + (on ? " open" : "") + '"><button class="mx-b">' + esc(g.h) + '</button><div class="mx-d"><div>' +
           g.items.map(function (it) { return '<a href="' + it.u + '"' + (here(it.u) ? ' class="on"' : "") + ">" + esc(it.t) + "</a>"; }).join("") +
           "</div></div></div>";
       }).join("") + '<a class="btn mx-cta" href="/application/download">' + esc(get(T, "cta") || "") + "</a>";
@@ -234,16 +234,16 @@
       d.open = true;
       var h = b.scrollHeight;
       b.style.height = "0px"; b.style.overflow = "hidden";
-      requestAnimationFrame(function () { b.style.transition = "height .34s cubic-bezier(.4,0,.2,1)"; b.style.height = h + "px"; });
+      requestAnimationFrame(function () { b.style.transition = "height .7s cubic-bezier(.4,0,.2,1)"; b.style.height = h + "px"; });
     } else {
       b.style.height = b.offsetHeight + "px"; b.style.overflow = "hidden";
-      requestAnimationFrame(function () { b.style.transition = "height .3s cubic-bezier(.4,0,.2,1)"; b.style.height = "0px"; });
+      requestAnimationFrame(function () { b.style.transition = "height .6s cubic-bezier(.4,0,.2,1)"; b.style.height = "0px"; });
     }
     clearTimeout(d._t);
     d._t = setTimeout(function () {
       if (!open) d.open = false;
       b.style.height = ""; b.style.overflow = ""; b.style.transition = "";
-    }, 360);
+    }, 720);
   }
   function bindAcc(root) {
     root.querySelectorAll("details.acc").forEach(function (d) {
@@ -289,7 +289,7 @@
     var t = document.getElementById(location.hash.slice(1));
     if (t && t.matches("details.acc")) {
       if (!t.open) t.querySelector("summary").click();
-      setTimeout(function () { t.scrollIntoView({ behavior: "smooth", block: "start" }); }, 380);
+      setTimeout(function () { t.scrollIntoView({ behavior: "smooth", block: "start" }); }, 740);
     }
   }
   window.addEventListener("hashchange", openHash);

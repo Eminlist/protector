@@ -18,10 +18,10 @@
     "i": "🧭",
     "h": "Qeydiyyat qaydası",
     "ol": [
-     "Proqramı açın və **«E-poçt və parol»** və ya **«Google hesabı»** üsulunu seçin.",
-     "E-poçt üsulunda **«Hesabınız yoxdur? Qeydiyyat»** keçidinə toxunun.",
-     "Formu doldurun və **«Qeydiyyatı Tamamla»** düyməsini sıxın.",
-     "Google üsulunda hesabı seçdikdən sonra telefon nömrənizi daxil edin."
+     "Bu səhifədəki qeydiyyat formunu doldurun.",
+     "Təhlükəsizlik yoxlamasını tamamlayın və **«Qeydiyyatı tamamla»** düyməsini sıxın.",
+     "E-poçt ünvanınıza göndərilən təsdiq məktubundakı keçidə toxunun.",
+     "Proqrama həmin e-poçt və parolla daxil olun."
     ]
    },
    {
@@ -49,7 +49,27 @@
      "Yeni hesablar üçün Premium sınaq müddəti nəzərdə tutulub. Ətraflı: [Hesab və Premium](/help/account#s4)."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Hesab yaradın",
+   "name": "Ad və soyad *",
+   "email": "E-poçt *",
+   "pass": "Parol *",
+   "passHint": "Ən azı 8 simvol, 1 rəqəm, 1 böyük və 1 kiçik hərf.",
+   "phone": "Telefon nömrəsi *",
+   "store": "Mağaza adı",
+   "address": "Mağaza ünvanı",
+   "btn": "Qeydiyyatı tamamla",
+   "busy": "Qeydiyyat aparılır…",
+   "ok": "Qeydiyyat uğurla tamamlandı. E-poçt ünvanınıza təsdiq məktubu göndərildi. Proqrama həmin e-poçt və parolla daxil ola bilərsiniz.",
+   "errName": "Ad və soyad ən azı 3 hərfdən ibarət olmalıdır.",
+   "errEmail": "E-poçt ünvanı düzgün deyil.",
+   "errPass": "Parol tələblərə uyğun deyil.",
+   "errPhone": "Nömrə yanlışdır: 9 rəqəm olmalı və düzgün prefikslə başlamalıdır (10, 50, 51, 55, 60, 70, 77, 99, 12).",
+   "errTs": "Zəhmət olmasa, təhlükəsizlik yoxlamasını tamamlayın.",
+   "errExists": "Bu e-poçt ünvanı ilə hesab artıq mövcuddur. [Daxil olun](/account/login).",
+   "errGen": "Qeydiyyat tamamlanmadı. Bir qədər sonra yenidən cəhd edin."
+  }
  },
  "ru": {
   "page": {
@@ -70,10 +90,10 @@
     "i": "🧭",
     "h": "Порядок регистрации",
     "ol": [
-     "Откройте приложение и выберите способ **«Email и пароль»** или **«Аккаунт Google»**.",
-     "При выборе e-mail нажмите **«Нет аккаунта? Регистрация»**.",
-     "Заполните форму и нажмите **«Завершить регистрацию»**.",
-     "При входе через Google после выбора аккаунта укажите номер телефона."
+     "Заполните форму регистрации на этой странице.",
+     "Пройдите проверку безопасности и нажмите **«Завершить регистрацию»**.",
+     "Перейдите по ссылке из письма подтверждения, отправленного на ваш e-mail.",
+     "Войдите в приложение с этим e-mail и паролем."
     ]
    },
    {
@@ -101,7 +121,27 @@
      "Для новых учётных записей предусмотрен пробный период Premium. Подробнее: [Учётная запись и Premium](/help/account#s4)."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Создайте учётную запись",
+   "name": "Имя и фамилия *",
+   "email": "E-mail *",
+   "pass": "Пароль *",
+   "passHint": "Не менее 8 символов, 1 цифра, 1 заглавная и 1 строчная буква.",
+   "phone": "Номер телефона *",
+   "store": "Название магазина",
+   "address": "Адрес магазина",
+   "btn": "Завершить регистрацию",
+   "busy": "Выполняется регистрация…",
+   "ok": "Регистрация успешно завершена. На ваш e-mail отправлено письмо для подтверждения. Вы можете войти в приложение с этим e-mail и паролем.",
+   "errName": "Имя и фамилия должны содержать не менее 3 букв.",
+   "errEmail": "Неверный адрес e-mail.",
+   "errPass": "Пароль не соответствует требованиям.",
+   "errPhone": "Неверный номер: 9 цифр и допустимый префикс (10, 50, 51, 55, 60, 70, 77, 99, 12).",
+   "errTs": "Пожалуйста, пройдите проверку безопасности.",
+   "errExists": "Учётная запись с этим e-mail уже существует. [Войдите](/account/login).",
+   "errGen": "Регистрация не завершена. Повторите попытку позже."
+  }
  },
  "tr": {
   "page": {
@@ -122,10 +162,10 @@
     "i": "🧭",
     "h": "Kayıt yöntemi",
     "ol": [
-     "Uygulamayı açın ve **«E-posta ve şifre»** veya **«Google hesabı»** yöntemini seçin.",
-     "E-posta yönteminde **«Hesabınız yok mu? Kayıt ol»** bağlantısına dokunun.",
-     "Formu doldurun ve **«Kaydı Tamamla»** düğmesine basın.",
-     "Google yönteminde hesabı seçtikten sonra telefon numaranızı girin."
+     "Bu sayfadaki kayıt formunu doldurun.",
+     "Güvenlik doğrulamasını tamamlayın ve **«Kaydı tamamla»** düğmesine basın.",
+     "E-posta adresinize gönderilen doğrulama iletisindeki bağlantıya dokunun.",
+     "Uygulamaya bu e-posta ve şifreyle giriş yapın."
     ]
    },
    {
@@ -153,7 +193,27 @@
      "Yeni hesaplar için Premium deneme süresi sunulmaktadır. Ayrıntılar: [Hesap ve Premium](/help/account#s4)."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Hesap oluşturun",
+   "name": "Ad ve soyad *",
+   "email": "E-posta *",
+   "pass": "Şifre *",
+   "passHint": "En az 8 karakter, 1 rakam, 1 büyük ve 1 küçük harf.",
+   "phone": "Telefon numarası *",
+   "store": "Mağaza adı",
+   "address": "Mağaza adresi",
+   "btn": "Kaydı tamamla",
+   "busy": "Kayıt yapılıyor…",
+   "ok": "Kayıt başarıyla tamamlandı. E-posta adresinize doğrulama iletisi gönderildi. Uygulamaya bu e-posta ve şifreyle giriş yapabilirsiniz.",
+   "errName": "Ad ve soyad en az 3 harften oluşmalıdır.",
+   "errEmail": "E-posta adresi geçersiz.",
+   "errPass": "Şifre gereksinimleri karşılamıyor.",
+   "errPhone": "Geçersiz numara: 9 hane ve geçerli önek (10, 50, 51, 55, 60, 70, 77, 99, 12).",
+   "errTs": "Lütfen güvenlik doğrulamasını tamamlayın.",
+   "errExists": "Bu e-posta adresiyle bir hesap zaten mevcut. [Giriş yapın](/account/login).",
+   "errGen": "Kayıt tamamlanamadı. Lütfen daha sonra tekrar deneyin."
+  }
  },
  "en": {
   "page": {
@@ -174,10 +234,10 @@
     "i": "🧭",
     "h": "How to register",
     "ol": [
-     "Open the app and choose **«E-mail and password»** or **«Google account»**.",
-     "For e-mail, tap **«Don't have an account? Register»**.",
-     "Fill in the form and tap **«Complete Registration»**.",
-     "With Google, enter your phone number after choosing the account."
+     "Fill in the registration form on this page.",
+     "Complete the security check and tap **«Complete registration»**.",
+     "Open the link in the confirmation e-mail sent to your address.",
+     "Sign in to the app with this e-mail and password."
     ]
    },
    {
@@ -205,6 +265,26 @@
      "New accounts are offered a Premium trial period. Details: [Account and Premium](/help/account#s4)."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Create an account",
+   "name": "First and last name *",
+   "email": "E-mail *",
+   "pass": "Password *",
+   "passHint": "At least 8 characters, 1 number, 1 uppercase and 1 lowercase letter.",
+   "phone": "Phone number *",
+   "store": "Store name",
+   "address": "Store address",
+   "btn": "Complete registration",
+   "busy": "Registering…",
+   "ok": "Registration completed successfully. A confirmation e-mail has been sent to your address. You can sign in to the app with this e-mail and password.",
+   "errName": "First and last name must contain at least 3 letters.",
+   "errEmail": "The e-mail address is invalid.",
+   "errPass": "The password does not meet the requirements.",
+   "errPhone": "Invalid number: 9 digits with a valid prefix (10, 50, 51, 55, 60, 70, 77, 99, 12).",
+   "errTs": "Please complete the security check.",
+   "errExists": "An account with this e-mail already exists. [Sign in](/account/login).",
+   "errGen": "Registration was not completed. Please try again later."
+  }
  }
 }
