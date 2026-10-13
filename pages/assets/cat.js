@@ -1,4 +1,4 @@
-// ProTechtor™ — saytda gəzən pişik (ağ, mavi gözlü, boz qulaq və quyruq).
+// ProTechtor™ — saytda gəzən pişik (kök Siam pişiyi: krem bədən, tünd qəhvəyi qulaq/üz/pəncə/quyruq, mavi göz).
 // Bütün sayt səhifələrində işləyir: döşəmədə (ekranın altı) gəzir, menyulara tullanır,
 // menyu üstündə gəzir, menyu ətrafında fırlanır, oturur, quyruğunu yelləyir, pəncəsini yalayır,
 // uzanır, yatır, gərnəşir, kursora baxır/arxasınca qaçır; toxunanda reaksiya verir.
@@ -21,73 +21,97 @@
     ".door.show", "nav.foot a", ".tools"
   ].join(",");
 
-  /* ---------------- Rəsm (SVG) ---------------- */
-  function head(cx, cy) {
-    var eye = function (x) {
-      return '<g class="ey" transform="translate(' + x + ',-1)"><ellipse rx="4.6" ry="5.4" fill="url(#ptEye)" stroke="#6b5f5a" stroke-width=".5"/>' +
-        '<g class="pp"><ellipse rx="2" ry="3.4" fill="#12233f"/><circle cx="1.3" cy="-1.8" r="1.3" fill="#fff"/></g></g>';
-    };
+  /* ---------------- Rəsm (SVG) — kök Siam pişiyi ---------------- */
+  var DK = "#3b2a21"; // Siam "point" rəngi (qulaq, üz maskası, pəncə, quyruq)
+  var eyeS = function () { // yandan görünüş: badamvari göz
+    return '<g class="ey" transform="translate(8,-3)"><path d="M-4.2,0 Q0,-4 4,0 Q0,2.6 -4.2,0Z" fill="url(#ptEye)"/>' +
+      '<g class="pp"><ellipse cx=".6" rx="1.1" ry="2" fill="#0d1a30"/><circle cx="1.4" cy="-1" r=".7" fill="#fff"/></g></g>';
+  };
+  function headS(cx, cy) { // yan baş
     return '<g transform="translate(' + cx + "," + cy + ')"><g class="hd">' +
-      '<path d="M-17,-5 L-15,-27 L-2,-15Z" fill="#978b86"/><path d="M-14,-9 L-13,-22 L-6,-14Z" fill="#e8b4b8"/>' +
-      '<path d="M17,-5 L15,-27 L2,-15Z" fill="#978b86"/><path d="M14,-9 L13,-22 L6,-14Z" fill="#e8b4b8"/>' +
-      '<ellipse cx="-13" cy="6" rx="8" ry="7" fill="url(#ptFur)"/><ellipse cx="13" cy="6" rx="8" ry="7" fill="url(#ptFur)"/>' +
-      '<ellipse rx="19" ry="16.5" fill="url(#ptFur)" stroke="#d8d1cb" stroke-width=".6"/>' +
-      '<ellipse cy="-6" rx="15" ry="8" fill="#a99d97" opacity=".28"/>' +
-      '<ellipse cy="-12" rx="9" ry="4" fill="#a99d97" opacity=".22"/>' +
-      eye(-7) + eye(7) +
-      '<g class="ec"><path d="M-11,-1 Q-7,2.5 -3,-1 M3,-1 Q7,2.5 11,-1" stroke="#6b5f5a" stroke-width="1.2" stroke-linecap="round" fill="none"/></g>' +
-      '<path d="M-2.2,5.6 L2.2,5.6 L0,8.2Z" fill="#e79aa6"/>' +
-      '<path d="M0,8.2 Q-2,10.6 -4,9.6 M0,8.2 Q2,10.6 4,9.6" stroke="#9b8f8a" stroke-width=".8" fill="none" stroke-linecap="round"/>' +
-      '<ellipse class="tg" cy="11.2" rx="1.6" ry="2" fill="#f08aa0"/>' +
-      '<path d="M-6,7.5 L-23,4 M-6,8.5 L-23,9.5 M6,7.5 L23,4 M6,8.5 L23,9.5" stroke="#bfb7b1" stroke-width=".5" opacity=".9"/>' +
+      '<path d="M-3,-11 L0,-27 L7,-13Z" fill="' + DK + '"/>' +
+      '<path d="M-12,-3 C-12,-15 -1,-18 7,-15 C13,-12 17,-6 20,0 C22,5 19,9 14,10 C8,12 0,12 -6,10 C-11,8 -12,4 -12,-3Z" fill="url(#ptFur)"/>' +
+      '<path d="M-1,-13 C6,-15 13,-11 17,-5 C21,0 21,6 17,9 C12,12 4,11 0,6 C-3,1 -4,-8 -1,-13Z" fill="url(#ptMask)"/>' +
+      '<path d="M-9,-9 L-8,-28 L3,-14Z" fill="' + DK + '"/><path d="M-7,-12 L-7,-23 L0,-14Z" fill="#5a4234"/>' +
+      eyeS() +
+      '<g class="ec"><path d="M4,-3 Q8,-0.5 12,-3" stroke="#1d140f" stroke-width="1" stroke-linecap="round" fill="none"/></g>' +
+      '<path d="M18.5,0.5 L21,1.5 L19.5,3.5Z" fill="#1d140f"/>' +
+      '<path d="M19.5,3.5 Q18,6.5 14,6.5" stroke="#1d140f" stroke-width=".6" fill="none"/>' +
+      '<ellipse class="tg" cx="16" cy="8" rx="1.4" ry="1.8" fill="#e5899b"/>' +
+      '<path d="M15,5 L31,2 M15,6 L31,7 M15,7 L29,11" stroke="#f3ece2" stroke-width=".45" opacity=".9"/>' +
       "</g></g>";
   }
-  function leg(x, cls, shade) {
-    return '<g class="lg ' + cls + '"><rect x="' + x + '" y="56" width="9" height="30" rx="4.5" fill="' + shade + '"/>' +
-      '<ellipse cx="' + (x + 4.5) + '" cy="86" rx="6" ry="3" fill="' + shade + '"/></g>';
+  function headF(cx, cy) { // öndən baş
+    var e = function (x, d) {
+      return '<g class="ey" transform="translate(' + x + ',-2)"><path d="' + d + '" fill="url(#ptEye)"/>' +
+        '<g class="pp"><ellipse rx="1.1" ry="2.1" fill="#0d1a30"/><circle cx=".7" cy="-1" r=".7" fill="#fff"/></g></g>';
+    };
+    return '<g transform="translate(' + cx + "," + cy + ')"><g class="hd">' +
+      '<path d="M-15,-4 L-18,-25 L-4,-13Z" fill="' + DK + '"/><path d="M15,-4 L18,-25 L4,-13Z" fill="' + DK + '"/>' +
+      '<path d="M-13,-7 L-15,-20 L-7,-12Z" fill="#5a4234"/><path d="M13,-7 L15,-20 L7,-12Z" fill="#5a4234"/>' +
+      '<path d="M-16,-5 C-16,-14 -7,-16 0,-16 C7,-16 16,-14 16,-5 C17,5 9,13 0,14 C-9,13 -17,5 -16,-5Z" fill="url(#ptFur)"/>' +
+      '<ellipse cy="3" rx="11.5" ry="11" fill="url(#ptMask)"/>' +
+      e(-6, "M4,0.8 Q0,-3.4 -4.2,-0.6 Q0,2.4 4,0.8Z") + e(6, "M-4,0.8 Q0,-3.4 4.2,-0.6 Q0,2.4 -4,0.8Z") +
+      '<g class="ec"><path d="M-10,-2 Q-6,0.5 -2,-1.5 M2,-1.5 Q6,0.5 10,-2" stroke="#1d140f" stroke-width="1" stroke-linecap="round" fill="none"/></g>' +
+      '<path d="M-1.8,5.6 L1.8,5.6 L0,7.6Z" fill="#1d140f"/>' +
+      '<path d="M0,7.6 Q-1.6,9.6 -3,8.8 M0,7.6 Q1.6,9.6 3,8.8" stroke="#1d140f" stroke-width=".6" fill="none" stroke-linecap="round"/>' +
+      '<ellipse class="tg" cy="10.2" rx="1.5" ry="1.9" fill="#e5899b"/>' +
+      '<path d="M-4,7 L-23,4 M-4,8 L-23,9 M4,7 L23,4 M4,8 L23,9" stroke="#f3ece2" stroke-width=".45" opacity=".9"/>' +
+      "</g></g>";
+  }
+  function leg(x, cls, far) {
+    return '<g class="lg ' + cls + '"><rect x="' + x + '" y="63" width="11" height="24" rx="5.5" fill="url(#' + (far ? "ptLegF" : "ptLeg") + ')"/>' +
+      '<ellipse cx="' + (x + 5.5) + '" cy="86.6" rx="6.5" ry="2.8" fill="' + (far ? "#2e211a" : DK) + '"/></g>';
   }
   var DEFS =
-    '<defs><radialGradient id="ptFur" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#f4efea"/><stop offset="1" stop-color="#e2dbd4"/></radialGradient>' +
-    '<radialGradient id="ptEye" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#a6d0ff"/><stop offset=".6" stop-color="#4f86d4"/><stop offset="1" stop-color="#2d5a9e"/></radialGradient>' +
-    '<linearGradient id="ptTail" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#cfc8c3"/><stop offset="1" stop-color="#857b76"/></linearGradient></defs>';
+    '<defs><linearGradient id="ptFur" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2cfae"/><stop offset=".45" stop-color="#f1e6d2"/><stop offset="1" stop-color="#f8f2e7"/></linearGradient>' +
+    '<radialGradient id="ptMask" cx=".55" cy=".55" r=".55"><stop offset="0" stop-color="#2f2119"/><stop offset=".6" stop-color="#4a3528" stop-opacity=".95"/><stop offset="1" stop-color="#6b5040" stop-opacity="0"/></radialGradient>' +
+    '<linearGradient id="ptLeg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ead9bd"/><stop offset=".45" stop-color="#7a5c48"/><stop offset="1" stop-color="#3b2a21"/></linearGradient>' +
+    '<linearGradient id="ptLegF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdb795"/><stop offset=".45" stop-color="#5e4536"/><stop offset="1" stop-color="#2e211a"/></linearGradient>' +
+    '<radialGradient id="ptEye" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#9fd0ff"/><stop offset=".6" stop-color="#3f7fd0"/><stop offset="1" stop-color="#24508f"/></radialGradient>' +
+    '<linearGradient id="ptTail" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#6b5040"/><stop offset=".35" stop-color="#3b2a21"/><stop offset="1" stop-color="#2a1d17"/></linearGradient></defs>';
 
   // Yan görünüş: gəzmək, dayanmaq, tullanmaq, gərnəşmək
   var SIDE =
     '<g class="d ds"><g class="all">' +
-    leg(38, "la lr", "#e6e0da") + leg(76, "lb lf", "#e6e0da") +
-    '<path class="tl" d="M28,50 C12,47 6,32 10,16" stroke="url(#ptTail)" stroke-width="11" stroke-linecap="round" fill="none"/>' +
+    leg(36, "la lr", 1) + leg(73, "lb lf", 1) +
+    '<path class="tl" d="M21,54 C4,56 0,40 6,24" stroke="url(#ptTail)" stroke-width="7" stroke-linecap="round" fill="none"/>' +
     '<g class="bd">' +
-    '<ellipse cx="55" cy="54" rx="33" ry="19" fill="url(#ptFur)" stroke="#d8d1cb" stroke-width=".6"/>' +
-    '<ellipse cx="50" cy="43" rx="24" ry="7" fill="#b3a8a2" opacity=".35"/>' +
-    leg(66, "la lf", "#f8f5f2") +
-    '<ellipse cx="80" cy="52" rx="13" ry="16" fill="url(#ptFur)"/>' +
-    head(90, 30) +
+    '<ellipse cx="31" cy="62" rx="17" ry="20" fill="url(#ptFur)"/>' +
+    '<ellipse cx="55" cy="58" rx="38" ry="23" fill="url(#ptFur)"/>' +
+    '<ellipse cx="57" cy="70" rx="31" ry="13" fill="#f8f2e7"/>' +
+    '<ellipse cx="52" cy="43" rx="28" ry="6" fill="#c8ad86" opacity=".35"/>' +
+    leg(66, "la lf", 0) +
+    '<ellipse cx="83" cy="55" rx="14" ry="16" fill="url(#ptFur)"/>' +
+    headS(94, 37) +
     "</g>" +
-    leg(28, "lb lr", "#f8f5f2") +
+    leg(25, "lb lr", 0) +
     "</g></g>";
 
-  // Oturmaq (öndən, şəkildəki kimi), yalanmaq
+  // Oturmaq (öndən), yalanmaq
   var SITF =
     '<g class="d df">' +
-    '<path class="tl2" d="M74,83 C96,88 105,77 100,62" stroke="url(#ptTail)" stroke-width="10" stroke-linecap="round" fill="none"/>' +
-    '<path d="M60,40 C40,40 33,62 36,79 C38,89 82,89 84,79 C87,62 80,40 60,40Z" fill="url(#ptFur)" stroke="#d8d1cb" stroke-width=".6"/>' +
-    '<ellipse cx="40" cy="77" rx="11" ry="10" fill="url(#ptFur)"/><ellipse cx="80" cy="77" rx="11" ry="10" fill="url(#ptFur)"/>' +
-    '<path d="M60,44 C47,46 45,63 52,75 L60,81 L68,75 C75,63 73,46 60,44Z" fill="#fff"/>' +
-    '<g class="lg"><rect x="62" y="60" width="8" height="25" rx="4" fill="#fbf9f7"/><ellipse cx="66" cy="85.5" rx="6" ry="3.2" fill="#fbf9f7"/></g>' +
-    head(60, 28) +
-    '<g class="lg lp"><rect x="50" y="60" width="8" height="25" rx="4" fill="#fbf9f7"/><ellipse cx="54" cy="85.5" rx="6" ry="3.2" fill="#fbf9f7" stroke="#e6dfd9" stroke-width=".4"/></g>' +
+    '<path class="tl2" d="M80,85 C100,89 108,78 104,64" stroke="url(#ptTail)" stroke-width="7" stroke-linecap="round" fill="none"/>' +
+    '<path d="M60,38 C34,38 23,62 25,78 C27,91 93,91 95,78 C97,62 86,38 60,38Z" fill="url(#ptFur)"/>' +
+    '<ellipse cx="36" cy="77" rx="14" ry="11.5" fill="#f3eadb"/><ellipse cx="84" cy="77" rx="14" ry="11.5" fill="#f3eadb"/>' +
+    '<ellipse cx="60" cy="44" rx="17" ry="6" fill="#c8ad86" opacity=".3"/>' +
+    '<path d="M60,44 C47,46 44,64 51,76 L60,82 L69,76 C76,64 73,46 60,44Z" fill="#faf5ec"/>' +
+    '<g class="lg"><rect x="62" y="58" width="10" height="27" rx="5" fill="url(#ptLeg)"/><ellipse cx="67" cy="85.6" rx="6.5" ry="3" fill="' + DK + '"/></g>' +
+    headF(60, 28) +
+    '<g class="lg lp"><rect x="48" y="58" width="10" height="27" rx="5" fill="url(#ptLeg)"/><ellipse cx="53" cy="85.6" rx="6.5" ry="3" fill="' + DK + '"/></g>' +
     "</g>";
 
-  // Uzanmaq, yatmaq
+  // Uzanmaq, yatmaq (kök "çörək" pozası)
   var LIE =
     '<g class="d dl">' +
-    '<path d="M26,76 C10,80 2,70 6,58" stroke="url(#ptTail)" stroke-width="9" stroke-linecap="round" fill="none"/>' +
     '<g class="bdy">' +
-    '<ellipse cx="56" cy="71" rx="36" ry="15.5" fill="url(#ptFur)" stroke="#d8d1cb" stroke-width=".6"/>' +
-    '<ellipse cx="50" cy="62" rx="26" ry="6" fill="#b3a8a2" opacity=".3"/>' +
+    '<ellipse cx="54" cy="70" rx="38" ry="17" fill="url(#ptFur)"/>' +
+    '<ellipse cx="50" cy="59" rx="28" ry="6" fill="#c8ad86" opacity=".35"/>' +
     "</g>" +
-    '<ellipse cx="80" cy="84" rx="8" ry="3.8" fill="#fbf9f7" stroke="#e6dfd9" stroke-width=".4"/><ellipse cx="68" cy="85" rx="7.5" ry="3.6" fill="#f3efeb"/>' +
-    head(86, 58) +
+    '<path d="M18,74 C28,86 60,88 80,83" stroke="url(#ptTail)" stroke-width="6.5" stroke-linecap="round" fill="none"/>' +
+    '<ellipse cx="90" cy="85.5" rx="7" ry="3" fill="' + DK + '"/><ellipse cx="80" cy="86.2" rx="6.5" ry="2.8" fill="#2e211a"/>' +
+    '<ellipse cx="84" cy="70" rx="12" ry="14" fill="url(#ptFur)"/>' +
+    headS(88, 58) +
     "</g>";
 
   var CSS =
@@ -123,9 +147,9 @@
     "@keyframes ptlk{from{transform:rotate(152deg)}to{transform:rotate(166deg)}}" +
     ".ptcat.lick .df .hd{transform:rotate(-7deg) translateY(1px)}" +
     ".ptcat.lick .tg{display:inline}" +
-    ".ptcat.stretch .bd{transform:rotate(20deg)}" +
-    ".ptcat.stretch .lf{transform:rotate(-62deg)}" +
-    ".ptcat.stretch .ds .hd{transform:rotate(-20deg)}" +
+    ".ptcat.stretch .bd{transform:rotate(11deg)}" +
+    ".ptcat.stretch .lf{transform:rotate(-52deg)}" +
+    ".ptcat.stretch .ds .hd{transform:rotate(-11deg)}" +
     ".ptcat.stretch .tl{transform:rotate(14deg)}" +
     ".ptcat.air .lf{transform:rotate(-48deg)}" +
     ".ptcat.air .lr{transform:rotate(48deg)}" +
