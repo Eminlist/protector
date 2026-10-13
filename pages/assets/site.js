@@ -289,7 +289,13 @@
             setTimeout(function () { o.classList.remove("sl-l", "sl-r"); }, 650);
           });
           d.open = true;
-          try { par.scrollTo({ left: d.offsetLeft - par.offsetLeft - 4, behavior: "smooth" }); } catch (x) {}
+          var toD = function () {
+            try {
+              var x = par.scrollLeft + d.getBoundingClientRect().left - par.getBoundingClientRect().left - 4;
+              par.scrollTo({ left: Math.max(0, x), behavior: "smooth" });
+            } catch (x) {}
+          };
+          toD(); setTimeout(toD, 650);
           return;
         }
         var willOpen = !d.open;

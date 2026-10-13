@@ -334,3 +334,8 @@ html.embed main{padding:0!important}
 html.embed .wrap{padding:6px 14px 16px!important;max-width:none!important}
 html.embed .rform{margin-top:6px;border:0;box-shadow:none;background:transparent;padding:6px 0}
 .lforgot{align-self:center;font-size:14px}
+
+/* Bağlı zolaq: ikon aşağıda, yazı aşağıdan yuxarı (ikonun üstündən başlayır) */
+.vstrip>details.acc:not([open])>summary{flex-direction:column-reverse!important;justify-content:flex-start!important;align-items:center;padding:16px 0 18px!important}
+.vstrip>details.acc:not([open])>summary>span:not(.ai):not(.chev){writing-mode:vertical-rl;transform:rotate(180deg);color:var(--text)!important;opacity:.82;font-weight:700}
+.vstrip>details.acc:not([open]):hover>summary>span:not(.ai):not(.chev){opacity:1;color:var(--accent)!important}

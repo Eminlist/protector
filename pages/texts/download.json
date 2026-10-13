@@ -181,7 +181,7 @@
    "links": [
     {
      "id": "install",
-     "t": "Kurulum kılavuzu",
+     "t": "Kurulum talimatı",
      "d": "APK dosyasının adım adım kurulumu",
      "u": "/application/install"
     },
@@ -193,7 +193,7 @@
     },
     {
      "id": "guide",
-     "t": "Kullanım kılavuzu",
+     "t": "Kullanım talimatları",
      "d": "Arama ve sonuçlar",
      "u": "/application/guide"
     },

@@ -743,7 +743,7 @@
   "tiles": [
    {
     "id": "guide",
-    "t": "Kullanım kılavuzu",
+    "t": "Kullanım talimatları",
     "u": "/application/guide"
    },
    {
@@ -1048,7 +1048,7 @@
        "Cihazda yeterli boş alan olduğunu kontrol edin.",
        "Dosyanın tamamen indirildiğinden emin olun; gerekirse dosyayı [yeniden indirin](/application/download).",
        "«Bilinmeyen kaynaklardan yükleme» izninin verildiğini kontrol edin.",
-       "Ayrıntılar: [Kurulum kılavuzu](/application/install)."
+       "Ayrıntılar: [Kurulum talimatı](/application/install)."
       ]
      },
      {
