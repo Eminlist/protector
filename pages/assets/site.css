@@ -339,3 +339,16 @@ html.embed .rform{margin-top:6px;border:0;box-shadow:none;background:transparent
 .vstrip>details.acc:not([open])>summary{flex-direction:column-reverse!important;justify-content:flex-start!important;align-items:center;padding:16px 0 18px!important}
 .vstrip>details.acc:not([open])>summary>span:not(.ai):not(.chev){writing-mode:vertical-rl;transform:rotate(180deg);color:var(--text)!important;opacity:.82;font-weight:700}
 .vstrip>details.acc:not([open]):hover>summary>span:not(.ai):not(.chev){opacity:1;color:var(--accent)!important}
+/* Qeydiyyat forması telefonda yığcam */
+@media (max-width:700px){
+  .rform{gap:8px;padding:14px!important}
+  .rform h2{font-size:19px;margin:0}
+  .rform label{gap:3px;font-size:13px}
+  .rform input{font-size:15px;padding:9px 12px;border-radius:10px}
+  .rform small{font-size:11px;line-height:1.3}
+  .rform .btn{padding:11px 16px}
+  #reg{display:grid;grid-template-columns:1fr 1fr;column-gap:8px}
+  #reg>*{grid-column:1/-1;min-width:0}
+  #reg>label:nth-of-type(5),#reg>label:nth-of-type(6){grid-column:auto}
+  .rts{min-height:0}
+}
