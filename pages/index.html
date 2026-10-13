@@ -293,7 +293,7 @@ const TG='https://t.me/protechtor_app', MAIL='mailto:admin@protechtor.app';
 const LX={
 az:{
  title:'ProTechtor™ — qoruyucu şüşə uyğunluğu',
- hero:'Bölməni seçin — bələdçi ora gedib açacaq. Sağ aşağıdakı düymə ilə söhbət tərzində də seçə bilərsiniz.',
+ hero:'Bölməni seçin. Sağ aşağıdakı düymə ilə söhbət tərzində də seçə bilərsiniz.',
  foot:['Proqramı yüklə','Yardım mərkəzi','Əlaqə','Məxfilik'],
  bot:{name:'Bələdçi',on:'● onlayn',welcome:'Xoş gəldiniz! Hansı bölməni açım?',close:'Bağla',menu:'Menyu',theme:'Fon rəngi'},
  grp:'Uyğun modellər',
@@ -319,7 +319,7 @@ az:{
 },
 ru:{
  title:'ProTechtor™ — совместимость защитных стёкол',
- hero:'Выберите раздел — проводница подойдёт к нему и откроет его. Также можно выбрать в формате чата кнопкой справа внизу.',
+ hero:'Выберите раздел. Также можно выбрать в формате чата кнопкой справа внизу.',
  foot:['Скачать приложение','Центр помощи','Контакты','Конфиденциальность'],
  bot:{name:'Проводница',on:'● онлайн',welcome:'Добро пожаловать! Какой раздел открыть?',close:'Закрыть',menu:'Меню',theme:'Цвет фона'},
  grp:'Подходящие модели',
@@ -345,7 +345,7 @@ ru:{
 },
 tr:{
  title:'ProTechtor™ — koruyucu cam uyumluluğu',
- hero:'Bir bölüm seçin — rehber oraya gidip açacaktır. Sağ alttaki düğme ile sohbet şeklinde de seçebilirsiniz.',
+ hero:'Bir bölüm seçin. Sağ alttaki düğme ile sohbet şeklinde de seçebilirsiniz.',
  foot:['Uygulamayı indir','Yardım merkezi','İletişim','Gizlilik'],
  bot:{name:'Rehber',on:'● çevrimiçi',welcome:'Hoş geldiniz! Hangi bölümü açayım?',close:'Kapat',menu:'Menü',theme:'Arka plan rengi'},
  grp:'Uygun modeller',
@@ -371,7 +371,7 @@ tr:{
 },
 en:{
  title:'ProTechtor™ — protective glass compatibility',
- hero:'Choose a section — the guide will walk over and open it. You can also choose in chat style with the button at the bottom right.',
+ hero:'Choose a section. You can also choose in chat style with the button at the bottom right.',
  foot:['Download the app','Help center','Contact','Privacy'],
  bot:{name:'Guide',on:'● online',welcome:'Welcome! Which section shall I open?',close:'Close',menu:'Menu',theme:'Background color'},
  grp:'Compatible models',
@@ -693,6 +693,16 @@ async function selectMenu(id,fromChat,direct){
   /* əvvəlcə ilgili telefon ekranı önə gəlir */
   focusTarget=-(PHONE_OF[id]*40);
   dragRest=Date.now()+3000;
+  if(!fromChat){
+    /* söhbət pəncərəsi açılmır: istifadəçi özü seçir və birbaşa həmin səhifəyə keçir */
+    let url=null;
+    X.msgs.forEach(m=>{ if(!url&&m&&m.a&&m.a[0]&&/^\//.test(m.a[0][1])) url=m.a[0][1]; });
+    if(!url) X.msgs.forEach(m=>{ if(!url&&m&&m.a&&m.a[0]) url=m.a[0][1]; });
+    fogAt(door);
+    busy=false; lastAct=Date.now();
+    if(url) setTimeout(()=>{ location.href=url; },300);
+    return;
+  }
   openPanel();
   /* məzmun dərhal göstərilir (yazışma gecikməsi yoxdur); bələdçi eyni anda seçimi göstərir */
   if(fromChat||pBody.children.length) addMsg(X.t,true);
