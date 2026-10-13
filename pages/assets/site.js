@@ -143,6 +143,11 @@
       bu.setAttribute("aria-expanded", o ? "true" : "false");
       mp.setAttribute("aria-hidden", o ? "false" : "true");
     }
+    window.__ptMenu = setPanel;
+    // keçiddə menyu bağlanır; geri qayıdanda (keşdən) menyu və ✕ ikonu açıq qalmır
+    if (mp) mp.addEventListener("click", function (e) { if (e.target.closest("a[href]")) setPanel(false); });
+    addEventListener("pageshow", function () { setPanel(false); closeAll(); });
+    addEventListener("pagehide", function () { setPanel(false); });
     if (bu) bu.addEventListener("click", function () { setPanel(!mp.classList.contains("open")); });
     var shd = document.getElementById("mshade");
     if (shd) shd.addEventListener("click", function () { setPanel(false); });
@@ -554,7 +559,7 @@
   function open(u) {
     build(); labels(); go(u);
     document.querySelectorAll(".mg-d").forEach(function (d) { d.parentElement.classList.remove("open"); });
-    var mp = document.getElementById("mpanel"); if (mp) mp.classList.remove("open");
+    if (window.__ptMenu) window.__ptMenu(false);
     box.classList.add("show");
     requestAnimationFrame(function () { requestAnimationFrame(function () { box.classList.add("in"); }); });
     document.documentElement.classList.add("authp-lock");
