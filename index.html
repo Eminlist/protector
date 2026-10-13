@@ -3748,10 +3748,33 @@ function ptReportsMigrate() {
     }).then(function () { try { localStorage.setItem("pt_rmig", "1"); } catch (e) {} })
       .catch(function (e) { ptRMigDone = false; console.warn("rmig", e && (e.code || e.message)); });
 }
+// Əsas baza gzip ilə brauzerdə sıxılır/açılır — server böyük JSON-u emal etmir (CPU limiti)
+async function ptGzip(txt) {
+    const cs = new CompressionStream("gzip"), w = cs.writable.getWriter();
+    w.write(new TextEncoder().encode(txt)); w.close();
+    return new Uint8Array(await new Response(cs.readable).arrayBuffer());
+}
+async function ptGunzipB64(b64) {
+    const bin = atob(b64), u = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    const ds = new DecompressionStream("gzip"), w = ds.writable.getWriter();
+    w.write(u); w.close();
+    return JSON.parse(await new Response(ds.readable).text());
+}
+async function ptBaseRaw(path, data, meta) {
+    const txt = JSON.stringify(data);
+    meta = Object.assign({ size: txt.length }, meta || {});
+    return dataFetch(path, { method: "POST", body: await ptGzip(txt), headers: { "Content-Type": "application/octet-stream", "X-Meta": encodeURIComponent(JSON.stringify(meta)) } });
+}
+async function ptBaseVer(id) {
+    const v = id ? (await dataFetch("/base/get?raw=1&id=" + encodeURIComponent(id))).ver : (await dataFetch("/base/cur?raw=1")).cur;
+    if (v && v.gz) { v.data = await ptGunzipB64(v.gz); delete v.gz; }
+    return v;
+}
 // Əsas baza (admin): D1-də versiyalı saxlanılır; köhnə Firestore sənədi yalnız ilk köçürmə üçün oxunur
 async function ptBaseRead() {
     let cur = null, d1ok = false;
-    try { cur = (await dataFetch("/base/cur")).cur; d1ok = true; } catch (e) { cur = null; if (e && e.code === "unauthenticated") throw e; }
+    try { cur = await ptBaseVer(0); d1ok = true; } catch (e) { cur = null; if (e && e.code === "unauthenticated") throw e; }
     if (cur && cur.data && typeof cur.data.dataJson === "string") { window.ptBaseCur = { id: cur.id, ts: cur.ts }; return cur.data; }
     const snap = await db.doc(FS_DB_DOC).get();
     const data = snap.exists ? (snap.data() || {}) : {};
@@ -3764,7 +3787,7 @@ async function ptBaseRead() {
     return data;
 }
 async function ptBasePublish(doc, note, hist) {
-    const r = await dataPost("/base/publish", { data: doc, note: note || "", hist: hist || null, models: namesFromGroups(JSON.parse(doc.dataJson || "[]")).length });
+    const r = await ptBaseRaw("/base/publish", doc, { note: note || "", hist: hist || null, groups: +doc.groupCount || 0, models: namesFromGroups(JSON.parse(doc.dataJson || "[]")).length });
     window.ptBaseCur = { id: r.id, ts: r.ts };
     return r;
 }
@@ -14037,7 +14060,13 @@ window.ptSaveCodes = function (key, codes) {
   indexFor = null;
   var fp = new firebase.firestore.FieldPath("codes", key);
   var val = codes.length ? codes : firebase.firestore.FieldValue.delete();
-  return Promise.all([dataPost("/base/codes", { key: key, codes: codes }), apiFetch("/catalog").then(function (c) {
+  var saveD1 = ptBaseVer(0).then(function (v) {
+    if (!v || !v.data) return;
+    var d = v.data; d.codes = d.codes || {};
+    if (codes.length) d.codes[key] = codes; else delete d.codes[key];
+    return ptBaseRaw("/base/codes", d, { id: v.id });
+  });
+  return Promise.all([saveD1, apiFetch("/catalog").then(function (c) {
     c = c || {}; c.codes = c.codes || {};
     if (codes.length) c.codes[key] = codes; else delete c.codes[key];
     return apiFetch("/admin/meta", { method: "PUT", body: JSON.stringify({ key: "catalog", val: c }) });
@@ -15078,8 +15107,8 @@ window.ptVerOpen = function () {
 window.ptVerRestore = function (id, btn) {
     confirmAction("#" + id + " versiyası geri qaytarılsın? Baza həmin vəziyyətə qayıdacaq və istifadəçilər üçün yenidən dərc ediləcək.", function () {
         if (btn) btn.disabled = true;
-        dataFetch("/base/get?id=" + encodeURIComponent(id)).then(function (d) {
-            var data = (d.ver && d.ver.data) || {};
+        ptBaseVer(id).then(function (ver) {
+            var data = (ver && ver.data) || {};
             var groups = groupsFromFirestore(data);
             if (!groups.length) throw new Error("Versiya boşdur");
             if (typeof applyCodes === "function") applyCodes(data.codes, true);

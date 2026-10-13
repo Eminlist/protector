@@ -24,7 +24,7 @@ const BAT_OLD = ["Sony Ericsson", "Samsung", "Philips", "Motorola", "Siemens", "
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-  "Access-Control-Allow-Headers": "Authorization,Content-Type",
+  "Access-Control-Allow-Headers": "Authorization,Content-Type,X-Meta",
   "Access-Control-Max-Age": "86400"
 };
 const J = (d, s) => new Response(JSON.stringify(d), { status: s || 200, headers: Object.assign({ "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }, CORS) });
@@ -115,6 +115,12 @@ async function gz(str) {
   w.write(new TextEncoder().encode(str));
   w.close();
   return new Uint8Array(await new Response(cs.readable).arrayBuffer());
+}
+function b64(buf) {
+  const u = new Uint8Array(buf || []);
+  let s = "";
+  for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+  return btoa(s);
 }
 async function gunz(buf) {
   const ds = new DecompressionStream("gzip");
@@ -464,7 +470,15 @@ const _handler = {
     if (me.anon) return E("registered-only", 403);
 
     let b = {};
-    if (req.method === "POST") {
+    // Əsas baza: brauzer gzip edib xam göndərir (server JSON emal etmir — pulsuz planın CPU limitini keçməsin)
+    const rawGz = req.method === "POST" && /octet-stream/i.test(req.headers.get("content-type") || "");
+    if (rawGz) {
+      if (!me.admin) return E("forbidden", 403);
+      try { b = JSON.parse(decodeURIComponent(req.headers.get("X-Meta") || "%7B%7D")) || {}; } catch (e) { b = {}; }
+      const buf = new Uint8Array(await req.arrayBuffer());
+      if (buf.length < 20 || buf.length > 1900000 || buf[0] !== 0x1f || buf[1] !== 0x8b) return E("data");
+      b.gz = buf;
+    } else if (req.method === "POST") {
       try { b = await body(req); } catch (e) { return E("too-big", 413); }
     }
 
@@ -730,6 +744,7 @@ const _handler = {
     // ===== Əsas baza: dərc, versiyalar, geri qaytarma =====
     if (path === "/base/cur" && req.method === "GET") {
       const r = await baseRow(db, 0);
+      if (url.searchParams.get("raw")) return J({ cur: r ? Object.assign(verMeta(r), { gz: b64(r.data) }) : null });
       return J({ cur: await baseOut(r) });
     }
     if (path === "/base/list" && req.method === "GET") {
@@ -741,7 +756,29 @@ const _handler = {
       if (!id) return E("id");
       const r = await baseRow(db, id);
       if (!r) return E("not-found", 404);
+      if (url.searchParams.get("raw")) return J({ ver: Object.assign(verMeta(r), { gz: b64(r.data) }) });
       return J({ ver: await baseOut(r) });
+    }
+    if (path === "/base/publish" && req.method === "POST" && b.gz) {
+      const now = Date.now();
+      const ins = await db.prepare("INSERT INTO pt_base (ts, by, note, groups, models, size, data) VALUES (?, ?, ?, ?, ?, ?, ?)")
+        .bind(now, me.email, String(b.note || "").slice(0, 200), +b.groups || 0, +b.models || 0, +b.size || 0, b.gz).run();
+      const id = ins.meta && ins.meta.last_row_id;
+      await cfgSet(db, "base_cur", id);
+      const h = b.hist && typeof b.hist === "object" ? b.hist : null;
+      if (h && (h.a || h.r || h.e || h.g || h.note)) {
+        await db.prepare("INSERT INTO pt_hist (ts, kind, a, r, e, g, n, note, first) VALUES (?, 'base', ?, ?, ?, ?, ?, ?, ?)")
+          .bind(now, +h.a || 0, +h.r || 0, +h.e || 0, +h.g || 0, +h.n || +b.models || 0, String(h.note || "").slice(0, 30), h.first ? 1 : 0).run();
+      }
+      ctx.waitUntil(db.prepare("DELETE FROM pt_base WHERE id NOT IN (SELECT id FROM pt_base ORDER BY id DESC LIMIT ?)").bind(BASE_KEEP).run().catch(() => {}));
+      return J({ ok: true, id, ts: now });
+    }
+    // Kodlar dəyişəndə brauzer cari versiyanı özü yeniləyib xam göndərir (yeni versiya yaranmır)
+    if (path === "/base/codes" && req.method === "POST" && b.gz) {
+      const cur = +(await cfgGet(db, "base_cur")) || 0;
+      if (!cur || +b.id !== cur) return E("stale", 409);
+      await db.prepare("UPDATE pt_base SET data=?, size=? WHERE id=?").bind(b.gz, +b.size || 0, cur).run();
+      return J({ ok: true });
     }
     if (path === "/base/publish" && req.method === "POST") {
       const data = b.data;
