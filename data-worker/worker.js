@@ -628,6 +628,18 @@ const _handler = {
       for (let i = old.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = old[i]; old[i] = old[j]; old[j] = t; }
       return J({ n: ix.byModel.size, c: ix.byCode.size, brands: BAT_OLD, old: old.slice(0, 24) });
     }
+    // Model səhifəsi: bir neçə modelin batareya kodları bir sorğuda {nz(model): [kodlar]}
+    if (path === "/bat/codes" && req.method === "POST") {
+      const names = (Array.isArray(b.models) ? b.models : []).slice(0, 120).map((x) => String(x).slice(0, 100));
+      const ix = await batIndex(db), byNz = new Map(), codes = {};
+      ix.byModel.forEach((rows, m) => { byNz.set(nz(m), rows); });
+      names.forEach((n) => {
+        const rows = byNz.get(nz(n)); if (!rows) return;
+        const cs = []; rows.forEach((r) => r.codes.forEach((c) => { if (cs.indexOf(c) < 0) cs.push(c); }));
+        if (cs.length) codes[nz(n)] = cs;
+      });
+      return J({ codes });
+    }
     if (path === "/bat/search" && req.method === "GET") {
       const q = String(url.searchParams.get("q") || "").trim().slice(0, 60);
       if (!q) return J({ codes: [], models: [], multi: false });

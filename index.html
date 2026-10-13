@@ -2286,7 +2286,12 @@ html{scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:var(--accent-c
 ::-webkit-scrollbar-thumb:hover{background:var(--accent-color);background-clip:content-box}
 /* Kompüter görünüşü: axtarış və video səhifənin bir başından o birinə uzanmasın */
 @media (min-width:900px){
-  .main-content{max-width:720px;margin-left:auto;margin-right:auto}
+  /* kompüterdə ana səhifə yığcam: yazı və boşluqlar brauzer zoom-u 80% kimi kiçilir */
+  #main-view{zoom:.8}
+  .main-content{max-width:760px;margin-left:auto;margin-right:auto;padding-top:12px}
+  .top-header{height:92px}
+  #recent{position:relative;z-index:2}
+  .pt-stage{isolation:isolate}
   .search-wrapper{max-width:560px;margin-left:auto;margin-right:auto}
   .pt-stage{max-width:380px;height:470px;margin-left:auto;margin-right:auto}
 }
@@ -11321,7 +11326,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.11";
+const APP_VERSION = "3.1.3.13";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -12027,6 +12032,7 @@ function renderCompatibilityList(group, selected) {
     models.forEach(function (model, index) {
         const item = document.createElement("div");
         item.className = "compatibility-item";
+        item.setAttribute("data-model", model);
 
         const isSel = String(model).trim().toLowerCase() === String(selected).trim().toLowerCase();
         if (isSel) {
@@ -15334,6 +15340,36 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     }, 220);
   }
   window.ptBatRun = run;
+
+  /* Model səhifəsi (uyğunluq siyahısı): hər modelin batareya kodu da göstərilir */
+  var cmpSeq = 0;
+  function fillCompat() {
+    var my = ++cmpSeq;
+    try {
+      if (!batEnabled() || !registered()) return;
+      var list = $("compatibility-list"); if (!list) return;
+      var items = list.querySelectorAll(".compatibility-item[data-model]");
+      if (!items.length) return;
+      var names = []; items.forEach(function (it) { names.push(it.getAttribute("data-model")); });
+      dataPost("/bat/codes", { models: names.slice(0, 120) }).then(function (d) {
+        if (my !== cmpSeq) return;
+        var m = (d && d.codes) || {};
+        items.forEach(function (it) {
+          if (it.querySelector(".m-bat")) return;
+          var c = m[norm(it.getAttribute("data-model"))]; if (!c || !c.length) return;
+          var host = it.querySelector(".compat-model"); if (!host) return;
+          var d2 = el("div", "m-bat"), ic = el("span", "m-bat-ic"); ic.innerHTML = BAT_SVG;
+          d2.appendChild(ic); d2.appendChild(el("span", "m-bat-code", c.join(" · ")));
+          d2.style.cursor = "default";
+          host.appendChild(d2);
+        });
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  try {
+    var orc = renderCompatibilityList;
+    renderCompatibilityList = function () { var r = orc.apply(this, arguments); fillCompat(); return r; };
+  } catch (e) {}
 
   /* ===== Admin: batareya kodunu düzəlt → sayt bazası + GitHub-dakı Battery.json ===== */
   function nzs(x) { return String(x || "").toLowerCase().replace(/[^a-z0-9а-яё]+/g, ""); }
