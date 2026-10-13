@@ -356,3 +356,27 @@ html.embed .rform{margin-top:6px;border:0;box-shadow:none;background:transparent
 /* gizli elementlər həmişə gizli qalır (forma/hesab qutusu eyni anda görünmür) */
 [hidden]{display:none!important}
 .card.contact a{overflow-wrap:anywhere}
+
+/* ===== Açıq (günəş) rəng — ana səhifədə seçilən rəng bütün səhifələrdə qalır ===== */
+:root{--ldd-acc:var(--accent)}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f4f7f5;--bg2:#e8eee9;--card:#ffffff;--line:#d3ddd6;
+  --text:#142019;--muted:#55645a;--accent:#1f9d55;--accent2:#178547;--onaccent:#ffffff;
+}
+:root[data-theme="light"] body{background-image:radial-gradient(ellipse at top,rgba(46,204,113,.14),transparent 60%)}
+:root[data-theme="light"] .top{background:rgba(244,247,245,.88)}
+:root[data-theme="light"] .acc-body p,:root[data-theme="light"] .acc-body li,:root[data-theme="light"] .doc p,:root[data-theme="light"] .doc li{color:#2f3b33}
+:root[data-theme="light"] .mg-dl{box-shadow:0 24px 50px -18px rgba(20,32,25,.28)}
+:root[data-theme="light"] .sw{border-color:rgba(0,0,0,.18)}
+:root[data-theme="light"] details.acc[open]>summary .chev,:root[data-theme="light"] .authp-t button.on{color:#fff}
+:root[data-theme="light"] .authp-in{box-shadow:0 0 0 1px rgba(46,204,113,.2),0 0 40px -6px rgba(46,204,113,.35),0 30px 60px -20px rgba(20,32,25,.35)}
+:root[data-theme="light"] .ph{filter:drop-shadow(0 22px 26px rgba(20,32,25,.28))}
+/* Günəş / ay düyməsi (menyu düyməsi ölçüsündə) */
+.tbtn{width:40px;height:38px;flex:none;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);cursor:pointer;transition:border-color .25s,color .25s}
+.tbtn:hover{border-color:var(--accent);color:var(--accent)}
+.tbtn svg{width:18px;height:18px}
+.tbtn .moon{display:none}
+:root[data-theme="light"] .tbtn .sun{display:none}
+:root[data-theme="light"] .tbtn .moon{display:block}
+@media (max-width:420px){.top>.wrap{gap:6px}.top-r{gap:6px}.brand{font-size:16px}.brand img{width:28px;height:28px}}

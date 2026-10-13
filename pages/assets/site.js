@@ -56,6 +56,10 @@
         '<a class="brand" href="/"><img src="/icon-192.png" alt="">ProTechtor™</a>' +
         '<nav class="mnav" id="mnav" aria-label="Menu"></nav>' +
         '<div class="top-r">' +
+        '<button class="tbtn" id="themeBtn" type="button" aria-label="Theme">' +
+        '<svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/></svg>' +
+        '<svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>' +
+        '</button>' +
         '<select class="lang" id="lang" aria-label="Language"><option value="az">AZ</option><option value="ru">RU</option><option value="tr">TR</option><option value="en">EN</option></select>' +
         '<a class="btn sm cta" href="/application/download" data-t="__cta"></a>' +
         '<button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>' +
@@ -443,6 +447,30 @@
   };
 
   buildShell();
+
+  /* Günəş / ay: ana səhifədə seçilən rəng bütün səhifələrdə eyni qalır (ortaq açar pt_home_theme), hər səhifədə dəyişmək olar */
+  var THEME_KEY = "pt_home_theme";
+  function applyTheme(t) {
+    document.documentElement.setAttribute("data-theme", t);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute("content", t === "light" ? "#f4f7f5" : "#0a0a0a");
+  }
+  (function () {
+    var t = store(THEME_KEY);
+    applyTheme(t === "light" ? "light" : "dark");
+    var tb = document.getElementById("themeBtn");
+    if (tb) tb.addEventListener("click", function () {
+      var nt = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+      applyTheme(nt); store(THEME_KEY, nt);
+    });
+    // başqa vərəqdə (və ya ana səhifədə) dəyişəndə bu səhifə də dərhal dəyişir
+    window.addEventListener("storage", function (e) { if (e.key === THEME_KEY) applyTheme(e.newValue === "light" ? "light" : "dark"); });
+    // dil seçimi: menyu düyməsi kimi kiçik düymə, aşağı açılan siyahı
+    if (!document.querySelector('script[src^="/assets/ptui.js"]')) {
+      var sc = document.createElement("script"); sc.src = "/assets/ptui.js?v=1"; document.head.appendChild(sc);
+    }
+  })();
+
   document.addEventListener("DOMContentLoaded", function () {
     var sel = document.getElementById("lang");
     if (sel) sel.addEventListener("change", function () { lang = sel.value; store(LANG_KEY, lang); load(); });
