@@ -380,3 +380,8 @@ html.embed .rform{margin-top:6px;border:0;box-shadow:none;background:transparent
 :root[data-theme="light"] .tbtn .sun{display:none}
 :root[data-theme="light"] .tbtn .moon{display:block}
 @media (max-width:420px){.top>.wrap{gap:6px}.top-r{gap:6px}.brand{font-size:16px}.brand img{width:28px;height:28px}}
+
+/* Zolaq menyusu: sərbəst və sonsuz sürüşmə — açıq yazının üstündən də tutub çəkmək olur */
+.vstrip{scroll-snap-type:none!important;overscroll-behavior-x:contain}
+.vstrip>details.acc[open] .acc-body{cursor:grab}
+.vstrip.dragging,.vstrip.dragging .acc-body{cursor:grabbing!important;user-select:none!important}

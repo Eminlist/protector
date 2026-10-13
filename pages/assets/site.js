@@ -252,31 +252,114 @@
       b.style.height = ""; b.style.overflow = ""; b.style.transition = "";
     }, 720);
   }
-  // Zolaq menyusu maus ilə sağa-sola çəkilir (telefonda barmaqla öz-özünə sürüşür)
+  // Zolaq menyusu: hər yerdən (açıq yazının üstündən də) tutub sürüşdürmək olur, sonsuz fırlanır
+  function stripLoop(w) {
+    if (w._lp) return;
+    w._lp = 1;
+    var busy = false;
+    function gap() { var g = parseFloat(getComputedStyle(w).columnGap); return isFinite(g) ? g : 10; }
+    // kənara çatanda kənardakı zolaq o biri başa keçir — siyahı dairə kimi fırlanır
+    w._fix = function () {
+      if (busy || (w._hold && Date.now() < w._hold)) return;
+      var kids = w.children;
+      if (kids.length < 3 || w.scrollWidth - w.clientWidth < 8) return;
+      busy = true;
+      var g = gap(), n = 0, el, wd;
+      while (w.scrollLeft > w.scrollWidth - w.clientWidth - 30 && n++ < kids.length) {
+        el = w.firstElementChild; wd = el.getBoundingClientRect().width + g;
+        if (el.getBoundingClientRect().right > w.getBoundingClientRect().left) break;
+        w.appendChild(el); w.scrollLeft -= wd;
+      }
+      n = 0;
+      while (w.scrollLeft < 30 && n++ < kids.length) {
+        el = w.lastElementChild; wd = el.getBoundingClientRect().width + g;
+        if (el.getBoundingClientRect().left < w.getBoundingClientRect().right) break;
+        w.insertBefore(el, w.firstElementChild); w.scrollLeft += wd;
+      }
+      busy = false;
+    };
+    // Sonsuz fırlanma üçün zolaqların surəti əvvələ və sona əlavə olunur (yalnız sığmayan menyuda)
+    w._fill = function () {
+      if (w.querySelector(".vcl")) return;
+      var orig = Array.prototype.slice.call(w.children);
+      if (orig.length < 2 || w.scrollWidth - w.clientWidth < 8) return;
+      var mk = function (d) {
+        var c = d.cloneNode(true);
+        c.classList.add("vcl"); c.open = false; c._acc = 0;
+        if (c.id) c.removeAttribute("id");
+        c.querySelectorAll("[id]").forEach(function (x) { x.removeAttribute("id"); });
+        return c;
+      };
+      var first = orig[0];
+      orig.forEach(function (d) { w.appendChild(mk(d)); });
+      orig.forEach(function (d) { w.insertBefore(mk(d), first); });
+      busy = true;
+      w.scrollLeft = first.offsetLeft - w.firstElementChild.offsetLeft;
+      busy = false;
+      if (typeof bindAcc === "function") bindAcc(w);
+    };
+    setTimeout(function () { w._fill(); }, 0);
+    var raf = 0;
+    w.addEventListener("scroll", function () {
+      if (raf) return;
+      raf = requestAnimationFrame(function () { raf = 0; w._fix(); });
+    }, { passive: true });
+    window.addEventListener("resize", function () { if (!w.querySelector(".vcl")) w._fill(); w._fix(); });
+    setTimeout(function () { w._fix(); }, 400);
+  }
   function dragStrip(w) {
     if (!w || w._dr) return;
     w._dr = 1;
-    var sx = 0, sl = 0, down = false, moved = false;
+    stripLoop(w);
+    var sx = 0, sy = 0, st = 0, down = false, moved = false, axis = "", body = null;
+    var lx = 0, lt = 0, v = 0, inert = 0;
     w.addEventListener("pointerdown", function (e) {
       if (e.pointerType !== "mouse" || e.button !== 0) return;
-      if (e.target.closest(".acc-body")) return;
-      down = true; moved = false; sx = e.clientX; sl = w.scrollLeft;
+      if (e.target.closest("a,button,input,textarea,select,iframe")) return;
+      cancelAnimationFrame(inert);
+      body = e.target.closest(".acc-body");
+      down = true; moved = false; axis = "";
+      sx = lx = e.clientX; sy = e.clientY; st = body ? body.scrollTop : 0;
+      lt = performance.now(); v = 0;
     });
     window.addEventListener("pointermove", function (e) {
       if (!down) return;
-      var dx = e.clientX - sx;
-      if (!moved && Math.abs(dx) > 5) { moved = true; w.classList.add("dragging"); }
-      if (moved) { w.scrollLeft = sl - dx; e.preventDefault(); }
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (!moved) {
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        moved = true;
+        axis = Math.abs(dx) >= Math.abs(dy) || !body ? "x" : "y";
+        w.classList.add("dragging");
+        try { window.getSelection().removeAllRanges(); } catch (x) {}
+      }
+      e.preventDefault();
+      if (axis === "y") { body.scrollTop = st - dy; return; }
+      var d = e.clientX - lx;
+      w.scrollLeft -= d;
+      w._fix();
+      var now = performance.now(), dt = Math.max(1, now - lt);
+      v = d / dt; lx = e.clientX; lt = now;
     });
     window.addEventListener("pointerup", function () {
       if (!down) return;
       down = false;
       w.classList.remove("dragging");
       if (moved) { w._drag = 1; setTimeout(function () { w._drag = 0; }, 0); }
+      // buraxanda ətalətlə davam edir (tam sürüşmə)
+      if (moved && axis === "x" && Math.abs(v) > 0.05) {
+        var vel = v * 16;
+        var step = function () {
+          vel *= 0.94;
+          if (Math.abs(vel) < 0.4) return;
+          w.scrollLeft -= vel; w._fix();
+          inert = requestAnimationFrame(step);
+        };
+        inert = requestAnimationFrame(step);
+      }
     });
   }
   function bindAcc(root) {
-    if (root.classList && root.classList.contains("vstrip")) dragStrip(root);
+    if (root.classList && root.classList.contains("vstrip")) { dragStrip(root); if (!root.querySelector(".vcl") && root._fill) setTimeout(root._fill, 0); }
     if (root.querySelectorAll) root.querySelectorAll(".vstrip").forEach(dragStrip);
     root.querySelectorAll("details.acc").forEach(function (d) {
       if (d._acc) return;
@@ -304,6 +387,7 @@
               par.scrollTo({ left: Math.max(0, x), behavior: "smooth" });
             } catch (x) {}
           };
+          par._hold = Date.now() + 1400;
           toD(); setTimeout(toD, 650);
           return;
         }
