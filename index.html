@@ -2253,7 +2253,7 @@
 .pt-logo:active img{transform:scale(.94)}
 .pt-logo-tx{font-weight:800;font-size:calc(20px * var(--font-scale));letter-spacing:-.6px;color:var(--text);white-space:nowrap}
 .pt-logo-tx sup{font-size:.5em;margin-left:1px}
-@media (max-width:380px){.pt-logo-tx{font-size:calc(16px * var(--font-scale))}.pt-logo img{width:44px;height:44px}}
+@media (max-width:640px){.pt-logo-tx{display:none}.pt-logo img{width:46px;height:46px}}
 .pt-hero{text-align:center;padding:30px 8px 26px}
 .pt-hero[hidden]{display:none}
 .pt-hero-s{font-size:calc(13px * var(--font-scale));letter-spacing:7px;color:var(--accent-color);text-transform:uppercase;font-weight:700;margin-bottom:10px}
@@ -2973,6 +2973,7 @@ html.sensitive .ripple-ring{display:none !important}
                 <datalist id="specBrandList"></datalist>
             </div>
             <label class="spec-codes">Model kodları (vergüllə)<input type="text" id="specCodes" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="SM-A225F, SM-A225M"></label>
+            <label class="spec-codes">🔋 Batareya modeli / kodu (vergüllə)<input type="text" id="specBat" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="BN54, BN55" disabled></label>
             <div class="spec-grid">
                 <label>Ekran (düym)<input type="number" step="0.01" id="specIn" placeholder="məs: 6.6"></label>
                 <label>Hündürlük (mm)<input type="number" step="0.1" id="specH" placeholder="məs: 161.1"></label>
@@ -7399,6 +7400,19 @@ function openSpecEdit(model) {
     document.getElementById("specBrand").value = nm[0] || "";
     document.getElementById("specName").value = nm.slice(1).join(" ");
     document.getElementById("specCodes").value = modelCodes(model).join(", ");
+    specBatOrig = null;
+    (function () {
+        const bi = document.getElementById("specBat"); if (!bi) return;
+        bi.value = ""; bi.disabled = true; bi.placeholder = "yüklənir…";
+        const mk = model;
+        dataFetch("/bat/search?q=" + encodeURIComponent(model)).then(function (d) {
+            if (specEditModel !== mk) return;
+            const hit = ((d && d.models) || []).filter(function (x) { return norm(x.model) === norm(mk); })[0];
+            const codes = hit ? (hit.codes || []) : [];
+            bi.value = codes.join(", "); specBatOrig = codes.join(", ");
+            bi.disabled = false; bi.placeholder = "BN54, BN55";
+        }).catch(function () { bi.placeholder = "batareya bazası oxunmadı"; });
+    })();
     const bl = {};
     (Array.isArray(database) ? database : []).forEach(function (g) { (Array.isArray(g) ? g : []).forEach(function (m) { const b = getBrand(m); if (b) bl[b] = 1; }); });
     document.getElementById("specBrandList").innerHTML = Object.keys(bl).sort().map(function (b) { return '<option value="' + escapeHtml(b) + '">'; }).join("");
@@ -7426,6 +7440,7 @@ function closeSpecEdit() {
     document.getElementById("spec-modal").style.display = "none";
 }
 
+let specBatOrig = null;
 let adminPendingSizes = null;
 
 function extractSizes(data) {
@@ -7521,6 +7536,12 @@ function saveSpecEdit(del) {
     const newCodes = del ? modelCodes(specEditModel) : parseCodesInput(cdEl.value);
     const codesChanged = newCodes.join(",") !== modelCodes(specEditModel).join(",");
     const str = del ? "" : specStr(document.getElementById("specIn").value, document.getElementById("specH").value, document.getElementById("specW").value, specEditCut);
+    /* Batareya modeli / kodu dəyişibsə — sayta və GitHub-a yazılır */
+    if (!del && specBatOrig !== null && window.ptBatEdit) {
+        const bEl = document.getElementById("specBat");
+        const bNew = String(bEl ? bEl.value : "").split(/[,;]+/).map(function (x) { return x.trim(); }).filter(Boolean);
+        if (bNew.join(", ") !== specBatOrig) window.ptBatEdit(specEditModel, bNew);
+    }
     const upd = {};
     let k = k0;
     if (!del) {
@@ -11281,7 +11302,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.7";
+const APP_VERSION = "3.1.3.8";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -15183,6 +15204,28 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     return box;
   }
 
+  // Server cavabı → antiudar kimi model sətirləri (ad üzrə tapılanlar, sonra kod üzrə tapılanlar)
+  function entries(d) {
+    var out = [], seen = {};
+    (d.models || []).forEach(function (m) {
+      var k = norm(m.model); if (seen[k]) return; seen[k] = 1;
+      var sh = m.shared || {};
+      out.push({ model: m.model, codes: m.codes || [], hit: "", others: (m.same || []).map(function (x) { return { m: x, codes: sh[x] || [] }; }) });
+    });
+    (d.codes || []).forEach(function (c) {
+      var mc = c.mc || {};
+      (c.models || []).forEach(function (mn) {
+        var k = norm(mn); if (seen[k]) return; seen[k] = 1;
+        var own = mc[mn] && mc[mn].length ? mc[mn] : [c.code];
+        var others = (c.models || []).filter(function (x) { return x !== mn; }).map(function (x) {
+          var oc = mc[x] || [c.code], shared = oc.filter(function (z) { return own.indexOf(z) >= 0; });
+          return { m: x, codes: shared.length ? shared : [c.code] };
+        });
+        out.push({ model: mn, codes: own, hit: c.code, others: others });
+      });
+    });
+    return out;
+  }
   var BAT_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="16" height="10" rx="2.5"/><path d="M22 11v2"/><path d="M11 9.5 9 12.5h3l-1.5 2.5"/></svg>';
   /* Nəticə sətirinin batareya xətti: batareya ikonu + kod(lar); toxunanda batareya uyğunluğu səhifəsi açılır */
   function batLine(entry) {
@@ -15268,10 +15311,64 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
       if (my !== seq) return;
       loadMeta();
       dataFetch("/bat/search?q=" + encodeURIComponent(q)).then(function (d) { merge(d || {}, q, my); })
-        .catch(function () { /* limit / şəbəkə: antiudar nəticəsi olduğu kimi qalır */ });
+        .catch(function (e) { try { console.warn("bat-search", e && (e.code || e.message)); } catch (x) {} });
     }, 220);
   }
   window.ptBatRun = run;
+
+  /* ===== Admin: batareya kodunu düzəlt → sayt bazası + GitHub-dakı Battery.json ===== */
+  function nzs(x) { return String(x || "").toLowerCase().replace(/[^a-z0-9а-яё]+/g, ""); }
+  function applyEdit(lines, model, codes) {
+    var mk = nzs(model), out = [], placed = false;
+    lines.forEach(function (line) {
+      var parts = String(line).split("|").map(function (x) { return x.trim(); });
+      if (parts.length < 2) { out.push(line); return; }
+      var models = parts[0].split(",").map(function (x) { return x.trim(); }).filter(Boolean);
+      var idx = -1; models.forEach(function (m, i) { if (idx < 0 && nzs(m) === mk) idx = i; });
+      if (idx < 0) { out.push(line); return; }
+      var tag = parts.length > 2 ? " | " + parts.slice(2).join(" | ") : "";
+      if (models.length === 1) {
+        if (codes.length && !placed) { out.push(models[0] + " | " + codes.join(", ") + (tag || " | verified")); placed = true; }
+      } else { models.splice(idx, 1); out.push(models.join(", ") + " | " + parts[1] + tag); }
+    });
+    if (codes.length && !placed) out.push(model + " | " + codes.join(", ") + " | verified");
+    return out;
+  }
+  function b64utf8(str) { var b = new TextEncoder().encode(str), s = ""; for (var i = 0; i < b.length; i += 8192) s += String.fromCharCode.apply(null, b.subarray(i, i + 8192)); return btoa(s); }
+  function utf8b64(b64) { var bin = atob(String(b64).replace(/\s+/g, "")), a = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i); return new TextDecoder().decode(a); }
+  async function githubEdit(model, codes) {
+    var token = "";
+    try { var sn = await db.doc("admin/github").get(); if (sn.exists) token = String((sn.data() || {}).token || "").trim(); } catch (e) {}
+    if (!token) return { ok: false, why: "GitHub tokeni yoxdur" };
+    var H = { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+    var url = "https://api.github.com/repos/Eminlist/Emin/contents/Battery.json";
+    var r = await fetch(url + "?ref=main&t=" + Date.now(), { headers: H, cache: "no-store" });
+    if (!r.ok) return { ok: false, why: "oxunmadı (" + r.status + ")" };
+    var j = await r.json();
+    if (!j.content) return { ok: false, why: "fayl çox böyükdür" };
+    var raw = utf8b64(j.content), arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return { ok: false, why: "format fərqlidir" };
+    var out = applyEdit(arr, model, codes);
+    var txt = JSON.stringify(out, null, /^\[\s*\n/.test(raw) ? 2 : 0);
+    var msg = "Battery: " + model + " → " + (codes.join(", ") || "silindi") + " (admin, proqramdan)";
+    var w = await fetch(url, { method: "PUT", headers: Object.assign({ "Content-Type": "application/json" }, H), body: JSON.stringify({ message: msg, content: b64utf8(txt), sha: j.sha, branch: "main" }) });
+    if (!w.ok) return { ok: false, why: w.status === 403 || w.status === 404 ? "token yazmağa icazəli deyil (" + w.status + ")" : "yazılmadı (" + w.status + ")" };
+    return { ok: true };
+  }
+  window.ptBatEdit = async function (model, codes) {
+    try { if (!isAdmin) return; } catch (e) { return; }
+    toast("🔋 Batareya yadda saxlanılır…");
+    var gh = { ok: false, why: "" };
+    try { gh = await githubEdit(model, codes); } catch (e) { gh = { ok: false, why: String((e && e.message) || e).slice(0, 60) }; }
+    try {
+      await dataPost("/bat/edit", { model: model, codes: codes, synced: !!gh.ok });
+      meta = null; loadMeta();
+      var inp = $("searchInput"); if (inp && inp.value.trim()) performSearch(inp.value);
+      toast(gh.ok ? "🔋 Batareya saxlanıldı ✓ — sayt və GitHub (Battery.json) yeniləndi" : "🔋 Sayta yazıldı ✓. GitHub-a yazıla bilmədi: " + gh.why + " — düzəliş «Dərc et»də qorunur, amma Battery.json-u əl ilə/agentlə də düzəltmək lazımdır");
+    } catch (e) {
+      toast("Batareya saxlanılmadı: " + ((e && (e.code || e.message)) || ""));
+    }
+  };
 
   // ----- Admin: «Əsas baza» hər iki bazanı GitHub-dan gətirir, «Dərc et» hər ikisini dərc edir -----
   function batLinesFrom(data) {

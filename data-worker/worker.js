@@ -71,6 +71,7 @@ async function init(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS pt_report_ts ON pt_report (ts)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_base (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, groups INTEGER, models INTEGER, size INTEGER, data BLOB NOT NULL)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_cfg (k TEXT PRIMARY KEY, v TEXT)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_bat_ed (mk TEXT PRIMARY KEY, model TEXT NOT NULL, codes TEXT NOT NULL, ts INTEGER NOT NULL)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_prefs (uid TEXT PRIMARY KEY, data TEXT NOT NULL, ts INTEGER NOT NULL)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_rate (k TEXT PRIMARY KEY, n INTEGER DEFAULT 0)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_bat (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, lines INTEGER, models INTEGER, codes INTEGER, size INTEGER, data BLOB NOT NULL)"),
@@ -210,6 +211,68 @@ async function batIndex(db) {
   }
   BAT = { id: cur, ix };
   return ix;
+}
+// Bir modelin batareya kodlarını sətirlər üzərində dəyiş (qrup sətrində olarsa model ayrılır, qalanlar toxunulmaz qalır)
+function batApplyEdit(lines, model, codes) {
+  const mk = nz(model), out = [];
+  let placed = false;
+  (Array.isArray(lines) ? lines : []).forEach((line) => {
+    const parts = String(line).split("|").map((x) => x.trim());
+    if (parts.length < 2) { out.push(line); return; }
+    const models = parts[0].split(",").map((x) => x.trim()).filter(Boolean);
+    const idx = models.findIndex((m) => nz(m) === mk);
+    if (idx < 0) { out.push(line); return; }
+    const tag = parts.length > 2 ? " | " + parts.slice(2).join(" | ") : "";
+    if (models.length === 1) {
+      if (codes.length && !placed) { out.push(models[0] + " | " + codes.join(", ") + (tag || " | verified")); placed = true; }
+    } else {
+      models.splice(idx, 1);
+      out.push(models.join(", ") + " | " + parts[1] + tag);
+    }
+  });
+  if (codes.length && !placed) out.push(model + " | " + codes.join(", ") + " | verified");
+  return out;
+}
+async function batOverlay(db, arr) {
+  const rs = await db.prepare("SELECT model, codes FROM pt_bat_ed ORDER BY ts").all();
+  let out = arr;
+  (rs.results || []).forEach((r) => { try { out = batApplyEdit(out, r.model, JSON.parse(r.codes)); } catch (e) {} });
+  return out;
+}
+async function batLines(db) {
+  const cur = +(await cfgGet(db, "bat_cur")) || 0;
+  if (!cur) return [];
+  const r = await db.prepare("SELECT data FROM pt_bat WHERE id=?").bind(cur).first();
+  try { return r ? JSON.parse(await gunz(r.data)) : []; } catch (e) { return []; }
+}
+async function batSave(env, ctx, db, me, arr) {
+  const ix = batBuild(arr);
+  if (!ix.byModel.size || !ix.byCode.size) return { err: "data" };
+  const prev = await batIndex(db);
+  const added = [], removed = [];
+  ix.byModel.forEach((_, m) => { if (!prev.byModel.has(m)) added.push(m); });
+  prev.byModel.forEach((_, m) => { if (!ix.byModel.has(m)) removed.push(m); });
+  const txt = JSON.stringify(arr);
+  const note = "+" + added.length + " / −" + removed.length;
+  const now = Date.now();
+  const ins = await db.prepare("INSERT INTO pt_bat (ts, by, note, lines, models, codes, size, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+    .bind(now, me.email, note, arr.length, ix.byModel.size, ix.byCode.size, txt.length, await gz(txt)).run();
+  const id = ins.meta && ins.meta.last_row_id;
+  await cfgSet(db, "bat_cur", id);
+  const structChanged = ix.byCode.size !== prev.byCode.size || ix.rows.length !== prev.rows.length;
+  if (added.length || removed.length || structChanged) {
+    await db.prepare("INSERT INTO pt_hist (ts, kind, a, r, n, c, note) VALUES (?, 'bat', ?, ?, ?, ?, ?)")
+      .bind(now, added.length, removed.length, ix.byModel.size, ix.byCode.size, added.length || removed.length ? "" : "edit").run();
+  }
+  BAT = { id, ix };
+  ctx.waitUntil(db.prepare("DELETE FROM pt_bat WHERE id NOT IN (SELECT id FROM pt_bat ORDER BY id DESC LIMIT ?)").bind(BAT_KEEP).run().catch(() => {}));
+  if (added.length || removed.length) {
+    ctx.waitUntil(notifyAdmin(env, db, "🔋 Batareya bazası yeniləndi",
+      "Əlavə: " + added.length + (added.length ? " (" + added.slice(0, 8).join(", ") + (added.length > 8 ? "…" : "") + ")" : "") +
+      "\nSilindi: " + removed.length + (removed.length ? " (" + removed.slice(0, 8).join(", ") + (removed.length > 8 ? "…" : "") + ")" : "") +
+      "\nCəmi: " + ix.byModel.size + " model · " + ix.byCode.size + " kod"));
+  }
+  return { ok: true, id, a: added.length, r: removed.length, n: ix.byModel.size, c: ix.byCode.size, added: added.slice(0, 10), removed: removed.slice(0, 10) };
 }
 function lev(a, b) {
   if (a === b) return 0;
@@ -579,35 +642,24 @@ const _handler = {
     if (path === "/bat/publish" && req.method === "POST") {
       const lines = Array.isArray(b.lines) ? b.lines : null;
       if (!lines || lines.length < 1 || lines.length > 30000) return E("data");
-      const arr = lines.map((x) => String(x).slice(0, 600)).filter((x) => x.indexOf("|") > 0);
-      const ix = batBuild(arr);
-      if (!ix.byModel.size || !ix.byCode.size) return E("data");
-      const prev = await batIndex(db);
-      const added = [], removed = [];
-      ix.byModel.forEach((_, m) => { if (!prev.byModel.has(m)) added.push(m); });
-      prev.byModel.forEach((_, m) => { if (!ix.byModel.has(m)) removed.push(m); });
-      const txt = JSON.stringify(arr);
-      const note = "+" + added.length + " / −" + removed.length;
-      const now = Date.now();
-      const ins = await db.prepare("INSERT INTO pt_bat (ts, by, note, lines, models, codes, size, data) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
-        .bind(now, me.email, note, arr.length, ix.byModel.size, ix.byCode.size, txt.length, await gz(txt)).run();
-      const id = ins.meta && ins.meta.last_row_id;
-      await cfgSet(db, "bat_cur", id);
-      // Tarixçə jurnalı: dəyişiklik varsa (model +/−, kod və ya sətir sayı) qeyd olunur
-      const structChanged = ix.byCode.size !== prev.byCode.size || ix.rows.length !== prev.rows.length;
-      if (added.length || removed.length || structChanged) {
-        await db.prepare("INSERT INTO pt_hist (ts, kind, a, r, n, c, note) VALUES (?, 'bat', ?, ?, ?, ?, ?)")
-          .bind(now, added.length, removed.length, ix.byModel.size, ix.byCode.size, added.length || removed.length ? "" : "edit").run();
-      }
-      BAT = { id, ix };
-      ctx.waitUntil(db.prepare("DELETE FROM pt_bat WHERE id NOT IN (SELECT id FROM pt_bat ORDER BY id DESC LIMIT ?)").bind(BAT_KEEP).run().catch(() => {}));
-      if (added.length || removed.length) {
-        ctx.waitUntil(notifyAdmin(env, db, "🔋 Batareya bazası yeniləndi",
-          "Əlavə: " + added.length + (added.length ? " (" + added.slice(0, 8).join(", ") + (added.length > 8 ? "…" : "") + ")" : "") +
-          "\nSilindi: " + removed.length + (removed.length ? " (" + removed.slice(0, 8).join(", ") + (removed.length > 8 ? "…" : "") + ")" : "") +
-          "\nCəmi: " + ix.byModel.size + " model · " + ix.byCode.size + " kod"));
-      }
-      return J({ ok: true, id, a: added.length, r: removed.length, n: ix.byModel.size, c: ix.byCode.size, added: added.slice(0, 10), removed: removed.slice(0, 10) });
+      let arr = lines.map((x) => String(x).slice(0, 600)).filter((x) => x.indexOf("|") > 0);
+      arr = await batOverlay(db, arr);   // GitHub-a yazıla bilməyən admin düzəlişləri itməsin
+      const r = await batSave(env, ctx, db, me, arr);
+      return r.err ? E(r.err) : J(r);
+    }
+    // ===== Batareya kodunu admin düzəldir (model üzrə); synced=true — GitHub-da da dəyişib =====
+    if (path === "/bat/edit" && req.method === "POST") {
+      const model = String(b.model || "").trim().slice(0, 100);
+      const codes = (Array.isArray(b.codes) ? b.codes : []).map((x) => String(x).trim().slice(0, 30)).filter(Boolean).slice(0, 12);
+      if (!model) return E("model");
+      const lines = await batLines(db);
+      if (!lines.length) return E("no-base");
+      const arr = batApplyEdit(lines, model, codes);
+      const mk = nz(model);
+      if (b.synced) await db.prepare("DELETE FROM pt_bat_ed WHERE mk=?").bind(mk).run();
+      else await db.prepare("INSERT INTO pt_bat_ed (mk, model, codes, ts) VALUES (?, ?, ?, ?) ON CONFLICT(mk) DO UPDATE SET model=excluded.model, codes=excluded.codes, ts=excluded.ts").bind(mk, model, JSON.stringify(codes), Date.now()).run();
+      const r = await batSave(env, ctx, db, me, arr);
+      return r.err ? E(r.err) : J(Object.assign(r, { model, codes }));
     }
     if (path === "/bat/list" && req.method === "GET") {
       const rs = await db.prepare("SELECT id, ts, by, note, lines, models, codes, size FROM pt_bat ORDER BY id DESC LIMIT ?").bind(BAT_KEEP).all();
