@@ -69,7 +69,9 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
   transform:translateY(0) scale(calc(1 + var(--g)*.035));
   opacity:0;transition:opacity .6s ease, transform .25s ease;
 }
-.door.show{opacity:1}
+.door{transform:translateY(-70px);transition:opacity 1.1s ease, transform 1.1s cubic-bezier(.22,.8,.2,1)}
+.door.in{transition:opacity .6s ease, transform .25s ease}
+.door.show{opacity:1;transform:translateY(0) scale(calc(1 + var(--g)*.035))}
 .door .n{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font:600 .75rem ui-monospace,monospace;color:var(--gold);background:rgba(var(--goldrgb),.12);border:1px solid rgba(var(--goldrgb),.35);flex-shrink:0}
 .door .t{font-weight:600;font-size:.98rem;line-height:1.15;display:block}
 .door .s{font-size:.72rem;color:var(--muted);display:block;margin-top:2px}
@@ -291,7 +293,7 @@ const TG='https://t.me/protechtor_app', MAIL='mailto:admin@protechtor.app';
 const LX={
 az:{
  title:'ProTechtor™ — qoruyucu şüşə uyğunluğu',
- hero:'Bölməni seçin — bələdçi ora gedib açacaq. Sağ aşağıdakı düymə ilə söhbət tərzində də seçə bilərsiniz.',
+ hero:'Bölməni seçin. Sağ aşağıdakı düymə ilə söhbət tərzində də seçə bilərsiniz.',
  foot:['Proqramı yüklə','Yardım mərkəzi','Əlaqə','Məxfilik'],
  bot:{name:'Bələdçi',on:'● onlayn',welcome:'Xoş gəldiniz! Hansı bölməni açım?',close:'Bağla',menu:'Menyu',theme:'Fon rəngi'},
  grp:'Uyğun modellər',
@@ -317,7 +319,7 @@ az:{
 },
 ru:{
  title:'ProTechtor™ — совместимость защитных стёкол',
- hero:'Выберите раздел — проводница подойдёт к нему и откроет его. Также можно выбрать в формате чата кнопкой справа внизу.',
+ hero:'Выберите раздел. Также можно выбрать в формате чата кнопкой справа внизу.',
  foot:['Скачать приложение','Центр помощи','Контакты','Конфиденциальность'],
  bot:{name:'Проводница',on:'● онлайн',welcome:'Добро пожаловать! Какой раздел открыть?',close:'Закрыть',menu:'Меню',theme:'Цвет фона'},
  grp:'Подходящие модели',
@@ -343,7 +345,7 @@ ru:{
 },
 tr:{
  title:'ProTechtor™ — koruyucu cam uyumluluğu',
- hero:'Bir bölüm seçin — rehber oraya gidip açacaktır. Sağ alttaki düğme ile sohbet şeklinde de seçebilirsiniz.',
+ hero:'Bir bölüm seçin. Sağ alttaki düğme ile sohbet şeklinde de seçebilirsiniz.',
  foot:['Uygulamayı indir','Yardım merkezi','İletişim','Gizlilik'],
  bot:{name:'Rehber',on:'● çevrimiçi',welcome:'Hoş geldiniz! Hangi bölümü açayım?',close:'Kapat',menu:'Menü',theme:'Arka plan rengi'},
  grp:'Uygun modeller',
@@ -369,7 +371,7 @@ tr:{
 },
 en:{
  title:'ProTechtor™ — protective glass compatibility',
- hero:'Choose a section — the guide will walk over and open it. You can also choose in chat style with the button at the bottom right.',
+ hero:'Choose a section. You can also choose in chat style with the button at the bottom right.',
  foot:['Download the app','Help center','Contact','Privacy'],
  bot:{name:'Guide',on:'● online',welcome:'Welcome! Which section shall I open?',close:'Close',menu:'Menu',theme:'Background color'},
  grp:'Compatible models',
@@ -490,7 +492,7 @@ const CLIPS={
   sit_wink:{loop:false,dur:7000}
 };
 const MODE=document.documentElement.getAttribute('data-mode')||'on';
-const GIRL=MODE!=='nogirl';
+const GIRL=false; /* bələdçi çıxarıldı: yalnız seçim */
 const isSafari=/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
 const probe=document.createElement('video');
 let VID=GIRL && !isSafari && !!probe.canPlayType && probe.canPlayType('video/webm; codecs="vp9"')!=='';
@@ -683,6 +685,7 @@ async function bot(list){
 
 /* ---- seçim ---- */
 async function selectMenu(id,fromChat,direct){
+  direct=true;
   if(busy||stage_==='intro') return; busy=true;
   wake(); token++;
   if(stage_!=='stand'){stage_='stand'}
@@ -779,7 +782,7 @@ applyLang();
 if(!GIRL){ girl.style.display='none'; } else if(VID) buildVideos(); else girl.classList.add('fallback');
 fitGirl();
 addEventListener('resize',()=>{ fitGirl(); if(!busy&&stage_!=='intro') setPos(0,0,0); });
-if(GIRL) intro(); else { stage_='stand'; (async()=>{ for(const d of doors){d.classList.add('show');await wait(120)} })(); }
+stage_='stand'; requestAnimationFrame(()=>requestAnimationFrame(()=>doors.forEach((d,i)=>{ d.style.transitionDelay=(i%4)*0.18+'s'; d.classList.add('show'); setTimeout(()=>{d.style.transitionDelay='';d.classList.add('in');},2200+i*200); })));
 })();
 </script>
 </body>
