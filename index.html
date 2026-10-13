@@ -15171,7 +15171,13 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     var nm = el("div", "compat-model", model);
     if (isSel) nm.appendChild(el("span", "match-badge full", "✓"));
     else if (!full) nm.appendChild(el("span", "match-badge partial", "±"));
-    if (codes.length) nm.appendChild(el("div", "m-code", "🔋 " + codes.join(" · ")));
+    /* ekran ölçüsü sətri (antiudar kimi) + batareya modeli + yaşıl işıq — bir sətirdə */
+    var sp = null; try { sp = specLineEl(model, null); } catch (e) {}
+    if (sp) nm.appendChild(sp);
+    var ch = el("div", "m-bat" + (codes.length ? "" : " m-bat-none")), ic = el("span", "m-bat-ic"); ic.textContent = "🔋";
+    ch.appendChild(ic); ch.appendChild(el("span", "m-bat-code", codes.length ? codes.join(" · ") : "___"));
+    ch.style.cursor = "default";
+    put(nm, ch);
     it.appendChild(br); it.appendChild(nm);
     return it;
   }
