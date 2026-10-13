@@ -11011,7 +11011,6 @@ function renderChangelogHistoryLocal() {
     const todayKey = getDateKey(new Date());
     const inst = getInstallInfo();
     const list = getChangelogList().filter(function (x) {
-        if (x.dateKey === todayKey) return false;
         if (inst.ts && (x.ts || 0) < inst.ts) return false;
         if (inst.n && x.first) return false;
         return true;
@@ -11038,14 +11037,8 @@ function renderChangelogHistoryLocal() {
         const datePart = text.split(" ")[0] || "";
         push(datePart, text.slice(datePart.length).trim(), item.ts);
     });
-    const last = localStorage.getItem(UPDATE_KEY);
-    if (last) {
-        const lt = parseInt(last, 10);
-        const ld = formatDateShort(new Date(lt));
-        if (!byDate[ld]) push(ld, t("lastCheck"), lt);
-    }
     rows.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
-    rows.forEach(function (r) {
+    rows.slice(0, 3).forEach(function (r) {
         const div = document.createElement("div");
         div.className = "changelog-item";
         const dateEl = document.createElement("div");
@@ -11060,19 +11053,33 @@ function renderChangelogHistoryLocal() {
     }
 }
 
-/* Yeniləmə tarixçəsi serverdəki jurnaldan oxunur (antiudar + batareya bazası, bugün də daxil) —
-   cihaz yaddaşından asılı deyil; yalnız qonaqlar və oflayn hal üçün yerli siyahı qalır */
-var _ptHist = null, _ptHistAt = 0, _ptHistBusy = false;
+/* Yeniləmə tarixçəsi — hər istifadəçinin ÖZ jurnalı (serverdə, hesaba bağlı):
+   bazası hər yeniləndikdə real olaraq nə aldığı yadda saxlanılır, yalnız son 3 əməliyyat göstərilir.
+   10 və ya 20 gündən sonra girən istifadəçi aradakı bütün dəyişiklikləri bir əməliyyat kimi görür. */
+var _ptHist = null, _ptHistAt = 0, _ptHistBusy = false, _ptHistUid = "";
+function ptHistKey(uid) { return "pt_usync_" + uid; }
 function ptHistLoad(force) {
     if (_ptHistBusy) return;
-    if (!force && _ptHist && Date.now() - _ptHistAt < 30000) return;
-    try {
-        if (typeof dataFetch !== "function" || !auth || !auth.currentUser || auth.currentUser.isAnonymous) return;
-    } catch (e) { return; }
+    let u = null;
+    try { u = auth && auth.currentUser; } catch (e) { u = null; }
+    if (!u || u.isAnonymous || typeof dataFetch !== "function") return;
+    if (_ptHistUid !== u.uid) {
+        _ptHistUid = u.uid; _ptHistAt = 0;
+        try { const c = JSON.parse(localStorage.getItem(ptHistKey(u.uid)) || "null"); _ptHist = Array.isArray(c) ? c : null; } catch (e) { _ptHist = null; }
+    }
+    if (!force && _ptHistAt && Date.now() - _ptHistAt < 30000) return;
+    let cnt = 0;
+    try { cnt = namesFromGroups(database || []).length || (catalogMeta && catalogMeta.modelCount) || 0; } catch (e) { cnt = 0; }
+    if (!cnt) return; /* baza hələ yüklənməyib — əməliyyat yazılmasın */
+    const inst = getInstallInfo();
+    const body = { since: inst.ts || Date.now(), n: (inst.ts && inst.n) ? inst.n : cnt };
     _ptHistBusy = true;
-    dataFetch("/hist").then(function (d) {
-        _ptHist = (d && Array.isArray(d.items)) ? d.items : [];
+    const uid = u.uid;
+    dataFetch("/usync", { method: "POST", body: JSON.stringify(body) }).then(function (d) {
+        if (uid !== _ptHistUid) return;
+        _ptHist = (d && Array.isArray(d.ops)) ? d.ops : [];
         _ptHistAt = Date.now();
+        try { localStorage.setItem(ptHistKey(uid), JSON.stringify(_ptHist)); } catch (e) {}
     }).catch(function () {}).then(function () {
         _ptHistBusy = false;
         if (_ptHist) renderChangelogHistory(true);
@@ -11080,73 +11087,39 @@ function ptHistLoad(force) {
 }
 function ptHistRefresh() { _ptHistAt = 0; renderChangelogHistory(); }
 var PT_BAT_LBL = { az: "Batareya", ru: "Батарея", tr: "Batarya", en: "Battery" };
-function ptHistRows(inst) {
-    const items = (_ptHist || []).filter(function (x) {
-        if (inst.ts && (x.ts || 0) < inst.ts) return false;
-        if (inst.n && x.first && x.kind !== "bat") return false;
-        return true;
-    });
-    if (inst.ts && inst.n) items.push({ ts: inst.ts, kind: "base", a: inst.n, n: inst.n, first: 1 });
-    const days = {}, rows = [];
-    items.forEach(function (x) {
-        const d = new Date(x.ts), key = getDateKey(d);
-        let day = days[key];
-        if (!day) { day = days[key] = { date: formatDateShort(d), ts: x.ts, base: null, bat: null }; rows.push(day); }
-        if ((x.ts || 0) > day.ts) day.ts = x.ts;
-        const slot = x.kind === "bat" ? "bat" : "base";
-        const acc = day[slot] || (day[slot] = { a: 0, r: 0, e: 0, g: 0, n: 0, first: false, notes: [] });
-        acc.a += x.a || 0; acc.r += x.r || 0; acc.e += x.e || 0; acc.g += x.g || 0;
-        if (x.first) acc.first = true;
-        if (x.note && acc.notes.indexOf(x.note) < 0) acc.notes.push(x.note);
-    });
-    return rows.map(function (day) {
+function ptHistRows() {
+    return (_ptHist || []).map(function (op) {
         const parts = [];
-        if (day.base) {
-            const b = day.base, p = [];
-            if (b.first) p.push(t("clFirst").replace("{n}", String(b.a || b.n)));
-            else if (b.a) p.push(t("clAdded").replace("{n}", String(b.a)));
+        if (op.first) parts.push(t("clFirst").replace("{n}", String(op.n || 0)));
+        if (op.base) {
+            const b = op.base, p = [];
+            if (b.a) p.push(t("clAdded").replace("{n}", String(b.a)));
             if (b.r) p.push(t("clRemoved").replace("{n}", String(b.r)));
             if (b.e) p.push(t("clEdited").replace("{n}", String(b.e)));
             if (b.g) p.push(t("clRegroupG"));
-            b.notes.forEach(function (n) { const v = t("note_" + n); if (n !== "battery" && v && v !== "note_" + n) p.push(v); });
+            (b.notes || []).forEach(function (n) { const v = t("note_" + n); if (n !== "battery" && v && v !== "note_" + n) p.push(v); });
             if (p.length) parts.push(p.join(", "));
         }
-        if (day.bat) {
-            const b = day.bat, p = [];
+        if (op.bat) {
+            const b = op.bat, p = [];
             if (b.a) p.push(t("clAdded").replace("{n}", String(b.a)));
             if (b.r) p.push(t("clRemoved").replace("{n}", String(b.r)));
             parts.push("🔋 " + (p.length ? (PT_BAT_LBL[currentLang] || PT_BAT_LBL.az) + ": " + p.join(", ") : t("note_battery")));
         }
-        return { date: day.date, parts: parts, ts: day.ts };
+        return { date: formatDateShort(new Date(op.ts || 0)), parts: parts, ts: op.ts || 0 };
     }).filter(function (r) { return r.parts.length; });
 }
 function renderChangelogHistory(noLoad) {
     if (!noLoad) ptHistLoad(false);
-    if (!_ptHist || !_ptHist.length) return renderChangelogHistoryLocal();
+    let u = null;
+    try { u = auth && auth.currentUser; } catch (e) { u = null; }
+    if (!u || u.isAnonymous || !_ptHist || _ptHistUid !== u.uid) return renderChangelogHistoryLocal();
     const box = document.getElementById("changelogBox");
     if (!box) return;
-    const inst = getInstallInfo();
-    const rows = ptHistRows(inst);
-    /* Serverdəki jurnaldan əvvəlki günlər: yerli (köhnə) siyahıdan tamamlanır */
-    let firstTs = Infinity;
-    _ptHist.forEach(function (x) { if ((x.ts || 0) < firstTs) firstTs = x.ts || 0; });
-    const fd = new Date(firstTs); fd.setHours(0, 0, 0, 0);
-    getChangelogList().forEach(function (x) {
-        if ((x.ts || 0) >= fd.getTime()) return;
-        if (inst.ts && (x.ts || 0) < inst.ts) return;
-        if (inst.n && x.first) return;
-        const text = formatChangelogEntry(x); if (!text) return;
-        const dp = text.split(" ")[0] || "";
-        if (dp && !rows.some(function (r) { return r.date === dp; })) rows.push({ date: dp, parts: [text.slice(dp.length).trim()], ts: x.ts || 0 });
-    });
-    const last = localStorage.getItem(UPDATE_KEY);
-    if (last) {
-        const lt = parseInt(last, 10), ld = formatDateShort(new Date(lt));
-        if (!rows.some(function (r) { return r.date === ld; })) rows.push({ date: ld, parts: [t("lastCheck")], ts: lt });
-    }
+    const rows = ptHistRows();
     rows.sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
     box.innerHTML = "";
-    rows.slice(0, 60).forEach(function (r) {
+    rows.slice(0, 3).forEach(function (r) {
         const div = document.createElement("div");
         div.className = "changelog-item";
         const dateEl = document.createElement("div");
@@ -13751,6 +13724,7 @@ function dbSync(force) {
         indexFor = null;
         try { updateLastUpdate(); } catch (e) {}
         try { var inp = $("searchInput"); if (inp && inp.value.trim()) performSearch(inp.value); } catch (e) {}
+        try { ptHistRefresh(); } catch (e) {}
       }
     }).catch(function () {}).then(function () { dbSyncBusy = false; });
   } catch (e) { dbSyncBusy = false; }
@@ -13765,7 +13739,7 @@ function init() {
   setInterval(function () { dbSync(false); }, 15 * 60 * 1000);
   try {
     auth.onAuthStateChanged(function () {
-      setTimeout(function () { loadFit(false); loadHol().then(holidayCheck); buildAdminBox(); blkTick(); dbSync(true); setTimeout(holidayCheck, 6000); setTimeout(holidayCheck, 15000); setTimeout(thxCheck, 3000); }, 1500);
+      setTimeout(function () { loadFit(false); loadHol().then(holidayCheck); buildAdminBox(); blkTick(); dbSync(true); setTimeout(holidayCheck, 6000); setTimeout(holidayCheck, 15000); setTimeout(thxCheck, 3000); setTimeout(function () { try { ptHistRefresh(); } catch (e) {} }, 4000); }, 1500);
     });
   } catch (e) {}
 }

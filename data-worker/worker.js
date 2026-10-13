@@ -78,6 +78,8 @@ async function init(db) {
     // Yeniləmə tarixçəsi: versiya saxlama limitindən asılı olmayan yüngül jurnal (antiudar + batareya)
     db.prepare("CREATE TABLE IF NOT EXISTS pt_hist (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, kind TEXT NOT NULL, a INTEGER DEFAULT 0, r INTEGER DEFAULT 0, e INTEGER DEFAULT 0, g INTEGER DEFAULT 0, n INTEGER DEFAULT 0, c INTEGER DEFAULT 0, note TEXT DEFAULT '', first INTEGER DEFAULT 0)"),
     db.prepare("CREATE INDEX IF NOT EXISTS pt_hist_ts ON pt_hist (ts)"),
+    // Hər istifadəçinin öz yeniləmə jurnalı: son sinxron vaxtı + real son 3 əməliyyat
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_usync (uid TEXT PRIMARY KEY, last INTEGER NOT NULL, ops TEXT NOT NULL)"),
     // Gecə saatlarında (Bakı 23:00–10:00) Telegram xəbərləri burada gözləyir, səhər 10:00-da bir yerdə gedir
     db.prepare("CREATE TABLE IF NOT EXISTS pt_tgq (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, text TEXT NOT NULL)")
   ]);
@@ -612,6 +614,47 @@ const _handler = {
     if (path === "/hist" && req.method === "GET") {
       const rs = await db.prepare("SELECT ts, kind, a, r, e, g, n, c, note, first FROM pt_hist ORDER BY ts DESC LIMIT 150").all();
       return J({ items: rs.results || [] });
+    }
+    // ===== Şəxsi yeniləmə tarixçəsi: istifadəçinin bazası hər yeniləndikdə nə aldığı (son 3 real əməliyyat) =====
+    if (path === "/usync" && req.method === "POST") {
+      if (me.anon) return J({ ops: [] });
+      const now = Date.now();
+      const row = await db.prepare("SELECT last, ops FROM pt_usync WHERE uid=?").bind(me.uid).first();
+      let ops = [], last = 0;
+      if (row) { last = +row.last || 0; try { ops = JSON.parse(row.ops) || []; } catch (e) { ops = []; } }
+      const agg = (rs) => {
+        const o = { ts: now, base: null, bat: null };
+        rs.forEach((x) => {
+          const k = x.kind === "bat" ? "bat" : "base";
+          const a = o[k] || (o[k] = { a: 0, r: 0, e: 0, g: 0, notes: [] });
+          a.a += +x.a || 0; a.r += +x.r || 0; a.e += +x.e || 0; a.g += +x.g || 0;
+          if (x.note && a.notes.indexOf(x.note) < 0) a.notes.push(String(x.note).slice(0, 20));
+        });
+        return (o.base || o.bat) ? o : null;
+      };
+      const histSince = async (from) => (await db.prepare("SELECT ts, kind, a, r, e, g, note FROM pt_hist WHERE ts > ? AND ts <= ? ORDER BY ts ASC LIMIT 3000").bind(from, now).all()).results || [];
+      let changed = false;
+      if (!row) {
+        // İlk dəfə: bazanın ilk yüklənməsi (cihazdakı quraşdırma vaxtı) + ondan sonrakı real yeniləmələr (gün-gün)
+        const since = Math.min(+((b && b.since) || 0) || now, now);
+        const n = Math.max(0, Math.min(+((b && b.n) || 0) || 0, 1e6));
+        if (n) ops.push({ ts: since, first: 1, n });
+        if (since < now) {
+          const byDay = {};
+          (await histSince(since)).forEach((x) => { const d = Math.floor((x.ts + 4 * 3600000) / 86400000); (byDay[d] = byDay[d] || []).push(x); });
+          Object.keys(byDay).forEach((d) => { const o = agg(byDay[d]); if (o) { o.ts = byDay[d][byDay[d].length - 1].ts; ops.push(o); } });
+        }
+        changed = true;
+      } else {
+        // Sonuncu yenilənmədən bəri nə dəyişibsə — bir əməliyyat kimi (10 və ya 20 gün keçsə də, cəmi)
+        const o = agg(await histSince(last));
+        if (o) { ops.push(o); changed = true; }
+      }
+      ops.sort((x, y) => (y.ts || 0) - (x.ts || 0));
+      ops = ops.slice(0, 3);
+      await db.prepare("INSERT INTO pt_usync (uid, last, ops) VALUES (?, ?, ?) ON CONFLICT(uid) DO UPDATE SET last=excluded.last, ops=excluded.ops")
+        .bind(me.uid, now, JSON.stringify(ops)).run();
+      return J({ ops, changed });
     }
     // ===== İstifadəçi seçimləri (hesabla sinxron): {açar: [dəyər, vaxt]} =====
     if (path === "/prefs" && req.method === "GET") {
