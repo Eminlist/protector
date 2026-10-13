@@ -59,7 +59,7 @@ document.getElementById("t").innerHTML=x[0];document.getElementById("d").textCon
   try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
   var cv = document.createElement('canvas');
   cv.setAttribute('aria-hidden', 'true');
-  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none';
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:90;opacity:.85;pointer-events:none';
   var cx = cv.getContext('2d'), W = 0, H = 0, P = [], mouse = { x: -999, y: -999 };
   function low() { return document.documentElement.classList.contains('low-power'); }
   function initP() {

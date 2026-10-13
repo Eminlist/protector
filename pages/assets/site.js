@@ -76,6 +76,7 @@
     var p = location.pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
     return u === p;
   }
+  var MENU_IC = { "/account/register": "account", "/account/login": "account", "/application": "guide", "/application/features": "features", "/application/guide": "guide", "/application/install": "install", "/application/download": "download", "/privacy": "privacy", "/help": "help", "/contact": "contact" };
   function renderMenu() {
     var menu = get(T, "menu");
     if (!Array.isArray(menu)) return;
@@ -83,10 +84,13 @@
     if (nav) {
       nav.innerHTML = menu.map(function (g, i) {
         var on = g.items.some(function (it) { return here(it.u); });
+        var cur = -1;
+        g.items.forEach(function (it, k) { if (here(it.u)) cur = k; });
+        if (cur < 0) cur = 0;
         return '<div class="mg' + (on ? " on" : "") + '"><button class="mg-b" aria-expanded="false" data-i="' + i + '">' + esc(g.h) +
-          '<span class="pl" aria-hidden="true"></span></button><div class="mg-d"><div class="mg-dl">' +
-          g.items.map(function (it) {
-            return '<a href="' + it.u + '"' + (here(it.u) ? ' class="on"' : "") + "><b>" + esc(it.t) + "</b>" + (it.d ? "<small>" + esc(it.d) + "</small>" : "") + "</a>";
+          '<span class="pl" aria-hidden="true"></span></button><div class="mg-d"><div class="mg-dl" style="--n:' + g.items.length + '">' +
+          g.items.map(function (it, k) {
+            return '<a class="si' + (here(it.u) ? " on" : "") + (k === cur ? " act" : "") + '" href="' + it.u + '"><span class="si-ic" aria-hidden="true">' + (ICONS[MENU_IC[it.u]] || "") + "</span><b>" + esc(it.t) + "</b>" + (it.d ? "<small>" + esc(it.d) + "</small>" : "") + '<span class="si-go" aria-hidden="true">›</span></a>';
           }).join("") + "</div></div></div>";
       }).join("");
     }
@@ -130,6 +134,21 @@
         if (g && !g.classList.contains("open")) { closeAll(g); g.classList.add("open"); }
       });
       nav.addEventListener("mouseleave", function () { if (hoverable.matches) closeAll(); });
+      function actStrip(a) {
+        var box = a.parentElement;
+        box.querySelectorAll("a.si.act").forEach(function (x) { x.classList.remove("act"); });
+        a.classList.add("act");
+      }
+      nav.addEventListener("mouseover", function (e) {
+        var a = e.target.closest("a.si");
+        if (a && hoverable.matches) actStrip(a);
+      });
+      nav.addEventListener("focusin", function (e) { var a = e.target.closest("a.si"); if (a) actStrip(a); });
+      // Hover olmayan geniş ekranlarda (planşet): birinci toxunuş açır, ikinci keçir
+      nav.addEventListener("click", function (e) {
+        var a = e.target.closest("a.si");
+        if (a && !a.classList.contains("act") && window.matchMedia("(min-width:901px)").matches) { e.preventDefault(); actStrip(a); }
+      });
       document.addEventListener("click", function (e) { if (!e.target.closest(".mg")) closeAll(); });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeAll(); setPanel(false); } });
     }
@@ -331,6 +350,34 @@
     download: svg('<path d="M18 44a12 12 0 01-1-24 16 16 0 0130-2 11 11 0 011 26z" fill="' + G + '" stroke="' + K + '" stroke-width="2.5" stroke-linejoin="round"/><path d="M32 26v24m-8-8l8 8 8-8" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
   };
 
+  /* PC: kart-keçidlər zolaq kimi düzülür, seçilən geniş kartaya açılır */
+  (function () {
+    var pcq = window.matchMedia("(min-width:901px)");
+    function setAct(t) {
+      var box = t.parentElement;
+      box.querySelectorAll(".tile.act").forEach(function (x) { x.classList.remove("act"); });
+      t.classList.add("act");
+    }
+    function init() {
+      document.querySelectorAll(".tiles").forEach(function (b) {
+        if (!b.querySelector(".tile.act") && b.firstElementChild && b.firstElementChild.classList.contains("tile")) b.firstElementChild.classList.add("act");
+      });
+    }
+    var q = 0;
+    new MutationObserver(function () { if (q) return; q = requestAnimationFrame(function () { q = 0; init(); }); })
+      .observe(document.documentElement, { childList: true, subtree: true });
+    document.addEventListener("click", function (e) {
+      if (!pcq.matches) return;
+      var t = e.target.closest && e.target.closest(".tiles .tile");
+      if (t && !t.classList.contains("act")) { e.preventDefault(); setAct(t); }
+    }, true);
+    document.addEventListener("focusin", function (e) {
+      var t = pcq.matches && e.target.closest && e.target.closest(".tiles .tile");
+      if (t && !t.classList.contains("act")) setAct(t);
+    });
+    document.addEventListener("DOMContentLoaded", init);
+  })();
+
   window.PT = {
     lang: function () { return lang; },
     t: function (k) { return get(T, k); },
@@ -362,7 +409,7 @@
   try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
   var cv = document.createElement('canvas');
   cv.setAttribute('aria-hidden', 'true');
-  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none';
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:90;opacity:.85;pointer-events:none';
   var cx = cv.getContext('2d'), W = 0, H = 0, P = [], mouse = { x: -999, y: -999 };
   function low() { return document.documentElement.classList.contains('low-power'); }
   function initP() {

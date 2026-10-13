@@ -12,21 +12,43 @@
 <meta property="og:title" content="ProTechtor™ — qoruyucu şüşə uyğunluğu">
 <meta property="og:description" content="Model adı və ya kodu ilə uyğun qoruyucu şüşəni tapın.">
 <meta property="og:image" content="https://protechtor.app/assets/og.png">
+<script>
+(function(){try{var t=localStorage.getItem('pt_home_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
 <style>
 :root{
+  color-scheme:dark;
   --bg:#070a10; --card:rgba(16,22,36,.78); --text:#f4f6fb; --muted:#93a0b8;
-  --gold:#f0c879; --teal:#2dd4bf; --line:rgba(255,255,255,.09);
+  --gold:#f0c879; --goldrgb:240,200,121; --ongold:#1a1205; --teal:#2dd4bf; --line:rgba(255,255,255,.09);
+  --panel:rgba(12,17,30,.94); --soft:rgba(255,255,255,.05); --soft2:rgba(255,255,255,.07);
+  --sb1:#f6dc9c; --sb2:#c89a3e; --shadow:rgba(0,0,0,.45); --pshadow:0 18px 40px rgba(0,0,0,.7); --link:#8db8ff;
   --Z:.55;
 }
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f6f7fa; --card:rgba(255,255,255,.9); --text:#141a2a; --muted:#566074;
+  --gold:#a8741a; --goldrgb:168,116,26; --ongold:#fffaf0; --teal:#0f9d8a; --line:rgba(20,26,42,.12);
+  --panel:rgba(255,255,255,.97); --soft:rgba(20,26,42,.045); --soft2:rgba(20,26,42,.07);
+  --sb1:#d9a441; --sb2:#a8741a; --shadow:rgba(20,26,42,.16); --pshadow:0 6px 14px rgba(20,26,42,.22); --link:#1d5fd1;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-html{scrollbar-width:thin;scrollbar-color:rgba(240,200,121,.65) var(--bg)}
+html{scrollbar-width:thin;scrollbar-color:var(--sb2) var(--bg)}
 ::-webkit-scrollbar{width:11px;height:11px}
 ::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#f6dc9c,#c89a3e);border-radius:10px;border:2px solid var(--bg);box-shadow:0 0 8px rgba(240,200,121,.5)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--sb1),var(--sb2));border-radius:10px;border:2px solid var(--bg);box-shadow:0 0 8px rgba(var(--goldrgb),.5)}
 ::-webkit-scrollbar-thumb:hover{background:var(--gold)}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
-#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
-header{position:relative;z-index:5;text-align:center;padding:26px 16px 0}
+#particles{position:fixed;inset:0;z-index:55;opacity:.85;pointer-events:none}
+header{position:relative;z-index:5;text-align:center;padding:26px 150px 0}
+.tools{position:fixed;top:14px;right:16px;z-index:60;display:flex;gap:8px;align-items:center}
+.tools select,.tools button{height:36px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit;font-size:.82rem;cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.tools select{padding:0 8px}
+.tools button{width:38px;display:grid;place-items:center}
+.tools select:hover,.tools button:hover{border-color:var(--gold);color:var(--gold)}
+.tools svg{width:18px;height:18px}
+#themeBtn .moon{display:none}
+:root[data-theme="light"] #themeBtn .sun{display:none}
+:root[data-theme="light"] #themeBtn .moon{display:block}
 header .brand{font-weight:700;letter-spacing:.02em;font-size:1.15rem}
 header .brand b{color:var(--gold)}
 header p{color:var(--muted);font-size:.9rem;margin-top:6px}
@@ -41,21 +63,21 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
   --g:0;
   position:relative;text-align:left;cursor:pointer;color:var(--text);font:inherit;
   background:var(--card);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border:1px solid rgba(240,200,121,calc(.12 + var(--g)*.8));
+  border:1px solid rgba(var(--goldrgb),calc(.12 + var(--g)*.8));
   border-radius:18px;padding:13px 16px;display:flex;gap:12px;align-items:center;
-  box-shadow:0 0 calc(var(--g)*36px) rgba(240,200,121,calc(var(--g)*.55)), 0 10px 26px rgba(0,0,0,.45);
+  box-shadow:0 0 calc(var(--g)*36px) rgba(var(--goldrgb),calc(var(--g)*.55)), 0 10px 26px var(--shadow);
   transform:translateY(0) scale(calc(1 + var(--g)*.035));
   opacity:0;transition:opacity .6s ease, transform .25s ease;
 }
 .door.show{opacity:1}
-.door .n{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font:600 .75rem ui-monospace,monospace;color:var(--gold);background:rgba(240,200,121,.12);border:1px solid rgba(240,200,121,.35);flex-shrink:0}
+.door .n{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font:600 .75rem ui-monospace,monospace;color:var(--gold);background:rgba(var(--goldrgb),.12);border:1px solid rgba(var(--goldrgb),.35);flex-shrink:0}
 .door .t{font-weight:600;font-size:.98rem;line-height:1.15;display:block}
 .door .s{font-size:.72rem;color:var(--muted);display:block;margin-top:2px}
-.door.selected{border-color:var(--gold);background:linear-gradient(135deg,rgba(240,200,121,.2),rgba(16,22,36,.95))}
+.door.selected{border-color:var(--gold);background:linear-gradient(135deg,rgba(var(--goldrgb),.2),var(--card))}
 
 .fog{
   position:absolute;z-index:4;width:340px;height:240px;margin:-120px 0 0 -170px;border-radius:50%;pointer-events:none;
-  background:radial-gradient(closest-side,rgba(255,226,170,.55),rgba(240,200,121,.22) 55%,transparent 80%);
+  background:radial-gradient(closest-side,rgba(255,226,170,.55),rgba(var(--goldrgb),.22) 55%,transparent 80%);
   filter:blur(26px);opacity:0;transform:scale(.3);
 }
 .fog.on{animation:fog 2.6s ease-out forwards}
@@ -64,20 +86,21 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 .center{position:relative;height:100%;perspective:1500px;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
 .center.drag{cursor:grabbing}
 .phone{cursor:pointer}
+.phone.app{cursor:default}
 .floor{position:absolute;left:50%;bottom:22px;width:700px;height:190px;transform:translateX(-50%) rotateX(72deg);border-radius:50%;
-  border:1px solid rgba(240,200,121,.25);background:radial-gradient(circle,rgba(240,200,121,.12),transparent 70%)}
+  border:1px solid rgba(var(--goldrgb),.25);background:radial-gradient(circle,rgba(var(--goldrgb),.12),transparent 70%)}
 
 /* ---------- 3D PHONES ---------- */
 .ring-wrap{position:absolute;left:0;right:0;top:-70px;height:100%;display:grid;place-items:center;transform-style:preserve-3d;z-index:1;transform:scale(var(--S,1))}
 .ring{position:relative;width:140px;height:270px;transform-style:preserve-3d;transform:rotateX(-6deg)}
 .phone{
   position:absolute;inset:0;border-radius:24px;padding:7px;background:#0a0f1c;border:2px solid rgba(255,255,255,.16);
-  box-shadow:0 18px 40px rgba(0,0,0,.7),inset 0 0 12px rgba(45,212,191,.1);display:flex;flex-direction:column;overflow:hidden;
+  box-shadow:var(--pshadow),inset 0 0 12px rgba(45,212,191,.1);display:flex;flex-direction:column;overflow:hidden;
   backface-visibility:visible;
 }
 .phone .notch{width:48px;height:11px;background:#000;border-radius:10px;margin:2px auto 5px}
 .phone .scr{flex:1;border-radius:17px;background:linear-gradient(180deg,#121a2e,#080c16);padding:9px 8px;display:flex;flex-direction:column;gap:6px}
-.phone .tag{font:600 .5rem ui-monospace,monospace;color:var(--gold);background:rgba(240,200,121,.12);border:1px solid rgba(240,200,121,.3);padding:2px 5px;border-radius:4px;align-self:flex-start}
+.phone .tag{font:600 .5rem ui-monospace,monospace;color:#f0c879;background:rgba(240,200,121,.12);border:1px solid rgba(240,200,121,.3);padding:2px 5px;border-radius:4px;align-self:flex-start}
 .phone h4{font-size:.74rem}
 .phone .row{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:.55rem;color:#dbe3f2;background:rgba(255,255,255,.05);padding:6px 6px;border-radius:7px}
 .phone .row i{display:block;width:16px;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--teal),#34d399);opacity:.8}
@@ -116,17 +139,17 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 /* ---------- CHAT DÜYMƏSİ + PANEL ---------- */
 .launcher{
   position:fixed;right:24px;bottom:24px;z-index:50;width:62px;height:62px;border-radius:50%;border:none;cursor:pointer;
-  background:linear-gradient(135deg,var(--gold),#c89a3e);color:#1a1205;display:grid;place-items:center;
-  box-shadow:0 10px 30px rgba(240,200,121,.45);transition:transform .25s ease, box-shadow .25s ease;
+  background:linear-gradient(135deg,var(--gold),#c89a3e);color:var(--ongold);display:grid;place-items:center;
+  box-shadow:0 10px 30px rgba(var(--goldrgb),.45);transition:transform .25s ease, box-shadow .25s ease;
 }
-.launcher:hover{transform:scale(1.08);box-shadow:0 14px 40px rgba(240,200,121,.65)}
-.launcher::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(240,200,121,.5);animation:ping 2.4s ease-out infinite}
+.launcher:hover{transform:scale(1.08);box-shadow:0 14px 40px rgba(var(--goldrgb),.65)}
+.launcher::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(var(--goldrgb),.5);animation:ping 2.4s ease-out infinite}
 @keyframes ping{0%{transform:scale(.9);opacity:.9}100%{transform:scale(1.5);opacity:0}}
 .launcher.open::after{display:none}
 .panel{
   position:fixed;right:24px;bottom:100px;z-index:49;width:370px;height:500px;max-height:calc(100vh - 130px);
-  background:rgba(12,17,30,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(240,200,121,.3);border-radius:22px;
-  box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 50px rgba(240,200,121,.12);
+  background:var(--panel);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(var(--goldrgb),.3);border-radius:22px;
+  box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 50px rgba(var(--goldrgb),.12);
   display:flex;flex-direction:column;overflow:hidden;
   transform-origin:bottom right;transform:scale(.6) translateY(30px);opacity:0;pointer-events:none;
   transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .3s ease;
@@ -138,9 +161,9 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 .p-head span{font-size:.7rem;color:var(--teal)}
 .p-head button{margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer}
 .p-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth}
-.msg{max-width:86%;padding:10px 13px;border-radius:16px 16px 16px 4px;background:rgba(255,255,255,.07);font-size:.88rem;line-height:1.45;animation:pop .35s ease}
-.msg.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:rgba(240,200,121,.2)}
-.msg a{display:inline-block;margin-top:8px;padding:7px 13px;border-radius:100px;background:var(--gold);color:#1a1205;font-weight:600;font-size:.8rem;text-decoration:none;margin-right:6px}
+.msg{max-width:86%;padding:10px 13px;border-radius:16px 16px 16px 4px;background:var(--soft2);font-size:.88rem;line-height:1.45;animation:pop .35s ease}
+.msg.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:rgba(var(--goldrgb),.2)}
+.msg a{display:inline-block;margin-top:8px;padding:7px 13px;border-radius:100px;background:var(--gold);color:var(--ongold);font-weight:600;font-size:.8rem;text-decoration:none;margin-right:6px}
 .msg a:hover{filter:brightness(1.08)}
 @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .typing{display:flex;gap:4px;padding:12px 14px}
@@ -148,15 +171,15 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
 @keyframes dot{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
 .chips{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px 14px;border-top:1px solid var(--line);max-height:128px;overflow-y:auto}
-.chip{font:inherit;font-size:.75rem;color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--line);padding:6px 11px;border-radius:100px;cursor:pointer;transition:all .2s}
-.chip:hover{border-color:var(--gold);color:var(--gold);background:rgba(240,200,121,.1)}
+.chip{font:inherit;font-size:.75rem;color:var(--text);background:var(--soft);border:1px solid var(--line);padding:6px 11px;border-radius:100px;cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--gold);color:var(--gold);background:rgba(var(--goldrgb),.1)}
 
-.hint{position:relative;z-index:5;text-align:center;color:var(--muted);font-size:.8rem;padding:6px 16px 8px}
 .foot{position:relative;z-index:5;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:center;padding:6px 16px 34px;font-size:.82rem}
-.foot a{color:#8db8ff;text-decoration:none}
+.foot a{color:var(--link);text-decoration:none}
 .foot a:hover{text-decoration:underline}
-.foot a.app{color:#1a1205;background:var(--gold);padding:5px 14px;border-radius:100px;font-weight:600;text-decoration:none}
+.foot a.app{color:var(--ongold);background:var(--gold);padding:5px 14px;border-radius:100px;font-weight:600;text-decoration:none}
 
+@media(max-width:700px){header{padding:58px 16px 0}}
 @media(max-width:1000px){
   /* telefon/planşet: əvvəlcə fırlanan telefonlar, menyu düymələri aşağıda */
   .stage{display:flex;flex-direction:column;height:auto;gap:14px;padding:0 14px 26px}
@@ -166,14 +189,31 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
   .panel{right:12px;left:12px;width:auto}
 }
 @media(prefers-reduced-motion:reduce){.launcher::after{animation:none}}
+
+.phone.app .scr{gap:5px;padding:8px 7px}
+.phone.app .ahd{display:flex;align-items:center;gap:4px;font:700 .56rem system-ui;color:#f4f6fb}
+.phone.app .ahd b{color:#f0c879}.phone.app .ahd i{width:11px;height:11px;border-radius:3px;background:linear-gradient(135deg,#2dd4bf,#34d399)}
+.phone.app .asr{display:flex;align-items:center;gap:4px;font:.56rem system-ui;color:#f4f6fb;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 6px}
+.phone.app .agr{font:600 .48rem system-ui;color:#34d399;letter-spacing:.04em;text-transform:uppercase;margin-top:2px}
+.phone.app .ars{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.35);border-left:3px solid #34d399;border-radius:7px;padding:5px 6px;color:#f4f6fb}
+.phone.app .ars b{display:block;font:600 .55rem system-ui}
+.phone.app .ars span{display:block;font:.48rem system-ui;color:#93a0b8;margin-top:1px}
 </style>
 </head>
 <body>
 <canvas id="particles"></canvas>
 
+<div class="tools">
+  <select id="langSel" aria-label="Language"><option value="az">AZ</option><option value="ru">RU</option><option value="tr">TR</option><option value="en">EN</option></select>
+  <button id="themeBtn" type="button" aria-label="Theme">
+    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/></svg>
+    <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>
+  </button>
+</div>
+
 <header>
   <div class="brand">Pro<b>Techtor</b>™</div>
-  <p>Bölməni seçin — bələdçi ora gedib açacaq. Sağ aşağıdakı düymə ilə söhbət tərzində də seçə bilərsiniz.</p>
+  <p id="heroP"></p>
 </header>
 
 <main class="stage" id="stage">
@@ -214,21 +254,19 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
   <div class="wing" id="wingR"></div>
 </main>
 
-<div class="hint">Səssiz rejim · bələdçi bir müddət hərəkət edilməyəndə oturub dincəlir, toxunduqda dərhal qayıdır.</div>
 <nav class="foot" aria-label="Əsas keçidlər">
-  <a class="app" href="/application/download">Proqramı yüklə</a>
-  <a href="/application">Proqram</a>
-  <a href="/help">Yardım mərkəzi</a>
-  <a href="/contact">Əlaqə</a>
-  <a href="/privacy">Məxfilik</a>
+  <a class="app" href="/application/download" data-f="0"></a>
+  <a href="/help" data-f="1"></a>
+  <a href="/contact" data-f="2"></a>
+  <a href="/privacy" data-f="3"></a>
 </nav>
 
 <!-- söhbət düyməsi və paneli -->
 <div class="panel" id="panel" aria-hidden="true">
   <div class="p-head">
     <div class="p-av">P</div>
-    <div><b>Bələdçi</b><span>● onlayn</span></div>
-    <button id="pClose" aria-label="Bağla">×</button>
+    <div><b id="pName"></b><span id="pOn"></span></div>
+    <button id="pClose" aria-label="Close">×</button>
   </div>
   <div class="p-body" id="pBody"></div>
   <div class="chips" id="pChips"></div>
@@ -245,63 +283,166 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const rand=(a,b)=>a+Math.random()*(b-a);
 
 const DL='/application/download';
-const MENUS=[
- {id:'app',  t:'Mobil ekranlar', s:'Proqramın səhifələri',
-  msgs:['Üç ölçülü telefonların hər birində proqramın ayrıca səhifəsi göstərilir.','Telefonlar öz-özünə fırlanır; siçanı üzərinə gətirdikdə fırlanma dayanır və səhifəni diqqətlə nəzərdən keçirə bilərsiniz.']},
- {id:'about',t:'Proqram haqqında', s:'ProTechtor™ nədir',
-  msgs:['ProTechtor™ telefon modelinə uyğun qoruyucu şüşəni müəyyən etməyə kömək edən proqramdır.','Model adı və ya model kodu ilə axtarış aparılır; eyni şüşəyə uyğun gələn modellər qrup şəklində təqdim olunur.',{t:'',a:[['Ətraflı','/application']]}]},
- {id:'pros', t:'Proqram üstünlükləri', s:'Əsas imkanlar',
-  msgs:['Sürətli axtarış, qruplaşdırılmış nəticələr və daim yenilənən məlumat bazası.','İstifadəçi üçün sadə və aydın interfeys.',{t:'',a:[['Bütün imkanlar','/application/features']]}]},
- {id:'guide',t:'İstifadə təlimatları', s:'Axtarış və nəticələr',
-  msgs:['1) Axtarış xanasına telefonun model adını və ya kodunu daxil edin.','2) Nəticələrdə həmin şüşəyə uyğun gələn modellərin qrupu göstərilir.',{t:'Ətraflı təlimat:',a:[['İstifadə təlimatı','/application/guide']]}]},
- {id:'setup',t:'Quraşdırma təlimatı', s:'APK-nın quraşdırılması',
-  msgs:['Əvvəlcə quraşdırma faylını (APK) endirin.','Telefonun təhlükəsizlik parametrlərində naməlum mənbələrdən quraşdırmaya icazə verin, sonra faylı açıb quraşdırmanı təsdiqləyin.',{t:'',a:[['Quraşdırma təlimatı','/application/install'],['Proqramı yüklə',DL]]}]},
- {id:'dl',   t:'Proqramı yüklə', s:'Rəsmi yükləmə səhifəsi',
-  msgs:['Proqramın ən son versiyasını rəsmi yükləmə səhifəsindən əldə edə bilərsiniz.',{t:'',a:[['Yükləmə səhifəsi',DL]]}]},
- {id:'gal',  t:'Qalereya', s:'Proqramdan kadrlar',
-  msgs:['Proqramın interfeysindən nümunələr yuxarıdakı telefonların ekranlarında göstərilir.','Fırlanmanı dayandırmaq üçün siçanı telefonlara yaxınlaşdırın.']},
- {id:'help', t:'Yardım mərkəzi', s:'Əlaqə və dəstək',
-  msgs:['Sualınız və ya təklifiniz olarsa, bizimlə əlaqə saxlaya bilərsiniz.',{t:'',a:[['Yardım mərkəzi','/help'],['Telegram: @protechtor_app','https://t.me/protechtor_app'],['admin@protechtor.app','mailto:admin@protechtor.app']]}]}
-];
-const PHONES=[
- ['01 AXTARIŞ','Model axtarışı',['Model adı və ya kodu','Uyğun qrup','Nəticələr']],
- ['02 HAQQINDA','ProTechtor™',['Model bazası','Avtomatik qruplar']],
- ['03 ÜSTÜNLÜKLƏR','Əsas imkanlar',['Sürətli axtarış','Qruplaşdırma','Yenilənən baza']],
- ['04 TƏLİMAT','Necə istifadə etməli',['Axtarış','Nəticə']],
- ['05 QURAŞDIRMA','Quraşdırma təlimatı',['Faylı endir','İcazə ver','Quraşdır']],
- ['06 YÜKLƏ','Rəsmi səhifə',['Android','Ən son versiya']],
- ['07 QALEREYA','Proqramdan kadrlar',['Ana ekran','Nəticələr']],
- ['08 YARDIM','Əlaqə və dəstək',['Telegram','E-poçt']],
- ['09 ANA EKRAN','Xoş gəldiniz',['Son axtarışlar','Tənzimləmə']]
-];
+const LANGS=['az','ru','tr','en'];
+const MENUS=['about','pros','guide','setup','dl','gal','help'];
+const PHONE_OF={about:1,pros:2,guide:3,setup:4,dl:5,gal:6,help:7};
+const PHONE_MENU=[null,'about','pros','guide','setup','dl','gal','help',null]; // 0 və 8: yalnız nümunə, seçildikdə heç nə olmur
+const TG='https://t.me/protechtor_app', MAIL='mailto:admin@protechtor.app';
+const LX={
+az:{
+ title:'ProTechtor™ — qoruyucu şüşə uyğunluğu',
+ hero:'Bölməni seçin — bələdçi ora gedib açacaq. Sağ aşağıdakı düymə ilə söhbət tərzində də seçə bilərsiniz.',
+ foot:['Proqramı yüklə','Yardım mərkəzi','Əlaqə','Məxfilik'],
+ bot:{name:'Bələdçi',on:'● onlayn',welcome:'Xoş gəldiniz! Hansı bölməni açım?',close:'Bağla',menu:'Menyu',theme:'Fon rəngi'},
+ grp:'Uyğun modellər',
+ menus:{
+  about:{t:'Proqram haqqında',s:'ProTechtor™ nədir',msgs:['ProTechtor™ telefon modelinə uyğun qoruyucu şüşəni müəyyən etməyə kömək edən proqramdır.','Model adı və ya model kodu ilə axtarış aparılır; eyni şüşəyə uyğun gələn modellər qrup şəklində təqdim olunur.',{t:'',a:[['Ətraflı','/application']]}]},
+  pros:{t:'Proqram üstünlükləri',s:'Əsas imkanlar',msgs:['Sürətli axtarış, qruplaşdırılmış nəticələr və daim yenilənən məlumat bazası.','İstifadəçi üçün sadə və aydın interfeys.',{t:'',a:[['Bütün imkanlar','/application/features']]}]},
+  guide:{t:'İstifadə təlimatları',s:'Axtarış və nəticələr',msgs:['1) Axtarış xanasına telefonun model adını və ya kodunu daxil edin.','2) Nəticələrdə həmin şüşəyə uyğun gələn modellərin qrupu göstərilir.',{t:'Ətraflı təlimat:',a:[['İstifadə təlimatı','/application/guide']]}]},
+  setup:{t:'Quraşdırma təlimatı',s:'APK-nın quraşdırılması',msgs:['Əvvəlcə quraşdırma faylını (APK) endirin.','Telefonun təhlükəsizlik parametrlərində naməlum mənbələrdən quraşdırmaya icazə verin, sonra faylı açıb quraşdırmanı təsdiqləyin.',{t:'',a:[['Quraşdırma təlimatı','/application/install'],['Proqramı yüklə',DL]]}]},
+  dl:{t:'Proqramı yüklə',s:'Rəsmi yükləmə səhifəsi',msgs:['Proqramın ən son versiyasını rəsmi yükləmə səhifəsindən əldə edə bilərsiniz.',{t:'',a:[['Yükləmə səhifəsi',DL]]}]},
+  gal:{t:'Qalereya',s:'Proqramdan kadrlar',msgs:['Proqramın interfeysindən nümunələr yuxarıdakı telefonların ekranlarında göstərilir.','Fırlanmanı dayandırmaq üçün siçanı telefonlara yaxınlaşdırın.']},
+  help:{t:'Yardım mərkəzi',s:'Əlaqə və dəstək',msgs:['Sualınız və ya təklifiniz olarsa, bizimlə əlaqə saxlaya bilərsiniz.',{t:'',a:[['Yardım mərkəzi','/help'],['Telegram: @protechtor_app',TG],['admin@protechtor.app',MAIL]]}]}
+ },
+ phones:[
+  ['01 AXTARIŞ','Model axtarışı',['Model adı və ya kodu','Uyğun qrup','Nəticələr']],
+  ['02 HAQQINDA','ProTechtor™',['Model bazası','Avtomatik qruplar']],
+  ['03 ÜSTÜNLÜKLƏR','Əsas imkanlar',['Sürətli axtarış','Qruplaşdırma','Yenilənən baza']],
+  ['04 TƏLİMAT','Necə istifadə etməli',['Axtarış','Nəticə']],
+  ['05 QURAŞDIRMA','Quraşdırma təlimatı',['Faylı endir','İcazə ver','Quraşdır']],
+  ['06 YÜKLƏ','Rəsmi səhifə',['Android','Ən son versiya']],
+  ['07 QALEREYA','Proqramdan kadrlar',['Ana ekran','Nəticələr']],
+  ['08 YARDIM','Əlaqə və dəstək',['Telegram','E-poçt']]
+ ]
+},
+ru:{
+ title:'ProTechtor™ — совместимость защитных стёкол',
+ hero:'Выберите раздел — проводница подойдёт к нему и откроет его. Также можно выбрать в формате чата кнопкой справа внизу.',
+ foot:['Скачать приложение','Центр помощи','Контакты','Конфиденциальность'],
+ bot:{name:'Проводница',on:'● онлайн',welcome:'Добро пожаловать! Какой раздел открыть?',close:'Закрыть',menu:'Меню',theme:'Цвет фона'},
+ grp:'Подходящие модели',
+ menus:{
+  about:{t:'О приложении',s:'Что такое ProTechtor™',msgs:['ProTechtor™ — приложение, помогающее определить защитное стекло, подходящее к модели телефона.','Поиск выполняется по названию или коду модели; модели, подходящие к одному стеклу, показываются группой.',{t:'',a:[['Подробнее','/application']]}]},
+  pros:{t:'Преимущества приложения',s:'Основные возможности',msgs:['Быстрый поиск, сгруппированные результаты и постоянно обновляемая база данных.','Простой и понятный интерфейс.',{t:'',a:[['Все возможности','/application/features']]}]},
+  guide:{t:'Инструкции по использованию',s:'Поиск и результаты',msgs:['1) Введите в поле поиска название или код модели телефона.','2) В результатах показывается группа моделей, подходящих к этому стеклу.',{t:'Подробная инструкция:',a:[['Инструкция по использованию','/application/guide']]}]},
+  setup:{t:'Инструкция по установке',s:'Установка APK',msgs:['Сначала скачайте установочный файл (APK).','В настройках безопасности телефона разрешите установку из неизвестных источников, затем откройте файл и подтвердите установку.',{t:'',a:[['Инструкция по установке','/application/install'],['Скачать приложение',DL]]}]},
+  dl:{t:'Скачать приложение',s:'Официальная страница загрузки',msgs:['Последнюю версию приложения можно получить на официальной странице загрузки.',{t:'',a:[['Страница загрузки',DL]]}]},
+  gal:{t:'Галерея',s:'Кадры из приложения',msgs:['Примеры интерфейса приложения показаны на экранах телефонов выше.','Чтобы остановить вращение, наведите курсор на телефоны.']},
+  help:{t:'Центр помощи',s:'Связь и поддержка',msgs:['Если у вас есть вопрос или предложение, вы можете связаться с нами.',{t:'',a:[['Центр помощи','/help'],['Telegram: @protechtor_app',TG],['admin@protechtor.app',MAIL]]}]}
+ },
+ phones:[
+  ['01 ПОИСК','Поиск модели',['Название или код модели','Подходящая группа','Результаты']],
+  ['02 О НАС','ProTechtor™',['База моделей','Автоматические группы']],
+  ['03 ПРЕИМУЩЕСТВА','Основные возможности',['Быстрый поиск','Группировка','Обновляемая база']],
+  ['04 ИНСТРУКЦИЯ','Как пользоваться',['Поиск','Результат']],
+  ['05 УСТАНОВКА','Инструкция по установке',['Скачать файл','Разрешить','Установить']],
+  ['06 СКАЧАТЬ','Официальная страница',['Android','Последняя версия']],
+  ['07 ГАЛЕРЕЯ','Кадры из приложения',['Главный экран','Результаты']],
+  ['08 ПОМОЩЬ','Связь и поддержка',['Telegram','E-mail']]
+ ]
+},
+tr:{
+ title:'ProTechtor™ — koruyucu cam uyumluluğu',
+ hero:'Bir bölüm seçin — rehber oraya gidip açacaktır. Sağ alttaki düğme ile sohbet şeklinde de seçebilirsiniz.',
+ foot:['Uygulamayı indir','Yardım merkezi','İletişim','Gizlilik'],
+ bot:{name:'Rehber',on:'● çevrimiçi',welcome:'Hoş geldiniz! Hangi bölümü açayım?',close:'Kapat',menu:'Menü',theme:'Arka plan rengi'},
+ grp:'Uygun modeller',
+ menus:{
+  about:{t:'Uygulama hakkında',s:'ProTechtor™ nedir',msgs:['ProTechtor™, telefon modeline uygun koruyucu camı belirlemeye yardımcı olan bir uygulamadır.','Arama model adı veya model kodu ile yapılır; aynı cama uyan modeller grup halinde sunulur.',{t:'',a:[['Ayrıntılı','/application']]}]},
+  pros:{t:'Uygulama avantajları',s:'Temel özellikler',msgs:['Hızlı arama, gruplandırılmış sonuçlar ve sürekli güncellenen veri tabanı.','Kullanıcı için sade ve anlaşılır arayüz.',{t:'',a:[['Tüm özellikler','/application/features']]}]},
+  guide:{t:'Kullanım talimatları',s:'Arama ve sonuçlar',msgs:['1) Arama kutusuna telefonun model adını veya kodunu girin.','2) Sonuçlarda bu cama uyan modellerin grubu gösterilir.',{t:'Ayrıntılı talimat:',a:[['Kullanım talimatı','/application/guide']]}]},
+  setup:{t:'Kurulum talimatı',s:'APK kurulumu',msgs:['Önce kurulum dosyasını (APK) indirin.','Telefonun güvenlik ayarlarında bilinmeyen kaynaklardan kuruluma izin verin, ardından dosyayı açıp kurulumu onaylayın.',{t:'',a:[['Kurulum talimatı','/application/install'],['Uygulamayı indir',DL]]}]},
+  dl:{t:'Uygulamayı indir',s:'Resmî indirme sayfası',msgs:['Uygulamanın en son sürümünü resmî indirme sayfasından edinebilirsiniz.',{t:'',a:[['İndirme sayfası',DL]]}]},
+  gal:{t:'Galeri',s:'Uygulamadan kareler',msgs:['Uygulama arayüzünden örnekler yukarıdaki telefonların ekranlarında gösterilir.','Dönmeyi durdurmak için fareyi telefonlara yaklaştırın.']},
+  help:{t:'Yardım merkezi',s:'İletişim ve destek',msgs:['Sorunuz veya öneriniz olursa bizimle iletişime geçebilirsiniz.',{t:'',a:[['Yardım merkezi','/help'],['Telegram: @protechtor_app',TG],['admin@protechtor.app',MAIL]]}]}
+ },
+ phones:[
+  ['01 ARAMA','Model araması',['Model adı veya kodu','Uygun grup','Sonuçlar']],
+  ['02 HAKKINDA','ProTechtor™',['Model veri tabanı','Otomatik gruplar']],
+  ['03 AVANTAJLAR','Temel özellikler',['Hızlı arama','Gruplandırma','Güncel veri tabanı']],
+  ['04 TALİMAT','Nasıl kullanılır',['Arama','Sonuç']],
+  ['05 KURULUM','Kurulum talimatı',['Dosyayı indir','İzin ver','Kur']],
+  ['06 İNDİR','Resmî sayfa',['Android','Son sürüm']],
+  ['07 GALERİ','Uygulamadan kareler',['Ana ekran','Sonuçlar']],
+  ['08 YARDIM','İletişim ve destek',['Telegram','E-posta']]
+ ]
+},
+en:{
+ title:'ProTechtor™ — protective glass compatibility',
+ hero:'Choose a section — the guide will walk over and open it. You can also choose in chat style with the button at the bottom right.',
+ foot:['Download the app','Help center','Contact','Privacy'],
+ bot:{name:'Guide',on:'● online',welcome:'Welcome! Which section shall I open?',close:'Close',menu:'Menu',theme:'Background color'},
+ grp:'Compatible models',
+ menus:{
+  about:{t:'About the app',s:'What ProTechtor™ is',msgs:['ProTechtor™ is an app that helps determine which protective glass fits a phone model.','Search by model name or model code; models that fit the same glass are shown as a group.',{t:'',a:[['Learn more','/application']]}]},
+  pros:{t:'App advantages',s:'Key features',msgs:['Fast search, grouped results and a constantly updated database.','A simple and clear interface.',{t:'',a:[['All features','/application/features']]}]},
+  guide:{t:'Usage instructions',s:'Search and results',msgs:["1) Enter the phone's model name or code in the search box.",'2) The results show the group of models that fit that glass.',{t:'Detailed instructions:',a:[['Usage instructions','/application/guide']]}]},
+  setup:{t:'Installation guide',s:'Installing the APK',msgs:['First, download the installation file (APK).',"In the phone's security settings, allow installation from unknown sources, then open the file and confirm the installation.",{t:'',a:[['Installation guide','/application/install'],['Download the app',DL]]}]},
+  dl:{t:'Download the app',s:'Official download page',msgs:['You can get the latest version of the app from the official download page.',{t:'',a:[['Download page',DL]]}]},
+  gal:{t:'Gallery',s:'Screens from the app',msgs:['Examples of the app interface are shown on the phone screens above.','To pause the rotation, move the mouse over the phones.']},
+  help:{t:'Help center',s:'Contact and support',msgs:['If you have a question or suggestion, you can contact us.',{t:'',a:[['Help center','/help'],['Telegram: @protechtor_app',TG],['admin@protechtor.app',MAIL]]}]}
+ },
+ phones:[
+  ['01 SEARCH','Model search',['Model name or code','Matching group','Results']],
+  ['02 ABOUT','ProTechtor™',['Model database','Automatic groups']],
+  ['03 ADVANTAGES','Key features',['Fast search','Grouping','Updated database']],
+  ['04 GUIDE','How to use',['Search','Result']],
+  ['05 INSTALL','Installation guide',['Download file','Allow','Install']],
+  ['06 DOWNLOAD','Official page',['Android','Latest version']],
+  ['07 GALLERY','Screens from the app',['Home screen','Results']],
+  ['08 HELP','Contact and support',['Telegram','E-mail']]
+ ]
+}
+};
+const LANG_KEY='antiudar_lang'; // sayt və proqramla ortaq açar
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+function pickLang(){
+  let q=null; try{ q=new URLSearchParams(location.search).get('lang'); }catch(e){}
+  if(q&&LX[q]){ store(LANG_KEY,q); return q; }
+  const st=store(LANG_KEY); if(st&&LX[st]) return st;
+  const n=(navigator.language||'az').slice(0,2).toLowerCase();
+  return LX[n]?n:'az';
+}
+let lang=pickLang();
+const T=()=>LX[lang];
 
 /* ---- menyular ---- */
 const wingL=$('#wingL'), wingR=$('#wingR'), doors=[];
-MENUS.forEach((m,i)=>{
+MENUS.forEach((id,i)=>{
   const b=document.createElement('button');
-  b.className='door'; b.dataset.id=m.id;
-  b.innerHTML=`<span class="n">0${i+1}</span><span><span class="t">${m.t}</span><span class="s">${m.s}</span></span>`;
+  b.className='door'; b.dataset.id=id;
+  b.innerHTML=`<span class="n">0${i+1}</span><span><span class="t"></span><span class="s"></span></span>`;
   (i<4?wingL:wingR).appendChild(b); doors.push(b);
-  b.addEventListener('click',()=>selectMenu(m.id));
+  b.addEventListener('click',()=>selectMenu(id));
   b.addEventListener('mouseenter',wake);
 });
 
 /* ---- 3D telefonlar ---- */
 const ring=$('#ring');
-PHONES.forEach((p,i)=>{
-  const d=document.createElement('div'); d.className='phone';
-  d.innerHTML=`<div class="notch"></div><div class="scr"><span class="tag">${p[0]}</span><h4>${p[1]}</h4><div class="bar"></div>${p[2].map(r=>`<div class="row"><span>${r}</span><i></i></div>`).join('')}</div>`;
-  d.style.transform=`rotateY(${i*40}deg) translateZ(270px)`;
-  d.dataset.i=i;
-  ring.appendChild(d);
-});
-let angle=0, auto=true, focusTarget=null, hoverRing=false;
+function buildPhones(){
+  ring.innerHTML='';
+  const P=T().phones;
+  for(let i=0;i<9;i++){
+    const d=document.createElement('div'); d.className='phone'+(i===8?' app':'');
+    if(i<8){
+      const p=P[i];
+      d.innerHTML=`<div class="notch"></div><div class="scr"><span class="tag">${p[0]}</span><h4>${p[1]}</h4><div class="bar"></div>${p[2].map(r=>`<div class="row"><span>${r}</span><i></i></div>`).join('')}</div>`;
+    }else{
+      /* proqramın axtarış interfeysi (nümunə) — seçildikdə heç bir əməliyyat olmur */
+      d.innerHTML=`<div class="notch"></div><div class="scr"><div class="ahd"><i></i><span><b>Pro</b>Techtor™</span></div><div class="asr">🔍 Galaxy A54</div><div class="agr">${T().grp}</div><div class="ars"><b>Samsung Galaxy A54 5G</b><span>6.4″ · 🔋EB-BA546ABY</span></div><div class="ars"><b>Samsung Galaxy A53 5G</b><span>6.5″ · 🔋EB-BA536ABY</span></div></div>`;
+    }
+    d.style.transform=`rotateY(${i*40}deg) translateZ(270px)`;
+    d.dataset.i=i;
+    ring.appendChild(d);
+  }
+}
+buildPhones();
+let angle=0, auto=true, focusTarget=null, hoverRing=false, busy=false;
 const center=$('#center'), stage=$('#stage'), girl=$('#girl');
 center.addEventListener('mouseenter',()=>hoverRing=true);
 center.addEventListener('mouseleave',()=>hoverRing=false);
 
 /* ---- istifadəçi telefonları özü fırladır və toxunduqda bölməni seçir (bələdçisiz) ---- */
-const PHONE_MENU=['guide','about','pros','guide','setup','dl','gal','help','app'];
 let drag=null, dragRest=0;
 center.addEventListener('pointerdown',e=>{
   if(e.button>0) return;
@@ -331,7 +472,7 @@ addEventListener('pointercancel',endDrag);
     let diff=((focusTarget-angle)%360+540)%360-180;
     angle+=diff*0.06;
     if(Math.abs(diff)<.4)focusTarget=null;
-  }else if(auto&&!hoverRing&&!drag&&Date.now()-dragRest>3500){angle-=0.14}
+  }else if(auto&&!hoverRing&&!drag&&!busy&&Date.now()-dragRest>2000){angle-=0.14}
   ring.style.transform=`rotateX(-6deg) rotateY(${angle}deg)`;
   requestAnimationFrame(loop);
 })();
@@ -415,7 +556,7 @@ function setPos(x,y,dur){
 }
 
 /* ---- boşluq (idle) və oyanma ---- */
-let busy=false, lastAct=Date.now(), stage_='stand', token=0;
+let lastAct=Date.now(), stage_='stand', token=0;
 function wake(){
   lastAct=Date.now();
   if(stage_==='sit'||stage_==='nails'){
@@ -512,13 +653,16 @@ function closePanel(){panel.classList.remove('open');launcher.classList.remove('
 launcher.addEventListener('click',()=>{
   if(panel.classList.contains('open')){closePanel();return}
   openPanel();
-  if(!pBody.children.length){ bot(['Xoş gəldiniz! Hansı bölməni açım?']); }
+  if(!pBody.children.length){ bot([T().bot.welcome]); }
 });
 $('#pClose').addEventListener('click',closePanel);
-MENUS.forEach(m=>{
-  const c=document.createElement('button'); c.className='chip'; c.textContent=m.t;
-  c.addEventListener('click',()=>selectMenu(m.id,true)); pChips.appendChild(c);
-});
+function buildChips(){
+  pChips.innerHTML='';
+  MENUS.forEach(id=>{
+    const c=document.createElement('button'); c.className='chip'; c.textContent=T().menus[id].t;
+    c.addEventListener('click',()=>selectMenu(id,true)); pChips.appendChild(c);
+  });
+}
 function addMsg(item,me){
   const d=document.createElement('div'); d.className='msg'+(me?' me':'');
   const text=typeof item==='string'?item:item.t;
@@ -532,7 +676,7 @@ async function bot(list){
     const ty=document.createElement('div'); ty.className='msg typing'; ty.innerHTML='<i></i><i></i><i></i>';
     pBody.appendChild(ty); pBody.scrollTop=pBody.scrollHeight;
     const len=typeof t==='string'?t.length:(t.t||'').length;
-    await wait(650+Math.min(len*8,700));
+    await wait(120+Math.min(len*2,180));
     ty.remove(); addMsg(t);
   }
 }
@@ -542,25 +686,25 @@ async function selectMenu(id,fromChat,direct){
   if(busy||stage_==='intro') return; busy=true;
   wake(); token++;
   if(stage_!=='stand'){stage_='stand'}
-  const idx=MENUS.findIndex(m=>m.id===id), m=MENUS[idx], door=doors[idx];
+  const idx=MENUS.indexOf(id), X=T().menus[id], door=doors[idx];
   doors.forEach(d=>d.classList.remove('selected')); door.classList.add('selected');
-  /* ilgili telefon önə gəlir */
-  const pi=Math.max(0,PHONE_MENU.indexOf(id));
-  focusTarget=-(pi*40);
+  /* əvvəlcə ilgili telefon ekranı önə gəlir */
+  focusTarget=-(PHONE_OF[id]*40);
+  dragRest=Date.now()+3000;
   openPanel();
   if(direct){
     /* bələdçisiz seçim: məzmun dərhal göstərilir */
-    if(fromChat||pBody.children.length) addMsg(m.t,true);
-    m.msgs.forEach(t=>addMsg(t));
+    if(fromChat||pBody.children.length) addMsg(X.t,true);
+    X.msgs.forEach(t=>addMsg(t));
     lastAct=Date.now(); busy=false; return;
   }
+  if(fromChat||pBody.children.length) addMsg(X.t,true);
+  await wait(1000);               /* 1 saniyə sonra bələdçi seçimə gedir */
   fogAt(door);
-  if(fromChat||pBody.children.length) addMsg(m.t,true);
-  await wait(250);
   if(GIRL) await pointAt(door);
-  await bot(m.msgs);
-  await wait(600);
-  lastAct=Date.now();
+  await bot(X.msgs);
+  await wait(300);
+  lastAct=Date.now(); dragRest=Date.now()+1500;
   busy=false;
 }
 
@@ -578,7 +722,7 @@ async function pointAt(door){
 
 /* ---- zərrəcik toru ---- */
 const cv=$('#particles'), cx=cv.getContext('2d');
-let W,H,P=[], mouse={x:-999,y:-999};
+let W,H,P=[], mouse={x:-999,y:-999}, PC={g:'240,200,121',l:'147,160,184'};
 function initP(){
   W=cv.width=innerWidth;H=cv.height=innerHeight;
   const n=Math.min(90,Math.floor(W*H/18000));
@@ -594,15 +738,42 @@ addEventListener('touchmove',e=>{const t=e.touches[0];mouse.x=t.clientX;mouse.y=
     if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
     const dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.hypot(dx,dy)||1;
     if(d<150){const f=(150-d)/150;p.x+=dx/d*f*2;p.y+=dy/d*f*2;
-      cx.strokeStyle=`rgba(240,200,121,${f*.55})`;cx.lineWidth=1;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(mouse.x,mouse.y);cx.stroke();}
-    cx.fillStyle='rgba(240,200,121,.55)';cx.beginPath();cx.arc(p.x,p.y,p.s,0,6.283);cx.fill();
+      cx.strokeStyle=`rgba(${PC.g},${f*.55})`;cx.lineWidth=1;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(mouse.x,mouse.y);cx.stroke();}
+    cx.fillStyle=`rgba(${PC.g},.55)`;cx.beginPath();cx.arc(p.x,p.y,p.s,0,6.283);cx.fill();
     for(let j=i+1;j<P.length;j++){
       const q=P[j],dd=Math.hypot(p.x-q.x,p.y-q.y);
-      if(dd<120){cx.strokeStyle=`rgba(147,160,184,${(1-dd/120)*.2})`;cx.lineWidth=.7;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke();}
+      if(dd<120){cx.strokeStyle=`rgba(${PC.l},${(1-dd/120)*.2})`;cx.lineWidth=.7;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke();}
     }
   }
   requestAnimationFrame(draw);
 })();
+
+/* ---- dil və fon rəngi ---- */
+const metaTheme=document.querySelector('meta[name="theme-color"]');
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  PC=t==='light'?{g:'168,116,26',l:'70,82,104'}:{g:'240,200,121',l:'147,160,184'};
+  if(metaTheme) metaTheme.setAttribute('content',t==='light'?'#f6f7fa':'#070a10');
+}
+let theme=document.documentElement.getAttribute('data-theme')||'dark';
+applyTheme(theme);
+$('#themeBtn').addEventListener('click',()=>{ theme=theme==='light'?'dark':'light'; applyTheme(theme); store('pt_home_theme',theme); });
+
+function applyLang(){
+  const X=T();
+  document.documentElement.lang=lang; document.title=X.title;
+  $('#langSel').value=lang;
+  $('#heroP').textContent=X.hero;
+  doors.forEach((d,i)=>{ const m=X.menus[MENUS[i]]; d.querySelector('.t').textContent=m.t; d.querySelector('.s').textContent=m.s; });
+  document.querySelectorAll('[data-f]').forEach(a=>{ a.textContent=X.foot[+a.dataset.f]; });
+  $('#pName').textContent=X.bot.name; $('#pOn').textContent=X.bot.on;
+  $('#pClose').setAttribute('aria-label',X.bot.close);
+  $('#launcher').setAttribute('aria-label',X.bot.menu);
+  $('#themeBtn').setAttribute('aria-label',X.bot.theme);
+  buildPhones(); buildChips();
+}
+$('#langSel').addEventListener('change',e=>{ lang=e.target.value; store(LANG_KEY,lang); applyLang(); });
+applyLang();
 
 /* ---- start ---- */
 if(!GIRL){ girl.style.display='none'; } else if(VID) buildVideos(); else girl.classList.add('fallback');

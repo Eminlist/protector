@@ -232,3 +232,38 @@ html{scrollbar-width:thin;scrollbar-color:rgba(46,204,113,.6) var(--bg)}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:10px;border:2px solid var(--bg);box-shadow:0 0 8px rgba(46,204,113,.5)}
 ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* ===== PC: zolaq (akkordeon) menyular — ikonlar qalır, seçilən zolaq geniş kartaya açılır ===== */
+@media (min-width:901px){
+  /* yuxarı menyunun alt bölmələri */
+  .mg-d{min-width:0}
+  .mg-dl{display:flex;gap:8px;padding:10px;border-radius:26px;height:290px;width:calc((var(--n,1) - 1)*66px + 340px)}
+  .mg-dl a.si{position:relative;flex:0 0 58px;min-width:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:14px 0;border-radius:18px;background:var(--card);border:1px solid var(--line);color:var(--text);transition:flex .45s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s}
+  .mg-dl a.si:hover{background:var(--card);text-decoration:none}
+  .mg-dl a.si.on{border-color:rgba(46,204,113,.45)}
+  .si-ic{display:block;width:34px;height:34px;flex:none;transition:width .4s,height .4s}
+  .si-ic svg{display:block;width:100%;height:100%}
+  .mg-dl a.si b{display:block;margin-top:auto;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font-size:15px;font-weight:600;color:var(--muted)}
+  .mg-dl a.si small,.si-go{display:none}
+  .mg-dl a.si.act{flex:1 1 0;align-items:flex-start;padding:18px;background:linear-gradient(160deg,rgba(46,204,113,.16),var(--card) 70%);border-color:rgba(46,204,113,.5);box-shadow:0 18px 34px -22px rgba(46,204,113,.7)}
+  .mg-dl a.si.act .si-ic{width:52px;height:52px}
+  .mg-dl a.si.act b{writing-mode:horizontal-tb;transform:none;white-space:normal;font-size:18px;color:var(--text);margin-top:auto;animation:siIn .5s .12s both}
+  .mg-dl a.si.act small{display:block;font-size:13px;margin-top:4px;padding-right:34px;animation:siIn .5s .18s both}
+  .mg-dl a.si.act .si-go{display:flex;position:absolute;right:14px;bottom:14px;width:30px;height:30px;border-radius:50%;align-items:center;justify-content:center;background:var(--accent);color:var(--onaccent);font-size:20px;line-height:1;padding-bottom:2px}
+  @keyframes siIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* kart-keçidlər (Yardım mərkəzi və s.) */
+  .tiles{display:flex;gap:10px;height:280px}
+  .tiles .tile{position:relative;flex:0 0 64px;min-width:0;min-height:0;overflow:hidden;align-items:center;padding:16px 0;gap:0;border-radius:22px;transition:flex .5s cubic-bezier(.2,.8,.2,1),background .3s,border-color .3s,box-shadow .3s}
+  .tiles .tile:hover{transform:none}
+  .tiles .tile-ic{display:block;width:36px;height:36px;flex:none;transition:width .4s,height .4s}
+  .tiles .tile-ic svg{width:100%;height:100%}
+  .tiles .tile b{margin-top:auto;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font-size:15px;color:var(--muted)}
+  .tiles .tile small{display:none}
+  .tiles .tile.act{flex:1 1 0;align-items:flex-start;padding:22px 24px;background:linear-gradient(160deg,rgba(46,204,113,.15),var(--card) 70%);border-color:rgba(46,204,113,.5);box-shadow:0 18px 34px -22px rgba(46,204,113,.7)}
+  .tiles .tile.act .tile-ic{width:60px;height:60px}
+  .tiles .tile.act b{writing-mode:horizontal-tb;transform:none;white-space:normal;font-size:20px;color:var(--text);animation:siIn .5s .12s both}
+  .tiles .tile.act small{display:block;margin-top:6px;padding-right:40px;font-size:14px;animation:siIn .5s .18s both}
+  .tiles .tile.act::after{content:"›";position:absolute;right:18px;bottom:18px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--accent);color:var(--onaccent);font-size:22px;line-height:1;padding-bottom:3px}
+}
+@media (prefers-reduced-motion:reduce){.mg-dl a.si,.tiles .tile{transition:none}.mg-dl a.si.act b,.mg-dl a.si.act small,.tiles .tile.act b,.tiles .tile.act small{animation:none}}
