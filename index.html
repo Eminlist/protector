@@ -2222,11 +2222,8 @@
         #profile-view .acc-group .pw-chev{color:var(--pa)}
         #profile-view .acc-group .pw-form{border:0;border-radius:0;box-shadow:none;background:transparent;padding-top:2px}
 
-/* Batareya axtarışı: sol Antiudar | sağ Batareya — seçilən böyüyür, digəri kiçilir */
-.pt-mode{display:flex;gap:10px;margin-bottom:14px}
-.pt-mode button{flex:1 1 0;min-width:0;height:48px;border:2px solid var(--border);border-radius:16px;background:var(--surface);color:var(--muted);font-weight:800;font-size:calc(14px * var(--font-scale));cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;padding:0 8px;transition:flex-grow .35s ease,background .25s,color .25s,border-color .25s}
-.pt-mode button.on{flex-grow:3;border-color:var(--accent-color);color:var(--accent-color);background:var(--surface-2)}
-#ptBatBox[hidden],#ptAntiBox[hidden]{display:none}
+/* Batareya axtarışı ümumi axtarışın içindədir */
+#ptBatBox:empty{display:none}
 .pt-bat-row{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px}
 .pt-bat-row b{display:block;color:var(--text);font-size:calc(15px * var(--font-scale));margin-bottom:6px;word-break:break-word}
 .pt-bat-code{display:inline-block;margin:2px 6px 2px 0;padding:4px 10px;border-radius:10px;border:1px solid var(--accent-color);color:var(--accent-color);font-weight:800;font-size:calc(14px * var(--font-scale));letter-spacing:.5px}
@@ -2241,15 +2238,45 @@
 .pt-bat-login button{margin-top:10px;height:42px;padding:0 22px;border-radius:12px;border:1px solid var(--accent-color);background:transparent;color:var(--accent-color);font-weight:800;cursor:pointer}
 .pt-bat-note{font-size:calc(12px * var(--font-scale));color:var(--muted);margin:2px 2px 10px}
 #ptBatCount{text-align:center;color:var(--muted);font-size:calc(12px * var(--font-scale));letter-spacing:.5px;padding:18px 0 6px}
-.pt-mode button{display:flex;align-items:center;justify-content:center}
-.pt-mode button{touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:flex-grow .2s ease,background .15s,color .15s,border-color .15s}
 .pt-stage{position:relative;margin:6px 0 0;height:400px;overflow:hidden;border-radius:22px;background:#03060d;border:1px solid var(--border);contain:layout paint}
 .pt-stage[hidden]{display:none}
 .pt-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:none;background:#03060d}
-.pt-stage[data-m=anti] #ptVidA,.pt-stage[data-m=bat] #ptVidB{display:block}
+.pt-stage #ptVidA{display:block}
+.m-bat{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:3px 10px 3px 7px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent-color) 55%,transparent);color:var(--accent-color);font-size:calc(12.5px * var(--font-scale));font-weight:800;letter-spacing:.3px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.m-bat:active{background:color-mix(in srgb,var(--accent-color) 14%,transparent)}
+.m-bat-ic{display:inline-flex}
+.result-model .m-brandtxt{font-size:calc(11px * var(--font-scale));letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:2px}
+.result-model .m-bat{display:flex;width:fit-content}
+/* Logo (başlıqda) və ana səhifə yazısı */
+.pt-logo{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;cursor:pointer;color:var(--text);-webkit-tap-highlight-color:transparent;font:inherit}
+.pt-logo img{width:52px;height:52px;border-radius:14px;display:block;box-shadow:0 0 14px color-mix(in srgb,var(--accent-color) 30%,transparent)}
+.pt-logo:active img{transform:scale(.94)}
+.pt-logo-tx{font-weight:800;font-size:calc(20px * var(--font-scale));letter-spacing:-.6px;color:var(--text);white-space:nowrap}
+.pt-logo-tx sup{font-size:.5em;margin-left:1px}
+@media (max-width:380px){.pt-logo-tx{font-size:calc(16px * var(--font-scale))}.pt-logo img{width:44px;height:44px}}
+.pt-hero{text-align:center;padding:30px 8px 26px}
+.pt-hero[hidden]{display:none}
+.pt-hero-s{font-size:calc(13px * var(--font-scale));letter-spacing:7px;color:var(--accent-color);text-transform:uppercase;font-weight:700;margin-bottom:10px}
+.pt-hero-t{font-size:calc(clamp(22px,6vw,32px) * var(--font-scale));line-height:1.15;font-weight:800;letter-spacing:-.8px;color:var(--text);word-wrap:break-word}
+/* Scroll zolağı hər yerdə eyni görünür, səhifə yerindən tərpənmir */
+html{scrollbar-gutter:stable;scrollbar-width:thin;scrollbar-color:var(--accent-color) transparent}
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent-color) 70%,transparent) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--accent-color) 60%,transparent);border-radius:10px;border:2px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:var(--accent-color);background-clip:content-box}
+/* Kompüter görünüşü: axtarış və video səhifənin bir başından o birinə uzanmasın */
+@media (min-width:900px){
+  .main-content{max-width:720px;margin-left:auto;margin-right:auto}
+  .search-wrapper{max-width:560px;margin-left:auto;margin-right:auto}
+  .pt-stage{max-width:380px;height:470px;margin-left:auto;margin-right:auto}
+}
+/* Son axtarışlar: yenilənmə tarixçəsi kimi — toxunanda açılır */
+#recent .rc-toggle{margin-bottom:0}
+#recent .cl-wrap>.rc-box{overflow:hidden;min-height:0;border-radius:14px}
+#recent .cl-wrap:not(.open)>.rc-box{border-width:0}
 
 /* Batareya: seçilmiş model səhifəsi antiudar ilə eyni görünür */
-#ptBatRecent{display:none;margin-bottom:8px}
 #detail-view.pt-bat-detail #pt-fit{display:none}
 #detail-view.pt-bat-detail .misfit-bar .pt-bat-acts{margin-top:0}
 #detail-view.pt-bat-detail .detail-size{white-space:normal;line-height:1.9}
@@ -2556,8 +2583,7 @@ html.sensitive .ripple-ring{display:none !important}
     <div id="main-view">
         <header class="top-header">
             <div class="header-left">
-                <div class="header-small">Antiudar</div>
-                <div class="header-title" data-i18n="title">Qoruyucu şüşə uyğunluğu</div>
+                <button type="button" class="pt-logo" onclick="location.reload()" aria-label="ProTechtor™" title="ProTechtor™"><img src="./icon-192.png?v=2" alt="ProTechtor™" width="56" height="56" draggable="false"><span class="pt-logo-tx">ProTechtor<sup>™</sup></span></button>
             </div>
             <div class="header-buttons">
                 <button id="adminBtn" class="profile-btn hb hb-admin" onclick="openAdmin()" title="Admin panel" aria-label="Admin panel"><span class="hi hi-admin" aria-hidden="true"></span><span class="admin-badge" id="adminInboxBadge">0</span></button>
@@ -2569,10 +2595,7 @@ html.sensitive .ripple-ring{display:none !important}
         </header>
 
         <main class="main-content">
-            <div class="pt-mode" id="ptMode">
-                <button type="button" id="ptModeAnti" class="on" onpointerdown="ptSetMode('anti')" aria-label="Antiudar" title="Antiudar"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M9.5 5.5h5"/><path d="M9 11l4-3M9 15l7-6" opacity=".6"/></svg></button>
-                <button type="button" id="ptModeBat" onpointerdown="ptSetMode('bat')" aria-label="Batareya" title="Batareya"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M10 2h4v2h-4z"/><path d="M12.5 8l-3 5h3l-1 4 3.5-5.5h-3z"/></svg></button>
-            </div>
+            <div class="pt-hero" id="ptHero"><div class="pt-hero-s">Antiudar</div><div class="pt-hero-t" data-i18n="title">Qoruyucu şüşə uyğunluğu</div></div>
             <div id="ptAntiBox">
             <div class="search-wrapper">
                 <input
@@ -2594,17 +2617,8 @@ html.sensitive .ripple-ring{display:none !important}
             <div id="status" class="status"></div>
             <div id="results"></div>
             </div>
-            <div id="ptBatBox" hidden>
-                <div class="search-wrapper">
-                    <input id="ptBatInput" class="search-input" type="text" placeholder="BN54 / Redmi Note 9" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-                    <button id="ptBatClear" class="clear-button" type="button" onclick="ptBatClear()">×</button>
-                </div>
-                <div id="ptBatBrands" class="brand-suggest" style="display:none;" role="listbox" aria-label="Brand suggestions"></div>
-                <div id="ptBatRecent"></div>
-                <div id="ptBatStatus" class="status"></div>
-                <div id="ptBatResults"></div>
-            </div>
-            <div id="ptStage" class="pt-stage" data-m="anti" aria-hidden="true"><video id="ptVidA" muted loop playsinline webkit-playsinline preload="auto" autoplay disablepictureinpicture></video><video id="ptVidB" muted loop playsinline webkit-playsinline preload="metadata" disablepictureinpicture></video></div>
+            <div id="ptBatBox"><div id="ptBatResults"></div></div>
+            <div id="ptStage" class="pt-stage" aria-hidden="true"><video id="ptVidA" muted loop playsinline webkit-playsinline preload="metadata" poster="media/glass.jpg" disablepictureinpicture></video></div>
             <div id="ptBatCount"></div>
         </main>
     </div>
@@ -3260,6 +3274,22 @@ html.sensitive .ripple-ring{display:none !important}
                         </div>
                         <label class="switch">
                             <input type="checkbox" id="lowPowerToggle" onchange="toggleLowPower(this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title"><span class="e3d ic3d" style="--a:#7AB8FF;--b:#2D6FD7" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" /><path d="m21 21-4.3-4.3" /></svg></span><span data-i18n="batSrcTitle">AXTARIŞ</span></div>
+                <div class="settings-box">
+                    <div class="settings-row">
+                        <div>
+                            <div data-i18n="batSrcLbl">Batareya axtarışı</div>
+                            <div style="font-size:11px; color:var(--muted);" data-i18n="batSrcDesc">Axtarışda batareya modelləri və kodları da göstərilir</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="batSrcToggle" checked onchange="ptBatToggle(this)">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -11251,7 +11281,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.6";
+const APP_VERSION = "3.1.3.7";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
@@ -11410,6 +11440,7 @@ function clearRecent() {
 
 function hideRecent() { document.getElementById("recent").style.display = "none"; }
 
+var _rcOpen = false;
 function renderRecent() {
     const box = document.getElementById("recent");
     const list = getRecent();
@@ -11417,18 +11448,25 @@ function renderRecent() {
     if (list.length === 0) { box.style.display = "none"; return; }
     box.style.display = "block";
 
-    const head = document.createElement("div");
-    head.className = "recent-head";
-    const title = document.createElement("div");
-    title.className = "recent-title";
-    title.innerText = t("recent");
-    const clr = document.createElement("button");
-    clr.className = "recent-clear";
-    clr.innerText = t("clear");
-    clr.addEventListener("click", clearRecent);
-    head.appendChild(title);
-    head.appendChild(clr);
-    box.appendChild(head);
+    /* Yenilənmə tarixçəsi kimi: başlığa toxunanda açılır */
+    const tg = document.createElement("div");
+    tg.className = "cl-toggle rc-toggle";
+    tg.setAttribute("role", "button");
+    tg.tabIndex = 0;
+    tg.setAttribute("aria-expanded", _rcOpen ? "true" : "false");
+    tg.innerHTML = '<span class="e3d ic3d" style="--a:#7AB8FF;--b:#2D6FD7" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg></span><span class="rc-title"></span><svg class="cl-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+    tg.querySelector(".rc-title").textContent = String(t("recent") || "").toUpperCase();
+    const wrap = document.createElement("div");
+    wrap.className = "cl-wrap" + (_rcOpen ? " open" : "");
+    const inner = document.createElement("div");
+    inner.className = "rc-box";
+    function flip() {
+        _rcOpen = !wrap.classList.contains("open");
+        wrap.classList.toggle("open", _rcOpen);
+        tg.setAttribute("aria-expanded", _rcOpen ? "true" : "false");
+    }
+    tg.addEventListener("click", flip);
+    tg.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); flip(); } });
 
     list.forEach(function (q) {
         const row = document.createElement("div");
@@ -11445,8 +11483,17 @@ function renderRecent() {
             updateClearButton();
             performSearch(q);
         });
-        box.appendChild(row);
+        inner.appendChild(row);
     });
+    const clr = document.createElement("button");
+    clr.type = "button";
+    clr.className = "recent-clear";
+    clr.innerText = t("clear");
+    clr.addEventListener("click", clearRecent);
+    inner.appendChild(clr);
+    wrap.appendChild(inner);
+    box.appendChild(tg);
+    box.appendChild(wrap);
 }
 
 function norm(s) {
@@ -11535,6 +11582,7 @@ function performSearch(query) {
     const gen = ++_srchGen;
     results.innerHTML = "";
     query = String(query || "").trim();
+    window.__ptAnti = null;
 
     if (!query) {
         status.innerText = "";
@@ -11590,11 +11638,13 @@ function performSearch(query) {
     if (matches.length === 0) { showNotFound(query); return; }
 
     status.innerText = matches.length + " " + (fuzzy ? t("similar") : t("found"));
+    window.__ptAnti = { gen: gen, keys: seen, n: matches.length };
 
     /* ilk 30 nəticə dərhal, qalanları hissə-hissə — ekran donmasın */
     function renderRow(item) {
         const row = document.createElement("div");
         row.className = "result-item";
+        row.setAttribute("data-k", item.key);
 
         const brand = document.createElement("div");
         brand.className = "brand-badge";
@@ -11617,6 +11667,7 @@ function performSearch(query) {
         arrow.className = "result-arrow";
         arrow.innerText = "›";
 
+        try { if (window.ptBatDecorate) window.ptBatDecorate(modelEl, item.model); } catch (e) {}
         row.appendChild(brand);
         row.appendChild(modelEl);
         row.appendChild(arrow);
@@ -12121,11 +12172,11 @@ async function fetchDatabase(retries = 3) {
     }
 }
 
-async function backgroundCheckUpdate() {
+async function backgroundCheckUpdate(force) {
     if (!navigator.onLine) return;
     try {
         const lastBg = +localStorage.getItem("pt_bg_chk") || 0;
-        if (!isAdmin && Date.now() - lastBg < 3 * 3600e3) return;
+        if (!force && !isAdmin && Date.now() - lastBg < 3 * 3600e3) return;
         localStorage.setItem("pt_bg_chk", String(Date.now()));
     } catch (e) {}
     try {
@@ -12142,21 +12193,11 @@ async function backgroundCheckUpdate() {
 
             if (!fsData || !Array.isArray(fsData.changelog) || fsData.changelog.length === 0) {
                 const changelogMsg = generateChangelogMessage(oldDatabase, parsed);
-                if (changelogMsg) {
-                    saveChangelog(changelogMsg);
-                    showChangelogToast(changelogMsg);
-                }
+                if (changelogMsg) saveChangelog(changelogMsg);
             }
             ptHistRefresh();
-            /* Real yeniləmə arxa planda gələndə də yüklənmə paneli görünsün */
-            try {
-                if (!document.hidden && typeof showProgress === "function") {
-                    showProgress("loading");
-                    progCountTo(namesFromGroups(database || []).length);
-                    setTimeout(function () { try { finishProgress(true); } catch (e) {} }, 2800);
-                }
-            } catch (e) {}
-            playSuccessSound();
+            /* Arxa fonda səssiz yenilənir: yükləmə paneli, səs və bildiriş göstərilmir */
+            try { indexFor = null; const si = document.getElementById("searchInput"); if (si && si.value.trim()) performSearch(si.value); } catch (e) {}
         }
     } catch (e) {}
 }
@@ -15019,8 +15060,12 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
   function registered() { try { return typeof isRegisteredUser === "function" && isRegisteredUser(); } catch (e) { return false; } }
   function toast(m) { try { showAppToast(m, 4000); } catch (e) {} }
 
-  var mode = "anti", meta = null, metaBusy = false, seq = 0, timer = 0;
-  var BRANDS = ["Sony Ericsson", "Samsung", "Philips", "Motorola", "Siemens", "Nokia"];
+  var meta = null, metaBusy = false, seq = 0, timer = 0;
+
+  /* Batareya axtarışı ümumi axtarışın içindədir; Tənzimləmələrdən söndürmək olar (hesabla sinxron) */
+  function batEnabled() { try { return localStorage.getItem("pt_bat_off") !== "1"; } catch (e) { return true; } }
+  window.ptBatEnabled = batEnabled;
+  function T(k) { try { return t(k); } catch (e) { return k; } }
 
   function count() {
     var e = $("ptBatCount"); if (!e) return;
@@ -15029,107 +15074,19 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
   function loadMeta() {
     if (meta || metaBusy || !registered()) return;
     metaBusy = true;
-    dataFetch("/bat/meta").then(function (d) { meta = d || null; if (meta && Array.isArray(meta.brands) && meta.brands.length) BRANDS = meta.brands; count(); phBuild(); })
+    dataFetch("/bat/meta").then(function (d) { meta = d || null; count(); })
       .catch(function () {}).then(function () { metaBusy = false; });
   }
 
-  window.ptSetMode = function (m) {
-    m = m === "bat" ? "bat" : "anti";
-    if (m === mode) return;
-    mode = m;
-    $("ptModeAnti").classList.toggle("on", mode === "anti");
-    $("ptModeBat").classList.toggle("on", mode === "bat");
-    $("ptAntiBox").hidden = mode !== "anti";
-    $("ptBatBox").hidden = mode !== "bat";
-    scene();
-    if (mode === "bat") { loadMeta(); run(); }
-  };
+  /* Alt video yalnız axtarış boş olanda görünür */
   function scene() {
     var st = $("ptStage"); if (!st) return;
-    st.setAttribute("data-m", mode);
-    var q = mode === "bat" ? ($("ptBatInput").value || "") : (($("searchInput") || {}).value || "");
-    st.hidden = !!q.trim();
-    var va = $("ptVidA"), vb = $("ptVidB");
-    var on = st.hidden ? null : (mode === "bat" ? vb : va);
-    [va, vb].forEach(function (v) { if (!v) return; if (v === on) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } else v.pause(); });
-  }
-
-  var phSeq = [], phIdx = 0;
-  function phBuild() {
-    var models = ((meta && meta.old) || []).slice(0, 14);
-    phSeq = BRANDS.concat(models);
-    phIdx = 0;
-  }
-  function phTick() {
-    var inp = $("ptBatInput");
-    if (mode !== "bat" || !inp || document.activeElement === inp || inp.value) return;
-    if (!phSeq.length || phIdx >= phSeq.length) phBuild();
-    var m = phSeq[phIdx++];
-    inp.style.opacity = 0.4;
-    setTimeout(function () { inp.placeholder = m; inp.style.opacity = 1; }, 280);
-  }
-
-  function T(k) { try { return t(k); } catch (e) { return k; } }
-  window.ptBatClear = function () {
-    var i = $("ptBatInput"), b = $("ptBatClear");
-    b.classList.add("rotate"); setTimeout(function () { b.classList.remove("rotate"); }, 300);
-    i.value = ""; run(); scene(); i.focus();
-    try { triggerHaptic(20); } catch (e) {}
-  };
-
-  // ----- Son axtarışlar (antiudar axtarışı ilə eyni) -----
-  var RK = "antiudar_bat_recent_v1";
-  function getRecent() {
-    try { var a = JSON.parse(localStorage.getItem(RK) || "[]"); return Array.isArray(a) ? a.filter(function (x) { return typeof x === "string"; }).slice(0, 10) : []; } catch (e) { return []; }
-  }
-  function saveRecent(q) {
-    q = String(q || "").trim(); if (!q) return;
-    var a = getRecent().filter(function (x) { return x.toLowerCase() !== q.toLowerCase(); });
-    a.unshift(q);
-    try { localStorage.setItem(RK, JSON.stringify(a.slice(0, 10))); } catch (e) {}
-  }
-  function clearRecent() { try { localStorage.removeItem(RK); } catch (e) {} renderRecent(); }
-  function hideRecent() { var b = $("ptBatRecent"); if (b) { b.style.display = "none"; b.textContent = ""; } }
-  function renderRecent() {
-    var box = $("ptBatRecent"); if (!box) return;
-    var list = getRecent();
-    box.textContent = "";
-    if (!list.length || $("ptBatInput").value.trim()) { box.style.display = "none"; return; }
-    box.style.display = "block";
-    var head = el("div", "recent-head");
-    head.appendChild(el("div", "recent-title", T("recent")));
-    var clr = el("button", "recent-clear", T("clear")); clr.type = "button"; clr.onclick = clearRecent;
-    head.appendChild(clr); box.appendChild(head);
-    list.forEach(function (q) {
-      var row = el("div", "recent-item");
-      row.appendChild(el("span", "", q)); row.appendChild(el("span", "", "›"));
-      row.onclick = function () { var i = $("ptBatInput"); i.value = q; run(); scene(); };
-      box.appendChild(row);
-    });
-  }
-
-  // ----- Marka təklifləri (antiudar axtarışı ilə eyni; qənaət rejimində söndürülür) -----
-  function hideBrands() { var b = $("ptBatBrands"); if (b) { b.classList.remove("show"); b.style.display = "none"; b.textContent = ""; } }
-  function updateBrands(q) {
-    var box = $("ptBatBrands"); if (!box) return;
-    q = String(q || "").trim();
-    if (document.documentElement.classList.contains("low-power") || !q || q.indexOf(" ") >= 0 || q.length > 12) return hideBrands();
-    var nq = norm(q), seenB = {}, all = [];
-    BRANDS.concat(typeof KNOWN_BRANDS !== "undefined" ? KNOWN_BRANDS : []).forEach(function (b) { if (!seenB[b]) { seenB[b] = 1; all.push(b); } });
-    var hits = all.filter(function (b) { return norm(b).indexOf(nq) >= 0; }).slice(0, 6);
-    if (!hits.length) return hideBrands();
-    box.textContent = "";
-    hits.forEach(function (b) {
-      var btn = el("button", "brand-chip", b); btn.type = "button";
-      btn.addEventListener("mousedown", function (e) { e.preventDefault(); });
-      btn.addEventListener("click", function () {
-        var i = $("ptBatInput"); i.value = b + " "; i.focus();
-        try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) {}
-        hideBrands(); run(); scene();
-      });
-      box.appendChild(btn);
-    });
-    box.classList.add("show"); box.style.display = "flex";
+    var q = (($("searchInput") || {}).value || "").trim();
+    st.hidden = !!q;
+    var hero = $("ptHero"); if (hero) hero.hidden = !!q;
+    var v = $("ptVidA"); if (!v) return;
+    if (st.hidden) { try { v.pause(); } catch (e) {} }
+    else { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
   }
 
   // ----- Seçilmiş model səhifəsi: antiudar ilə eyni səhifə (#detail-view), batareya məzmunu ilə -----
@@ -15226,45 +15183,41 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     return box;
   }
 
-  function msg(out, text, login) {
-    out.textContent = "";
-    var d = el("div", login ? "pt-bat-login" : "pt-bat-note", text);
-    if (login) {
-      var b = el("button", "", L().loginBtn); b.type = "button";
-      b.onclick = function () { try { openAuthModal("required"); } catch (e) {} };
-      d.appendChild(el("br")); d.appendChild(b);
-    }
-    out.appendChild(d);
-  }
-  // Server cavabı → antiudar kimi model sətirləri (ad üzrə tapılanlar, sonra kod üzrə tapılanlar)
-  function entries(d) {
-    var out = [], seen = {};
-    (d.models || []).forEach(function (m) {
-      var k = norm(m.model); if (seen[k]) return; seen[k] = 1;
-      var sh = m.shared || {};
-      out.push({ model: m.model, codes: m.codes || [], hit: "", others: (m.same || []).map(function (x) { return { m: x, codes: sh[x] || [] }; }) });
+  var BAT_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="16" height="10" rx="2.5"/><path d="M22 11v2"/><path d="M11 9.5 9 12.5h3l-1.5 2.5"/></svg>';
+  /* Nəticə sətirinin batareya xətti: batareya ikonu + kod(lar); toxunanda batareya uyğunluğu səhifəsi açılır */
+  function batLine(entry) {
+    var d = el("div", "m-bat");
+    var ic = el("span", "m-bat-ic"); ic.innerHTML = BAT_SVG;
+    d.appendChild(ic);
+    d.appendChild(el("span", "m-bat-code", entry.hit || entry.codes.join(" · ")));
+    d.setAttribute("role", "button");
+    d.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      try { playSoundEffect(); triggerHaptic(30); } catch (e) {}
+      openDetail(entry);
     });
-    (d.codes || []).forEach(function (c) {
-      var mc = c.mc || {};
-      (c.models || []).forEach(function (mn) {
-        var k = norm(mn); if (seen[k]) return; seen[k] = 1;
-        var own = mc[mn] && mc[mn].length ? mc[mn] : [c.code];
-        var others = (c.models || []).filter(function (x) { return x !== mn; }).map(function (x) {
-          var oc = mc[x] || [c.code], shared = oc.filter(function (z) { return own.indexOf(z) >= 0; });
-          return { m: x, codes: shared.length ? shared : [c.code] };
-        });
-        out.push({ model: mn, codes: own, hit: c.code, others: others });
-      });
-    });
-    return out;
+    return d;
   }
-  function row(item, q) {
+  var batMap = {};
+  /* antiudar nəticə sətrinə batareya xətti əlavə et (varsa) */
+  window.ptBatDecorate = function (host, model) {
+    try {
+      if (!host || host.querySelector(".m-bat")) return;
+      var e = batMap[norm(model)]; if (!e) return;
+      host.appendChild(batLine(e));
+    } catch (x) {}
+  };
+  function batRow(item, q) {
     var r = el("div", "result-item");
     var brand = el("div", "brand-badge");
     try { fillBrandBadge(brand, item.model, 22, 38); } catch (e) {}
     var name = el("div", "result-model");
     try { name.innerHTML = highlightMatch(escapeHtml(item.model), q); } catch (e) { name.textContent = item.model; }
-    name.appendChild(el("div", "m-code", "🔋 " + (item.hit || item.codes.join(" · "))));
+    var bt = ""; try { bt = getBrand(item.model); } catch (e) {}
+    if (bt) name.appendChild(el("div", "m-brandtxt", bt));
+    var sp = null; try { sp = specLineEl(item.model, null); } catch (e) {}
+    if (sp) name.appendChild(sp);
+    name.appendChild(batLine(item));
     r.appendChild(brand); r.appendChild(name); r.appendChild(el("div", "result-arrow", "›"));
     r.addEventListener("click", function () {
       try { playSoundEffect(); triggerHaptic(30); } catch (e) {}
@@ -15272,51 +15225,53 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     });
     return r;
   }
-  function notFound(q) {
-    var out = $("ptBatResults"), st = $("ptBatStatus");
-    st.textContent = T("none");
-    out.appendChild(el("div", "no-results", '"' + q + '": ' + T("noneText")));
-    var b = el("button", "update-button nf-button", T("nfBtn")); b.type = "button";
-    b.style.cssText = "max-width:280px;margin:18px auto 0;height:48px;font-size:13px";
-    b.onclick = function () { sendReport(b, q.slice(0, 100), "", "bat_missing", ""); };
-    out.appendChild(b);
-  }
-  function render(d, q) {
-    var out = $("ptBatResults"), st = $("ptBatStatus"), gen = seq;
-    out.textContent = "";
+  function clearBat() { var o = $("ptBatResults"); if (o) o.textContent = ""; batMap = {}; }
+  /* Server cavabı ümumi axtarışa qarışdırılır: antiudar nəticəsində olan model batareya xətti alır, qalanları aşağıya əlavə olunur */
+  function merge(d, q, my) {
+    if (my !== seq) return;
+    var out = $("ptBatResults"), res = $("results"), st = $("status");
     var list = entries(d).slice(0, 240);
-    if (!list.length) { notFound(q); return; }
-    st.textContent = list.length + " " + T(d.fuzzy ? "similar" : "found");
+    clearBat();
+    if (!list.length) return;
+    list.forEach(function (e) { batMap[norm(e.model)] = e; });
+    var anti = window.__ptAnti && window.__ptAnti.gen === _srchGen ? window.__ptAnti : null;
+    var keys = anti ? anti.keys : null;
+    var extra = list.filter(function (e) { return !keys || !keys.has(norm(e.model)); });
+    /* antiudar nəticələrinə batareya xətti */
+    res.querySelectorAll(".result-item[data-k]").forEach(function (r) {
+      var e = batMap[r.getAttribute("data-k")]; if (e) window.ptBatDecorate(r.querySelector(".result-model"), e.model);
+    });
+    /* antiudarda heç nə tapılmayıbsa «tapılmadı» bloku götürülür */
+    if (!anti) {
+      var nf = res.querySelectorAll(".no-results, .nf-button");
+      nf.forEach(function (n) { n.remove(); });
+    }
+    var base = anti ? (anti.n || 0) : 0;
+    if (st) st.textContent = (base + extra.length) + " " + T(d.fuzzy && !anti ? "similar" : "found");
+    var gen = my;
     function chunk(from, n) {
       if (gen !== seq) return;
-      var frag = document.createDocumentFragment(), to = Math.min(list.length, from + n);
-      for (var i = from; i < to; i++) frag.appendChild(row(list[i], q));
+      var frag = document.createDocumentFragment(), to = Math.min(extra.length, from + n);
+      for (var i = from; i < to; i++) frag.appendChild(batRow(extra[i], q));
       out.appendChild(frag);
-      if (to < list.length) requestAnimationFrame(function () { chunk(to, 60); });
+      if (to < extra.length) requestAnimationFrame(function () { chunk(to, 60); });
     }
     chunk(0, 30);
   }
-  function run() {
-    var s = L(), q = $("ptBatInput").value.trim(), out = $("ptBatResults"), st = $("ptBatStatus");
-    $("ptBatClear").style.display = q ? "block" : "none";
-    updateBrands(q);
+  function run(q) {
+    q = String(q || "").trim();
     var my = ++seq;
-    out.textContent = "";
-    if (!q) { st.textContent = ""; renderRecent(); return; }
-    hideRecent();
-    if (!registered()) { st.textContent = ""; msg(out, s.login, true); return; }
-    loadMeta();
-    dataFetch("/bat/search?q=" + encodeURIComponent(q)).then(function (d) {
+    clearTimeout(timer);
+    clearBat();
+    if (!q || q.length < 2 || !batEnabled() || !registered()) return;
+    timer = setTimeout(function () {
       if (my !== seq) return;
-      render(d || {}, q);
-    }).catch(function (e) {
-      if (my !== seq) return;
-      var c = e && e.code;
-      st.textContent = "";
-      if (c === "unauthenticated" || c === "registered-only") msg(out, s.login, true);
-      else msg(out, c === "daily-limit" ? s.limit : (c === "slow" ? s.slow : s.err));
-    });
+      loadMeta();
+      dataFetch("/bat/search?q=" + encodeURIComponent(q)).then(function (d) { merge(d || {}, q, my); })
+        .catch(function () { /* limit / şəbəkə: antiudar nəticəsi olduğu kimi qalır */ });
+    }, 220);
   }
+  window.ptBatRun = run;
 
   // ----- Admin: «Əsas baza» hər iki bazanı GitHub-dan gətirir, «Dərc et» hər ikisini dərc edir -----
   function batLinesFrom(data) {
@@ -15391,24 +15346,225 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
   if (document.readyState !== "loading") init();
   var done = false;
   function init() {
-    if (done || !$("ptBatInput")) return; done = true;
-    $("ptBatInput").addEventListener("input", function () {
-      clearTimeout(timer);
-      $("ptBatClear").style.display = this.value ? "block" : "none";
-      updateBrands(this.value);
-      if (!this.value.trim()) { run(); scene(); return; }
-      timer = setTimeout(function () { run(); scene(); }, 320);
-    });
-    var ai = $("searchInput"); if (ai) ai.addEventListener("input", function () { setTimeout(scene, 0); });
-    $("ptBatClear").style.display = "none";
+    if (done || !$("ptBatResults")) return; done = true;
     var mb = /\/application\/eminapp\/?$/.test(location.pathname) ? "/application/eminapp/media/" : "media/";
-    var va = $("ptVidA"), vb = $("ptVidB");
-    va.poster = mb + "antiudar.jpg"; vb.poster = mb + "batareya.jpg";
-    va.src = mb + "antiudar.mp4"; vb.src = mb + "batareya.mp4";
-    count(); scene(); hookAdmin(); phBuild();
+    var va = $("ptVidA");
+    if (va) { va.poster = mb + "glass.jpg"; va.src = mb + "glass.mp4"; }
+    /* ümumi axtarışa qoşulma */
+    try {
+      var op = performSearch;
+      performSearch = function (query) {
+        var r = op.apply(this, arguments);
+        try { run(query); scene(); } catch (e) {}
+        return r;
+      };
+    } catch (e) {}
+    try {
+      var oc = clearSearch;
+      clearSearch = function () { var r = oc.apply(this, arguments); try { run(""); scene(); } catch (e) {} return r; };
+    } catch (e) {}
+    var ai = $("searchInput"); if (ai) ai.addEventListener("input", function () { scene(); });
+    count(); scene(); hookAdmin();
     var tries = 0, iv = setInterval(function () { loadMeta(); if (meta || ++tries > 30) clearInterval(iv); }, 2000);
-    setInterval(phTick, 2400);
   }
+})();
+</script>
+<script>
+/* Seçimlərin hesabla sinxronu + ilk girişdə səssiz baza yenilənməsi + batareya axtarışı düyməsi */
+(function () {
+  "use strict";
+  var LS = { theme: "antiudar_theme", accent: "antiudar_accent", accent_dark: "antiudar_accent_dark", sound: "antiudar_sound", sound_type: "antiudar_sound_type", haptic: "antiudar_haptic", haptic_intensity: "antiudar_haptic_intensity", low_power: "antiudar_low_power", font_scale: "antiudar_font_scale", cb: "pt_cb", sens: "pt_sens", eye: "pt_eye", lang: "antiudar_lang", bat_off: "pt_bat_off" };
+  var PK = "pt_prefs_v1";            /* {açar: [dəyər, vaxt]} — yalnız istifadəçinin özünün seçdikləri */
+  var applying = false, initing = false, timer = 0, pulled = false;
+  function $(id) { return document.getElementById(id); }
+  function load() { try { var o = JSON.parse(localStorage.getItem(PK) || "{}"); return (o && typeof o === "object") ? o : {}; } catch (e) { return {}; } }
+  function save(o) { try { localStorage.setItem(PK, JSON.stringify(o)); } catch (e) {} }
+  function signed() { try { var u = auth && auth.currentUser; return !!(u && !u.isAnonymous); } catch (e) { return false; } }
+
+  function push() {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      if (!signed()) return;
+      dataFetch("/prefs", { method: "POST", body: JSON.stringify({ prefs: load() }) }).catch(function () {});
+    }, 900);
+  }
+  function mark(k, v) {
+    if (applying || initing || !LS[k]) return;
+    var o = load(); o[k] = [String(v), Date.now()]; save(o);
+    if (signed()) push();
+  }
+
+  /* İstifadəçi hərəkətləri: funksiyalar sarılır (başlanğıc init çağırışları sayılmır) */
+  function wrap(name, fn) {
+    try {
+      var o = window[name]; if (typeof o !== "function") return;
+      window[name] = function () { var r = o.apply(this, arguments); try { fn.apply(this, arguments); } catch (e) {} return r; };
+    } catch (e) {}
+  }
+  function wrapInit(name) {
+    try {
+      var o = window[name]; if (typeof o !== "function") return;
+      window[name] = function () { var p = initing; initing = true; try { return o.apply(this, arguments); } finally { initing = p; } };
+    } catch (e) {}
+  }
+  ["initTheme", "initLang", "initAccentColor", "initFontScale", "initToggles"].forEach(wrapInit);
+  wrap("setTheme", function (t) { mark("theme", t); });
+  wrap("setAccentColor", function (a, d, sv) { if (sv !== false) { mark("accent", a); mark("accent_dark", d); } });
+  wrap("setFontScale", function (sc, sv) { if (sv !== false) mark("font_scale", Math.min(2, Math.max(0.85, +sc || 1))); });
+  wrap("changeSoundType", function (el) { mark("sound_type", el.value); });
+  wrap("changeHapticIntensity", function (el) { mark("haptic_intensity", el.value); });
+  wrap("toggleSound", function (el) { mark("sound", !!el.checked); });
+  wrap("toggleHaptic", function (el) { mark("haptic", !!el.checked); });
+  wrap("toggleLowPower", function (el) { mark("low_power", !!el.checked); });
+  wrap("setColorBlind", function (v) { mark("cb", v || ""); });
+  wrap("toggleSensitive", function (el) { mark("sens", el.checked ? "1" : "0"); });
+  wrap("toggleEyeComfort", function (el) { mark("eye", el.checked ? "1" : "0"); });
+  wrap("setLang", function (l, sv) { if (sv !== false) mark("lang", l); });
+
+  /* Batareya axtarışı düyməsi */
+  window.ptBatToggle = function (el) {
+    var off = !el.checked;
+    try { localStorage.setItem("pt_bat_off", off ? "1" : "0"); } catch (e) {}
+    mark("bat_off", off ? "1" : "0");
+    refreshSearch();
+  };
+  function refreshSearch() {
+    try {
+      var i = $("searchInput");
+      if (i && i.value.trim()) performSearch(i.value); else if (window.ptBatRun) window.ptBatRun("");
+    } catch (e) {}
+  }
+
+  /* Serverdən gələn seçimləri tətbiq et */
+  function applyAll(P) {
+    applying = true;
+    var sp = window.playSoundEffect, th = window.triggerHaptic;
+    window.playSoundEffect = function () {}; window.triggerHaptic = function () {};
+    try {
+      Object.keys(LS).forEach(function (k) {
+        if (!P[k] || k === "accent_dark") return;
+        var v = P[k][0];
+        try {
+          if (k === "accent") { setAccentColor(v, (P.accent_dark && P.accent_dark[0]) || localStorage.getItem(LS.accent_dark) || "#145a32", true); return; }
+          if (localStorage.getItem(LS[k]) === v && k !== "lang") return;
+          if (k === "theme") setTheme(v);
+          else if (k === "font_scale") setFontScale(+v, true);
+          else if (k === "cb") setColorBlind(v);
+          else if (k === "lang") { if (typeof currentLang === "undefined" || currentLang !== v) setLang(v, true); }
+          else {
+            localStorage.setItem(LS[k], v);
+            if (k === "sound") soundEnabled = v === "true";
+            else if (k === "sound_type") soundType = v;
+            else if (k === "haptic") hapticEnabled = v === "true";
+            else if (k === "haptic_intensity") hapticIntensity = v;
+            else if (k === "low_power") { lowPowerMode = v === "true"; document.documentElement.classList.toggle("low-power", lowPowerMode); }
+            else if (k === "sens") document.documentElement.classList.toggle("sensitive", v === "1");
+            else if (k === "eye") document.documentElement.classList.toggle("eye-comfort", v === "1");
+          }
+        } catch (e) {}
+      });
+      try { initToggles(); } catch (e) {}
+      try { initFontScale(); } catch (e) {}
+      var bt = $("batSrcToggle"); if (bt) bt.checked = localStorage.getItem("pt_bat_off") !== "1";
+    } finally {
+      window.playSoundEffect = sp; window.triggerHaptic = th; applying = false;
+    }
+  }
+  function merge(remote) {
+    var loc = load(), out = {}, changedLocal = false, changedRemote = false;
+    var keys = {}; Object.keys(loc).forEach(function (k) { keys[k] = 1; }); Object.keys(remote || {}).forEach(function (k) { keys[k] = 1; });
+    Object.keys(keys).forEach(function (k) {
+      var a = loc[k], b = remote && remote[k];
+      if (a && b) { if ((+b[1] || 0) > (+a[1] || 0)) { out[k] = b; if (a[0] !== b[0]) changedLocal = true; } else { out[k] = a; if ((+a[1] || 0) > (+b[1] || 0)) changedRemote = true; } }
+      else if (b) { out[k] = b; changedLocal = true; }
+      else { out[k] = a; changedRemote = true; }
+    });
+    return { out: out, loc: changedLocal, rem: changedRemote };
+  }
+  function pull() {
+    if (pulled || !signed()) return;
+    pulled = true;
+    dataFetch("/prefs").then(function (d) {
+      var m = merge((d && d.prefs) || {});
+      save(m.out);
+      if (m.loc) applyAll(m.out);
+      if (m.rem) push();
+    }).catch(function () { pulled = false; });
+  }
+
+  function onLogin() {
+    pull();
+    /* hesabla ilk giriş: baza arxa fonda səssiz yenilənir (bildiriş/yükləmə ekranı yoxdur) */
+    try {
+      if (!sessionStorage.getItem("pt_first_upd")) {
+        sessionStorage.setItem("pt_first_upd", "1");
+        setTimeout(function () { try { backgroundCheckUpdate(true); } catch (e) {} }, 1200);
+      }
+    } catch (e) {}
+  }
+
+  function init() {
+    /* yeni tənzimləmə sətrinin mətni (4 dildə) */
+    var TXT = {
+      az: { batSrcTitle: "AXTARIŞ", batSrcLbl: "Batareya axtarışı", batSrcDesc: "Axtarışda batareya modelləri və kodları da göstərilir" },
+      ru: { batSrcTitle: "ПОИСК", batSrcLbl: "Поиск батарей", batSrcDesc: "В поиске также показываются модели и коды батарей" },
+      tr: { batSrcTitle: "ARAMA", batSrcLbl: "Batarya araması", batSrcDesc: "Aramada batarya modelleri ve kodları da gösterilir" },
+      en: { batSrcTitle: "SEARCH", batSrcLbl: "Battery search", batSrcDesc: "Search also shows battery models and codes" }
+    };
+    try { Object.keys(TXT).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], TXT[l]); }); } catch (e) {}
+    try { var lg = (typeof currentLang !== "undefined" && TXT[currentLang]) ? currentLang : "az"; Object.keys(TXT[lg]).forEach(function (k) { var e = document.querySelector('[data-i18n="' + k + '"]'); if (e) e.textContent = TXT[lg][k]; }); } catch (e) {}
+    var bt = $("batSrcToggle"); if (bt) bt.checked = localStorage.getItem("pt_bat_off") !== "1";
+    try {
+      auth.onAuthStateChanged(function (u) { if (u && !u.isAnonymous) onLogin(); else pulled = false; });
+    } catch (e) {}
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
+})();
+</script>
+<script>
+/* Maus izləyən zərrəcik toru — bütün səhifələrdə eyni (ana səhifədəki kimi) */
+(function () {
+  if (window.__ptFx || document.getElementById('particles')) return;
+  window.__ptFx = 1;
+  try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+  var cv = document.createElement('canvas');
+  cv.setAttribute('aria-hidden', 'true');
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none';
+  var cx = cv.getContext('2d'), W = 0, H = 0, P = [], mouse = { x: -999, y: -999 };
+  function low() { return document.documentElement.classList.contains('low-power'); }
+  function initP() {
+    W = cv.width = innerWidth; H = cv.height = innerHeight;
+    var n = Math.min(90, Math.floor(W * H / 18000));
+    P = []; for (var i = 0; i < n; i++) P.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .5, vy: (Math.random() - .5) * .5, s: Math.random() * 2 + 1 });
+  }
+  function draw() {
+    requestAnimationFrame(draw);
+    if (document.hidden) return;
+    cx.clearRect(0, 0, W, H);
+    if (low()) return;
+    for (var i = 0; i < P.length; i++) {
+      var p = P[i]; p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1; if (p.y < 0 || p.y > H) p.vy *= -1;
+      var dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy) || 1;
+      if (d < 150) {
+        var f = (150 - d) / 150; p.x += dx / d * f * 2; p.y += dy / d * f * 2;
+        cx.strokeStyle = 'rgba(240,200,121,' + (f * .55) + ')'; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(mouse.x, mouse.y); cx.stroke();
+      }
+      cx.fillStyle = 'rgba(240,200,121,.55)'; cx.beginPath(); cx.arc(p.x, p.y, p.s, 0, 6.283); cx.fill();
+      for (var j = i + 1; j < P.length; j++) {
+        var q = P[j], dd = Math.hypot(p.x - q.x, p.y - q.y);
+        if (dd < 120) { cx.strokeStyle = 'rgba(147,160,184,' + ((1 - dd / 120) * .2) + ')'; cx.lineWidth = .7; cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(q.x, q.y); cx.stroke(); }
+      }
+    }
+  }
+  function start() {
+    document.body.insertBefore(cv, document.body.firstChild);
+    initP(); addEventListener('resize', initP);
+    addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    addEventListener('touchmove', function (e) { var t = e.touches[0]; if (t) { mouse.x = t.clientX; mouse.y = t.clientY; } }, { passive: true });
+    draw();
+  }
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
 </script>
 </body>

@@ -50,5 +50,51 @@ var l=(navigator.language||"az").slice(0,2).toLowerCase();var x=L[l]||L.az;
 document.documentElement.lang=L[l]?l:"az";
 document.getElementById("t").innerHTML=x[0];document.getElementById("d").textContent=x[1];document.getElementById("s").textContent=x[2];
 </script>
+<script>
+/* Maus izləyən zərrəcik toru — bütün səhifələrdə eyni (ana səhifədəki kimi) */
+(function () {
+  if (window.__ptFx || document.getElementById('particles')) return;
+  window.__ptFx = 1;
+  try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
+  var cv = document.createElement('canvas');
+  cv.setAttribute('aria-hidden', 'true');
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none';
+  var cx = cv.getContext('2d'), W = 0, H = 0, P = [], mouse = { x: -999, y: -999 };
+  function low() { return document.documentElement.classList.contains('low-power'); }
+  function initP() {
+    W = cv.width = innerWidth; H = cv.height = innerHeight;
+    var n = Math.min(90, Math.floor(W * H / 18000));
+    P = []; for (var i = 0; i < n; i++) P.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .5, vy: (Math.random() - .5) * .5, s: Math.random() * 2 + 1 });
+  }
+  function draw() {
+    requestAnimationFrame(draw);
+    if (document.hidden) return;
+    cx.clearRect(0, 0, W, H);
+    if (low()) return;
+    for (var i = 0; i < P.length; i++) {
+      var p = P[i]; p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1; if (p.y < 0 || p.y > H) p.vy *= -1;
+      var dx = p.x - mouse.x, dy = p.y - mouse.y, d = Math.hypot(dx, dy) || 1;
+      if (d < 150) {
+        var f = (150 - d) / 150; p.x += dx / d * f * 2; p.y += dy / d * f * 2;
+        cx.strokeStyle = 'rgba(240,200,121,' + (f * .55) + ')'; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(mouse.x, mouse.y); cx.stroke();
+      }
+      cx.fillStyle = 'rgba(240,200,121,.55)'; cx.beginPath(); cx.arc(p.x, p.y, p.s, 0, 6.283); cx.fill();
+      for (var j = i + 1; j < P.length; j++) {
+        var q = P[j], dd = Math.hypot(p.x - q.x, p.y - q.y);
+        if (dd < 120) { cx.strokeStyle = 'rgba(147,160,184,' + ((1 - dd / 120) * .2) + ')'; cx.lineWidth = .7; cx.beginPath(); cx.moveTo(p.x, p.y); cx.lineTo(q.x, q.y); cx.stroke(); }
+      }
+    }
+  }
+  function start() {
+    document.body.insertBefore(cv, document.body.firstChild);
+    initP(); addEventListener('resize', initP);
+    addEventListener('mousemove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+    addEventListener('touchmove', function (e) { var t = e.touches[0]; if (t) { mouse.x = t.clientX; mouse.y = t.clientY; } }, { passive: true });
+    draw();
+  }
+  if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+</script>
 </body>
 </html>

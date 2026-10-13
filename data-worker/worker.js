@@ -16,8 +16,9 @@ const LANDING_MODES = ["on", "nogirl", "off"];
 const PUSH_URL = "https://protector-push.o553115544.workers.dev";
 // Batareya bazası (Battery.json) — yalnız serverdə saxlanılır, axtarış serverdə gedir (antiudar kimi qorunur)
 const BAT_KEEP = 10;               // son 10 versiya
-const BAT_DAY_LIMIT = 300;         // istifadəçi gündə ən çox 300 batareya axtarışı
-const BAT_MIN_LIMIT = 40;          // dəqiqədə ən çox 40 (kütləvi çıxarmanın qarşısı)
+const PREF_KEYS = ["theme","accent","accent_dark","sound","sound_type","haptic","haptic_intensity","low_power","font_scale","cb","sens","eye","lang","bat_off"];
+const BAT_DAY_LIMIT = 1500;        // istifadəçi gündə ən çox 1500 batareya axtarışı (ümumi axtarışın içindədir)
+const BAT_MIN_LIMIT = 70;          // dəqiqədə ən çox 40 (kütləvi çıxarmanın qarşısı)
 const BAT_OLD = ["Sony Ericsson", "Samsung", "Philips", "Motorola", "Siemens", "Nokia"];
 
 const CORS = {
@@ -70,6 +71,7 @@ async function init(db) {
     db.prepare("CREATE INDEX IF NOT EXISTS pt_report_ts ON pt_report (ts)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_base (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, groups INTEGER, models INTEGER, size INTEGER, data BLOB NOT NULL)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_cfg (k TEXT PRIMARY KEY, v TEXT)"),
+    db.prepare("CREATE TABLE IF NOT EXISTS pt_prefs (uid TEXT PRIMARY KEY, data TEXT NOT NULL, ts INTEGER NOT NULL)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_rate (k TEXT PRIMARY KEY, n INTEGER DEFAULT 0)"),
     db.prepare("CREATE TABLE IF NOT EXISTS pt_bat (id INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER NOT NULL, by TEXT, note TEXT, lines INTEGER, models INTEGER, codes INTEGER, size INTEGER, data BLOB NOT NULL)"),
     // Yeniləmə tarixçəsi: versiya saxlama limitindən asılı olmayan yüngül jurnal (antiudar + batareya)
@@ -533,6 +535,28 @@ const _handler = {
     if (path === "/hist" && req.method === "GET") {
       const rs = await db.prepare("SELECT ts, kind, a, r, e, g, n, c, note, first FROM pt_hist ORDER BY ts DESC LIMIT 150").all();
       return J({ items: rs.results || [] });
+    }
+    // ===== İstifadəçi seçimləri (hesabla sinxron): {açar: [dəyər, vaxt]} =====
+    if (path === "/prefs" && req.method === "GET") {
+      const row = await db.prepare("SELECT data FROM pt_prefs WHERE uid=?").bind(me.uid).first();
+      let prefs = {};
+      try { prefs = row ? JSON.parse(row.data) || {} : {}; } catch (e) { prefs = {}; }
+      return J({ prefs });
+    }
+    if (path === "/prefs" && req.method === "POST") {
+      const row = await db.prepare("SELECT data FROM pt_prefs WHERE uid=?").bind(me.uid).first();
+      let cur = {};
+      try { cur = row ? JSON.parse(row.data) || {} : {}; } catch (e) { cur = {}; }
+      const inc = (b && b.prefs && typeof b.prefs === "object") ? b.prefs : {};
+      Object.keys(inc).forEach((k) => {
+        if (PREF_KEYS.indexOf(k) < 0) return;
+        const x = inc[k];
+        if (!Array.isArray(x) || x.length < 2) return;
+        const v = String(x[0]).slice(0, 40), ts = Math.min(+x[1] || 0, Date.now() + 60000);
+        if (!cur[k] || (+cur[k][1] || 0) <= ts) cur[k] = [v, ts];
+      });
+      await db.prepare("INSERT INTO pt_prefs (uid, data, ts) VALUES (?, ?, ?) ON CONFLICT(uid) DO UPDATE SET data=excluded.data, ts=excluded.ts").bind(me.uid, JSON.stringify(cur), Date.now()).run();
+      return J({ prefs: cur });
     }
     // ===== Batareya axtarışı (qeydiyyatlı istifadəçilər; baza heç vaxt tam göndərilmir) =====
     if (path === "/bat/meta" && req.method === "GET") {
