@@ -21,6 +21,10 @@
 <link rel="apple-touch-icon" href="/icon-180.png">
 <link rel="stylesheet" href="/assets/site.css">
 <script src="/assets/site.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js" defer></script>
+<script src="/assets/login.js" defer></script>
 </head>
 <body data-page="login">
 <header id="top"></header>
@@ -30,10 +34,22 @@
       <h1 data-t="hero.h"></h1>
       <p data-t="hero.p"></p>
       <div class="btns">
-        <a class="btn" href="/application/eminapp/" data-app-link data-t="btn.open"></a>
         <a class="btn ghost" href="/application/download"><span>⬇</span> <span data-t="btn.dl"></span></a>
       </div>
       <p style="margin-top:14px"><a href="/account/register" data-t="btn.alt"></a></p>
+    </div>
+    <form class="card rform" id="lg" novalidate autocomplete="on">
+      <h2 data-t="form.h"></h2>
+      <label><span data-t="form.email"></span><input id="lEmail" type="email" autocomplete="email" inputmode="email" maxlength="120" required></label>
+      <label><span data-t="form.pass"></span><input id="lPass" type="password" autocomplete="current-password" maxlength="64" required></label>
+      <div id="lMsg" class="rmsg" role="status" aria-live="polite"></div>
+      <button class="btn" id="lBtn" type="submit" data-t="form.btn"></button>
+      <a href="#" id="lForgot" class="lforgot" data-t="form.forgot"></a>
+    </form>
+    <div class="card rform" id="lIn" hidden>
+      <div class="rmsg ok" data-t="form.ok"></div>
+      <p><span data-t="form.as"></span> <b id="lWho"></b></p>
+      <button class="btn ghost" id="lOut" type="button" data-t="form.out"></button>
     </div>
     <div data-sections="s" style="margin-top:20px"></div>
   </div>

@@ -41,7 +41,25 @@
      "Ümumi istifadədə olan cihazlarda işi bitirdikdən sonra hesabdan çıxın."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Hesaba daxil olun",
+   "email": "E-poçt",
+   "pass": "Parol",
+   "btn": "Daxil ol",
+   "forgot": "Parolumu unutmuşam",
+   "busy": "Giriş yoxlanılır…",
+   "ok": "Hesabınıza uğurla daxil oldunuz.",
+   "as": "Daxil olduğunuz hesab:",
+   "out": "Hesabdan çıx",
+   "errEmail": "E-poçt ünvanı düzgün deyil.",
+   "errPass": "Parolu daxil edin.",
+   "errBad": "E-poçt və ya parol yanlışdır.",
+   "errMany": "Çoxlu uğursuz cəhd edildi. Bir qədər sonra yenidən cəhd edin.",
+   "errGen": "Giriş baş tutmadı. Bir qədər sonra yenidən cəhd edin.",
+   "resetOk": "Parolun bərpası üçün məktub e-poçt ünvanınıza göndərildi.",
+   "resetNeed": "Əvvəlcə e-poçt ünvanınızı daxil edin."
+  }
  },
  "ru": {
   "page": {
@@ -85,7 +103,25 @@
      "На общедоступных устройствах выходите из учётной записи после завершения работы."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Войдите в учётную запись",
+   "email": "Эл. почта",
+   "pass": "Пароль",
+   "btn": "Войти",
+   "forgot": "Забыли пароль?",
+   "busy": "Проверка данных…",
+   "ok": "Вы успешно вошли в учётную запись.",
+   "as": "Учётная запись:",
+   "out": "Выйти",
+   "errEmail": "Неверный адрес эл. почты.",
+   "errPass": "Введите пароль.",
+   "errBad": "Неверная эл. почта или пароль.",
+   "errMany": "Слишком много неудачных попыток. Повторите позже.",
+   "errGen": "Не удалось выполнить вход. Повторите позже.",
+   "resetOk": "Письмо для восстановления пароля отправлено на вашу эл. почту.",
+   "resetNeed": "Сначала введите адрес эл. почты."
+  }
  },
  "tr": {
   "page": {
@@ -129,7 +165,25 @@
      "Ortak kullanılan cihazlarda işiniz bittikten sonra hesaptan çıkış yapın."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Hesabınıza giriş yapın",
+   "email": "E-posta",
+   "pass": "Şifre",
+   "btn": "Giriş yap",
+   "forgot": "Şifremi unuttum",
+   "busy": "Giriş kontrol ediliyor…",
+   "ok": "Hesabınıza başarıyla giriş yaptınız.",
+   "as": "Giriş yapılan hesap:",
+   "out": "Çıkış yap",
+   "errEmail": "E-posta adresi geçersiz.",
+   "errPass": "Şifrenizi girin.",
+   "errBad": "E-posta veya şifre hatalı.",
+   "errMany": "Çok fazla başarısız deneme. Daha sonra tekrar deneyin.",
+   "errGen": "Giriş yapılamadı. Daha sonra tekrar deneyin.",
+   "resetOk": "Şifre sıfırlama e-postası adresinize gönderildi.",
+   "resetNeed": "Önce e-posta adresinizi girin."
+  }
  },
  "en": {
   "page": {
@@ -173,6 +227,24 @@
      "On shared devices, sign out when you have finished."
     ]
    }
-  ]
+  ],
+  "form": {
+   "h": "Sign in to your account",
+   "email": "Email",
+   "pass": "Password",
+   "btn": "Sign in",
+   "forgot": "Forgot password?",
+   "busy": "Checking…",
+   "ok": "You have signed in successfully.",
+   "as": "Signed in as:",
+   "out": "Sign out",
+   "errEmail": "Invalid email address.",
+   "errPass": "Enter your password.",
+   "errBad": "Incorrect email or password.",
+   "errMany": "Too many failed attempts. Please try again later.",
+   "errGen": "Sign-in failed. Please try again later.",
+   "resetOk": "A password reset email has been sent to your address.",
+   "resetNeed": "Enter your email address first."
+  }
  }
 }

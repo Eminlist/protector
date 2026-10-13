@@ -309,3 +309,28 @@ html{scrollbar-width:thin;scrollbar-color:rgba(46,204,113,.6) var(--bg)}
 .vstrip{height:auto!important;min-height:0!important;max-height:min(calc(100dvh - 150px),760px)!important}
 .vstrip>details.acc{height:auto!important;min-height:360px!important;max-height:min(calc(100dvh - 158px),752px);overflow:hidden}
 .vstrip>details.acc:not([open])>summary{height:auto!important;min-height:360px!important}
+
+/* Qeydiyyat / Giriş paneli: yuxarıdan aşağı açılır */
+.authp{position:fixed;inset:0;z-index:200;display:none}
+.authp.show{display:block}
+.authp-bg{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity .6s}
+.authp.in .authp-bg{opacity:1}
+.authp-in{position:absolute;left:50%;top:70px;width:min(560px,calc(100% - 24px));background:var(--card);border:1px solid rgba(46,204,113,.45);border-radius:20px;box-shadow:0 0 0 1px rgba(46,204,113,.2),0 0 40px -6px rgba(46,204,113,.45),0 30px 60px -20px #000;overflow:hidden;transform:translate(-50%,-120%);opacity:0;transition:transform .7s cubic-bezier(.22,.8,.2,1),opacity .5s}
+.authp.in .authp-in{transform:translate(-50%,0);opacity:1}
+.authp-h{display:flex;align-items:center;gap:10px;padding:12px 12px 0}
+.authp-t{display:flex;gap:6px;flex:1}
+.authp-t button{font:inherit;font-weight:700;font-size:15px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:9px 14px;cursor:pointer;transition:color .25s,border-color .25s,box-shadow .25s}
+.authp-t button:hover{color:var(--accent);border-color:rgba(46,204,113,.55);box-shadow:0 0 16px -4px rgba(46,204,113,.6)}
+.authp-t button.on{color:#111;background:var(--accent);border-color:transparent}
+.authp-x{width:36px;height:36px;flex:none;border-radius:50%;font-size:16px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);cursor:pointer}
+.authp-x:hover{color:var(--accent);border-color:rgba(46,204,113,.55)}
+.authp iframe{display:block;width:100%;height:420px;border:0;background:transparent}
+html.authp-lock{overflow:hidden}
+@media (prefers-reduced-motion:reduce){.authp-in,.authp-bg{transition:none}}
+/* Panel daxilində (embed): yalnız forma */
+html.embed #top,html.embed #foot,html.embed [data-sections],html.embed .vstrip,html.embed .hero,html.embed .crumb{display:none!important}
+html.embed body,html.embed{background:var(--card)!important}
+html.embed main{padding:0!important}
+html.embed .wrap{padding:6px 14px 16px!important;max-width:none!important}
+html.embed .rform{margin-top:6px;border:0;box-shadow:none;background:transparent;padding:6px 0}
+.lforgot{align-self:center;font-size:14px}

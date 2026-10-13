@@ -31,7 +31,7 @@
   // Sadə işarələmə: **qalın**, [mətn](link), {app} — proqramın ünvanı,
   // rəng nişanları: {dot:green} {bar:yellow} {tick:1} {tick:2}
   function fmt(s) {
-    return esc(String(s).replace(/\{app\}/g, CFG.appUrl || "/application/eminapp/"))
+    return esc(String(s).replace(/\{app\}/g, "/application/download"))
       .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
       .replace(/\{dot:(\w+)\}/g, '<i class="sw sw-$1" aria-hidden="true"></i>')
       .replace(/\{bar:(\w+)\}/g, '<i class="sbar sw-$1" aria-hidden="true"></i>')
@@ -214,8 +214,6 @@
           (c.d ? "<small>" + esc(c.d) + "</small>" : "") + "</a>";
       }).join("");
     });
-    // Proqramın ünvanı (common.json → "_" → appUrl): <a data-app-link>
-    document.querySelectorAll("[data-app-link]").forEach(function (a) { a.href = CFG.appUrl || "/application/eminapp/"; });
     var title = get(T, "page.title");
     if (title) document.title = title + " — ProTechtor™";
     var desc = get(T, "page.desc");
@@ -445,7 +443,7 @@
 
 /* Maus izləyən zərrəcik toru — bütün səhifələrdə eyni (ana səhifədəki kimi) */
 (function () {
-  if (window.__ptFx || document.getElementById('particles')) return;
+  if (window.__ptFx || document.getElementById('particles') || /[?&]embed=1(&|$)/.test(location.search)) return;
   window.__ptFx = 1;
   try { if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return; } catch (e) {}
   var cv = document.createElement('canvas');
@@ -486,4 +484,86 @@
     draw();
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+})();
+
+/* Qeydiyyat / Giriş: səhifəni tərk etmədən yuxarıdan açılan panel.
+   Panelin içində həmin səhifələr ?embed=1 rejimində (yalnız forma) açılır. */
+(function () {
+  var EMB = /[?&]embed=1(&|$)/.test(location.search);
+  var AUTH = /^\/account\/(register|login)\/?$/;
+  function path(a) { try { var u = new URL(a.href, location.href); return u.origin === location.origin ? u.pathname : ""; } catch (e) { return ""; } }
+  if (EMB) {
+    document.documentElement.classList.add("embed");
+    // panel daxilində: qeydiyyat ⇄ giriş panel içində qalır, digər keçidlər əsas səhifəni dəyişir
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a || e.defaultPrevented) return;
+      var p = path(a);
+      if (!p || a.getAttribute("href").charAt(0) === "#") return;
+      e.preventDefault();
+      if (AUTH.test(p)) location.href = p + "?embed=1";
+      else window.top.location.href = a.href;
+    });
+    function size() { try { parent.postMessage({ ptH: document.documentElement.scrollHeight }, location.origin); } catch (e) {} }
+    addEventListener("load", size);
+    new MutationObserver(size).observe(document.documentElement, { childList: true, subtree: true, attributes: true });
+    setInterval(size, 800);
+    return;
+  }
+  var box = null, fr = null, tabs = null;
+  function build() {
+    if (box) return;
+    box = document.createElement("div");
+    box.className = "authp";
+    box.innerHTML = '<div class="authp-bg"></div><div class="authp-in" role="dialog" aria-modal="true">' +
+      '<div class="authp-h"><div class="authp-t"><button type="button" data-u="/account/register"></button><button type="button" data-u="/account/login"></button></div>' +
+      '<button type="button" class="authp-x" aria-label="✕">✕</button></div><iframe title=""></iframe></div>';
+    document.body.appendChild(box);
+    fr = box.querySelector("iframe"); tabs = box.querySelectorAll(".authp-t button");
+    box.querySelector(".authp-bg").addEventListener("click", close);
+    box.querySelector(".authp-x").addEventListener("click", close);
+    tabs.forEach(function (b) { b.addEventListener("click", function () { if (window.__ptTick) window.__ptTick(); go(b.getAttribute("data-u")); }); });
+    addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+    addEventListener("message", function (e) {
+      if (e.origin !== location.origin || !e.data || !e.data.ptH) return;
+      fr.style.height = Math.min(e.data.ptH, innerHeight - 140) + "px";
+    });
+    fr.addEventListener("load", function () {
+      var p = ""; try { p = fr.contentWindow.location.pathname; } catch (x) {}
+      mark(p);
+    });
+  }
+  function labels() {
+    var m = (window.PT && PT.t("menu")) || [];
+    var all = []; m.forEach(function (g) { (g.items || []).forEach(function (it) { all.push(it); }); });
+    tabs.forEach(function (b) {
+      var u = b.getAttribute("data-u"), it = all.filter(function (x) { return x.u === u; })[0];
+      b.textContent = it ? it.t : (u.indexOf("register") > 0 ? "Qeydiyyat" : "Giriş");
+    });
+  }
+  function mark(p) { tabs.forEach(function (b) { b.classList.toggle("on", p.indexOf(b.getAttribute("data-u")) === 0); }); }
+  function go(u) { mark(u); fr.src = u + "?embed=1"; }
+  function open(u) {
+    build(); labels(); go(u);
+    document.querySelectorAll(".mg-d").forEach(function (d) { d.parentElement.classList.remove("open"); });
+    var mp = document.getElementById("mpanel"); if (mp) mp.classList.remove("open");
+    box.classList.add("show");
+    requestAnimationFrame(function () { requestAnimationFrame(function () { box.classList.add("in"); }); });
+    document.documentElement.classList.add("authp-lock");
+  }
+  function close() {
+    if (!box) return;
+    box.classList.remove("in");
+    document.documentElement.classList.remove("authp-lock");
+    setTimeout(function () { box.classList.remove("show"); }, 650);
+  }
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest("a[href]");
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+    var p = path(a);
+    if (!AUTH.test(p)) return;
+    e.preventDefault(); e.stopPropagation();
+    if (window.__ptTick) window.__ptTick();
+    open(p.replace(/\/$/, ""));
+  }, true);
 })();

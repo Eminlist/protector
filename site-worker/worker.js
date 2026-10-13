@@ -82,7 +82,7 @@ export default {
     if (url.pathname === "/") {
       // Android proqramı (APK) köhnə ünvanı ("/") açırsa və ya köhnə proqram linki (?m=...) — proqrama
       const ua = request.headers.get("user-agent") || "";
-      if (/ProTechtorApp/.test(ua) || appParams(url.searchParams)) {
+      if (/ProTechtorApp/.test(ua)) {
         return Response.redirect("https://protechtor.app" + APP + url.search, 302);
       }
     }
