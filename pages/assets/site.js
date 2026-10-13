@@ -76,7 +76,6 @@
     var p = location.pathname.replace(/\.html$/, "").replace(/\/$/, "") || "/";
     return u === p;
   }
-  var MENU_IC = { "/account/register": "account", "/account/login": "account", "/application": "guide", "/application/features": "features", "/application/guide": "guide", "/application/install": "install", "/application/download": "download", "/privacy": "privacy", "/help": "help", "/contact": "contact" };
   function renderMenu() {
     var menu = get(T, "menu");
     if (!Array.isArray(menu)) return;
@@ -84,13 +83,10 @@
     if (nav) {
       nav.innerHTML = menu.map(function (g, i) {
         var on = g.items.some(function (it) { return here(it.u); });
-        var cur = -1;
-        g.items.forEach(function (it, k) { if (here(it.u)) cur = k; });
-        if (cur < 0) cur = 0;
         return '<div class="mg' + (on ? " on" : "") + '"><button class="mg-b" aria-expanded="false" data-i="' + i + '">' + esc(g.h) +
-          '<span class="pl" aria-hidden="true"></span></button><div class="mg-d"><div class="mg-dl" style="--n:' + g.items.length + '">' +
-          g.items.map(function (it, k) {
-            return '<a class="si' + (here(it.u) ? " on" : "") + (k === cur ? " act" : "") + '" href="' + it.u + '"><span class="si-ic" aria-hidden="true">' + (ICONS[MENU_IC[it.u]] || "") + "</span><b>" + esc(it.t) + "</b>" + (it.d ? "<small>" + esc(it.d) + "</small>" : "") + '<span class="si-go" aria-hidden="true">›</span></a>';
+          '<span class="pl" aria-hidden="true"></span></button><div class="mg-d"><div class="mg-dl">' +
+          g.items.map(function (it) {
+            return '<a href="' + it.u + '"' + (here(it.u) ? ' class="on"' : "") + "><b>" + esc(it.t) + "</b>" + (it.d ? "<small>" + esc(it.d) + "</small>" : "") + "</a>";
           }).join("") + "</div></div></div>";
       }).join("");
     }
@@ -134,21 +130,6 @@
         if (g && !g.classList.contains("open")) { closeAll(g); g.classList.add("open"); }
       });
       nav.addEventListener("mouseleave", function () { if (hoverable.matches) closeAll(); });
-      function actStrip(a) {
-        var box = a.parentElement;
-        box.querySelectorAll("a.si.act").forEach(function (x) { x.classList.remove("act"); });
-        a.classList.add("act");
-      }
-      nav.addEventListener("mouseover", function (e) {
-        var a = e.target.closest("a.si");
-        if (a && hoverable.matches) actStrip(a);
-      });
-      nav.addEventListener("focusin", function (e) { var a = e.target.closest("a.si"); if (a) actStrip(a); });
-      // Hover olmayan geniş ekranlarda (planşet): birinci toxunuş açır, ikinci keçir
-      nav.addEventListener("click", function (e) {
-        var a = e.target.closest("a.si");
-        if (a && !a.classList.contains("act") && window.matchMedia("(min-width:901px)").matches) { e.preventDefault(); actStrip(a); }
-      });
       document.addEventListener("click", function (e) { if (!e.target.closest(".mg")) closeAll(); });
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeAll(); setPanel(false); } });
     }
@@ -353,7 +334,25 @@
   /* PC: kart-keçidlər zolaq kimi düzülür, seçilən geniş kartaya açılır */
   (function () {
     var pcq = window.matchMedia("(min-width:901px)");
+    var ac = null;
+    function tick() { // yalnız qısa klik səsi
+      try {
+        ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+        if (ac.state === "suspended") ac.resume();
+        var t0 = ac.currentTime, n = Math.floor(ac.sampleRate * 0.03), buf = ac.createBuffer(1, n, ac.sampleRate), d = buf.getChannelData(0);
+        for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 4);
+        var src = ac.createBufferSource(); src.buffer = buf;
+        var f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 2200; f.Q.value = 0.8;
+        var g = ac.createGain(); g.gain.setValueAtTime(0.5, t0); g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.05);
+        src.connect(f); f.connect(g); g.connect(ac.destination); src.start(t0);
+        var o = ac.createOscillator(), og = ac.createGain();
+        o.type = "sine"; o.frequency.setValueAtTime(900, t0); o.frequency.exponentialRampToValueAtTime(380, t0 + 0.04);
+        og.gain.setValueAtTime(0.12, t0); og.gain.exponentialRampToValueAtTime(0.001, t0 + 0.05);
+        o.connect(og); og.connect(ac.destination); o.start(t0); o.stop(t0 + 0.06);
+      } catch (e) {}
+    }
     function setAct(t) {
+      tick();
       var box = t.parentElement;
       box.querySelectorAll(".tile.act").forEach(function (x) { x.classList.remove("act"); });
       t.classList.add("act");
@@ -373,7 +372,8 @@
     }, true);
     document.addEventListener("focusin", function (e) {
       var t = pcq.matches && e.target.closest && e.target.closest(".tiles .tile");
-      if (t && !t.classList.contains("act")) setAct(t);
+      var kb = false; try { kb = t && t.matches(":focus-visible"); } catch (x) {}
+      if (t && kb && !t.classList.contains("act")) setAct(t);
     });
     document.addEventListener("DOMContentLoaded", init);
   })();
