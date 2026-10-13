@@ -225,3 +225,10 @@ footer .wrap{max-width:1120px}
 @media (prefers-reduced-motion:reduce){.ph{animation:none}}
 .stage-cap{text-align:center;color:var(--muted);font-size:13px;margin-top:4px}
 [data-t]:empty{display:inline-block;min-width:3em}
+
+/* Temaya uyğun scroll zolağı */
+html{scrollbar-width:thin;scrollbar-color:rgba(46,204,113,.6) var(--bg)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:10px;border:2px solid var(--bg);box-shadow:0 0 8px rgba(46,204,113,.5)}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}

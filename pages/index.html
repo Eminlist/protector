@@ -19,6 +19,11 @@
   --Z:.55;
 }
 *{margin:0;padding:0;box-sizing:border-box}
+html{scrollbar-width:thin;scrollbar-color:rgba(240,200,121,.65) var(--bg)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#f6dc9c,#c89a3e);border-radius:10px;border:2px solid var(--bg);box-shadow:0 0 8px rgba(240,200,121,.5)}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
 #particles{position:fixed;inset:0;z-index:0;pointer-events:none}
 header{position:relative;z-index:5;text-align:center;padding:26px 16px 0}
@@ -28,7 +33,7 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 
 /* ---------- STAGE ---------- */
 .stage{
-  position:relative;z-index:3;margin:14px auto 0;max-width:1280px;height:620px;
+  position:relative;z-index:3;margin:14px auto 0;max-width:1280px;height:clamp(470px,calc(100dvh - 215px),780px);
   display:grid;grid-template-columns:270px 1fr 270px;gap:20px;align-items:center;padding:0 20px;
 }
 .wing{display:flex;flex-direction:column;gap:14px;position:relative;z-index:6}
@@ -56,12 +61,14 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 .fog.on{animation:fog 2.6s ease-out forwards}
 @keyframes fog{0%{opacity:0;transform:scale(.3)}35%{opacity:1}100%{opacity:0;transform:scale(1.9)}}
 
-.center{position:relative;height:100%;perspective:1500px}
+.center{position:relative;height:100%;perspective:1500px;touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none}
+.center.drag{cursor:grabbing}
+.phone{cursor:pointer}
 .floor{position:absolute;left:50%;bottom:22px;width:700px;height:190px;transform:translateX(-50%) rotateX(72deg);border-radius:50%;
   border:1px solid rgba(240,200,121,.25);background:radial-gradient(circle,rgba(240,200,121,.12),transparent 70%)}
 
 /* ---------- 3D PHONES ---------- */
-.ring-wrap{position:absolute;left:0;right:0;top:-70px;height:100%;display:grid;place-items:center;transform-style:preserve-3d;z-index:1}
+.ring-wrap{position:absolute;left:0;right:0;top:-70px;height:100%;display:grid;place-items:center;transform-style:preserve-3d;z-index:1;transform:scale(var(--S,1))}
 .ring{position:relative;width:140px;height:270px;transform-style:preserve-3d;transform:rotateX(-6deg)}
 .phone{
   position:absolute;inset:0;border-radius:24px;padding:7px;background:#0a0f1c;border:2px solid rgba(255,255,255,.16);
@@ -151,10 +158,11 @@ header p{color:var(--muted);font-size:.9rem;margin-top:6px}
 .foot a.app{color:#1a1205;background:var(--gold);padding:5px 14px;border-radius:100px;font-weight:600;text-decoration:none}
 
 @media(max-width:1000px){
-  .stage{grid-template-columns:1fr;height:auto;padding-bottom:30px}
-  .center{height:520px;order:-1}
-  .wing{flex-direction:row;flex-wrap:wrap}
-  .door{flex:1 1 220px}
+  /* telefon/planşet: əvvəlcə fırlanan telefonlar, menyu düymələri aşağıda */
+  .stage{display:flex;flex-direction:column;height:auto;gap:14px;padding:0 14px 26px}
+  .center{order:-1;flex:none;height:clamp(420px,calc(100dvh - 200px),680px)}
+  .wing{flex-direction:column;flex-wrap:nowrap;width:100%}
+  .door{flex:none;width:100%}
   .panel{right:12px;left:12px;width:auto}
 }
 @media(prefers-reduced-motion:reduce){.launcher::after{animation:none}}
@@ -284,18 +292,46 @@ PHONES.forEach((p,i)=>{
   const d=document.createElement('div'); d.className='phone';
   d.innerHTML=`<div class="notch"></div><div class="scr"><span class="tag">${p[0]}</span><h4>${p[1]}</h4><div class="bar"></div>${p[2].map(r=>`<div class="row"><span>${r}</span><i></i></div>`).join('')}</div>`;
   d.style.transform=`rotateY(${i*40}deg) translateZ(270px)`;
+  d.dataset.i=i;
   ring.appendChild(d);
 });
 let angle=0, auto=true, focusTarget=null, hoverRing=false;
 const center=$('#center'), stage=$('#stage'), girl=$('#girl');
 center.addEventListener('mouseenter',()=>hoverRing=true);
 center.addEventListener('mouseleave',()=>hoverRing=false);
+
+/* ---- istifadəçi telefonları özü fırladır və toxunduqda bölməni seçir (bələdçisiz) ---- */
+const PHONE_MENU=['guide','about','pros','guide','setup','dl','gal','help','app'];
+let drag=null, dragRest=0;
+center.addEventListener('pointerdown',e=>{
+  if(e.button>0) return;
+  drag={x:e.clientX,a:angle,moved:false,id:e.pointerId,t:e.target};
+  focusTarget=null;
+});
+addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.id) return;
+  const dx=e.clientX-drag.x;
+  if(!drag.moved&&Math.abs(dx)>6){ drag.moved=true; center.classList.add('drag'); try{center.setPointerCapture(e.pointerId)}catch(_){} }
+  if(drag.moved){ angle=drag.a+dx*0.45; dragRest=Date.now(); }
+});
+function endDrag(e){
+  if(!drag||(e&&e.pointerId!==drag.id)) return;
+  const d=drag; drag=null; center.classList.remove('drag');
+  if(d.moved){ dragRest=Date.now(); return; }
+  const ph=d.t&&d.t.closest&&d.t.closest('.phone');
+  if(ph&&ph.dataset.i!==undefined){
+    const id=PHONE_MENU[+ph.dataset.i];
+    if(id) selectMenu(id,false,true);
+  }
+}
+addEventListener('pointerup',endDrag);
+addEventListener('pointercancel',endDrag);
 (function loop(){
   if(focusTarget!==null){
     let diff=((focusTarget-angle)%360+540)%360-180;
     angle+=diff*0.06;
     if(Math.abs(diff)<.4)focusTarget=null;
-  }else if(auto&&!hoverRing){angle-=0.14}
+  }else if(auto&&!hoverRing&&!drag&&Date.now()-dragRest>3500){angle-=0.14}
   ring.style.transform=`rotateX(-6deg) rotateY(${angle}deg)`;
   requestAnimationFrame(loop);
 })();
@@ -322,6 +358,8 @@ let cur=null, Z=.55;
 
 const zk=n=>n.indexOf('sit_')===0?1.12:1;
 function fitGirl(){
+  const S=Math.max(.5,Math.min(1,center.clientWidth/660,center.clientHeight/560));
+  center.style.setProperty('--S',S.toFixed(3));
   Z=Math.max(.34,Math.min(.6,center.clientHeight*.55/605));
   document.documentElement.style.setProperty('--Z',Z);
   Object.keys(vids).forEach(k=>{ const v=vids[k]; if(v.videoWidth) v.style.width=(v.videoWidth*Z*zk(k))+'px'; });
@@ -500,22 +538,42 @@ async function bot(list){
 }
 
 /* ---- seçim ---- */
-async function selectMenu(id,fromChat){
+async function selectMenu(id,fromChat,direct){
   if(busy||stage_==='intro') return; busy=true;
   wake(); token++;
   if(stage_!=='stand'){stage_='stand'}
   const idx=MENUS.findIndex(m=>m.id===id), m=MENUS[idx], door=doors[idx];
   doors.forEach(d=>d.classList.remove('selected')); door.classList.add('selected');
-  fogAt(door);
-  focusTarget=-(idx*40);
+  /* ilgili telefon önə gəlir */
+  const pi=Math.max(0,PHONE_MENU.indexOf(id));
+  focusTarget=-(pi*40);
   openPanel();
+  if(direct){
+    /* bələdçisiz seçim: məzmun dərhal göstərilir */
+    if(fromChat||pBody.children.length) addMsg(m.t,true);
+    m.msgs.forEach(t=>addMsg(t));
+    lastAct=Date.now(); busy=false; return;
+  }
+  fogAt(door);
   if(fromChat||pBody.children.length) addMsg(m.t,true);
   await wait(250);
-  if(GIRL) await walkTo(door);
+  if(GIRL) await pointAt(door);
   await bot(m.msgs);
   await wait(600);
   lastAct=Date.now();
   busy=false;
+}
+
+/* bələdçi telefonların altına gəlir, əlini qaldırıb seçilən menyunu göstərir */
+async function pointAt(door){
+  const cr=center.getBoundingClientRect(), dr=door.getBoundingClientRect();
+  const toLeft=(dr.left+dr.width/2)<(cr.left+cr.width/2);
+  const mine=++token;
+  await goHome(mine);
+  if(mine!==token) return;
+  setFlip(toLeft);
+  show('wave'); await clipEnd('wave');
+  setFlip(false); show('idle');
 }
 
 /* ---- zərrəcik toru ---- */
