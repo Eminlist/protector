@@ -466,3 +466,10 @@
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+
+// Saytda gəzən pişik
+(function () {
+  var s = document.createElement('script');
+  s.src = '/assets/cat.js'; s.defer = true;
+  document.head.appendChild(s);
+})();
