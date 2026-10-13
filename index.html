@@ -2242,13 +2242,13 @@
 .pt-stage[hidden]{display:none}
 .pt-stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;display:none;background:#03060d}
 .pt-stage #ptVidA{display:block}
-.m-bat{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:3px 10px 3px 7px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent-color) 55%,transparent);color:var(--accent-color);font-size:calc(12.5px * var(--font-scale));font-weight:800;letter-spacing:.3px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.m-bat{display:inline-flex;align-items:center;gap:5px;margin-top:0;padding:2px 9px 2px 6px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent-color) 55%,transparent);color:var(--accent-color);font-size:calc(12.5px * var(--font-scale));font-weight:800;letter-spacing:.3px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .m-bat:active{background:color-mix(in srgb,var(--accent-color) 14%,transparent)}
 .m-bat-ic{display:inline-flex}
 .m-bat-none{border-color:var(--border);color:var(--muted);cursor:default}
 .m-bat-none .m-bat-code{letter-spacing:2px;font-weight:700}
 .result-model .m-brandtxt{font-size:calc(11px * var(--font-scale));letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:2px}
-.result-model .m-bat{display:flex;width:fit-content}
+.m-spec{flex-wrap:wrap}
 /* Logo (başlıqda) və ana səhifə yazısı */
 .pt-logo{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;cursor:pointer;color:var(--text);-webkit-tap-highlight-color:transparent;font:inherit}
 .pt-logo img{width:52px;height:52px;border-radius:14px;display:block;box-shadow:0 0 14px color-mix(in srgb,var(--accent-color) 30%,transparent)}
@@ -11331,15 +11331,15 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.14";
-/* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 · Genuine 4" (uzun rəqəmlər göstərilmir) */
+const APP_VERSION = "3.1.3.15";
+/* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 r4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
     if (!m) return String(v || "");
     var base = m[1] + "." + m[2] + "." + m[3], n = parseInt(m[4] || "0", 10);
     if (!n) return base;
-    // Bütün dillərdə eyni: «3.1.3 · Genuine 5»
-    return base + " · Genuine " + n;
+    // Bütün dillərdə eyni: «3.1.3 r13»
+    return base + " r" + n;
 }
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LANG_KEY = "antiudar_lang";
@@ -15272,6 +15272,12 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     return d;
   }
   var batMap = {}, batDone = -1;
+  /* batareya xətti ekran ölçüsü ilə eyni sətirdə (.m-spec) dayanır */
+  function slot(host) {
+    var sp = host.querySelector(".m-spec");
+    if (!sp) { sp = el("div", "m-spec"); host.appendChild(sp); }
+    return sp;
+  }
   function batNone() {
     var d = el("div", "m-bat m-bat-none");
     var ic = el("span", "m-bat-ic"); ic.innerHTML = BAT_SVG;
@@ -15283,8 +15289,8 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     try {
       if (!host || host.querySelector(".m-bat")) return;
       var e = batMap[norm(model)];
-      if (e) host.appendChild(batLine(e));
-      else if (batDone === seq) host.appendChild(batNone());
+      if (e) slot(host).appendChild(batLine(e));
+      else if (batDone === seq) slot(host).appendChild(batNone());
     } catch (x) {}
   };
   function batRow(item, q) {
@@ -15297,7 +15303,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     if (bt) name.appendChild(el("div", "m-brandtxt", bt));
     var sp = null; try { sp = specLineEl(item.model, null); } catch (e) {}
     if (sp) name.appendChild(sp);
-    name.appendChild(batLine(item));
+    slot(name).appendChild(batLine(item));
     r.appendChild(brand); r.appendChild(name); r.appendChild(el("div", "result-arrow", "›"));
     r.addEventListener("click", function () {
       try { playSoundEffect(); triggerHaptic(30); } catch (e) {}
@@ -15322,7 +15328,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
       var e = batMap[r.getAttribute("data-k")]; if (e) window.ptBatDecorate(r.querySelector(".result-model"), e.model);
     });
     res.querySelectorAll(".result-item[data-k]").forEach(function (r) {
-      var h = r.querySelector(".result-model"); if (h && !h.querySelector(".m-bat")) h.appendChild(batNone());
+      var h = r.querySelector(".result-model"); if (h && !h.querySelector(".m-bat")) slot(h).appendChild(batNone());
     });
     if (!list.length) return;
     /* antiudarda heç nə tapılmayıbsa «tapılmadı» bloku götürülür */
@@ -15375,11 +15381,11 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
           if (it.querySelector(".m-bat")) return;
           var c = m[norm(it.getAttribute("data-model"))];
           var host = it.querySelector(".compat-model"); if (!host) return;
-          if (!c || !c.length) { host.appendChild(batNone()); return; }
+          if (!c || !c.length) { slot(host).appendChild(batNone()); return; }
           var d2 = el("div", "m-bat"), ic = el("span", "m-bat-ic"); ic.innerHTML = BAT_SVG;
           d2.appendChild(ic); d2.appendChild(el("span", "m-bat-code", c.join(" · ")));
           d2.style.cursor = "default";
-          host.appendChild(d2);
+          slot(host).appendChild(d2);
         });
       }).catch(function () {});
     } catch (e) {}
