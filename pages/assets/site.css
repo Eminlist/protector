@@ -352,3 +352,7 @@ html.embed .rform{margin-top:6px;border:0;box-shadow:none;background:transparent
   #reg>label:nth-of-type(5),#reg>label:nth-of-type(6){grid-column:auto}
   .rts{min-height:0}
 }
+
+/* gizli elementlər həmişə gizli qalır (forma/hesab qutusu eyni anda görünmür) */
+[hidden]{display:none!important}
+.card.contact a{overflow-wrap:anywhere}
