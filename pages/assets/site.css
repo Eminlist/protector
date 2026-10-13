@@ -234,24 +234,13 @@ html{scrollbar-width:thin;scrollbar-color:rgba(46,204,113,.6) var(--bg)}
 ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
 
 @keyframes siIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-/* ===== PC: kartlar zolaq kimi düzülür, basılan zolaq hamar şəkildə geniş kartaya açılır ===== */
-@media (min-width:901px){
-  /* kart-keçidlər (Yardım mərkəzi və s.) */
-  .tiles{display:flex;gap:10px;height:280px}
-  .tiles .tile{position:relative;flex:0 0 64px;min-width:0;min-height:0;overflow:hidden;align-items:center;padding:16px 0;gap:0;border-radius:22px;transition:flex .6s cubic-bezier(.22,.8,.2,1),background .4s,border-color .4s,box-shadow .4s;cursor:pointer}
-  .tiles .tile:hover{transform:none}
-  .tiles .tile-ic{display:block;width:36px;height:36px;flex:none;transition:width .4s,height .4s}
-  .tiles .tile-ic svg{width:100%;height:100%}
-  .tiles .tile b{margin-top:auto;writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;font-size:15px;color:var(--muted)}
-  .tiles .tile small{display:none}
-  .tiles .tile.act{flex:1 1 0;align-items:flex-start;padding:22px 24px;background:linear-gradient(160deg,rgba(46,204,113,.15),var(--card) 70%);border-color:rgba(46,204,113,.5);box-shadow:0 18px 34px -22px rgba(46,204,113,.7)}
-  .tiles .tile.act .tile-ic{width:60px;height:60px}
-  .tiles .tile.act b{writing-mode:horizontal-tb;transform:none;white-space:normal;font-size:20px;color:var(--text);animation:siIn .5s .12s both}
-  .tiles .tile.act>b,.tiles .tile.act>small{min-width:250px}
-  .tiles .tile.act small{display:block;margin-top:6px;padding-right:40px;font-size:14px;animation:siIn .5s .18s both}
-  .tiles .tile.act::after{content:"›";position:absolute;right:18px;bottom:18px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--accent);color:var(--onaccent);font-size:22px;line-height:1;padding-bottom:3px}
-}
-@media (prefers-reduced-motion:reduce){.tiles .tile{transition:none}.tiles .tile.act b,.tiles .tile.act small{animation:none}}
+/* Keçid kartları (məlumat açmayanlar): kvadrat, maus üstündə yaşıl işıq, seçəndə flash */
+.tile,.card.feat,.plist a{position:relative;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s,background .25s}
+.tile:hover,.card.feat:hover,.plist a:hover{text-decoration:none;transform:translateY(-3px);border-color:rgba(46,204,113,.65);background:linear-gradient(160deg,rgba(46,204,113,.12),var(--card) 70%);box-shadow:0 0 0 1px rgba(46,204,113,.35),0 0 24px -4px rgba(46,204,113,.55),0 16px 30px -20px rgba(46,204,113,.7)}
+.tile:hover .tile-ic svg{filter:drop-shadow(0 0 8px rgba(46,204,113,.7))}
+.tile.flash,.card.feat.flash,.plist a.flash{animation:tFlash .45s ease-out}
+@keyframes tFlash{0%{background:rgba(46,204,113,.55);box-shadow:0 0 0 2px var(--accent),0 0 46px rgba(46,204,113,.9)}100%{background:var(--card)}}
+@media (prefers-reduced-motion:reduce){.tile.flash,.card.feat.flash,.plist a.flash{animation:none}}
 
 /* ===== Qeydiyyat forması (/account/register) ===== */
 .rform{margin-top:20px;display:flex;flex-direction:column;gap:12px}

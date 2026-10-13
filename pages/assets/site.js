@@ -385,11 +385,9 @@
     download: svg('<path d="M18 44a12 12 0 01-1-24 16 16 0 0130-2 11 11 0 011 26z" fill="' + G + '" stroke="' + K + '" stroke-width="2.5" stroke-linejoin="round"/><path d="M32 26v24m-8-8l8 8 8-8" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
   };
 
-  /* PC: kart-keçidlər zolaq kimi düzülür, seçilən geniş kartaya açılır */
+  /* Keçid kartları: kliklə flash + səs, sonra keçid */
   (function () {
-    var pcq = window.matchMedia("(min-width:901px)");
     var ac = null;
-    window.__ptTick = function () { tick(); };
     function tick() { // yalnız qısa klik səsi
       try {
         ac = ac || new (window.AudioContext || window.webkitAudioContext)();
@@ -406,31 +404,19 @@
         o.connect(og); og.connect(ac.destination); o.start(t0); o.stop(t0 + 0.06);
       } catch (e) {}
     }
-    function setAct(t) {
-      tick();
-      var box = t.parentElement;
-      box.querySelectorAll(".tile.act").forEach(function (x) { x.classList.remove("act"); });
-      t.classList.add("act");
-    }
-    function init() {
-      document.querySelectorAll(".tiles").forEach(function (b) {
-        if (!b.querySelector(".tile.act") && b.firstElementChild && b.firstElementChild.classList.contains("tile")) b.firstElementChild.classList.add("act");
-      });
-    }
-    var q = 0;
-    new MutationObserver(function () { if (q) return; q = requestAnimationFrame(function () { q = 0; init(); }); })
-      .observe(document.documentElement, { childList: true, subtree: true });
+    window.__ptTick = tick;
     document.addEventListener("click", function (e) {
-      if (!pcq.matches) return;
-      var t = e.target.closest && e.target.closest(".tiles .tile");
-      if (t && !t.classList.contains("act")) { e.preventDefault(); setAct(t); }
+      var t = e.target.closest && e.target.closest(".tile, .card.feat, .plist a");
+      if (!t || e.ctrlKey || e.metaKey || e.shiftKey || e.button) return;
+      tick();
+      t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
+      setTimeout(function () { t.classList.remove("flash"); }, 460);
+      var href = t.getAttribute("href");
+      if (href && t.tagName === "A" && t.target !== "_blank") {
+        e.preventDefault();
+        setTimeout(function () { location.href = href; }, 260);
+      }
     }, true);
-    document.addEventListener("focusin", function (e) {
-      var t = pcq.matches && e.target.closest && e.target.closest(".tiles .tile");
-      var kb = false; try { kb = t && t.matches(":focus-visible"); } catch (x) {}
-      if (t && kb && !t.classList.contains("act")) setAct(t);
-    });
-    document.addEventListener("DOMContentLoaded", init);
   })();
 
   window.PT = {
