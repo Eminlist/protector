@@ -316,3 +316,7 @@ html{scrollbar-width:thin;scrollbar-color:rgba(46,204,113,.6) var(--bg)}
 @media (min-width:901px){.vstrip>details.acc[open]{flex:1 0 min(640px,calc(100% - 150px))}}
 .vstrip>details.acc[open]>summary{min-width:0}
 .vstrip>details.acc[open]>summary>span:not(.ai):not(.chev){white-space:normal;word-break:normal;overflow-wrap:break-word}
+/* Zolaq menyusu: hündürlük mətnə görədir, ekrandan uzun olmur, boş qutu yaranmır */
+.vstrip{height:auto!important;min-height:0!important;max-height:min(calc(100dvh - 150px),760px)!important}
+.vstrip>details.acc{height:auto!important;min-height:360px!important;max-height:min(calc(100dvh - 158px),752px);overflow:hidden}
+.vstrip>details.acc:not([open])>summary{height:auto!important;min-height:360px!important}
