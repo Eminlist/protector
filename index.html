@@ -15262,7 +15262,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
   /* Nəticə sətirinin batareya xətti: batareya ikonu + kod(lar); toxunanda batareya uyğunluğu səhifəsi açılır */
   function batLine(entry) {
     var d = el("div", "m-bat");
-    var ic = el("span", "m-bat-ic"); ic.innerHTML = BAT_SVG;
+    var ic = el("span", "m-bat-ic"); ic.textContent = "🔋";
     d.appendChild(ic);
     d.appendChild(el("span", "m-bat-code", entry.hit || entry.codes.join(" · ")));
     d.setAttribute("role", "button");
@@ -15282,7 +15282,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
   }
   function batNone() {
     var d = el("div", "m-bat m-bat-none");
-    var ic = el("span", "m-bat-ic"); ic.innerHTML = BAT_SVG;
+    var ic = el("span", "m-bat-ic"); ic.textContent = "🔋";
     d.appendChild(ic); d.appendChild(el("span", "m-bat-code", "___"));
     return d;
   }
@@ -15384,7 +15384,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
           var c = m[norm(it.getAttribute("data-model"))];
           var host = it.querySelector(".compat-model"); if (!host) return;
           if (!c || !c.length) { slot(host).appendChild(batNone()); return; }
-          var d2 = el("div", "m-bat"), ic = el("span", "m-bat-ic"); ic.innerHTML = BAT_SVG;
+          var d2 = el("div", "m-bat"), ic = el("span", "m-bat-ic"); ic.textContent = "🔋";
           d2.appendChild(ic); d2.appendChild(el("span", "m-bat-code", c.join(" · ")));
           d2.style.cursor = "default";
           slot(host).appendChild(d2);
