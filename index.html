@@ -2250,9 +2250,11 @@
 .result-model .m-brandtxt{font-size:calc(11px * var(--font-scale));letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:2px}
 .m-spec{flex-wrap:wrap}
 /* Logo (başlıqda) və ana səhifə yazısı */
-.pt-logo{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;cursor:pointer;color:var(--text);-webkit-tap-highlight-color:transparent;font:inherit}
+.pt-logo{display:flex;align-items:center;gap:12px;background:none;border:0;padding:0;cursor:default;color:var(--text);-webkit-tap-highlight-color:transparent;font:inherit}
 .pt-logo img{width:52px;height:52px;border-radius:14px;display:block;box-shadow:0 0 14px color-mix(in srgb,var(--accent-color) 30%,transparent)}
-.pt-logo:active img{transform:scale(.94)}
+.pt-logo-btn{background:none;border:0;padding:0;margin:0;cursor:pointer;display:flex;-webkit-tap-highlight-color:transparent}
+.pt-logo-btn:active img{transform:scale(.94)}
+.pt-logo-tx{cursor:default;user-select:none}
 .pt-logo-tx{font-weight:800;font-size:calc(20px * var(--font-scale));letter-spacing:-.6px;color:var(--text);white-space:nowrap}
 .pt-logo-tx sup{font-size:.5em;margin-left:1px}
 .pt-logo-tx b{font-weight:800}
@@ -2613,7 +2615,7 @@ html.sensitive .ripple-ring{display:none !important}
     <div id="main-view">
         <header class="top-header">
             <div class="header-left">
-                <button type="button" class="pt-logo" onclick="location.reload()" aria-label="ProTechtor™" title="ProTechtor™"><img src="./icon-192.png?v=2" alt="ProTechtor™" width="56" height="56" draggable="false"><span class="pt-logo-tx"><b class="pt-y">Pro</b><b class="pt-g">Techtor</b><sup>™</sup></span></button>
+                <div class="pt-logo"><button type="button" class="pt-logo-btn" onclick="location.reload()" aria-label="Səhifəni yenilə" title="Yenilə"><img src="./icon-192.png?v=2" alt="ProTechtor™" width="56" height="56" draggable="false"></button><span class="pt-logo-tx"><b class="pt-y">Pro</b><b class="pt-g">Techtor</b><sup>™</sup></span></div>
             </div>
             <div class="header-buttons">
                 <button id="adminBtn" class="profile-btn hb hb-admin" onclick="openAdmin()" title="Admin panel" aria-label="Admin panel"><span class="hi hi-admin" aria-hidden="true"></span><span class="admin-badge" id="adminInboxBadge">0</span></button>
@@ -11331,7 +11333,7 @@ function renderPrivacy() {
     if (typeof admAccInit === "function") admAccInit();
 }
 
-const APP_VERSION = "3.1.3.15";
+const APP_VERSION = "3.1.3.13";
 /* Versiyanın rəsmi göstərilməsi: "3.1.3.04" → "3.1.3 r4" (uzun rəqəmlər göstərilmir) */
 function ptVerLabel(v) {
     var m = /(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?/.exec(String(v == null ? APP_VERSION : v));
