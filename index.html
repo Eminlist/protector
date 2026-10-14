@@ -8900,7 +8900,7 @@ function giftPopupCheck() {
 function notifText(x) {
     if (x.type === "premium_on") return t("nPremiumOn").replace("{d}", fmtDate(x.until));
     if (x.type === "premium_off") return t("nPremiumOff");
-    if (x.type === "premium_gift") return giftMsg(x);
+    if (x.type === "premium_gift") return giftMsg(x) + (x.pend && x.exp ? " " + t("gfDue").replace("{n}", 10).replace("{d}", fmtDate(x.exp - 1)) : "");
     if (x.type === "premium_refund") return x.until ? t("nRefundUntil").replace("{a}", x.amount || 0).replace("{d}", fmtDate(x.until)) : t("nRefundOff").replace("{a}", x.amount || 0);
     if (x.type === "expiring") return t("proExpiring").replace("{n}", x.n);
     if (x.type === "grace") return t("proGrace").replace("{n}", x.n);
@@ -9235,26 +9235,28 @@ function gfSelect(id) {
 }
 
 function giftGrantOne(u, days, r, batch) {
+    // Hədiyyə dərhal tətbiq olunmur: istifadəçi 10 gün ərzində «Qəbul et» basmalıdır
     const now = Date.now();
     u._giftNotif = null;
-    const base = Math.max(now, +u.premiumUntil || 0);
-    const until = base + days * DAY_MS;
+    const gid = "g" + now.toString(36) + Math.random().toString(36).slice(2, 6);
+    const exp = now + 10 * DAY_MS;
     const ref = db.collection("users").doc(u._id);
-    return ref.set({ premiumUntil: until, premiumSince: u.premiumSince || now }, { merge: true }).then(function () {
+    const g = { d: days, e: exp, t: now, u: r.unit || "d", a: r.gAmount || days, r: r.reason || "", x: r.reasonText || "" };
+    const pg = {}; pg[gid] = g;
+    return ref.set({ pg: pg }, { merge: true }).then(function () {
         return db.collection("payments").add({
             uid: u._id, email: u.email || "", storeName: u.storeName || "", username: u.username || "",
-            amount: 0, gift: true, days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "",
-            from: base, until: until, createdAt: now, batch: batch || "",
+            amount: 0, gift: true, gid: gid, exp: exp, pending: true, days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "",
+            from: 0, until: 0, createdAt: now, batch: batch || "",
             by: (auth.currentUser && auth.currentUser.email) || ""
         });
     }).then(function () {
-        const nx = { type: "premium_gift", days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "", until: until, createdAt: now, read: false };
+        const nx = { type: "premium_gift", gid: gid, pend: 1, exp: exp, days: days, unit: r.unit || "d", gAmount: r.gAmount || days, reason: r.reason, reasonText: r.reasonText || "", createdAt: now, read: false };
         u._giftNotif = nx;
         return ptNotifCol(ref.id).add(Object.assign({ noPush: true }, nx)).catch(function (e) { console.warn("gift notif", e && e.message); });
     }).then(function () {
-        u.premiumUntil = until;
-        if (!u.premiumSince) u.premiumSince = now;
-        return until;
+        u.pg = Object.assign({}, u.pg || {}, pg);
+        return exp;
     });
 }
 
@@ -9265,11 +9267,10 @@ function gfGiveOne() {
     if (!u) { appAlert("Əvvəlcə istifadəçini seçin.", "Hədiyyə", "🎁"); return; }
     if (!days) { appAlert("Müddəti seçin.", "Hədiyyə", "🎁"); return; }
     if (r.reason === "custom" && !r.reasonText) { appAlert("Səbəbi yazın.", "Hədiyyə", "🎁"); return; }
-    const until = Math.max(Date.now(), +u.premiumUntil || 0) + days * DAY_MS;
-    appConfirm(gfName(u) + " üçün " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə edilsin?\nYeni bitmə tarixi: " + fmtDate(until) + "\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText, unit: r.unit, gAmount: r.gAmount }, "az"), "Bəli, hədiyyə et").then(function (ok) {
+    appConfirm(gfName(u) + " üçün " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə göndərilsin?\nİstifadəçi hədiyyəni 10 gün ərzində «Qəbul et» ilə qəbul etməlidir.\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText, unit: r.unit, gAmount: r.gAmount }, "az"), "Bəli, hədiyyə et").then(function (ok) {
         if (!ok) return;
         giftGrantOne(u, days, r, "").then(function (nu) {
-            showAppToast("🎁 " + gfName(u) + ": " + gfDurText(r.unit, r.gAmount, "az") + " · " + fmtDate(nu) + "-dək");
+            showAppToast("🎁 " + gfName(u) + ": " + gfDurText(r.unit, r.gAmount, "az") + " göndərildi · qəbul üçün " + fmtDate(nu - 1) + "-dək");
             if (window.ptPushNotif && u._giftNotif) ptPushNotif([u._id], u._giftNotif).then(function (d) {
                 showAppToast("📲 Push: " + (d && typeof d.sent === "number" ? (d.sent ? d.sent + " cihaza göndərildi" : "istifadəçinin qeydiyyatlı cihazı yoxdur (APK quraşdırılmayıb)") : "göndərildi"), 5000);
             }).catch(function (e) { showAppToast("⚠️ Push göndərilmədi: " + ((e && e.message) || ""), 6000); });
@@ -9313,7 +9314,7 @@ function gfGiveBulk() {
     if (!list.length) { appAlert("Bu qrupda istifadəçi yoxdur.", "Toplu hədiyyə", "🎁"); return; }
     if (!days) { appAlert("Müddəti seçin.", "Toplu hədiyyə", "🎁"); return; }
     if (r.reason === "custom" && !r.reasonText) { appAlert("Səbəbi yazın.", "Toplu hədiyyə", "🎁"); return; }
-    appConfirm(label + ": " + list.length + " istifadəçiyə " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə edilsin?\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText, unit: r.unit, gAmount: r.gAmount }, "az"), "Bəli, hamısına ver").then(function (ok) {
+    appConfirm(label + ": " + list.length + " istifadəçiyə " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə göndərilsin? (10 gün ərzində qəbul etməlidirlər)\n\n" + giftMsg({ days: days, reason: r.reason, reasonText: r.reasonText, unit: r.unit, gAmount: r.gAmount }, "az"), "Bəli, hamısına ver").then(function (ok) {
         if (!ok) return;
         const batch = "b" + Date.now();
         const prog = document.getElementById("gfProg");
@@ -9328,8 +9329,8 @@ function gfGiveBulk() {
             })).then(step);
         };
         step().then(function () {
-            if (prog) prog.textContent = "✓ " + done + " istifadəçiyə hədiyyə edildi" + (fail ? " · xəta: " + fail : "");
-            showAppToast("🎁 " + done + " istifadəçiyə " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə edildi");
+            if (prog) prog.textContent = "✓ " + done + " istifadəçiyə hədiyyə göndərildi" + (fail ? " · xəta: " + fail : "");
+            showAppToast("🎁 " + done + " istifadəçiyə " + gfDurText(r.unit, r.gAmount, "az") + " Premium hədiyyə göndərildi (10 gün ərzində qəbul)");
             const okU = list.filter(function (u) { return u._giftNotif; });
             if (window.ptPushNotif && okU.length) ptPushNotif(okU.map(function (u) { return u._id; }), okU[0]._giftNotif).then(function (d) {
                 showAppToast("📲 Push: " + (d && typeof d.sent === "number" ? d.sent + " cihaza göndərildi" : "göndərildi"), 5000);
@@ -9402,8 +9403,9 @@ function gfLoadLog() {
         if (!list.length) { box.innerHTML = '<div class="fm-status">Hələ hədiyyə verilməyib</div>'; return; }
         box.innerHTML = list.slice(0, 200).map(function (g) {
             const who = g.username || g.storeName || g.email || g.uid || "—";
+            const gs = gfGiftState(g);
             return '<div class="gf-row' + (g.revoked ? " off" : "") + '"><span>' + escapeHtml(who) +
-                '<small>' + fmtDate(g.createdAt) + " · " + escapeHtml(gfReasonLabel(g)) + (g.batch ? " · toplu" : "") + (g.revoked ? " · geri alınıb" : "") + '</small></span>' +
+                '<small>' + fmtDate(g.createdAt) + " · " + escapeHtml(gfReasonLabel(g)) + (g.batch ? " · toplu" : "") + (gs ? " · " + gs : "") + (g.revoked ? " · geri alınıb" : "") + '</small></span>' +
                 '<span class="ga"><b>' + (g.unit ? gfDurText(g.unit, g.gAmount, "az") : (g.days || 0) + " gün") + '</b>' +
                 (g.revoked ? "" : '<button type="button" onclick="gfRevoke(\'' + jsArg(g._id) + '\')">Geri al</button>') +
                 '<button type="button" onclick="gfDeleteLog(\'' + jsArg(g._id) + '\')" aria-label="Sil">🗑</button></span></div>';
@@ -9411,6 +9413,17 @@ function gfLoadLog() {
     }).catch(function (e) {
         box.innerHTML = '<div class="fm-status" style="color:var(--c-bad)">Oxunmadı (' + escapeHtml((e && (e.code || e.message)) || "") + ')</div>';
     });
+}
+
+function gfGiftState(g) {
+    if (!g.gid) return "";
+    const u = adminFindUser(g.uid) || {};
+    const st = (u.pgDone || {})[g.gid];
+    if (st === "a") return "qəbul edilib";
+    if (st === "r") return "rədd edilib";
+    if (st === "x") return "müddəti bitib";
+    if ((u.pg || {})[g.gid]) return Date.now() >= (+g.exp || 0) ? "müddəti bitib (qəbul edilməyib)" : "qəbul gözlənilir";
+    return "";
 }
 
 function gfRevoke(pid) {
@@ -9421,8 +9434,18 @@ function gfRevoke(pid) {
         const now = Date.now();
         const ref = db.collection("users").doc(g.uid);
         ref.get().then(function (snap) {
-            const cur = snap.exists ? (+(snap.data() || {}).premiumUntil || 0) : 0;
-            const dur = Math.max(0, (+g.until || 0) - (+g.from || +g.createdAt || 0));
+            const ud = snap.exists ? (snap.data() || {}) : {};
+            const cur = +ud.premiumUntil || 0;
+            if (g.gid && (ud.pg || {})[g.gid]) {
+                const o = {}; o["pg." + g.gid] = firebase.firestore.FieldValue.delete();
+                return ref.update(o).then(function () {
+                    return db.collection("payments").doc(pid).update({ revoked: true, revokedAt: now });
+                }).then(function () { showAppToast("Hədiyyə geri alındı (hələ qəbul edilməmişdi)"); gfLoadLog(); });
+            }
+            if (g.gid && (ud.pgDone || {})[g.gid] !== "a") {
+                return db.collection("payments").doc(pid).update({ revoked: true, revokedAt: now }).then(function () { showAppToast("Hədiyyə qəbul edilmədiyi üçün Premium dəyişmədi"); gfLoadLog(); });
+            }
+            const dur = g.gid ? (+g.days || 0) * DAY_MS : Math.max(0, (+g.until || 0) - (+g.from || +g.createdAt || 0));
             let nu = cur - dur;
             if (nu <= now) nu = 0;
             return ref.set({ premiumUntil: nu }, { merge: true }).then(function () {
@@ -12676,6 +12699,10 @@ body.pt-oh .settings-back,body.pt-oh .detail-back,body.pt-oh .profile-back,body.
 .pt-thx{display:block;margin-top:10px;height:38px;padding:0 20px;border:none;border-radius:12px;background:var(--accent-color);color:#111;font-weight:800;font-size:13px;font-family:inherit;cursor:pointer}
 .pt-thx:active{transform:scale(.97)}
 .pt-thx.done{opacity:.55;pointer-events:none}
+.pt-gfa{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.pt-gfa .pt-thx{margin-top:0}
+.pt-gfa .pt-gno{background:transparent;color:inherit;border:1px solid var(--c-bad,#e5484d)}
+.pt-gst{margin-top:6px;font-size:12px;opacity:.8}
 /* admin: hədiyyə bölməsinin əlavə tabları */
 .fm-seg.pt-seg6{overflow-x:auto;scrollbar-width:none}
 .fm-seg.pt-seg6::-webkit-scrollbar{display:none}
@@ -12738,7 +12765,7 @@ az: { pxDear: "Hörmətli istifadəçi", pxBlkTitle: "Hesabınız müvəqqəti m
   pxTools: "ƏLAVƏ ALƏTLƏR", pxHol: "🎉 Bayramlar", pxSave: "Yadda saxla", pxCancel: "Bağla",
   
   pxVarH: "{ad} yazsanız istifadəçinin adı əvəz olunur. Ad yoxdursa «Hörmətli istifadəçi» yazılır.", pxMsgPh: "Mesaj mətni... (az)", pxSentN: "{n} istifadəçiyə göndərildi", pxMsg: "Mesaj",
-  pxHolH: "Bayram günü istifadəçi tətbiqi açanda avtomatik təbrik (və hədiyyə) göndərilir. {ad} dəstəklənir.", pxHolName: "Bayramın adı", pxHolDate: "Tarix", pxHolYear: "Hər il təkrarlansın", pxHolGift: "Premium hədiyyə (gün, 0 = yoxdur)", pxHolAdd: "+ Bayram əlavə et", pxHolSaved: "Bayramlar yadda saxlandı ✓", pxHolNeed: "Ad, tarix və Azərbaycan dilində mətn tələb olunur",
+  pxHolH: "Bayram günü istifadəçi tətbiqi açanda avtomatik təbrik göndərilir; hədiyyə isə 10 gün ərzində «Qəbul et» ilə qəbul olunur. {ad} dəstəklənir.", pxHolName: "Bayramın adı", pxHolDate: "Tarix", pxHolYear: "Hər il təkrarlansın", pxHolGift: "Premium hədiyyə (gün, 0 = yoxdur)", pxHolAdd: "+ Bayram əlavə et", pxHolSaved: "Bayramlar yadda saxlandı ✓", pxHolNeed: "Ad, tarix və Azərbaycan dilində mətn tələb olunur",
   pxNote: "📝 Gizli qeyd", pxNoteH: "Gizli qeyd (yalnız admin görür)", pxNoteSaved: "Qeyd yadda saxlandı", pxNoteTag: "📝 Admin qeydi", pxErr: "Xəta" },
 ru: { pxDear: "Уважаемый пользователь", pxBlkTitle: "Ваш аккаунт временно ограничен", pxBlkReason: "Причина:", pxBlkLeft: "До снятия блокировки", pxBlkPerm: "Блокировка бессрочная", pxBlkDone: "Срок блокировки истёк ✓", pxD: "дн.",
   pxNewM: "Новинки: добавлено моделей — {n}: {m}", pxFit: "✓ Подошло", pxFitThx: "Спасибо! Ваше подтверждение учтено", pxFitDup: "Вы уже подтверждали эту модель", pxFitAcc: "Чтобы подтвердить, войдите или зарегистрируйтесь",
@@ -12770,10 +12797,10 @@ en: { pxDear: "Dear user", pxBlkTitle: "Your account is temporarily restricted",
 };
 Object.keys(X).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], X[l]); });
 var X2 = {
-az: { pxHolExp: "Hədiyyə müddəti bitdi", pxThx: "Təşəkkür", pxThxDone: "Təşəkkür göndərildi ✓", pxThxSent: "Təşəkkürünüz adminə çatdırıldı 🙏" },
-ru: { pxHolExp: "Срок получения подарка истёк", pxThx: "Спасибо", pxThxDone: "Спасибо отправлено ✓", pxThxSent: "Ваша благодарность передана администратору 🙏" },
-tr: { pxHolExp: "Hediye süresi doldu", pxThx: "Teşekkürler", pxThxDone: "Teşekkür gönderildi ✓", pxThxSent: "Teşekkürünüz yöneticiye iletildi 🙏" },
-en: { pxHolExp: "The gift period has expired", pxThx: "Thank you", pxThxDone: "Thanks sent ✓", pxThxSent: "Your thanks were delivered to the admin 🙏" }
+az: { gfAcc: "Qəbul et", gfRej: "Rədd et", gfAccd: "Hədiyyə qəbul edildi", gfRejd: "Hədiyyə rədd edildi", gfRejQ: "Hədiyyədən imtina etmək istədiyinizə əminsiniz?", gfDue: "Hədiyyəni {n} gün ərzində ({d} tarixinədək) qəbul edə bilərsiniz.", gfKeep: "Qəbul edilməmiş hədiyyə mesajı silinmir. Əvvəlcə hədiyyəni qəbul edin və ya rədd edin.", gfErr: "Əməliyyat yerinə yetirilmədi, bir qədər sonra yenidən cəhd edin", pxHolExp: "Hədiyyə müddəti bitdi", pxThx: "Təşəkkür", pxThxDone: "Təşəkkür göndərildi ✓", pxThxSent: "Təşəkkürünüz adminə çatdırıldı 🙏" },
+ru: { gfAcc: "Принять", gfRej: "Отклонить", gfAccd: "Подарок принят", gfRejd: "Подарок отклонён", gfRejQ: "Вы уверены, что хотите отказаться от подарка?", gfDue: "Подарок можно принять в течение {n} дней (до {d}).", gfKeep: "Сообщение с непринятым подарком не удаляется. Сначала примите или отклоните подарок.", gfErr: "Операция не выполнена, повторите попытку позже", pxHolExp: "Срок получения подарка истёк", pxThx: "Спасибо", pxThxDone: "Спасибо отправлено ✓", pxThxSent: "Ваша благодарность передана администратору 🙏" },
+tr: { gfAcc: "Kabul et", gfRej: "Reddet", gfAccd: "Hediye kabul edildi", gfRejd: "Hediye reddedildi", gfRejQ: "Hediyeyi reddetmek istediğinizden emin misiniz?", gfDue: "Hediyeyi {n} gün içinde ({d} tarihine kadar) kabul edebilirsiniz.", gfKeep: "Kabul edilmemiş hediye mesajı silinmez. Önce hediyeyi kabul edin veya reddedin.", gfErr: "İşlem gerçekleştirilemedi, lütfen daha sonra tekrar deneyin", pxHolExp: "Hediye süresi doldu", pxThx: "Teşekkürler", pxThxDone: "Teşekkür gönderildi ✓", pxThxSent: "Teşekkürünüz yöneticiye iletildi 🙏" },
+en: { gfAcc: "Accept", gfRej: "Decline", gfAccd: "Gift accepted", gfRejd: "Gift declined", gfRejQ: "Are you sure you want to decline the gift?", gfDue: "You can accept the gift within {n} days (until {d}).", gfKeep: "A gift message that has not been accepted cannot be deleted. Please accept or decline the gift first.", gfErr: "The operation could not be completed, please try again later", pxHolExp: "The gift period has expired", pxThx: "Thank you", pxThxDone: "Thanks sent ✓", pxThxSent: "Your thanks were delivered to the admin 🙏" }
 };
 Object.keys(X2).forEach(function (l) { if (I18N[l]) Object.assign(I18N[l], X2[l]); });
 
@@ -13078,7 +13105,7 @@ function loadHol() {
   }).catch(function () {});
 }
 function bakuAt(back) { var d = new Date(Date.now() + 4 * 3600000 - (back || 0) * 86400000); return { y: d.getUTCFullYear(), md: two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()), full: d.getUTCFullYear() + "-" + two(d.getUTCMonth() + 1) + "-" + two(d.getUTCDate()) }; }
-var HOL_GIFT_DAYS = 30; /* hədiyyə bayramdan sonra 1 ay ərzində qəbul olunur */
+var HOL_GIFT_DAYS = 9; /* hədiyyə bayram günü + 9 gün = 10 gün ərzində qəbul olunur */
 function holAge(h) {
   for (var k = 0; k <= HOL_GIFT_DAYS; k++) { var t = bakuAt(k); if ((h.md && h.md === t.md) || (h.date && h.date === t.full)) return k; }
   return -1;
@@ -13100,7 +13127,7 @@ function holidayCheck() {
         if (!toasted) { toasted = true; toast(texts[L()] || texts.az, 6500); }
       }
       /* admin hədiyyə almır; anım günlərində hədiyyə yoxdur */
-      if (!isAdmin && holType(h) !== "m" && +h.gift > 0) claimGift(h, t.y, u);
+      if (!isAdmin && holType(h) !== "m" && +h.gift > 0) holGiftPend(h, t, u);
     });
   } catch (e) {}
 }
@@ -13140,18 +13167,9 @@ renderNotifications = function () {
   try {
     [].forEach.call(document.querySelectorAll("#notifList .notif-item"), function (el) {
       var x = notifRendered[+el.getAttribute("data-i")];
-      if (x && x.type === "holiday" && +x.hg > 0 && !el.querySelector(".pt-hexp") && Date.now() - (+x.createdAt || 0) > HOL_GIFT_DAYS * DAY_MS) {
-        var gk = "holgift_" + x.hid + "_" + x.hy, got = false;
-        try { got = allNotifs().some(function (n) { return n && (n.local === gk || (n.type === "premium_gift" && n.reason === "holiday" && n.local === gk)); }); } catch (e) {}
-        var nb0 = el.querySelector(".nbody");
-        if (!got && nb0) {
-          var ex = document.createElement("div"); ex.className = "pt-hexp";
-          ex.style.cssText = "margin-top:6px;font-size:12px;opacity:.75";
-          ex.textContent = T("pxHolExp"); nb0.appendChild(ex);
-        }
-      }
       if (!x || x.type !== "premium_gift" || el.querySelector(".pt-thx")) return;
       var nb = el.querySelector(".nbody"); if (!nb) return;
+      if (giftIsNew(x)) { giftUi(x, nb); return; }
       var b = document.createElement("button"); b.type = "button"; b.className = "pt-thx" + (thxDone(x) ? " done" : "");
       b.textContent = thxDone(x) ? T("pxThxDone") : "🙏 " + T("pxThx");
       b.onclick = function (ev) { ev.stopPropagation(); thxSend(x, b); };
@@ -13166,7 +13184,135 @@ giftPopupCheck = function () {
   var x = allNotifs().filter(function (n) { return n.type === "premium_gift" && !n.read && shown.indexOf(notifKey(n)) < 0; })[0];
   if (!x) return;
   shown.push(notifKey(x)); jset("pt_gift_shown", shown.slice(-50));
+  if (giftIsNew(x)) {
+    var st = giftSt(x); if (st !== "p") return;
+    appDialog({ mode: "confirm", icon: "🎁", title: T("giftTitle"), text: giftMsg(x) + "\n\n" + giftDue(x), ok: "✓ " + T("gfAcc"), cancel: T("closeBtn") }).then(function (v) { if (v === true) giftAccept(x); });
+    return;
+  }
   appDialog({ mode: "confirm", icon: "🎁", title: T("giftTitle"), text: giftMsg(x), ok: "🙏 " + T("pxThx"), cancel: T("closeBtn") }).then(function (v) { if (v === true) thxSend(x, null); });
+};
+
+/* ---------- Hədiyyə: Qəbul et / Rədd et (10 gün) ----------
+   Admin hədiyyəsi: users/{uid}.pg[gid] = {d, e, t}; qəbul edilənə qədər Premium əlavə olunmur.
+   Bayram hədiyyəsi: bayram günü + 9 gün ərzində qəbul olunur (holGift/holGiftY).
+   Nəticə: users/{uid}.pgDone[açar] = "a" (qəbul) | "r" (rədd) | "x" (müddəti bitib). */
+var GIFT_WIN_DAYS = 10;
+function gKey(v) { return String(v || "").replace(/[^A-Za-z0-9_]/g, "_").slice(0, 60); }
+function giftIsNew(x) { return !!(x && x.type === "premium_gift" && (x.gid || x.hol)); }
+function giftDoneKey(x) { return x.gid ? gKey(x.gid) : "h_" + gKey(x.hol) + "_" + (+x.hy || 0); }
+function accD() { return (typeof accountData !== "undefined" && accountData) || {}; }
+function giftSt(x) {
+  var a = accD(), done = (a.pgDone || {})[giftDoneKey(x)];
+  if (x.hol && a.holGift === x.hol && +a.holGiftY === +x.hy) return "a";
+  if (done) return done;
+  if (x.gid && !(a.pg || {})[gKey(x.gid)]) return Object.keys(a).length ? "x" : "?";
+  return Date.now() >= (+x.exp || 0) ? "xp" : "p";
+}
+function giftDue(x) { return T("gfDue").replace("{n}", GIFT_WIN_DAYS).replace("{d}", fmtDate((+x.exp || 0) - 1)); }
+function giftUi(x, nb) {
+  var st = giftSt(x), line = document.createElement("div"); line.className = "pt-gst";
+  if (st === "p" || st === "xp") {
+    line.textContent = st === "p" ? "⏳ " + giftDue(x) : T("pxHolExp");
+    nb.appendChild(line);
+    var row = document.createElement("div"); row.className = "pt-gfa";
+    var ok = document.createElement("button"); ok.type = "button"; ok.className = "pt-thx"; ok.textContent = "✓ " + T("gfAcc");
+    ok.onclick = function (ev) { ev.stopPropagation(); giftAccept(x, ok); };
+    var no = document.createElement("button"); no.type = "button"; no.className = "pt-thx pt-gno"; no.textContent = "✕ " + T("gfRej");
+    no.onclick = function (ev) { ev.stopPropagation(); giftReject(x, no); };
+    row.appendChild(ok); row.appendChild(no); nb.appendChild(row);
+    return;
+  }
+  if (st === "a") {
+    line.textContent = "✓ " + T("gfAccd"); nb.appendChild(line);
+    var b = document.createElement("button"); b.type = "button"; b.className = "pt-thx" + (thxDone(x) ? " done" : "");
+    b.textContent = thxDone(x) ? T("pxThxDone") : "🙏 " + T("pxThx");
+    b.onclick = function (ev) { ev.stopPropagation(); thxSend(x, b); };
+    nb.appendChild(b);
+    return;
+  }
+  if (st === "r") line.textContent = "✕ " + T("gfRejd");
+  else if (st === "x") line.textContent = T("pxHolExp");
+  else return;
+  nb.appendChild(line);
+}
+function giftAfter(x, msg) {
+  try { if (x.id && !x.read) notifRef(me().uid).doc(x.id).update({ read: true }).catch(function () {}); } catch (e) {}
+  try { if (x.local) { var sn = getSeenLocal(); if (sn.indexOf(x.local) < 0) { sn.push(x.local); localStorage.setItem(NOTIF_SEEN_KEY, JSON.stringify(sn.slice(-200))); } } } catch (e) {}
+  x.read = true;
+  setTimeout(function () { try { renderNotifications(); updateNotifBadge(); } catch (e) {} }, 400);
+  if (msg) toast(msg, 5000);
+}
+function giftClose(x, code) {
+  var u = me(); if (!u) return Promise.resolve();
+  var o = {}, FV = firebase.firestore.FieldValue;
+  o["pgDone." + giftDoneKey(x)] = code;
+  if (x.gid) { o["pg." + gKey(x.gid)] = FV.delete(); o.pgLast = gKey(x.gid); }
+  return db.collection("users").doc(u.uid).update(o);
+}
+function giftAccept(x, btn) {
+  var u = me(); if (!u) return;
+  var st = giftSt(x);
+  if (st === "xp") {
+    giftClose(x, "x").catch(function () {});
+    appAlert(T("pxHolExp"), T("giftTitle"), "🎁");
+    giftAfter(x);
+    return;
+  }
+  if (st !== "p") return;
+  var a = accD(), days = 0, o = {};
+  if (x.gid) { var g = (a.pg || {})[gKey(x.gid)] || {}; days = Math.round(+g.d || 0); }
+  else days = Math.round(+x.days || 0);
+  if (days < 1) return;
+  var until = Math.max(Date.now(), +a.premiumUntil || 0) + days * DAY_MS;
+  if (x.gid) {
+    o.premiumUntil = until; o["pg." + gKey(x.gid)] = firebase.firestore.FieldValue.delete();
+    o["pgDone." + gKey(x.gid)] = "a"; o.pgLast = gKey(x.gid);
+  } else { o.premiumUntil = until; o.holGift = x.hol; o.holGiftY = +x.hy; }
+  if (btn) btn.disabled = true;
+  db.collection("users").doc(u.uid).update(o).then(function () {
+    giftAfter(x, "🎁 " + T("gfAccd") + " · Premium " + fmtDate(until));
+    try { updateProBadge(); } catch (e) {}
+  }).catch(function (e) {
+    if (btn) btn.disabled = false;
+    toast(T("gfErr") + " (" + ((e && (e.code || e.message)) || "") + ")", 6000);
+  });
+}
+function giftReject(x, btn) {
+  appConfirm(T("gfRejQ"), T("gfRej"), true).then(function (ok) {
+    if (!ok) return;
+    if (btn) btn.disabled = true;
+    giftClose(x, giftSt(x) === "xp" ? "x" : "r").then(function () { giftAfter(x, T("gfRejd")); })
+      .catch(function (e) { if (btn) btn.disabled = false; toast(T("gfErr") + " (" + ((e && (e.code || e.message)) || "") + ")", 6000); });
+  });
+}
+/* bayram hədiyyəsi: 10 gün ərzində mesaj kimi gəlir, avtomatik qəbul olunmur */
+function holGiftPend(h, t, u) {
+  var days = Math.round(+h.gift); if (days < 1) return;
+  var x = { hol: h.id, hy: t.y };
+  if (giftSt(Object.assign({ exp: Date.now() + 1 }, x)) !== "p") return;
+  var p = t.full.split("-"), exp = Date.UTC(+p[0], +p[1] - 1, +p[2]) - 4 * 3600000 + GIFT_WIN_DAYS * DAY_MS;
+  addLocal({ local: "holgift_" + h.id + "_" + t.y, uid: u.uid, type: "premium_gift", days: days, reason: "holiday", hol: h.id, hy: t.y, pend: 1, exp: exp, createdAt: Date.now() });
+  try { updateNotifBadge(); giftPopupCheck(); } catch (e) {}
+}
+/* gözləyən hədiyyə mesajı silinmir; D1 mesajı yoxdursa, pg-dən göstərilir */
+var _localNotifsG = localNotifs;
+localNotifs = function () {
+  var out = _localNotifsG.apply(this, arguments);
+  try {
+    var a = accD(), pg = a.pg || {}, have = {};
+    (notifItems || []).forEach(function (n) { if (n && n.gid) have[gKey(n.gid)] = 1; });
+    Object.keys(pg).forEach(function (k) {
+      if (have[k]) return; var g = pg[k] || {};
+      out.push({ local: "pg_" + k, type: "premium_gift", gid: k, pend: 1, days: +g.d || 0, unit: g.u || "d", gAmount: +g.a || +g.d || 0, reason: g.r || "", reasonText: g.x || "", exp: +g.e || 0, createdAt: +g.t || Date.now(), read: getSeenLocal().indexOf("pg_" + k) >= 0 });
+    });
+  } catch (e) {}
+  return out;
+};
+var _removeNotifsG = removeNotifs;
+removeNotifs = function (items) {
+  var keep = (items || []).filter(function (x) { return giftIsNew(x) && /^(p|xp)$/.test(giftSt(x)); });
+  if (keep.length) toast(T("gfKeep"), 5000);
+  return _removeNotifsG.call(this, (items || []).filter(function (x) { return keep.indexOf(x) < 0; }));
 };
 
 /* ---------- 3) blok: atmasın, geri sayım göstərsin ---------- */
@@ -13561,7 +13707,7 @@ function holRender() {
       '<span class="pt-hchev">›</span></summary><div class="pt-hb">' + (holOpenId === h.id ? holRowBody(h) : "") + "</div></details>";
   });
   box.innerHTML =
-    '<div class="fm-note"><div>Aktiv bayramda istifadəçi tətbiqi açanda (həmin gün və sonrakı 2 gün) öz dilində <b>AZ/RU/TR/EN</b> təbrik alır. Hədiyyə yazsanız, Premium avtomatik əlavə olunur (hər bayram ildə 1 dəfə). Anım günlərində təbrik yerinə ehtiram mesajı gedir. Admin hesabı hədiyyə almır.</div></div>' +
+    '<div class="fm-note"><div>Aktiv bayramda istifadəçi tətbiqi açanda (həmin gün və sonrakı 2 gün) öz dilində <b>AZ/RU/TR/EN</b> təbrik alır. Hədiyyə yazsanız, istifadəçi onu 10 gün ərzində «Qəbul et» düyməsi ilə qəbul edir; 11-ci gündən «Hədiyyə müddəti bitdi» bildirilir (hər bayram ildə 1 dəfə). Anım günlərində təbrik yerinə ehtiram mesajı gedir. Admin hesabı hədiyyə almır.</div></div>' +
     '<div class="pt-htools"><input class="fm-in" placeholder="🔎 Bayram axtar…" value="' + esc(holQ) + '" oninput="PTX.holFind(this.value)">' +
     '<select class="fm-in" onchange="PTX.holFilter(this.value)">' +
       [["all", "Hamısı"], ["on", "Aktiv"], ["off", "Söndürülmüş"], ["gift", "Hədiyyəli"], ["c", "Bayramlar"], ["a", "Xatırlatma günləri"], ["m", "Anım günləri"]].map(function (o) { return '<option value="' + o[0] + '"' + (holF === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") +
@@ -14014,7 +14160,7 @@ window.ptAdmPageOpened = function (id) {
     if (b) { b.disabled = true; b.textContent = "Göndərilir…"; }
     giftGrantOne(u, n, r, "").then(function (nu) {
       ptSheetClose();
-      showAppToast("🎁 " + gfName(u) + ": " + n + " gün · " + fmtDate(nu) + "-dək");
+      showAppToast("🎁 " + gfName(u) + ": " + n + " gün göndərildi · qəbul üçün " + fmtDate(nu - 1) + "-dək");
       if (window.ptPushNotif && u._giftNotif) ptPushNotif([u._id], u._giftNotif).then(function (d) {
         showAppToast("📲 Push: " + (d && typeof d.sent === "number" ? (d.sent ? d.sent + " cihaza göndərildi" : "istifadəçinin qeydiyyatlı cihazı yoxdur (APK quraşdırılmayıb)") : "göndərildi"), 5000);
       }).catch(function (e) { showAppToast("⚠️ Push göndərilmədi: " + ((e && e.message) || ""), 6000); });
