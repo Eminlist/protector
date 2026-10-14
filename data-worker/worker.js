@@ -711,7 +711,7 @@ const _handler = {
     if (path === "/bat/publish" && req.method === "POST") {
       const lines = Array.isArray(b.lines) ? b.lines : null;
       if (!lines || lines.length < 1 || lines.length > 30000) return E("data");
-      let arr = lines.map((x) => String(x).slice(0, 600)).filter((x) => x.indexOf("|") > 0);
+      let arr = lines.map((x) => String(x).slice(0, 20000)).filter((x) => x.indexOf("|") > 0);
       arr = await batOverlay(db, arr);   // GitHub-a yazıla bilməyən admin düzəlişləri itməsin
       const r = await batSave(env, ctx, db, me, arr);
       return r.err ? E(r.err) : J(r);
