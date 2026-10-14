@@ -385,3 +385,6 @@ html.embed .rform{margin-top:6px;border:0;box-shadow:none;background:transparent
 .vstrip{scroll-snap-type:none!important;overscroll-behavior-x:contain}
 .vstrip>details.acc[open] .acc-body{cursor:grab}
 .vstrip.dragging,.vstrip.dragging .acc-body{cursor:grabbing!important;user-select:none!important}
+/* Bütün şaquli menyular: toxunuşda yana sürüşməni skript idarə edir (sonsuz + sürətə uyğun hizaya oturma), şaquli sürüşmə — brauzer */
+.vstrip,.vstrip>details.acc[open] .acc-body{touch-action:pan-y}
+.vstrip{overscroll-behavior-x:none}

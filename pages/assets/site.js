@@ -278,11 +278,11 @@
       }
       busy = false;
     };
-    // Sonsuz fırlanma üçün zolaqların surəti əvvələ və sona əlavə olunur (yalnız sığmayan menyuda)
+    // Sonsuz fırlanma üçün zolaqların surəti əvvələ və sona əlavə olunur (bütün şaquli menyularda)
     w._fill = function () {
       if (w.querySelector(".vcl")) return;
       var orig = Array.prototype.slice.call(w.children);
-      if (orig.length < 2 || w.scrollWidth - w.clientWidth < 8) return;
+      if (orig.length < 2) return; // bütün şaquli menyular (sığanlar da) sonsuz fırlanır
       var mk = function (d) {
         var c = d.cloneNode(true);
         c.classList.add("vcl"); c.open = false; c._acc = 0;
@@ -291,12 +291,32 @@
         return c;
       };
       var first = orig[0];
-      orig.forEach(function (d) { w.appendChild(mk(d)); });
-      orig.forEach(function (d) { w.insertBefore(mk(d), first); });
+      // qısa menyularda da açıq zolaq kənara dirənməsin deyə ehtiyat surətlər kifayət qədər olmalıdır
+      var maxW = 0;
+      orig.forEach(function (d) { maxW = Math.max(maxW, d.getBoundingClientRect().width); });
+      for (var rnd = 0; rnd < 8; rnd++) {
+        orig.forEach(function (d) { w.appendChild(mk(d)); });
+        var lead = w.firstElementChild;
+        orig.forEach(function (d) { w.insertBefore(mk(d), lead === first ? first : lead); });
+        if (w.scrollWidth - w.clientWidth > w.clientWidth + maxW + 160) break;
+      }
       busy = true;
       w.scrollLeft = first.offsetLeft - w.firstElementChild.offsetLeft;
       busy = false;
       if (typeof bindAcc === "function") bindAcc(w);
+    };
+    // Sürüşdürmə: kənara dirənəndə zolaqları o biri başa keçirib qalan məsafəni də gedir (heç nə itmir)
+    w._move = function (dx) {
+      for (var i = 0; i < 6 && Math.abs(dx) > 0.5; i++) {
+        var a = w.scrollLeft;
+        w.scrollLeft = a + dx;
+        var got = w.scrollLeft - a;
+        dx -= got;
+        var b = w.scrollLeft;
+        w._fix();
+        if (Math.abs(dx) > 0.5 && w.scrollLeft === b && Math.abs(got) < 0.5) break; // daha yer yoxdur
+      }
+      w._fix();
     };
     setTimeout(function () { w._fill(); }, 0);
     var raf = 0;
@@ -311,52 +331,89 @@
     if (!w || w._dr) return;
     w._dr = 1;
     stripLoop(w);
-    var sx = 0, sy = 0, st = 0, down = false, moved = false, axis = "", body = null;
-    var lx = 0, lt = 0, v = 0, inert = 0;
-    w.addEventListener("pointerdown", function (e) {
-      if (e.pointerType !== "mouse" || e.button !== 0) return;
-      if (e.target.closest("a,button,input,textarea,select,iframe")) return;
+    var sx = 0, sy = 0, st = 0, down = false, moved = false, axis = "", body = null, pid = null, ptype = "";
+    var lx = 0, lt = 0, v = 0, inert = 0, wheelT = 0, wheelOn = false;
+    // Zolağın sol kənarını menyunun sol kənarına düzləyən mövqelər (hiza nöqtələri)
+    function snapPoints() {
+      var r = w.getBoundingClientRect(), pl = parseFloat(getComputedStyle(w).paddingLeft) || 0, out = [];
+      Array.prototype.forEach.call(w.children, function (c) {
+        out.push(w.scrollLeft + c.getBoundingClientRect().left - r.left - pl);
+      });
+      return out;
+    }
+    // Buraxanda: sürüşdürmə sürəti ilə gedir və eyni tempdə ən yaxın zolağın hizasına oturur
+    function glide(vel) {
       cancelAnimationFrame(inert);
+      var cur = w.scrollLeft, proj = cur - vel * 280, pts = snapPoints(), best = cur, bd = Infinity;
+      pts.forEach(function (p) {
+        if (vel > 0.05 && p > cur + 1) return;   // sağa atılıb — geri (sola) getmir
+        if (vel < -0.05 && p < cur - 1) return;  // sola atılıb — geri getmir
+        var dd = Math.abs(p - proj);
+        if (dd < bd) { bd = dd; best = p; }
+      });
+      var dist = best - cur;
+      if (Math.abs(dist) < 1) return;
+      var sp = Math.max(Math.abs(vel), 0.35);
+      var dur = Math.min(1400, Math.max(260, 3 * Math.abs(dist) / sp)); // easeOutCubic başlanğıc sürəti = buraxılış sürəti
+      var t0 = performance.now(), done = 0;
+      var step = function (now) {
+        var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3), want = dist * e;
+        w._move(want - done); done = want;
+        if (k < 1) inert = requestAnimationFrame(step); else inert = 0;
+      };
+      inert = requestAnimationFrame(step);
+    }
+    w._glide = glide;
+    w.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (e.target.closest("a,button,input,textarea,select,iframe")) return;
+      cancelAnimationFrame(inert); inert = 0;
       body = e.target.closest(".acc-body");
-      down = true; moved = false; axis = "";
+      down = true; moved = false; axis = ""; pid = e.pointerId; ptype = e.pointerType;
       sx = lx = e.clientX; sy = e.clientY; st = body ? body.scrollTop : 0;
       lt = performance.now(); v = 0;
     });
     window.addEventListener("pointermove", function (e) {
-      if (!down) return;
+      if (!down || e.pointerId !== pid) return;
       var dx = e.clientX - sx, dy = e.clientY - sy;
       if (!moved) {
         if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        // toxunuşda şaquli hərəkəti brauzer özü sürüşdürür (açıq yazı, səhifə)
+        if (ptype !== "mouse" && Math.abs(dy) > Math.abs(dx)) { down = false; return; }
         moved = true;
         axis = Math.abs(dx) >= Math.abs(dy) || !body ? "x" : "y";
         w.classList.add("dragging");
         try { window.getSelection().removeAllRanges(); } catch (x) {}
       }
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
       if (axis === "y") { body.scrollTop = st - dy; return; }
       var d = e.clientX - lx;
-      w.scrollLeft -= d;
-      w._fix();
+      w._move(-d);
       var now = performance.now(), dt = Math.max(1, now - lt);
-      v = d / dt; lx = e.clientX; lt = now;
-    });
-    window.addEventListener("pointerup", function () {
-      if (!down) return;
+      v = v * 0.35 + (d / dt) * 0.65; lx = e.clientX; lt = now;
+    }, { passive: false });
+    function up(e) {
+      if (!down || (e && e.pointerId !== pid)) return;
       down = false;
       w.classList.remove("dragging");
-      if (moved) { w._drag = 1; setTimeout(function () { w._drag = 0; }, 0); }
-      // buraxanda ətalətlə davam edir (tam sürüşmə)
-      if (moved && axis === "x" && Math.abs(v) > 0.05) {
-        var vel = v * 16;
-        var step = function () {
-          vel *= 0.94;
-          if (Math.abs(vel) < 0.4) return;
-          w.scrollLeft -= vel; w._fix();
-          inert = requestAnimationFrame(step);
-        };
-        inert = requestAnimationFrame(step);
+      if (moved) { w._drag = 1; setTimeout(function () { w._drag = 0; }, 250); }
+      if (moved && axis === "x") {
+        if (performance.now() - lt > 90) v = 0; // dayanıb buraxıbsa — sadəcə hizaya oturur
+        glide(v);
       }
-    });
+    }
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+    // Trekpad/təkərlə yana sürüşdürmə bitəndə də hizaya oturur
+    w.addEventListener("wheel", function (e) {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      wheelOn = true; cancelAnimationFrame(inert); inert = 0;
+    }, { passive: true });
+    w.addEventListener("scroll", function () {
+      if (!wheelOn || down || inert) return;
+      clearTimeout(wheelT);
+      wheelT = setTimeout(function () { wheelOn = false; if (!down && !inert) glide(0); }, 160);
+    }, { passive: true });
   }
   function bindAcc(root) {
     if (root.classList && root.classList.contains("vstrip")) { dragStrip(root); if (!root.querySelector(".vcl") && root._fill) setTimeout(root._fill, 0); }
@@ -383,7 +440,7 @@
           d.open = true;
           var toD = function () {
             try {
-              var x = par.scrollLeft + d.getBoundingClientRect().left - par.getBoundingClientRect().left - 4;
+              var x = par.scrollLeft + d.getBoundingClientRect().left - par.getBoundingClientRect().left - (parseFloat(getComputedStyle(par).paddingLeft) || 0);
               par.scrollTo({ left: Math.max(0, x), behavior: "smooth" });
             } catch (x) {}
           };
