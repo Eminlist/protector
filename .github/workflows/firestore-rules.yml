@@ -1,0 +1,42 @@
+name: Firestore rules (dərc)
+
+# firestore.rules dəyişəndə və ya əl ilə işə salınanda qaydaları birbaşa API ilə dərc edir
+on:
+  push:
+    branches: [main]
+    paths: [firestore.rules]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT: protechtor-99407
+      FIREBASE_SA: ${{ secrets.FIREBASE_SA }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Token
+        run: |
+          [ -n "$FIREBASE_SA" ] || { echo "::error::FIREBASE_SA secret yoxdur"; exit 1; }
+          printf '%s' "$FIREBASE_SA" > /tmp/sa.json
+          gcloud auth activate-service-account --key-file=/tmp/sa.json --quiet
+          T=$(gcloud auth print-access-token); echo "::add-mask::$T"; echo "TOKEN=$T" >> $GITHUB_ENV
+          rm -f /tmp/sa.json
+      - name: Ruleset yarat
+        run: |
+          jq -n --rawfile c firestore.rules '{source:{files:[{name:"firestore.rules",content:$c}]}}' > body.json
+          code=$(curl -sS -o rs.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            "https://firebaserules.googleapis.com/v1/projects/$PROJECT/rulesets" -d @body.json)
+          echo "HTTP $code"; cat rs.json
+          [ "$code" = "200" ] || exit 1
+          echo "RS=$(jq -r .name rs.json)" >> $GITHUB_ENV
+      - name: Release (dərc et)
+        run: |
+          jq -n --arg n "projects/$PROJECT/releases/cloud.firestore" --arg r "$RS" '{release:{name:$n,rulesetName:$r}}' > rel.json
+          code=$(curl -sS -o out.json -w '%{http_code}' -X PATCH \
+            -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+            "https://firebaserules.googleapis.com/v1/projects/$PROJECT/releases/cloud.firestore" -d @rel.json)
+          echo "HTTP $code"; cat out.json
+          [ "$code" = "200" ] || exit 1
+          echo "✓ Qaydalar dərc olundu: $RS"
