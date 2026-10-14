@@ -40,6 +40,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.indexOf('/api/') === 0) return;
   e.respondWith(
     fetch(e.request, { cache: 'no-store' }).then((res) => {
       if (res && res.ok) {

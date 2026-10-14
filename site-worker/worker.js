@@ -47,6 +47,28 @@ async function catalog(request, env, ctx, url) {
   return new Response(JSON.stringify(out), { headers: Object.assign({ "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-pt-cache": hit ? "HIT" : "MISS" }, CORS) });
 }
 
+// /api/v/* — protector-api-yə eyni ünvandan (protechtor.app) ötürmə.
+// protector-api yalnız köhnə eminlist.github.io mənbəyinə CORS icazəsi verir; protechtor.app-dan birbaşa sorğular
+// brauzerdə «Failed to fetch» verirdi (dərc, versiyaya qaytarma, baza yenilənməsi). Server-server sorğuda Origin olmur.
+async function apiProxy(request, env, url) {
+  const path = url.pathname.slice("/api/v".length) + url.search;
+  const h = new Headers();
+  const auth = request.headers.get("Authorization"); if (auth) h.set("Authorization", auth);
+  const ct = request.headers.get("Content-Type"); if (ct) h.set("Content-Type", ct);
+  const ip = request.headers.get("CF-Connecting-IP"); if (ip) { h.set("CF-Connecting-IP", ip); h.set("X-Forwarded-For", ip); }
+  const init = { method: request.method, headers: h };
+  if (request.method !== "GET" && request.method !== "HEAD") init.body = await request.arrayBuffer();
+  let r;
+  try {
+    const req = new Request(API_ORIGIN + path, init);
+    r = env.API ? await env.API.fetch(req) : await fetch(req);
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "upstream" }), { status: 502, headers: { "content-type": "application/json", "cache-control": "no-store" } });
+  }
+  const out = new Headers({ "content-type": r.headers.get("content-type") || "application/json", "cache-control": "no-store" });
+  return new Response(r.body, { status: r.status, headers: out });
+}
+
 // İlk səhifə rejimi (admin paneldən idarə olunur): on | nogirl | off — Cloudflare keşində qısa müddət saxlanılır
 const DATA_ORIGIN = "https://protector-data.o553115544.workers.dev";
 const LANDING_TTL = 20; // saniyə
@@ -74,6 +96,7 @@ export default {
     }
 
     if (url.pathname === "/api/catalog") return catalog(request, env, ctx, url);
+    if (url.pathname.indexOf("/api/v/") === 0) return apiProxy(request, env, url);
 
     // Proqram: /application/eminapp → /application/eminapp/
     if (url.pathname === "/application/eminapp" || url.pathname === "/index.html") {

@@ -3536,7 +3536,8 @@ const SEARCH_COUNT_KEY = "antiudar_search_count";
 const FREE_LIMIT = 3;
 const FS_DB_DOC = "app_data/database";
 const FS_CATALOG_DOC = "app_data/catalog";
-const API_BASE = "https://protector-api.o553115544.workers.dev";
+/* protechtor.app-da API sorğuları eyni ünvandan (/api/v) gedir — protector-api protechtor.app-a CORS icazəsi vermir */
+const API_BASE = /(^|\.)protechtor\.app$/.test(location.hostname) ? location.origin + "/api/v" : "https://protector-api.o553115544.workers.dev";
 async function apiFetch(path, opts) {
     const u = auth.currentUser;
     if (!u || (u.isAnonymous && !(opts && opts.anon))) { const e = new Error("auth"); e.code = "unauthenticated"; throw e; }

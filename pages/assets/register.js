@@ -13,7 +13,7 @@
   };
   var APPCHECK_KEY = "6Le-_-EtAAAAABzopqfpR0pI3_tNPLd4tHD0qChF";
   var TS_SITEKEY = "0x4AAAAAAFSWDremRZy4kQth";
-  var API_BASE = "https://protector-api.o553115544.workers.dev";
+  var API_BASE = /(^|\.)protechtor\.app$/.test(location.hostname) ? location.origin + "/api/v" : "https://protector-api.o553115544.workers.dev";
   var PREFIXES = ["10", "50", "51", "55", "60", "70", "77", "99", "12"];
 
   var auth = null, db = null, tsId, busy = false;
