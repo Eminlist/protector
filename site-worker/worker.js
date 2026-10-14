@@ -69,6 +69,31 @@ async function apiProxy(request, env, url) {
   return new Response(r.body, { status: r.status, headers: out });
 }
 
+// /api/d/* — protector-data-ya eyni ünvandan (protechtor.app) ötürmə.
+// Əvvəl brauzer protector-data.workers.dev-ə birbaşa (CORS ilə) müraciət edirdi: Worker resurs limitinə düşəndə və ya
+// mobil şəbəkə workers.dev-i kəsəndə Cloudflare CORS başlığı olmayan cavab qaytarırdı və brauzer yalnız «Failed to fetch» göstərirdi.
+// İndi sorğu eyni mənbədən gedir (CORS yoxdur), xəta olarsa real status və səbəb JSON kimi qaytarılır.
+async function dataProxy(request, env, url) {
+  const path = url.pathname.slice("/api/d".length) + url.search;
+  const h = new Headers();
+  ["Authorization", "Content-Type", "X-Meta"].forEach(function (k) { const v = request.headers.get(k); if (v) h.set(k, v); });
+  const init = { method: request.method, headers: h };
+  if (request.method !== "GET" && request.method !== "HEAD") init.body = await request.arrayBuffer();
+  const jerr = function (code, s) {
+    return new Response(JSON.stringify({ error: code }), { status: s, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
+  };
+  let r;
+  try {
+    const req = new Request(DATA_ORIGIN + path, init);
+    r = env.DATA ? await env.DATA.fetch(req) : await fetch(req);
+  } catch (e) {
+    return jerr("data-server: " + String((e && e.message) || e).slice(0, 160), 502);
+  }
+  const ct = r.headers.get("content-type") || "";
+  if (!/json/i.test(ct)) return jerr("data-server-" + r.status, r.ok ? 502 : r.status);
+  return new Response(r.body, { status: r.status, headers: { "content-type": ct, "cache-control": "no-store" } });
+}
+
 // İlk səhifə rejimi (admin paneldən idarə olunur): on | nogirl | off — Cloudflare keşində qısa müddət saxlanılır
 const DATA_ORIGIN = "https://protector-data.o553115544.workers.dev";
 const LANDING_TTL = 20; // saniyə
@@ -97,6 +122,7 @@ export default {
 
     if (url.pathname === "/api/catalog") return catalog(request, env, ctx, url);
     if (url.pathname.indexOf("/api/v/") === 0) return apiProxy(request, env, url);
+    if (url.pathname.indexOf("/api/d/") === 0) return dataProxy(request, env, url);
 
     // Proqram: /application/eminapp → /application/eminapp/
     if (url.pathname === "/application/eminapp" || url.pathname === "/index.html") {

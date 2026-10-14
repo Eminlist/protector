@@ -3566,7 +3566,10 @@ async function apiFetch(path, opts) {
     return d;
 }
 // ---------- D1 (protector-data Worker): bildirişlər, «Uyğun gəlmədi» hesabatları, əsas baza versiyaları ----------
-const DATA_API = "https://protector-data.o553115544.workers.dev";
+/* protechtor.app-da D1 sorğuları eyni ünvandan (/api/d) gedir. Birbaşa workers.dev sorğusu Worker limitə düşəndə və ya
+   mobil şəbəkə kəsəndə CORS-suz cavab alırdı və brauzer yalnız «Failed to fetch» göstərirdi (dərc dayanırdı). */
+const DATA_DIRECT = "https://protector-data.o553115544.workers.dev";
+const DATA_API = /(^|\.)protechtor\.app$/.test(location.hostname) ? location.origin + "/api/d" : DATA_DIRECT;
 const CATALOG_CDN = "https://protechtor.app/api/catalog";
 async function dataFetch(path, opts) {
     const u = auth.currentUser;
@@ -3574,7 +3577,16 @@ async function dataFetch(path, opts) {
     const tok = await u.getIdToken();
     const o = Object.assign({}, opts || {});
     o.headers = Object.assign({ "Authorization": "Bearer " + tok }, o.body ? { "Content-Type": "application/json" } : {}, o.headers || {});
-    const r = await fetch(DATA_API + path, o);
+    // Şəbəkə kəsilməsində 3 cəhd: 2 dəfə eyni ünvandan, sonuncu birbaşa Worker ünvanından
+    let r = null, netErr = null;
+    for (let t = 0; t < 3; t++) {
+        try { r = await fetch((t === 2 && DATA_API !== DATA_DIRECT ? DATA_DIRECT : DATA_API) + path, o); netErr = null; break; }
+        catch (e) { netErr = e; await new Promise(function (res) { setTimeout(res, 1200 * (t + 1)); }); }
+    }
+    if (!r) {
+        const e = new Error("Serverlə əlaqə qurulmadı — internet bağlantısını yoxlayıb yenidən cəhd edin");
+        e.code = "network"; e.cause = netErr; throw e;
+    }
     let d = null;
     try { d = await r.json(); } catch (e) { d = null; }
     if (!r.ok) {
