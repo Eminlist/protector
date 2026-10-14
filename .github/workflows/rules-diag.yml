@@ -1,4 +1,4 @@
-name: Rules diag (müvəqqəti)
+name: Rules diag (müvəqqəti) v3
 on:
   push:
     branches: [main]

@@ -95,12 +95,12 @@ service cloud.firestore {
     function ymdOf(t) { return t.year() * 10000 + t.month() * 100 + t.day(); }
 
     function holHit(h, id) {
-      let v = h.get('dates', {}).get(id, 0);
+      let v = int(h.get('dates', {}).get(id, 0));
       let t0 = request.time + duration.value(4, 'h');
       let full = v >= 10000000;
-      let m = full ? math.floor(v / 100) % 100 : math.floor(v / 100);
+      let m = full ? int(v / 100) % 100 : int(v / 100);
       let d = v % 100;
-      let y0 = full ? math.floor(v / 10000) : t0.year();
+      let y0 = full ? int(v / 10000) : t0.year();
       let hd0 = timestamp.date(y0, m, d);
       let hd = (full || hd0 <= t0) ? hd0 : timestamp.date(y0 - 1, m, d);
       return v != 0
@@ -108,7 +108,27 @@ service cloud.firestore {
         && t0 < hd + duration.value(10, 'd');
     }
 
-    function holGiftOk() { return false; }
+    function holGiftOk() {
+      let d = request.resource.data;
+      let o = resource.data;
+      let h = get(/databases/$(database)/documents/app_data/holidays).data;
+      let id = d.get('holGift', '');
+      let days = h.get('gifts', {}).get(id, 0);
+      let nowMs = request.time.toMillis();
+      let base = o.get('premiumUntil', 0) > nowMs ? o.get('premiumUntil', 0) : nowMs;
+      let want = base + days * 86400000;
+      return id is string && id != ''
+        && days > 0
+        && holHit(h, id)
+        && (d.get('holGiftY', 0) == (request.time + duration.value(4, 'h')).year()
+            || d.get('holGiftY', 0) == (request.time + duration.value(4, 'h')).year() - 1)
+        && !(o.get('holGift', '') == id && o.get('holGiftY', 0) == d.get('holGiftY', 0))
+        && d.get('premiumUntil', 0) is int
+        && d.premiumUntil >= want - 900000
+        && d.premiumUntil <= want + 900000
+        && notBlocked(o)
+        && d.diff(o).affectedKeys().hasOnly(['premiumUntil', 'holGift', 'holGiftY']);
+    }
 
     // ===== Admin hədiyyəsi: users/{uid}.pg[gid] = {d: gün, e: bitmə ms}; 10 gün ərzində «Qəbul et» =====
     function giftAcceptOk() {

@@ -76,7 +76,12 @@ service cloud.firestore {
              && (d.get('blockUntil', 0) == 0 || d.get('blockUntil', 0) > request.time.toMillis()));
     }
 
-    function canOpenModel(id) { return false; }
+    function canOpenModel(id) {
+      let u = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return canReadDb()
+        && u.get('q', '') == id
+        && notBlocked(u);
+    }
 
     function canReport() {
       let path = /databases/$(database)/documents/users/$(request.auth.uid);
@@ -90,17 +95,15 @@ service cloud.firestore {
     function ymdOf(t) { return t.year() * 10000 + t.month() * 100 + t.day(); }
 
     function holHit(h, id) {
-      let v = h.get('dates', {}).get(id, 0);
-      let t0 = request.time + duration.value(4, 'h');
+      let v = int(h.get('dates', {}).get(id, 0));
+      let t0 = request.time.toMillis() + 14400000;
       let full = v >= 10000000;
-      let m = full ? math.floor(v / 100) % 100 : math.floor(v / 100);
+      let m = full ? int(v / 100) % 100 : int(v / 100);
       let d = v % 100;
-      let y0 = full ? math.floor(v / 10000) : t0.year();
-      let hd0 = timestamp.date(y0, m, d);
-      let hd = (full || hd0 <= t0) ? hd0 : timestamp.date(y0 - 1, m, d);
-      return v != 0
-        && hd <= t0
-        && t0 < hd + duration.value(10, 'd');
+      let ya = full ? int(v / 10000) : (request.time + duration.value(4, 'h')).year();
+      let y = (full || timestamp.date(ya, m, d).toMillis() <= t0) ? ya : ya - 1;
+      let hd = timestamp.date(y, m, d).toMillis();
+      return v != 0 && hd <= t0 && t0 < hd + 864000000;
     }
 
     function holGiftOk() {
