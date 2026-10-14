@@ -18,17 +18,8 @@ jobs:
           gcloud auth activate-service-account --key-file=/tmp/sa.json --quiet
           T=$(gcloud auth print-access-token); echo "::add-mask::$T"; rm -f /tmp/sa.json
           A="Authorization: Bearer $T"; B=https://firebaserules.googleapis.com/v1/projects/$P
-          echo "== releases"; curl -sS -H "$A" "$B/releases?pageSize=20"; echo
-          echo "== rulesets list"; curl -sS -o rl.json -w 'HTTP %{http_code}\n' -H "$A" "$B/rulesets?pageSize=5"; head -c 600 rl.json; echo
-          R=$(curl -sS -H "$A" "$B/releases/cloud.firestore" | jq -r .rulesetName); echo "live: $R"
-          echo "== live ruleset get"; curl -sS -o live.json -w 'HTTP %{http_code}\n' -H "$A" "https://firebaserules.googleapis.com/v1/$R"
-          jq -r '.source.files[0].content' live.json > live.rules 2>/dev/null; wc -l live.rules; grep -n "duration.value\|holWin" live.rules | head
-          echo "== create trivial ruleset"
-          jq -n '{source:{files:[{name:"t.rules",content:"rules_version = '"'"'2'"'"';\nservice cloud.firestore { match /databases/{d}/documents { match /{x=**} { allow read, write: if false; } } }"}]}}' > t.json
-          curl -sS -w '\nHTTP %{http_code}\n' -X POST -H "$A" -H "Content-Type: application/json" "$B/rulesets" -d @t.json
-          echo "== create ruleset from LIVE source"
-          jq -n --rawfile c live.rules '{source:{files:[{name:"firestore.rules",content:$c}]}}' > l.json
-          curl -sS -w '\nHTTP %{http_code}\n' -X POST -H "$A" -H "Content-Type: application/json" "$B/rulesets" -d @l.json | tail -c 400
-          echo "== test NEW source (:test)"
-          jq -n --rawfile c firestore.rules '{source:{files:[{name:"firestore.rules",content:$c}]}}' > n.json
-          curl -sS -w '\nHTTP %{http_code}\n' -X POST -H "$A" -H "Content-Type: application/json" "https://firebaserules.googleapis.com/v1/projects/$P:test" -d @n.json | tail -c 1500
+          for f in tools/rdiag/*.rules; do
+            jq -n --rawfile c "$f" '{source:{files:[{name:"firestore.rules",content:$c}]}}' > v.json
+            code=$(curl -sS -o vr.json -w '%{http_code}' -X POST -H "$A" -H "Content-Type: application/json" "$B/rulesets" -d @v.json)
+            echo "RESULT $(basename $f) HTTP $code $(jq -c '.error.message // empty' vr.json | head -c 300)"
+          done
