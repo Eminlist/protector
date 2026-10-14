@@ -2807,6 +2807,10 @@ html.sensitive .ripple-ring{display:none !important}
                 </div>
                 <div class="adm-grp">FAYLLAR</div>
                 <div class="adm-tiles four"><button type="button" class="adm-tile " onclick="adminImportFromGitHub()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>Əsas baza</span></button><button type="button" class="adm-tile " onclick="adminExportCSV()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></svg></span><span>İstifadəçilər (CSV)</span></button><button type="button" class="adm-tile " onclick="adminBackupJSON()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>JSON yüklə</span><input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)"></label></div>
+                <div class="adm-grp">BATAREYA BAZASI</div>
+                <input type="text" id="ptBatAdmQ" class="admin-search adm-search" placeholder="🔋 Batareya: model / kod axtar..." oninput="ptBatAdmRender()">
+                <div class="adm-tiles"><button type="button" class="adm-tile" onclick="ptBatAdmLoad()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>Batareya bazası</span></button><button type="button" class="adm-tile" onclick="ptBatAdmAdd()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></svg></span><span>Yeni sətir</span></button><button type="button" class="adm-tile ok" onclick="ptBatAdmSave()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg></span><span>Yadda saxla <b id="ptBatAdmDirty"></b></span></button></div>
+                <div id="ptBatAdmList" class="admin-list"><div class="admin-empty">«Batareya bazası» basın — GitHub-dakı Battery.json yüklənəcək.</div></div>
             </div>
         </details>
         <div class="adm-acc adm-link" role="button" tabindex="0" onclick="admPageOpen('users')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();admPageOpen('users')}">
@@ -6244,7 +6248,7 @@ async function adminPublishDatabase() {
     setAdminStatus("Dərc edilir...");
     showProgress("Dərc edilir…");
     progCountTo(namesFromGroups(cleaned).length);
-    progPhases(["phCompare", "phCodes", "phWrite", "phSync"], 1900);
+    progPhases(["phCompare", "phCodes", "phWrite", "phSync"], 700);
     const pubStart = Date.now();
     try {
         const oldDb = JSON.parse(JSON.stringify(database || []));
@@ -6302,8 +6306,8 @@ async function adminPublishDatabase() {
         triggerHaptic(50);
         if (typeof playSuccessSound === "function") playSuccessSound();
         renderAdminList();
-        const pubLeft = 11000 - (Date.now() - pubStart);
-        setTimeout(function () { finishProgress(true); }, Math.max(900, pubLeft));
+        const pubLeft = 1500 - (Date.now() - pubStart);
+        setTimeout(function () { finishProgress(true); }, Math.max(300, pubLeft));
     } catch (err) {
         console.error(err);
         finishProgress(false);
@@ -6667,9 +6671,19 @@ async function publishPublicModels(groups) {
             }
         }
     }
-    for (let i = 0; i < chunks.length; i++) {
-        setAdminStatus("İstifadəçi bazası yenilənir... " + (i + 1) + "/" + chunks.length);
-        await sendChunk(chunks[i], 0);
+    // Paketlər 3-3 paralel göndərilir (əvvəl bir-bir gedirdi — dərc uzun çəkirdi)
+    let nextI = 0, doneN = 0;
+    async function worker() {
+        while (nextI < chunks.length) {
+            const i = nextI++;
+            await sendChunk(chunks[i], 0);
+            doneN++;
+            setAdminStatus("İstifadəçi bazası yenilənir... " + doneN + "/" + chunks.length);
+        }
+    }
+    if (chunks.length) {
+        setAdminStatus("İstifadəçi bazası yenilənir... 0/" + chunks.length);
+        await Promise.all([worker(), worker(), worker()]);
     }
     const ver = ops.length || !oldVer ? Date.now() : oldVer;
     await ptMetaPut("İndeks", { method: "PUT", body: JSON.stringify({ key: "pubindex", val: { h: hashes, ver: ver, updatedAt: Date.now() } }) });
@@ -11982,7 +11996,8 @@ function buildSizeIndex(groups) {
             const sp = modelSpec(m);
             if (!sp || !sp.h || !sp.w) return;
             const b = Math.round(sp.h) + "|" + Math.round(sp.w);
-            (idx[b] = idx[b] || []).push({ m: String(m), h: sp.h, w: sp.w });
+            const k = norm(m);
+            (idx[b] = idx[b] || []).push({ m: String(m), h: sp.h, w: sp.w, k: k, ip: /^iphone/.test(k) });
         });
     });
     return idx;
@@ -11999,8 +12014,8 @@ function sameSizeList(group, idx) {
     sizes.forEach(function (sp) {
         for (let dh = -1; dh <= 1; dh++) for (let dw = -1; dw <= 1; dw++) {
             (idx[(Math.round(sp.h) + dh) + "|" + (Math.round(sp.w) + dw)] || []).forEach(function (e) {
-                const k = norm(e.m);
-                if (own[k] || seen[k] || isIp(e.m) !== ip) return;
+                const k = e.k !== undefined ? e.k : norm(e.m);
+                if (own[k] || seen[k] || (e.ip !== undefined ? e.ip : isIp(e.m)) !== ip) return;
                 if (Math.abs(e.h - sp.h) <= 0.3 && Math.abs(e.w - sp.w) <= 0.3) { seen[k] = 1; out.push(e.m); }
             });
         }
@@ -12021,8 +12036,8 @@ function smallerSizeList(group, idx, exclude) {
     const out = [], seen = {};
     for (let h = Math.round(H) - 3; h <= Math.round(H) + 1; h++) for (let w = Math.round(W) - 3; w <= Math.round(W) + 1; w++) {
         (idx[h + "|" + w] || []).forEach(function (e) {
-            const k = norm(e.m);
-            if (own[k] || seen[k] || isIp(e.m) !== ip) return;
+            const k = e.k !== undefined ? e.k : norm(e.m);
+            if (own[k] || seen[k] || (e.ip !== undefined ? e.ip : isIp(e.m)) !== ip) return;
             const dh = H - e.h, dw = W - e.w;
             if (dh < 0 || dw < 0 || dh > 2 || dw > 2 || Math.max(dh, dw) < 0.5) return;
             seen[k] = 1;
@@ -15610,6 +15625,135 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
       adminPublishDatabase._bat = 1;
     }
   }
+
+  /* ===== Admin → Baza idarəsi → «BATAREYA BAZASI»: Battery.json sətirlərini axtar / düzəlt / əlavə et / sil =====
+     Sətir formatı: «Model 1, Model 2 | KOD1, KOD2» (+ istəyə görə « | verified»).
+     «Yadda saxla»: GitHub-dakı Battery.json yazılır və sayt bazası (D1) dərhal yenilənir. */
+  var batAdm = { lines: null, dirty: 0, busy: false, limit: 60 };
+  function batAdmFix(v) {
+    var parts = String(v || "").split("|").map(function (x) { return x.trim(); });
+    if (parts.length < 2 || !parts[0] || !parts[1]) return null;
+    var models = parts[0].split(",").map(function (x) { return x.trim(); }).filter(Boolean).join(", ");
+    var codes = parts[1].split(",").map(function (x) { return x.trim(); }).filter(Boolean).join(", ");
+    if (!models || !codes) return null;
+    return [models, codes].concat(parts.slice(2).filter(Boolean)).join(" | ");
+  }
+  function batAdmDirty() { var b = $("ptBatAdmDirty"); if (b) b.textContent = batAdm.dirty ? "(" + batAdm.dirty + ")" : ""; }
+  window.ptBatAdmLoad = async function () {
+    if (!isAdmin || batAdm.busy) return;
+    if (batAdm.dirty && !confirm("Yadda saxlanmamış " + batAdm.dirty + " dəyişiklik itəcək. Yenidən yüklənsin?")) return;
+    batAdm.busy = true;
+    var box = $("ptBatAdmList"); if (box) box.innerHTML = '<div class="admin-empty">Battery.json yüklənir…</div>';
+    try {
+      batAdm.lines = await fetchBatteryFromGitHub();
+      batAdm.dirty = 0; batAdm.limit = 60;
+      setAdminStatus("🔋 Batareya bazası yükləndi · " + batAdm.lines.length + " sətir");
+    } catch (e) {
+      batAdm.lines = null;
+      if (box) box.innerHTML = '<div class="admin-empty">Yüklənmədi: ' + escapeHtml((e && e.message) || "") + '</div>';
+      batAdm.busy = false; return;
+    }
+    batAdm.busy = false; batAdmDirty(); ptBatAdmRender();
+  };
+  window.ptBatAdmRender = function () {
+    var box = $("ptBatAdmList"); if (!box) return;
+    if (!batAdm.lines) { if (($("ptBatAdmQ") || {}).value) ptBatAdmLoad(); return; }
+    var q = String(($("ptBatAdmQ") || {}).value || "").trim().toLowerCase(), qz = nzs(q);
+    var hits = [];
+    batAdm.lines.forEach(function (l, i) {
+      if (!q || String(l).toLowerCase().indexOf(q) >= 0 || (qz && nzs(l).indexOf(qz) >= 0)) hits.push(i);
+    });
+    box.innerHTML = "";
+    var info = document.createElement("div");
+    info.className = "admin-empty";
+    info.textContent = "🔋 " + batAdm.lines.length + " sətir" + (q ? " · tapıldı: " + hits.length : "") + " · format: Model 1, Model 2 | KOD1, KOD2";
+    box.appendChild(info);
+    hits.slice(0, batAdm.limit).forEach(function (i) {
+      var row = document.createElement("div");
+      row.className = "admin-model-row";
+      var inp = document.createElement("input");
+      inp.type = "text"; inp.value = batAdm.lines[i];
+      inp.placeholder = "Model 1, Model 2 | KOD1, KOD2";
+      inp.addEventListener("change", function () {
+        var v = batAdmFix(this.value);
+        if (!v) { showAppToast("Format: Model 1, Model 2 | KOD1, KOD2"); this.value = batAdm.lines[i]; return; }
+        if (v !== batAdm.lines[i]) { batAdm.lines[i] = v; batAdm.dirty++; batAdmDirty(); }
+        this.value = v;
+      });
+      var del = document.createElement("button");
+      del.type = "button"; del.className = "admin-icon-btn del"; del.title = "Sətiri sil"; del.textContent = "🗑";
+      del.addEventListener("click", function () {
+        if (!confirm("Silinsin?\n" + batAdm.lines[i])) return;
+        batAdm.lines.splice(i, 1); batAdm.dirty++; batAdmDirty(); ptBatAdmRender();
+      });
+      row.appendChild(inp); row.appendChild(del);
+      box.appendChild(row);
+    });
+    if (hits.length > batAdm.limit) {
+      var more = document.createElement("button");
+      more.type = "button"; more.className = "admin-icon-btn";
+      more.style.cssText = "width:100%;margin-top:6px;padding:8px";
+      more.textContent = "Daha çox göstər (" + (hits.length - batAdm.limit) + ")";
+      more.addEventListener("click", function () { batAdm.limit += 60; ptBatAdmRender(); });
+      box.appendChild(more);
+    }
+  };
+  window.ptBatAdmAdd = async function () {
+    if (!isAdmin) return;
+    if (!batAdm.lines) { await ptBatAdmLoad(); if (!batAdm.lines) return; }
+    var v = prompt("Yeni sətir (Model 1, Model 2 | KOD1, KOD2):", "");
+    if (v == null) return;
+    v = batAdmFix(v);
+    if (!v) { showAppToast("Format: Model 1, Model 2 | KOD1, KOD2"); return; }
+    batAdm.lines.push(v); batAdm.dirty++; batAdmDirty();
+    var qi = $("ptBatAdmQ"); if (qi) qi.value = v.split("|")[0].split(",")[0].trim();
+    ptBatAdmRender();
+  };
+  async function githubWriteBattery(lines, msg) {
+    var token = "";
+    try { var sn = await db.doc("admin/github").get(); if (sn.exists) token = String((sn.data() || {}).token || "").trim(); } catch (e) {}
+    if (!token) return { ok: false, why: "GitHub tokeni yoxdur" };
+    var H = { "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+    var url = "https://api.github.com/repos/Eminlist/Emin/contents/Battery.json";
+    var r = await fetch(url + "?ref=main&t=" + Date.now(), { headers: H, cache: "no-store" });
+    if (!r.ok) return { ok: false, why: "oxunmadı (" + r.status + ")" };
+    var j = await r.json(), pretty = true;
+    if (j.content) { try { pretty = /^\[\s*\n/.test(utf8b64(j.content)); } catch (e) {} }
+    var txt = JSON.stringify(lines, null, pretty ? 2 : 0) + (pretty ? "\n" : "");
+    var w = await fetch(url, { method: "PUT", headers: Object.assign({ "Content-Type": "application/json" }, H), body: JSON.stringify({ message: msg, content: b64utf8(txt), sha: j.sha, branch: "main" }) });
+    if (!w.ok) return { ok: false, why: w.status === 409 ? "fayl bu arada dəyişib — yenidən yükləyin (409)" : (w.status === 403 || w.status === 404 ? "token yazmağa icazəli deyil (" + w.status + ")" : "yazılmadı (" + w.status + ")") };
+    return { ok: true };
+  }
+  window.ptBatAdmSave = async function () {
+    if (!isAdmin || batAdm.busy) return;
+    if (!batAdm.lines) { showAppToast("Əvvəlcə «Batareya bazası» basın"); return; }
+    if (!batAdm.dirty) { showAppToast("Dəyişiklik yoxdur"); return; }
+    batAdm.busy = true;
+    var lines = batAdm.lines.slice();
+    setAdminStatus("🔋 Batareya bazası yadda saxlanılır…");
+    var gh = { ok: false, why: "" };
+    try { gh = await githubWriteBattery(lines, "Battery: " + batAdm.dirty + " dəyişiklik (admin paneldən)"); } catch (e) { gh = { ok: false, why: String((e && e.message) || e).slice(0, 60) }; }
+    if (!gh.ok) {
+      batAdm.busy = false;
+      setAdminStatus("🔋 Saxlanılmadı: " + gh.why);
+      showAppToast("🔋 GitHub-a yazılmadı: " + gh.why + " — heç nə dəyişmədi", 6000);
+      return;
+    }
+    try {
+      var res = await dataPost("/bat/publish", { lines: lines });
+      window.ptBatPending = null;
+      batAdm.dirty = 0; batAdmDirty();
+      meta = null; loadMeta();
+      var inp = $("searchInput"); if (inp && inp.value.trim()) performSearch(inp.value);
+      setAdminStatus("🔋 Batareya bazası saxlanıldı və dərc olundu · " + (res && res.n || 0) + " model · " + (res && res.c || 0) + " kod");
+      showAppToast("🔋 Saxlanıldı ✓ — GitHub (Battery.json) və sayt yeniləndi");
+    } catch (e) {
+      setAdminStatus("🔋 GitHub-a yazıldı, sayt yenilənmədi: " + ((e && (e.code || e.message)) || "") + " — «Dərc et» basın");
+      showAppToast("🔋 GitHub-a yazıldı ✓, sayt yenilənmədi — «Dərc et» basın", 6000);
+      batAdm.dirty = 0; batAdmDirty();
+    }
+    batAdm.busy = false;
+  };
 
   document.addEventListener("DOMContentLoaded", init);
   if (document.readyState !== "loading") init();
