@@ -2807,10 +2807,7 @@ html.sensitive .ripple-ring{display:none !important}
                 </div>
                 <div class="adm-grp">FAYLLAR</div>
                 <div class="adm-tiles four"><button type="button" class="adm-tile " onclick="adminImportFromGitHub()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>Əsas baza</span></button><button type="button" class="adm-tile " onclick="adminExportCSV()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /><path d="M14 2v5a1 1 0 0 0 1 1h5" /><path d="M8 13h2" /><path d="M14 13h2" /><path d="M8 17h2" /><path d="M14 17h2" /></svg></span><span>İstifadəçilər (CSV)</span></button><button type="button" class="adm-tile " onclick="adminBackupJSON()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>JSON yüklə</span><input type="file" id="adminJsonFile" accept=".json,application/json" style="display:none" onchange="adminImportJsonFile(this)"></label></div>
-                <div class="adm-grp">BATAREYA BAZASI</div>
-                <input type="text" id="ptBatAdmQ" class="admin-search adm-search" placeholder="🔋 Batareya: model / kod axtar..." oninput="ptBatAdmRender()">
-                <div class="adm-tiles"><button type="button" class="adm-tile" onclick="ptBatAdmLoad()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>Batareya bazası</span></button><button type="button" class="adm-tile" onclick="ptBatAdmAdd()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></svg></span><span>Yeni sətir</span></button><button type="button" class="adm-tile ok" onclick="ptBatAdmSave()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg></span><span>Yadda saxla <b id="ptBatAdmDirty"></b></span></button></div>
-                <div id="ptBatAdmList" class="admin-list"><div class="admin-empty">«Batareya bazası» basın — GitHub-dakı Battery.json yüklənəcək.</div></div>
+                <div class="adm-tiles four" style="margin-top:8px"><button type="button" class="adm-tile" onclick="ptBatBackup()"><span class="e3d ic3d" style="--a:#E6B07A;--b:#9C5A24" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" /><path d="M10 12h4" /></svg></span><span>🔋 Backup (JSON)</span></button><label class="adm-tile" style="margin:0;"><span class="e3d ic3d" style="--a:#FFD666;--b:#E39400" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg></span><span>🔋 JSON yüklə</span><input type="file" id="ptBatJsonFile" accept=".json,application/json" style="display:none" onchange="ptBatImport(this)"></label></div>
             </div>
         </details>
         <div class="adm-acc adm-link" role="button" tabindex="0" onclick="admPageOpen('users')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();admPageOpen('users')}">
@@ -3354,6 +3351,14 @@ html.sensitive .ripple-ring{display:none !important}
             <details class="adm-acc adm-db-acc" id="admDbAcc">
                 <summary><span class="e3d ic3d" aria-hidden="true"><svg viewBox="0 0 24 24"><rect width="8" height="18" x="3" y="3" rx="1" /><path d="M7 3v18" /><path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z" /></svg></span><span>Modellər bazası <small id="admDbCount" class="adm-db-count"></small></span><span class="chev">›</span></summary>
                 <div class="adm-acc-body"><div id="adminList" class="admin-list"></div></div>
+            </details>
+            <details class="adm-acc adm-db-acc" id="ptBatAcc" ontoggle="if(this.open)ptBatAdmOpen()">
+                <summary><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2" /><path d="M22 11v2" /><path d="M6 10v4" /><path d="M10 10v4" /></svg></span><span>Batareya bazası <small id="ptBatAdmCount" class="adm-db-count"></small></span><span class="chev">›</span></summary>
+                <div class="adm-acc-body">
+                <input type="text" id="ptBatAdmQ" class="admin-search adm-search" placeholder="🔋 Model / batareya kodu axtar..." oninput="ptBatAdmRender()">
+                <div class="adm-tiles"><button type="button" class="adm-tile" onclick="ptBatAdmLoad()"><span class="e3d ic3d" style="--a:#6B7383;--b:#262B33" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 15V3" /><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><path d="m7 10 5 5 5-5" /></svg></span><span>Yenilə</span></button><button type="button" class="adm-tile" onclick="ptBatAdmAdd()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14" /><path d="M12 5v14" /></svg></span><span>Yeni sətir</span></button><button type="button" class="adm-tile ok" onclick="ptBatAdmSave()"><span class="e3d ic3d" style="--a:#5BE08A;--b:#1E9E4A" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg></span><span>Yadda saxla <b id="ptBatAdmDirty"></b></span></button></div>
+                <div id="ptBatAdmList" class="admin-list"><div class="admin-empty">Battery.json yüklənir…</div></div>
+                </div>
             </details>
         </div>
 
@@ -14047,7 +14052,7 @@ if (dbPage) {
   var acc = $("admDbAcc");
   if (acc) { acc.open = false; var s = acc.querySelector("summary > span:nth-child(2)"); if (s && s.firstChild) s.firstChild.nodeValue = "Model bazası "; }
   var wrapM = document.createElement("div"); wrapM.className = "adm-menus acc-exclusive pt-subacc";
-  var sec = $("adminDbSection"); if (sec) { sec.parentNode.insertBefore(wrapM, sec); if (acc) wrapM.appendChild(acc); sec.remove(); }
+  var sec = $("adminDbSection"); if (sec) { sec.parentNode.insertBefore(wrapM, sec); if (acc) wrapM.appendChild(acc); var batA = $("ptBatAcc"); if (batA) { batA.open = false; wrapM.appendChild(batA); } sec.remove(); }
   else cont.appendChild(wrapM);
   toSubAcc(sizes, wrapM, "Model ölçüləri");
 }
@@ -15792,7 +15797,7 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     var box = $("ptBatAdmList"); if (box) box.innerHTML = '<div class="admin-empty">Battery.json yüklənir…</div>';
     try {
       batAdm.lines = await fetchBatteryFromGitHub();
-      batAdm.dirty = 0; batAdm.limit = 60;
+      batAdm.dirty = 0; batAdm.limit = 60; batAdm.open = new Set(); batAdm.tmp = {};
       setAdminStatus("🔋 Batareya bazası yükləndi · " + batAdm.lines.length + " sətir");
     } catch (e) {
       batAdm.lines = null;
@@ -15801,46 +15806,186 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
     }
     batAdm.busy = false; batAdmDirty(); ptBatAdmRender();
   };
+  /* Modellər → «Batareya bazası»: «Modellər bazası» kimi qruplar; batareyası olmayan telefonlar da siyahıdadır */
+  batAdm.open = new Set(); batAdm.tmp = {};
+  function batSplit(l) {
+    var p = String(l || "").split("|").map(function (x) { return x.trim(); });
+    return {
+      models: (p[0] || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean),
+      codes: (p[1] || "").split(",").map(function (x) { return x.trim(); }).filter(Boolean),
+      extra: p.slice(2).filter(Boolean)
+    };
+  }
+  function batBaseModels() {
+    var g = (Array.isArray(adminEditDb) && adminEditDb.length) ? adminEditDb : (Array.isArray(database) ? database : []);
+    var out = [], seen = {};
+    g.forEach(function (grp) {
+      (Array.isArray(grp) ? grp : []).forEach(function (m) {
+        m = String(m || "").trim(); var k = norm(m);
+        if (m && k && !seen[k]) { seen[k] = 1; out.push(m); }
+      });
+    });
+    return out;
+  }
+  function batEntries() {
+    var covered = {}, list = [];
+    batAdm.lines.forEach(function (l, i) {
+      var e = batSplit(l); e.i = i; e.key = "L" + i;
+      e.models.forEach(function (m) { covered[norm(m)] = 1; });
+      list.push(e);
+    });
+    var miss = 0;
+    batBaseModels().forEach(function (m) {
+      if (covered[norm(m)]) return;
+      miss++;
+      var key = "M" + norm(m);
+      list.push({ i: -1, key: key, models: [m].concat(batAdm.tmp[key] || []), codes: [], extra: [] });
+    });
+    batAdm.miss = miss;
+    return list;
+  }
+  function batCount() {
+    var c = $("ptBatAdmCount"); if (!c) return;
+    c.textContent = batAdm.lines ? "· " + batAdm.lines.length + " sətir · " + (batAdm.miss || 0) + " kodsuz model" : "";
+  }
+  function batCommit(e, models, codes) {
+    models = models.map(function (x) { return String(x || "").trim(); }).filter(Boolean);
+    codes = codes.map(function (x) { return String(x || "").trim(); }).filter(Boolean);
+    if (e.i >= 0) {
+      if (!models.length) {
+        if (!confirm("Sətirdə model qalmadı. Silinsin?\n" + batAdm.lines[e.i])) return false;
+        batAdm.lines.splice(e.i, 1); batAdm.open = new Set(); batAdm.dirty++; batAdmDirty(); return true;
+      }
+      if (!codes.length) { showAppToast("Batareya kodu boş ola bilməz"); return false; }
+      var v = batAdmFix(models.join(", ") + " | " + codes.join(", ") + (e.extra.length ? " | " + e.extra.join(" | ") : ""));
+      if (!v) { showAppToast("Format: Model 1, Model 2 | KOD1, KOD2"); return false; }
+      if (v !== batAdm.lines[e.i]) { batAdm.lines[e.i] = v; batAdm.dirty++; batAdmDirty(); }
+      return true;
+    }
+    if (!codes.length) { showAppToast("Batareya kodunu yazın"); return false; }
+    var nv = batAdmFix(models.join(", ") + " | " + codes.join(", "));
+    if (!nv) { showAppToast("Format: Model 1, Model 2 | KOD1, KOD2"); return false; }
+    batAdm.lines.push(nv); delete batAdm.tmp[e.key];
+    batAdm.open.delete(e.key); batAdm.open.add("L" + (batAdm.lines.length - 1));
+    batAdm.dirty++; batAdmDirty();
+    return true;
+  }
+  window.ptBatAdmOpen = function () { if (!batAdm.lines) ptBatAdmLoad(); else ptBatAdmRender(); };
   window.ptBatAdmRender = function () {
     var box = $("ptBatAdmList"); if (!box) return;
     if (!batAdm.lines) { if (($("ptBatAdmQ") || {}).value) ptBatAdmLoad(); return; }
     var q = String(($("ptBatAdmQ") || {}).value || "").trim().toLowerCase(), qz = nzs(q);
-    var hits = [];
-    batAdm.lines.forEach(function (l, i) {
-      if (!q || String(l).toLowerCase().indexOf(q) >= 0 || (qz && nzs(l).indexOf(qz) >= 0)) hits.push(i);
+    var all = batEntries(), hits = [];
+    all.forEach(function (e) {
+      if (!q) { hits.push(e); return; }
+      var t = e.models.join(", ") + " | " + e.codes.join(", ");
+      if (t.toLowerCase().indexOf(q) >= 0 || (qz && nzs(t).indexOf(qz) >= 0)) hits.push(e);
     });
+    batCount();
     box.innerHTML = "";
     var info = document.createElement("div");
     info.className = "admin-empty";
-    info.textContent = "🔋 " + batAdm.lines.length + " sətir" + (q ? " · tapıldı: " + hits.length : "") + " · format: Model 1, Model 2 | KOD1, KOD2";
+    info.textContent = "🔋 " + batAdm.lines.length + " sətir · " + batAdm.miss + " kodsuz model" + (q ? " · tapıldı: " + hits.length : "") + " · format: Model 1, Model 2 | KOD1, KOD2";
     box.appendChild(info);
-    hits.slice(0, batAdm.limit).forEach(function (i) {
-      var row = document.createElement("div");
-      row.className = "admin-model-row";
-      var inp = document.createElement("input");
-      inp.type = "text"; inp.value = batAdm.lines[i];
-      inp.placeholder = "Model 1, Model 2 | KOD1, KOD2";
-      inp.addEventListener("change", function () {
-        var v = batAdmFix(this.value);
-        if (!v) { showAppToast("Format: Model 1, Model 2 | KOD1, KOD2"); this.value = batAdm.lines[i]; return; }
-        if (v !== batAdm.lines[i]) { batAdm.lines[i] = v; batAdm.dirty++; batAdmDirty(); }
-        this.value = v;
+    var frag = document.createDocumentFragment();
+    hits.slice(0, batAdm.limit).forEach(function (e) {
+      var isOpen = batAdm.open.has(e.key);
+      var div = document.createElement("div");
+      div.className = "admin-group" + (isOpen ? " open" : "");
+      var head = document.createElement("div");
+      head.className = "admin-group-head";
+      head.innerHTML =
+        '<span class="admin-group-num">' + (e.i >= 0 ? String(e.i + 1).padStart(2, "0") : "—") + '</span>' +
+        '<span class="admin-group-info">' + escapeHtml(e.models[0] || "Boş") + (e.models.length > 1 ? " + " + (e.models.length - 1) + " model" : "") +
+        ' · 🔋 ' + escapeHtml(e.codes.length ? e.codes.join(", ") : "___") + '</span>' +
+        '<span class="admin-group-count">' + e.models.length + '</span>';
+      if (e.i >= 0) {
+        var gdel = document.createElement("button");
+        gdel.type = "button"; gdel.className = "admin-icon-btn del"; gdel.title = "Sətiri sil"; gdel.textContent = "🗑";
+        gdel.addEventListener("click", function (ev) {
+          ev.stopPropagation();
+          if (!confirm("Silinsin?\n" + batAdm.lines[e.i])) return;
+          batAdm.lines.splice(e.i, 1); batAdm.open = new Set(); batAdm.dirty++; batAdmDirty(); ptBatAdmRender();
+        });
+        head.appendChild(gdel);
+      }
+      head.addEventListener("click", function () {
+        if (batAdm.open.has(e.key)) batAdm.open.delete(e.key); else batAdm.open.add(e.key);
+        ptBatAdmRender();
       });
-      var del = document.createElement("button");
-      del.type = "button"; del.className = "admin-icon-btn del"; del.title = "Sətiri sil"; del.textContent = "🗑";
-      del.addEventListener("click", function () {
-        if (!confirm("Silinsin?\n" + batAdm.lines[i])) return;
-        batAdm.lines.splice(i, 1); batAdm.dirty++; batAdmDirty(); ptBatAdmRender();
+      div.appendChild(head);
+      if (!isOpen) { frag.appendChild(div); return; }
+
+      var body = document.createElement("div");
+      body.className = "admin-group-body";
+      e.models.forEach(function (m, mi) {
+        var row = document.createElement("div");
+        row.className = "admin-model-row";
+        var inp = document.createElement("input");
+        inp.type = "text"; inp.value = m; inp.placeholder = "Model adı";
+        if (e.i < 0 && mi === 0) inp.readOnly = true;
+        inp.addEventListener("change", function () {
+          var ms = e.models.slice(); ms[mi] = this.value.trim();
+          if (e.i < 0) { batAdm.tmp[e.key] = ms.slice(1).filter(Boolean); ptBatAdmRender(); return; }
+          if (batCommit(e, ms, e.codes)) ptBatAdmRender(); else this.value = m;
+        });
+        row.appendChild(inp);
+        if (!(e.i < 0 && mi === 0)) {
+          var del = document.createElement("button");
+          del.type = "button"; del.className = "admin-icon-btn del"; del.title = "Modeli sil"; del.textContent = "×";
+          del.addEventListener("click", function (ev) {
+            ev.stopPropagation();
+            var ms = e.models.slice(); ms.splice(mi, 1);
+            if (e.i < 0) { batAdm.tmp[e.key] = ms.slice(1); ptBatAdmRender(); return; }
+            if (batCommit(e, ms, e.codes)) ptBatAdmRender();
+          });
+          row.appendChild(del);
+        }
+        body.appendChild(row);
       });
-      row.appendChild(inp); row.appendChild(del);
-      box.appendChild(row);
+
+      var codeRow = document.createElement("div");
+      codeRow.className = "admin-model-row";
+      var cin = document.createElement("input");
+      cin.type = "text"; cin.value = e.codes.join(", "); cin.placeholder = "🔋 Batareya kodu (KOD1, KOD2)";
+      var cok = document.createElement("button");
+      cok.type = "button"; cok.className = "admin-icon-btn add"; cok.title = "Kodu saxla"; cok.textContent = "✓";
+      function saveCodes() { if (batCommit(e, e.models, cin.value.split(","))) ptBatAdmRender(); }
+      cok.addEventListener("click", function (ev) { ev.stopPropagation(); saveCodes(); });
+      cin.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); saveCodes(); } });
+      var lbl = document.createElement("span"); lbl.textContent = "🔋"; lbl.style.cssText = "align-self:center;padding:0 2px";
+      codeRow.appendChild(lbl); codeRow.appendChild(cin); codeRow.appendChild(cok);
+      body.appendChild(codeRow);
+
+      var addRow = document.createElement("div");
+      addRow.className = "admin-model-row";
+      var ain = document.createElement("input");
+      ain.type = "text"; ain.placeholder = "Yeni model əlavə et...";
+      var abtn = document.createElement("button");
+      abtn.type = "button"; abtn.className = "admin-icon-btn add"; abtn.title = "Əlavə et"; abtn.textContent = "+";
+      function addModel() {
+        var v = ain.value.trim(); if (!v) return;
+        if (e.i < 0) { batAdm.tmp[e.key] = e.models.slice(1).concat([v]); ptBatAdmRender(); return; }
+        if (batCommit(e, e.models.concat([v]), e.codes)) ptBatAdmRender();
+      }
+      abtn.addEventListener("click", function (ev) { ev.stopPropagation(); addModel(); });
+      ain.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); addModel(); } });
+      addRow.appendChild(ain); addRow.appendChild(abtn);
+      body.appendChild(addRow);
+
+      div.appendChild(body);
+      frag.appendChild(div);
     });
-    if (hits.length > batAdm.limit) {
+    box.appendChild(frag);
+    if (!hits.length) {
+      var em = document.createElement("div"); em.className = "admin-empty"; em.textContent = "Axtarışa uyğun model tapılmadı.";
+      box.appendChild(em);
+    } else if (hits.length > batAdm.limit) {
       var more = document.createElement("button");
-      more.type = "button"; more.className = "admin-icon-btn";
-      more.style.cssText = "width:100%;margin-top:6px;padding:8px";
-      more.textContent = "Daha çox göstər (" + (hits.length - batAdm.limit) + ")";
-      more.addEventListener("click", function () { batAdm.limit += 60; ptBatAdmRender(); });
+      more.type = "button"; more.className = "adm-tile";
+      more.style.cssText = "width:100%;margin:10px 0;justify-content:center";
+      more.textContent = "Daha çox göstər (" + (hits.length - batAdm.limit) + " qalıb)";
+      more.addEventListener("click", function () { batAdm.limit += 150; ptBatAdmRender(); });
       box.appendChild(more);
     }
   };
@@ -15899,6 +16044,50 @@ document.addEventListener("keydown", function (e) { if (e.key === "Escape") ptVe
       batAdm.dirty = 0; batAdmDirty();
     }
     batAdm.busy = false;
+  };
+
+  /* Baza idarəsi → FAYLLAR: batareya bazası üçün Backup (JSON) və JSON yüklə */
+  window.ptBatBackup = async function () {
+    if (!isAdmin) return;
+    var lines = batAdm.lines;
+    if (!lines) {
+      try { setAdminStatus("🔋 Battery.json yüklənir…"); lines = await fetchBatteryFromGitHub(); }
+      catch (e) { showAppToast("🔋 Battery.json yüklənmədi: " + ((e && e.message) || "")); setAdminStatus("🔋 Backup alınmadı"); return; }
+    }
+    var blob = new Blob([JSON.stringify(lines, null, 2) + "\n"], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "Battery_backup_" + new Date().toISOString().slice(0, 10) + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+    setAdminStatus("🔋 Batareya backup endirildi · " + lines.length + " sətir");
+  };
+  window.ptBatImport = function (input) {
+    if (!isAdmin || !input.files || !input.files[0]) return;
+    var file = input.files[0];
+    setAdminStatus("🔋 JSON oxunur…");
+    var reader = new FileReader();
+    reader.onload = async function (ev) {
+      input.value = "";
+      try {
+        var data = JSON.parse(ev.target.result);
+        var arr = Array.isArray(data) ? data : (data && (data.lines || data.battery || data.Battery)) || [];
+        if (!Array.isArray(arr)) arr = [];
+        var lines = [], bad = 0;
+        arr.forEach(function (x) { var v = batAdmFix(x); if (v) lines.push(v); else bad++; });
+        if (!lines.length) throw new Error("Faylda düzgün sətir yoxdur");
+        if (batAdm.dirty && !confirm("Yadda saxlanmamış " + batAdm.dirty + " dəyişiklik itəcək. Davam edilsin?")) { setAdminStatus("🔋 JSON yüklənmədi"); return; }
+        batAdm.lines = lines; batAdm.dirty = lines.length; batAdm.limit = 60; batAdm.open = new Set(); batAdm.tmp = {};
+        batAdmDirty(); ptBatAdmRender();
+        setAdminStatus("🔋 JSON yükləndi · " + lines.length + " sətir" + (bad ? " · " + bad + " səhv sətir atıldı" : ""));
+        if (confirm("🔋 " + lines.length + " sətir yükləndi" + (bad ? " (" + bad + " səhv sətir atıldı)" : "") + ".\nİndi yadda saxlanılsın? (GitHub Battery.json + sayt)")) await ptBatAdmSave();
+        else showAppToast("🔋 Yükləndi — Modellər → Batareya bazası → «Yadda saxla» basın", 6000);
+      } catch (err) {
+        setAdminStatus("🔋 JSON xətası: " + ((err && err.message) || ""));
+        showAppToast("🔋 JSON oxunmadı");
+      }
+    };
+    reader.readAsText(file);
   };
 
   document.addEventListener("DOMContentLoaded", init);
