@@ -2880,6 +2880,7 @@ html.sensitive .ripple-ring{display:none !important}
                     <div class="fm-pane" data-pane="pp-ru"><input type="text" id="ptPushTiru" class="fm-in" placeholder="Başlıq (RU)" style="margin-bottom:8px"><textarea id="ptPushBru" class="fm-ta sm" placeholder="Mətn (RU) — boş qalsa AZ göstərilir"></textarea></div>
                     <div class="fm-pane" data-pane="pp-tr"><input type="text" id="ptPushTitr" class="fm-in" placeholder="Başlıq (TR)" style="margin-bottom:8px"><textarea id="ptPushBtr" class="fm-ta sm" placeholder="Mətn (TR) — boş qalsa AZ göstərilir"></textarea></div>
                     <div class="fm-pane" data-pane="pp-en"><input type="text" id="ptPushTien" class="fm-in" placeholder="Başlıq (EN)" style="margin-bottom:8px"><textarea id="ptPushBen" class="fm-ta sm" placeholder="Mətn (EN) — boş qalsa AZ göstərilir"></textarea></div>
+                    <div class="fm-sw-row"><span>Telefon panelində * ulduzlarını sil</span><label class="switch"><input type="checkbox" id="ptPushNoStar" checked><span class="slider"></span></label></div>
                     <div class="fm-acts"><button type="button" class="fm-btn pri wide" id="ptPushSendBtn" onclick="ptAdminPushSend()">Göndər</button></div>
                     <div class="fm-note"><div>Push yalnız Android proqramında (APK) gəlir. Fərdi mesaj, müraciət cavabları, Premium və «Dərc et»dəki yeni modellər üçün push avtomatik gedir.</div></div>
                 </div>
@@ -14762,7 +14763,9 @@ window.ptAdminPushSend = function () {
         if (!ok) return;
         var btn = document.getElementById("ptPushSendBtn");
         if (btn) btn.disabled = true;
-        pushSend({ to: user ? [user._id] : "all", t: type, ti: ti, b: b, o: "notif" }).then(function (d) {
+        var ns = document.getElementById("ptPushNoStar");
+        var strip = function (o) { if (!ns || !ns.checked) return o; var r = {}; Object.keys(o).forEach(function (k) { r[k] = String(o[k] || "").replace(/\*/g, ""); }); return r; };
+        pushSend({ to: user ? [user._id] : "all", t: type, ti: strip(ti), b: strip(b), o: "notif" }).then(function (d) {
             if (user) {
                 var ul = user.lang || user.language || "az";
                 ptNotifCol(user._id).add({ type: "msg", title: String(ti[ul] || ti.az || "").slice(0, 120), text: (b[ul] || b.az).slice(0, 500), createdAt: Date.now(), read: false, noPush: true }).catch(function () {});
