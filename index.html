@@ -2021,7 +2021,6 @@
         .ntool .crown-inline{width:16px;height:16px;margin:0}
         .notif-item{display:flex;align-items:flex-start;gap:10px}
         .notif-item .nbody{flex:1;min-width:0}
-        .notif-item .ntitle{margin-bottom:3px}
         .notif-item.link::after{display:none}
         .notif-item .ngo{color:var(--accent-color);font-size:18px;line-height:1;align-self:center}
         .ndel{flex-shrink:0;width:32px;height:32px;border-radius:10px;border:none;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;align-self:center}
@@ -2880,7 +2879,6 @@ html.sensitive .ripple-ring{display:none !important}
                     <div class="fm-pane" data-pane="pp-ru"><input type="text" id="ptPushTiru" class="fm-in" placeholder="Başlıq (RU)" style="margin-bottom:8px"><textarea id="ptPushBru" class="fm-ta sm" placeholder="Mətn (RU) — boş qalsa AZ göstərilir"></textarea></div>
                     <div class="fm-pane" data-pane="pp-tr"><input type="text" id="ptPushTitr" class="fm-in" placeholder="Başlıq (TR)" style="margin-bottom:8px"><textarea id="ptPushBtr" class="fm-ta sm" placeholder="Mətn (TR) — boş qalsa AZ göstərilir"></textarea></div>
                     <div class="fm-pane" data-pane="pp-en"><input type="text" id="ptPushTien" class="fm-in" placeholder="Başlıq (EN)" style="margin-bottom:8px"><textarea id="ptPushBen" class="fm-ta sm" placeholder="Mətn (EN) — boş qalsa AZ göstərilir"></textarea></div>
-                    <div class="fm-sw-row"><span>Telefon panelində * ulduzlarını sil</span><label class="switch"><input type="checkbox" id="ptPushNoStar" checked><span class="slider"></span></label></div>
                     <div class="fm-acts"><button type="button" class="fm-btn pri wide" id="ptPushSendBtn" onclick="ptAdminPushSend()">Göndər</button></div>
                     <div class="fm-note"><div>Push yalnız Android proqramında (APK) gəlir. Fərdi mesaj, müraciət cavabları, Premium və «Dərc et»dəki yeni modellər üçün push avtomatik gedir.</div></div>
                 </div>
@@ -6187,15 +6185,6 @@ function escapeHtml(s) {
         .replace(/"/g, "&quot;");
 }
 
-// Admin mətnlərində: ***x*** qalın+maili, **x** qalın, *x* maili (yalnız sayt içində)
-function ptMd(s) {
-    return escapeHtml(s)
-        .replace(/\*\*\*([^*\n]+?)\*\*\*/g, "<b><i>$1</i></b>")
-        .replace(/\*\*([^*\n]+?)\*\*/g, "<b>$1</b>")
-        .replace(/\*([^*\n]+?)\*/g, "<i>$1</i>");
-}
-window.ptMd = ptMd;
-
 function admDbOpen() {
     const d = document.getElementById("admDbAcc");
     if (d && !d.open) d.open = true;
@@ -9034,7 +9023,7 @@ function renderNotifications() {
         const sel = notifSelected.has(notifKey(x));
         return '<div class="notif-item' + (x.read ? "" : " unread") + (sel ? " sel" : "") + ((toPay || notifSelectMode) ? " link" : "") + '" data-i="' + i + '" onclick="notifClick(' + i + ')">' +
             (notifSelectMode ? '<span class="nchk">✓</span>' : '') +
-            '<div class="nbody">' + (x.title ? '<div class="ntitle"><b><i>' + escapeHtml(x.title) + '</i></b></div>' : '') + ptMd(notifText(x)) + '<div class="notif-date">' + fmtDate(x.createdAt || Date.now()) + "</div></div>" +
+            '<div class="nbody">' + escapeHtml(notifText(x)) + '<div class="notif-date">' + fmtDate(x.createdAt || Date.now()) + "</div></div>" +
             (!notifSelectMode && toPay ? '<span class="ngo">›</span>' : '') +
             (!notifSelectMode ? '<button class="ndel" aria-label="' + escapeHtml(t("notifDelete")) + '" onclick="event.stopPropagation();notifDeleteOne(' + i + ')">' + trash + '</button>' : '') +
             "</div>";
@@ -14763,12 +14752,10 @@ window.ptAdminPushSend = function () {
         if (!ok) return;
         var btn = document.getElementById("ptPushSendBtn");
         if (btn) btn.disabled = true;
-        var ns = document.getElementById("ptPushNoStar");
-        var strip = function (o) { if (!ns || !ns.checked) return o; var r = {}; Object.keys(o).forEach(function (k) { r[k] = String(o[k] || "").replace(/\*/g, ""); }); return r; };
-        pushSend({ to: user ? [user._id] : "all", t: type, ti: strip(ti), b: strip(b), o: "notif" }).then(function (d) {
+        pushSend({ to: user ? [user._id] : "all", t: type, ti: ti, b: b, o: "notif" }).then(function (d) {
             if (user) {
                 var ul = user.lang || user.language || "az";
-                ptNotifCol(user._id).add({ type: "msg", title: String(ti[ul] || ti.az || "").slice(0, 120), text: (b[ul] || b.az).slice(0, 500), createdAt: Date.now(), read: false, noPush: true }).catch(function () {});
+                ptNotifCol(user._id).add({ type: "msg", text: (b[ul] || b.az).slice(0, 500), createdAt: Date.now(), read: false, noPush: true }).catch(function () {});
             }
             showAppToast("📲 Göndərildi" + (d && typeof d.sent === "number" ? " · " + d.sent + " cihaz" : ""));
             LS.forEach(function (l) { ["ptPushTi" + l, "ptPushB" + l].forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ""; }); });
@@ -15029,7 +15016,7 @@ function renderMsgs(keepPos) {
         h += '<div class="ptc-m ' + (me ? "me" : "them") + '">';
         if (!me && m.f === "a") h += '<div class="ptc-who">' + esc(tx("adm")) + "</div>";
         if (m.i) h += '<img class="ptc-img" loading="lazy" src="' + CHAT_API + "/img/" + esc(m.i) + '" alt="" onclick="ptChatZoom(this.src)">';
-        if (m.t) h += (m.f === "a" && typeof window.ptMd === "function") ? window.ptMd(m.t) : esc(m.t);
+        if (m.t) h += esc(m.t);
         h += '<div class="ptc-meta">' + fmtT(m.ts) + ticks(m) + "</div></div>";
     });
     box.innerHTML = h;

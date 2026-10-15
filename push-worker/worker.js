@@ -16,7 +16,7 @@
 
 const PROJECT = "protechtor-99407";
 const ADMIN_EMAIL = "o553115544@gmail.com";
-const ORIGINS = ["https://protechtor.app", "https://www.protechtor.app", "https://m.protechtor.app", "https://eminlist.github.io"];
+const ORIGINS = ["https://eminlist.github.io"];
 const TYPES = ["news", "models", "reply", "bulk", "premium", "general", "update", "warn", "vip"];
 const LANGS = ["az", "ru", "tr", "en"];
 const MAX_TOKENS_PER_USER = 5;
