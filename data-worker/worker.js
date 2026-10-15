@@ -16,9 +16,14 @@ const LANDING_MODES = ["on", "nogirl", "off"];
 const PUSH_URL = "https://protector-push.o553115544.workers.dev";
 // Batareya bazası (Battery.json) — yalnız serverdə saxlanılır, axtarış serverdə gedir (antiudar kimi qorunur)
 const BAT_KEEP = 10;               // son 10 versiya
-const PREF_KEYS = ["theme","accent","accent_dark","sound","sound_type","haptic","haptic_intensity","low_power","font_scale","cb","sens","eye","lang","bat_off"];
+const PREF_KEYS = ["theme","accent","accent_dark","sound","sound_type","haptic","haptic_intensity","low_power","font_scale","cb","sens","eye","lang"];
 const BAT_DAY_LIMIT = 1500;        // istifadəçi gündə ən çox 1500 batareya axtarışı (ümumi axtarışın içindədir)
 const BAT_MIN_LIMIT = 70;          // dəqiqədə ən çox 40 (kütləvi çıxarmanın qarşısı)
+const BAT_PAGE = 5;                // istifadəçiyə hər dəfə 5 nəticə
+const BAT_GAP_FIRST = 10000;       // ilk 5-dən sonra 10 saniyə
+const BAT_GAP_NEXT = 5000;         // sonra hər 5 saniyədən bir 5 nəticə
+const BAT_MAX = 240;               // bir axtarışda ən çox 240 nəticə
+const BLOCK_STREAK = 3;            // limiti ardıcıl 3 gün dolduran hesab avtomatik bloklanır (protector-api ilə eyni)
 const BAT_OLD = ["Sony Ericsson", "Samsung", "Philips", "Motorola", "Siemens", "Nokia"];
 
 const CORS = {
@@ -183,7 +188,8 @@ async function cleanup(env) {
     db.prepare("DELETE FROM pt_report WHERE ts < ? AND status != 'pending'").bind(now - REPORT_KEEP_MS),
     db.prepare("DELETE FROM pt_rate WHERE k < ?").bind("r:" + (Math.floor(now / 86400000) - 2)),
     db.prepare("DELETE FROM pt_rate WHERE k LIKE 'b:%' AND k < ?").bind("b:" + (Math.floor(now / 86400000) - 2)),
-    db.prepare("DELETE FROM pt_rate WHERE k LIKE 'bm:%' AND k < ?").bind("bm:" + (Math.floor(now / 60000) - 1440))
+    db.prepare("DELETE FROM pt_rate WHERE k LIKE 'bm:%' AND k < ?").bind("bm:" + (Math.floor(now / 60000) - 1440)),
+    db.prepare("DELETE FROM pt_rate WHERE k LIKE 'bs:%' AND n < ?").bind((now - 86400000) * 1000)
   ]);
 }
 
@@ -355,6 +361,50 @@ function batSearch(ix, q) {
     out.models.push(o);
   });
   return out;
+}
+// Server cavabı → model sətirləri (ad üzrə tapılanlar, sonra kod üzrə tapılanlar)
+function batFlat(d) {
+  const out = [], seen = new Set();
+  (d.models || []).forEach((m) => {
+    const k = nz(m.model); if (seen.has(k)) return; seen.add(k);
+    const sh = m.shared || {};
+    out.push({ model: m.model, codes: m.codes || [], hit: "", others: (m.same || []).map((x) => ({ m: x, codes: sh[x] || [] })) });
+  });
+  (d.codes || []).forEach((c) => {
+    const mc = c.mc || {};
+    (c.models || []).forEach((mn) => {
+      const k = nz(mn); if (seen.has(k)) return; seen.add(k);
+      const own = mc[mn] && mc[mn].length ? mc[mn] : [c.code];
+      const others = (c.models || []).filter((x) => x !== mn).map((x) => {
+        const oc = mc[x] || [c.code], shared = oc.filter((z) => own.indexOf(z) >= 0);
+        return { m: x, codes: shared.length ? shared : [c.code] };
+      });
+      out.push({ model: mn, codes: own, hit: c.code, others });
+    });
+  });
+  return out.slice(0, BAT_MAX);
+}
+function qHash(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+// İnsan təsdiqi (Turnstile) + avtomatik blok — protector-api ilə eyni cədvəllər
+async function batUserState(db, uid) {
+  try {
+    const r = await db.prepare("SELECT EXISTS(SELECT 1 FROM human WHERE uid = ?1) AS h, EXISTS(SELECT 1 FROM autoblock WHERE uid = ?1) AS b").bind(uid).first();
+    return { human: !!(r && r.h), blocked: !!(r && r.b) };
+  } catch (e) { return { human: true, blocked: false }; }
+}
+function dayNum(ms) { const d = new Date(ms); return d.getUTCFullYear() * 10000 + (d.getUTCMonth() + 1) * 100 + d.getUTCDate(); }
+// Gündəlik limit dolanda qeyd: ardıcıl BLOCK_STREAK gün dolubsa — avtomatik blok + Telegram
+async function batLimitHit(env, db, me) {
+  try {
+    const now = Date.now();
+    const ins = await db.prepare("INSERT OR IGNORE INTO limithit (uid, day) VALUES (?, ?)").bind(me.uid, dayNum(now)).run();
+    if (!ins.meta || !ins.meta.changes) return;
+    const days = []; for (let i = 0; i < BLOCK_STREAK; i++) days.push(dayNum(now - i * 86400000));
+    const r = await db.prepare("SELECT COUNT(*) AS n FROM limithit WHERE uid = ? AND day IN (" + days.map(() => "?").join(",") + ")").bind(me.uid, ...days).first();
+    if (!r || r.n < BLOCK_STREAK) return;
+    const b = await db.prepare("INSERT OR IGNORE INTO autoblock (uid, email, at, days) VALUES (?, ?, ?, ?)").bind(me.uid, me.email || "", now, BLOCK_STREAK).run();
+    if (b.meta && b.meta.changes) await tgSend(env, "⛔ ProTechtor: avtomatik blok (batareya axtarışı)\n" + (me.email || me.uid) + "\nLimit ardıcıl " + BLOCK_STREAK + " gün doldu.\nAdmin → Avtomatik bloklananlar bölməsindən aça bilərsiniz.");
+  } catch (e) {}
 }
 // Gündəlik + dəqiqəlik limit (admin istisna)
 async function batLimit(db, me) {
@@ -697,12 +747,46 @@ const _handler = {
       });
       return J({ codes });
     }
+    // İstifadəçi: ən az 2 hərf; nəticələr 5-5 verilir (ilk 5 dərhal, 10 san sonra 5, sonra hər 5 san 5) — admin hamısını birdən alır
     if (path === "/bat/search" && req.method === "GET") {
       const q = String(url.searchParams.get("q") || "").trim().slice(0, 60);
-      if (!q) return J({ codes: [], models: [], multi: false });
-      const lim = await batLimit(db, me);
-      if (lim) return E(lim, 429);
-      return J(batSearch(await batIndex(db), q));
+      const p = Math.max(0, Math.min(999, parseInt(url.searchParams.get("p") || "0", 10) || 0));
+      if (!q || (!me.admin && nz(q).length < 2)) return J({ items: [], total: 0, next: false });
+      if (!me.admin) {
+        const st = await batUserState(db, me.uid);
+        if (st.blocked) return E("blocked", 403);
+        if (!st.human) return E("human-required", 403);
+      }
+      // Köməkçi (AI) və admin redaktoru üçün qısa xam cavab: istifadəçiyə ən çox 8 model + 6 kod
+      if (url.searchParams.get("raw") === "1") {
+        if (!me.admin) {
+          const lim = await batLimit(db, me);
+          if (lim === "daily-limit") ctx.waitUntil(batLimitHit(env, db, me));
+          if (lim) return E(lim, 429);
+        }
+        const d = batSearch(await batIndex(db), q);
+        if (!me.admin) { d.models = d.models.slice(0, 8); d.codes = d.codes.slice(0, 6).map((c) => Object.assign({}, c, { models: c.models.slice(0, 60) })); }
+        return J(d);
+      }
+      const key = "bs:" + me.uid + ":" + qHash(nz(q)), now = Date.now();
+      if (!me.admin) {
+        if (p === 0) {
+          const lim = await batLimit(db, me);
+          if (lim === "daily-limit") ctx.waitUntil(batLimitHit(env, db, me));
+          if (lim) return E(lim, 429);
+        } else {
+          const row = await db.prepare("SELECT n FROM pt_rate WHERE k=?").bind(key).first();
+          const n = row ? +row.n : 0, last = Math.floor(n / 1000), lp = n % 1000;
+          const need = p === 1 ? BAT_GAP_FIRST : BAT_GAP_NEXT;
+          if (!row || lp !== p - 1) return E("wait", 429);
+          if (now - last < need - 400) return J({ error: "wait", ms: need - (now - last) }, 429);
+        }
+        await db.prepare("INSERT INTO pt_rate (k, n) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET n=excluded.n").bind(key, now * 1000 + p).run();
+      }
+      const d = batSearch(await batIndex(db), q), all = batFlat(d);
+      if (me.admin) return J({ items: all, total: all.length, next: false, fuzzy: !!d.fuzzy, multi: !!d.multi });
+      const from = p * BAT_PAGE, items = all.slice(from, from + BAT_PAGE), next = from + BAT_PAGE < all.length;
+      return J({ items, total: all.length, next, wait: next ? (p === 0 ? BAT_GAP_FIRST : BAT_GAP_NEXT) : 0, fuzzy: !!d.fuzzy, multi: !!d.multi });
     }
 
     if (!me.admin && (path.startsWith("/r/") || path.startsWith("/base/") || path.startsWith("/bat/"))) return E("forbidden", 403);
